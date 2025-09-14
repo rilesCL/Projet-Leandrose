@@ -6,7 +6,7 @@ import java.util.Set;
 public enum Role{
 	GESTIONNAIRE("ROLE_GESTIONNAIRE"),
 	PREPOSE("ROLE_PREPOSE"),
-	EMPRUNTEUR("ROLE_EMPRUNTEUR"),
+	EMPLOYEUR("ROLE_EMPLOYEUR"),
 	;
 
 	private final String string;
@@ -14,7 +14,7 @@ public enum Role{
 
 	static{
 		GESTIONNAIRE.managedRoles.add(PREPOSE);
-		GESTIONNAIRE.managedRoles.add(EMPRUNTEUR);
+		GESTIONNAIRE.managedRoles.add(EMPLOYEUR);
 	}
 
 	Role(String string){

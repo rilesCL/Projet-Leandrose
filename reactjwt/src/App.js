@@ -62,7 +62,7 @@ function App() {
           <Route path='about' element={<About/>}/>
           <Route path='login' element={<LoginForm setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
-          <Route path='emprunteur' element={<EmprunteurHome/>}/>
+          <Route path='employeur' element={<EmprunteurHome/>}/>
           <Route path='prepose' element={<PreposeHome/>}/>
           <Route path='gestionnaire' element={<GestionnaireHome/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>

@@ -10,7 +10,7 @@ function Header({user}) {
         <ul className="nav-links">
           <li><Link to="/">Accueil</Link></li>
           <li><Link to="/about">À propos</Link></li>
-          <li><Link to="/emprunteur">Emprunteur</Link></li>
+          <li><Link to="/employeur">Emprunteur</Link></li>
           <li><Link to="/prepose">Prepose</Link></li>
           <li><Link to="/gestionnaire">Gestionnaire</Link></li>
           <li>{

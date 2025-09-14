@@ -1,7 +1,7 @@
 package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.*;
-import ca.cal.leandrose.repository.EmprunteurRepository;
+import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.repository.PreposeRepository;
 import ca.cal.leandrose.repository.UserAppRepository;
@@ -22,7 +22,7 @@ public class UserAppService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserAppRepository userAppRepository;
-    private final EmprunteurRepository emprunteurRepository;
+    private final EmployeurRepository EmployeurRepository;
     private final PreposeRepository preposeRepository;
     private final GestionnaireRepository gestionnaireRepository;
 
@@ -37,7 +37,7 @@ public class UserAppService {
         String email = jwtTokenProvider.getEmailFromJWT(token);
         UserApp user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
         return switch(user.getRole()){
-            case EMPRUNTEUR -> getEmprunteurDto(user.getId());
+            case EMPLOYEUR -> getEmployeurDto(user.getId());
             case PREPOSE -> getPreposeDto(user.getId());
             case GESTIONNAIRE -> getGestionnaireDto(user.getId());
         };
@@ -57,10 +57,10 @@ public class UserAppService {
                 PreposeDto.empty();
     }
 
-    private EmprunteurDto getEmprunteurDto(Long id) {
-        final Optional<Emprunteur> emprunteurOptional = emprunteurRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                EmprunteurDto.create(emprunteurOptional.get()) :
-                EmprunteurDto.empty();
+    private EmployeurDto getEmployeurDto(Long id) {
+        final Optional<Employeur> employeurOptional = EmployeurRepository.findById(id);
+        return employeurOptional.isPresent() ?
+                EmployeurDto.create(employeurOptional.get()) :
+                EmployeurDto.empty();
     }
 }
