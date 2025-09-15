@@ -23,8 +23,7 @@ public class RegisterController {
                 request.getEmail(),
                 request.getPassword(),
                 request.getCompanyName(),
-                request.getField(),
-                request.getSince()
+                request.getField()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(employeurDto);
     }

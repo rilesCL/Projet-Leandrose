@@ -11,12 +11,12 @@ import java.time.LocalDate;
 public class EmployeurDto extends UserDTO {
     private String companyName;
     private String field;
-    private LocalDate since;
 
     @Builder
-    public EmployeurDto(Long id, String firstName, String lastname, String email, String password, Role role, String companyName, String field, LocalDate since) {
+    public EmployeurDto(Long id, String firstName, String lastname, String email, String password, Role role, String companyName, String field) {
         super(id, firstName, lastname, email, role);
-        this.since = since;
+        this.companyName = companyName;
+        this.field = field;
     }
 
     public EmployeurDto() {}
@@ -30,14 +30,11 @@ public class EmployeurDto extends UserDTO {
                 .role(employeur.getRole())
                 .companyName(employeur.getCompanyName())
                 .field(employeur.getField())
-                .since(employeur.getSince())
                 .build();
-
-
-
     }
 
     public static EmployeurDto empty() {
         return new EmployeurDto();
     }
+
 }
