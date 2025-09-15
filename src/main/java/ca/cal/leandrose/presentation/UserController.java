@@ -37,4 +37,5 @@ public class UserController {
 			userService.getMe(request.getHeader("Authorization")));
 	}
 
+
 }
