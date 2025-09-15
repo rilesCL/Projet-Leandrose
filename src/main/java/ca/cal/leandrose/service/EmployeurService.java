@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -46,6 +45,9 @@ public class EmployeurService {
     }
     @Transactional
     public EmployeurDto getEmployeurById(Long id){
+        if (id == null){
+            throw new IllegalArgumentException();
+        }
         Optional<Employeur> emp = employeurRepository.findById(id);
         if (emp.isEmpty()){
             throw new UserNotFoundException();

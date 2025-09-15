@@ -5,8 +5,6 @@ import ca.cal.leandrose.model.auth.Role;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
 public class EmployeurDto extends UserDTO {
     private String companyName;
