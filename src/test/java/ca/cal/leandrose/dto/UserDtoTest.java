@@ -1,4 +1,3 @@
 package ca.cal.leandrose.dto;
 
-public class UserDtoTest {
-}
+public class UserDtoTest {}

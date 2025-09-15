@@ -7,12 +7,14 @@ import jakarta.persistence.Entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
 @DiscriminatorValue("E")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Employeur extends UserApp {
     private String companyName;

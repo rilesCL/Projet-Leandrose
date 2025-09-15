@@ -48,7 +48,7 @@ public class EmployeurService {
     public EmployeurDto getEmployeurById(Long id){
         Optional<Employeur> emp = employeurRepository.findById(id);
         if (emp.isEmpty()){
-           throw new UserNotFoundException();
+            throw new UserNotFoundException();
         }
         return EmployeurDto.create(emp.get());
     }
