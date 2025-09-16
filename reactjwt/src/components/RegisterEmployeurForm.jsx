@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {registerEmployeur} from "../api/apiEmployeur.jsx";
+import {useNavigate} from "react-router";
 
 function RegisterEmployeur() {
     const navigate = useNavigate();
@@ -56,7 +57,7 @@ function RegisterEmployeur() {
 
     return (
         <div>
-
+            ASFGUDIHGORSAGCVHFJKASBHF
         </div>
     );
 }
