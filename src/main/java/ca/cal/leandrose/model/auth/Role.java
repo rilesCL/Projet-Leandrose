@@ -7,6 +7,7 @@ public enum Role{
 	GESTIONNAIRE("ROLE_GESTIONNAIRE"),
 	PREPOSE("ROLE_PREPOSE"),
 	EMPLOYEUR("ROLE_EMPLOYEUR"),
+	STUDENT("ROLE_STUDENT")
 	;
 
 	private final String string;
@@ -15,6 +16,7 @@ public enum Role{
 	static{
 		GESTIONNAIRE.managedRoles.add(PREPOSE);
 		GESTIONNAIRE.managedRoles.add(EMPLOYEUR);
+		GESTIONNAIRE.managedRoles.add(STUDENT);
 	}
 
 	Role(String string){
