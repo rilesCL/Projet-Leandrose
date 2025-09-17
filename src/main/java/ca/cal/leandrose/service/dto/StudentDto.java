@@ -34,5 +34,4 @@ public class StudentDto extends UserDTO{
     public static StudentDto empty() {
         return new StudentDto();
     }
-
 }
