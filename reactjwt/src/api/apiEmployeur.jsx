@@ -21,10 +21,11 @@ async function handleFetch(url, options) {
 const BASE_URL = 'http://localhost:8080/api/register';
 
 export async function registerEmployeur(employeur) {
-    await handleFetch(`${BASE_URL}/enregistrerUtilisateur`, {
+    const res = await handleFetch(`${BASE_URL}/employeur`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(employeur)
     });
+    return await res.text();
 }
 

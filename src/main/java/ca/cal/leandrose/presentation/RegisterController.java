@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/register")
-@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class RegisterController {
 
     private final EmployeurService employeurService;
+
+    public RegisterController(EmployeurService employeurService) {
+        this.employeurService = employeurService;
+    }
 
     @PostMapping("/employeur")
     public ResponseEntity<EmployeurDto> registerEmployeur(@Valid @RequestBody RegisterEmployeur request) {
