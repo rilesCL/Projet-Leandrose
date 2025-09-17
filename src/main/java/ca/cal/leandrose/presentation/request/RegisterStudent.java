@@ -25,8 +25,8 @@ public class RegisterStudent {
 
 
     @NotBlank(message = "numero matricule is required")
-    private String numero_matricule;
+    private String studentNumber;
 
     @NotBlank(message = "Name of the program is required")
-    private String programme;
+    private String program;
 }

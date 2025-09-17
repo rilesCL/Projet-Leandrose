@@ -49,17 +49,4 @@ public class RegisterController {
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(studentDto);
     }
-
-    @PostMapping("/student")
-    public ResponseEntity<StudentDto> registerStudent(@Valid @RequestBody RegisterStudent request){
-        StudentDto studentDto = studentService.createStudent(
-                request.getFirstName(),
-                request.getLastName(),
-                request.getPassword(),
-                request.getEmail(),
-                request.getProgramme(),
-                request.getNumero_matricule()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentDto);
-    }
 }
