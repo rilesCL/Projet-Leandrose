@@ -47,6 +47,12 @@ public class UserAppService {
                 GestionnaireDto.empty();
     }
 
+    private StudentDto getStudentDto(Long id){
+        final Optional<Student>  studentOptional = studentRepository.findById(id);
+        return studentOptional.isPresent() ?
+                StudentDto.create(studentOptional.get()) :
+                StudentDto.empty();
+    }
     private EmployeurDto getEmployeurDto(Long id) {
         final Optional<Employeur> employeurOptional = employeurRepository.findById(id);
         return employeurOptional.isPresent() ?
@@ -54,10 +60,4 @@ public class UserAppService {
                 EmployeurDto.empty();
     }
 
-    private StudentDto getStudentDto(Long id){
-        final Optional<Student>  studentOptional = studentRepository.findById(id);
-        return studentOptional.isPresent() ?
-                StudentDto.create(studentOptional.get()) :
-                StudentDto.empty();
-    }
 }
