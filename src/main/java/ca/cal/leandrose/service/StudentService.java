@@ -23,10 +23,10 @@ public class StudentService {
     public StudentDto createStudent(
             String firstName,
             String lastName,
-            String rawPassword,
             String email,
-            String programme,
-            String numero_matricule
+            String rawPassword,
+            String studentNumber,
+            String program
     ){
         try{
             Student student = Student.builder()
@@ -34,8 +34,8 @@ public class StudentService {
                     .lastName(lastName)
                     .email(email)
                     .password(passwordEncoder.encode(rawPassword))
-                    .program(programme)
-                    .studentNumber(numero_matricule)
+                    .studentNumber(studentNumber)
+                    .program(program)
                     .build();
             Student savedStudent = studentRepository.save(student);
             return StudentDto.create(savedStudent);

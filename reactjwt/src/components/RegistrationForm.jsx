@@ -9,8 +9,8 @@ export default function RegistrationForm() {
         password: "",
         companyName: "",
         field: "",
-        programme: "",
-        numero_matricule: "",
+        program: "",
+        studentNumber: "",
     };
 
     const [userType, setUserType] = useState("student");
@@ -39,10 +39,10 @@ export default function RegistrationForm() {
         if (!formData.password) newErrors.password = "Mot de passe requis";
 
         if (userType === "student") {
-            if (!formData.programme.trim())
-                newErrors.programme = "Le nom du programme est requis";
-            if (!formData.numero_matricule.trim())
-                newErrors.numero_matricule = "Le numéro de matricule est requis";
+            if (!formData.program.trim())
+                newErrors.program = "Le nom du programme est requis";
+            if (!formData.studentNumber.trim())
+                newErrors.studentNumber = "Le numéro de matricule est requis";
         }
 
         if (userType === "employeur") {
@@ -141,8 +141,8 @@ export default function RegistrationForm() {
 
                 {userType === "student" && (
                     <>
-                        {renderInput("programme", "Programme")}
-                        {renderInput("numero_matricule", "Numéro de matricule")}
+                        {renderInput("program", "Programme")}
+                        {renderInput("studentNumber", "Numéro de matricule")}
                     </>
                 )}
 
