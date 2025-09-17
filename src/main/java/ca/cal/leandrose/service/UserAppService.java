@@ -21,7 +21,6 @@ public class UserAppService {
     private final UserAppRepository userAppRepository;
     private final StudentRepository studentRepository;
     private final EmployeurRepository employeurRepository;
-    private final PreposeRepository preposeRepository;
     private final GestionnaireRepository gestionnaireRepository;
 
     public String authenticateUser(LoginDTO loginDto) {
@@ -36,7 +35,6 @@ public class UserAppService {
         UserApp user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
         return switch(user.getRole()){
             case EMPLOYEUR -> getEmployeurDto(user.getId());
-            case PREPOSE -> getPreposeDto(user.getId());
             case GESTIONNAIRE -> getGestionnaireDto(user.getId());
             case STUDENT -> getStudentDto(user.getId());
         };
@@ -47,13 +45,6 @@ public class UserAppService {
         return gestionnaireOptional.isPresent() ?
                 GestionnaireDto.create(gestionnaireOptional.get()) :
                 GestionnaireDto.empty();
-    }
-
-    private PreposeDto getPreposeDto(Long id) {
-        final Optional<Prepose> preposeOptional = preposeRepository.findById(id);
-        return preposeOptional.isPresent() ?
-                PreposeDto.create(preposeOptional.get()) :
-                PreposeDto.empty();
     }
 
     private EmployeurDto getEmployeurDto(Long id) {
