@@ -1,10 +1,7 @@
 package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.*;
-import ca.cal.leandrose.repository.EmployeurRepository;
-import ca.cal.leandrose.repository.GestionnaireRepository;
-import ca.cal.leandrose.repository.PreposeRepository;
-import ca.cal.leandrose.repository.UserAppRepository;
+import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.security.JwtTokenProvider;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.*;
@@ -22,7 +19,8 @@ public class UserAppService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserAppRepository userAppRepository;
-    private final EmployeurRepository EmployeurRepository;
+    private final StudentRepository studentRepository;
+    private final EmployeurRepository employeurRepository;
     private final PreposeRepository preposeRepository;
     private final GestionnaireRepository gestionnaireRepository;
 
@@ -40,6 +38,7 @@ public class UserAppService {
             case EMPLOYEUR -> getEmployeurDto(user.getId());
             case PREPOSE -> getPreposeDto(user.getId());
             case GESTIONNAIRE -> getGestionnaireDto(user.getId());
+            case STUDENT -> getStudentDto(user.getId());
         };
     }
 
@@ -58,9 +57,16 @@ public class UserAppService {
     }
 
     private EmployeurDto getEmployeurDto(Long id) {
-        final Optional<Employeur> employeurOptional = EmployeurRepository.findById(id);
+        final Optional<Employeur> employeurOptional = employeurRepository.findById(id);
         return employeurOptional.isPresent() ?
                 EmployeurDto.create(employeurOptional.get()) :
                 EmployeurDto.empty();
+    }
+
+    private StudentDto getStudentDto(Long id){
+        final Optional<Student>  studentOptional = studentRepository.findById(id);
+        return studentOptional.isPresent() ?
+                StudentDto.create(studentOptional.get()) :
+                StudentDto.empty();
     }
 }
