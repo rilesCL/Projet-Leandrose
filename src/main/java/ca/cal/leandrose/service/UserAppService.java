@@ -1,10 +1,7 @@
 package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.*;
-import ca.cal.leandrose.repository.EmployeurRepository;
-import ca.cal.leandrose.repository.GestionnaireRepository;
-import ca.cal.leandrose.repository.PreposeRepository;
-import ca.cal.leandrose.repository.UserAppRepository;
+import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.security.JwtTokenProvider;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.*;
@@ -23,8 +20,8 @@ public class UserAppService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserAppRepository userAppRepository;
     private final EmployeurRepository EmployeurRepository;
-    private final PreposeRepository preposeRepository;
     private final GestionnaireRepository gestionnaireRepository;
+    private final StudentRepository studentRepository;
 
     public String authenticateUser(LoginDTO loginDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -38,7 +35,7 @@ public class UserAppService {
         UserApp user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
         return switch(user.getRole()){
             case EMPLOYEUR -> getEmployeurDto(user.getId());
-            case PREPOSE -> getPreposeDto(user.getId());
+            case STUDENT -> getStudentDto(user.getId());
             case GESTIONNAIRE -> getGestionnaireDto(user.getId());
         };
     }
@@ -50,11 +47,11 @@ public class UserAppService {
                 GestionnaireDto.empty();
     }
 
-    private PreposeDto getPreposeDto(Long id) {
-        final Optional<Prepose> preposeOptional = preposeRepository.findById(id);
-        return preposeOptional.isPresent() ?
-                PreposeDto.create(preposeOptional.get()) :
-                PreposeDto.empty();
+    private StudentDto getStudentDto(Long id) {
+        final Optional<Student> studentOptional = studentRepository.findById(id);
+        return studentOptional.isPresent() ?
+                StudentDto.create(studentOptional.get()) :
+                StudentDto.empty();
     }
 
     private EmployeurDto getEmployeurDto(Long id) {
@@ -63,4 +60,5 @@ public class UserAppService {
                 EmployeurDto.create(employeurOptional.get()) :
                 EmployeurDto.empty();
     }
+
 }
