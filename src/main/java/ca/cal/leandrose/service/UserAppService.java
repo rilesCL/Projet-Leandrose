@@ -22,7 +22,7 @@ public class UserAppService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserAppRepository userAppRepository;
-    private final EmployeurRepository EmployeurRepository;
+    private final EmployeurRepository employeurRepository;
     private final PreposeRepository preposeRepository;
     private final GestionnaireRepository gestionnaireRepository;
 
@@ -58,7 +58,7 @@ public class UserAppService {
     }
 
     private EmployeurDto getEmployeurDto(Long id) {
-        final Optional<Employeur> employeurOptional = EmployeurRepository.findById(id);
+        final Optional<Employeur> employeurOptional = employeurRepository.findById(id);
         return employeurOptional.isPresent() ?
                 EmployeurDto.create(employeurOptional.get()) :
                 EmployeurDto.empty();
