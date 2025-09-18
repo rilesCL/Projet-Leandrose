@@ -44,4 +44,42 @@ class UserAppTest {
         assertEquals("pass456", employeur.getPassword());
         assertEquals(Role.EMPLOYEUR, employeur.getRole());
     }
+
+    @Test
+    void testUserAppGettersWithStudent() {
+        // Using Student as a concrete implementation
+        Student student = Student.builder()
+                .id(2L)
+                .firstName("Marie")
+                .lastName("Dupont")
+                .email("marie.dupont@student.com")
+                .password("studentpass123")
+                .studentNumber("STU001")
+                .program("Computer Science")
+                .build();
+
+        assertEquals(2L, student.getId());
+        assertEquals("Marie", student.getFirstName());
+        assertEquals("Dupont", student.getLastName());
+        assertEquals("marie.dupont@student.com", student.getEmail());
+        assertEquals("studentpass123", student.getPassword());
+        assertEquals(Role.STUDENT, student.getRole());
+        assertNotNull(student.getAuthorities());
+    }
+
+    @Test
+    void testUserAppSettersWithStudent() {
+        Student student = new Student();
+        student.setId(3L);
+        student.setFirstName("Bob");
+        student.setLastName("Wilson");
+        student.setCredentials(new ca.cal.leandrose.model.auth.Credentials("bob.wilson@student.com", "pass789", Role.STUDENT));
+
+        assertEquals(3L, student.getId());
+        assertEquals("Bob", student.getFirstName());
+        assertEquals("Wilson", student.getLastName());
+        assertEquals("bob.wilson@student.com", student.getEmail());
+        assertEquals("pass789", student.getPassword());
+        assertEquals(Role.STUDENT, student.getRole());
+    }
 }

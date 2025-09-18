@@ -7,7 +7,6 @@ import ca.cal.leandrose.service.StudentService;
 import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.StudentDto;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
