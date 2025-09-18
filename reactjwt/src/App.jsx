@@ -1,21 +1,22 @@
-
 import './App.css'
 import {
     RouterProvider,
     createBrowserRouter,
     createRoutesFromElements,
-    Route
-} from 'react-router';
+    Route,
+    Navigate
+} from 'react-router-dom';
 import RouteLayout from "./components/RouteLayout.jsx";
-import RegisterEmployeurForm from "./components/RegisterEmployeurForm.jsx";
-import RegistrationForm from "./components/RegistrationForm.jsx";
+import RegisterEtudiant from "./components/RegisterStudentForm.jsx";
+import RegisterEmployeur from "./components/RegisterEmployeurForm.jsx";
 
 function App() {
     const router = createBrowserRouter(
         createRoutesFromElements(
             <Route path="/" element={<RouteLayout />}>
-                <Route index element={<RegistrationForm />} />
-
+                <Route index element={<Navigate to="/register/etudiant" replace />} />
+                <Route path="register/etudiant" element={<RegisterEtudiant />} />
+                <Route path="register/employeur" element={<RegisterEmployeur />} />
             </Route>
         )
     );
