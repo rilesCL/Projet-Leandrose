@@ -1,10 +1,12 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.presentation.request.RegisterEmployeur;
+import ca.cal.leandrose.presentation.request.RegisterStudent;
 import ca.cal.leandrose.service.EmployeurService;
+import ca.cal.leandrose.service.StudentService;
 import ca.cal.leandrose.service.dto.EmployeurDto;
+import ca.cal.leandrose.service.dto.StudentDto;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class RegisterController {
 
     private final EmployeurService employeurService;
+    private final StudentService studentService;
 
-    public RegisterController(EmployeurService employeurService) {
+    public RegisterController(EmployeurService employeurService, StudentService studentService) {
         this.employeurService = employeurService;
+        this.studentService = studentService;
     }
 
     @PostMapping("/employeur")
@@ -32,7 +36,16 @@ public class RegisterController {
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(employeurDto);
     }
-
-
-
+    @PostMapping("/student")
+    public ResponseEntity<StudentDto> registerStudent(@Valid @RequestBody RegisterStudent request) {
+        StudentDto studentDto = studentService.createStudent(
+                request.getFirstName(),
+                request.getLastName(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getStudentNumber(),
+                request.getProgram()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentDto);
+    }
 }

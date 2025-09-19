@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { registerEmployeur } from "../api/apiEmployeur";
 import { useNavigate} from "react-router";
 
@@ -33,7 +33,6 @@ export default function RegisterEmployeur() {
     const [globalError, setGlobalError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const firstErrorRef = useRef(null);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -61,7 +60,7 @@ export default function RegisterEmployeur() {
 
         setIsSubmitting(true);
         try {
-            const result = await registerEmployeur(form);
+            await registerEmployeur(form);
             setSuccessMessage("Inscription réussie !");
             setForm(initialState);
             setErrors({});
@@ -247,6 +246,17 @@ export default function RegisterEmployeur() {
                         <div className="text-sm text-gray-500">
                             Déjà un compte ? <button type="button" onClick={() => navigate("/login")} className="text-indigo-600 hover:underline">Se connecter</button>
                         </div>
+                        <div className="text-sm text-gray-500">
+                            Vous êtes étudiant ?{" "}
+                            <button
+                                type="button"
+                                onClick={() => navigate("/register/etudiant")}
+                                className="text-indigo-600 hover:underline"
+                            >
+                                Créez un compte étudiant
+                            </button>
+                        </div>
+
                     </div>
                 </form>
             </div>

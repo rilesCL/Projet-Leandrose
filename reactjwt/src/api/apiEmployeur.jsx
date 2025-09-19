@@ -29,3 +29,12 @@ export async function registerEmployeur(employeur) {
     return await res.text();
 }
 
+export async function registerStudent(student){
+    const res = await handleFetch(`${BASE_URL}/student`,{
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(student)
+    });
+    return await res.text();
+}
+
