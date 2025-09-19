@@ -1,5 +1,6 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.service.AuthService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.JWTAuthResponse;
 import ca.cal.leandrose.service.dto.LoginDTO;
@@ -16,13 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
 
+    private final AuthService authService;
     private final UserAppService userService;
-
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginDTO loginDto) {
         try {
-            String accessToken = userService.authenticateUser(loginDto);
+            String accessToken = authService.login(loginDto);
             final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_JSON)
@@ -33,7 +34,6 @@ public class UserController {
                     .body("{\"error\":\"Invalid credentials\"}");
         }
     }
-
 
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {

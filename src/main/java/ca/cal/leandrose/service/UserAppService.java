@@ -26,12 +26,6 @@ public class UserAppService {
     private final PreposeRepository preposeRepository;
     private final GestionnaireRepository gestionnaireRepository;
 
-    public String authenticateUser(LoginDTO loginDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
-        return jwtTokenProvider.generateToken(authentication);
-    }
-
     public UserDTO getMe(String token) {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
         String email = jwtTokenProvider.getEmailFromJWT(token);
