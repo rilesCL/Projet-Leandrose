@@ -7,6 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @SpringBootApplication
@@ -18,24 +20,23 @@ public class LeandrOseApplication {
         SpringApplication.run(LeandrOseApplication.class, args);
     }
     @Bean
+    @Profile("!test")
+    @Transactional
     public CommandLineRunner Lsc0SE(EmployeurService employeurService, StudentService studentService) {
-    return args -> {
-      try {
-        EmployeurDto empDto =
-            employeurService.createEmployeur(
-                "Leandro", "Schoonewolff", "wbbey@gmail.com", "mansang", "macolo", "alimentation");
-        System.out.println(employeurService.getEmployeurById(1L));
+        return args -> {
+            try {
+                EmployeurDto empDto = employeurService.createEmployeur(
+                        "Leandro", "Schoonewolff", "wbbey@gmail.com", "mansang", "macolo", "alimentation");
+                System.out.println(employeurService.getEmployeurById(1L));
 
-          StudentDto studentDto = studentService.createStudent(
-                  "Ghilas", "Amr", "ghil.amr@student.com", "Password123", "STU001", "Computer Science");
-          System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
+                StudentDto studentDto = studentService.createStudent(
+                        "Ghilas", "Amr", "ghil.amr@student.com", "Password123", "STU001", "Computer Science");
+                System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
 
-      } catch (Exception e) {
-        System.err.println("Erreur générale non prévue: " + e.getMessage());
-        e.printStackTrace();
-      }
-    };
+            } catch (Exception e) {
+                System.err.println("Erreur générale non prévue: " + e.getMessage());
+                e.printStackTrace();
+            }
+        };
     }
 }
-
-
