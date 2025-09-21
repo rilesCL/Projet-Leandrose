@@ -22,13 +22,13 @@ public class InternshipOffer {
     private LocalDate startDate;
 
     @Column(nullable = false)
-    private Integer durationInWeeks;
+    private int durationInWeeks;
 
     @Column(nullable = false)
     private String address;
 
     @Column
-    private float remuneration;
+    private Float remuneration;
 
     @ManyToOne
     private Employeur employeur;
@@ -40,6 +40,6 @@ public class InternshipOffer {
     private Status status;
 
     public enum Status {
-        PENDING_VALIDATION, PUBLISHED, ASSIGNED
+        PENDING_VALIDATION, PUBLISHED, ASSIGNED, ARCHIVED
     }
 }
