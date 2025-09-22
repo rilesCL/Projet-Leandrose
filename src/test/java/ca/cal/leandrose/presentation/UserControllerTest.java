@@ -1,8 +1,6 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.service.AuthService;
-import ca.cal.leandrose.service.EmployeurService;
-import ca.cal.leandrose.service.StudentService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.LoginDTO;
 import ca.cal.leandrose.service.dto.UserDTO;

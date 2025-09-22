@@ -44,9 +44,8 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/user/login", "/emprunteur/register", "/prepose/register", "/api/register/**").permitAll()
-                        .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPRUNTEUR", "PREPOSE", "GESTIONNAIRE")
-                        .requestMatchers("/emprunteur/**").hasAuthority("EMPRUNTEUR")
-                        .requestMatchers("/prepose/**").hasAuthority("PREPOSE")
+                        .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
+                        .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
                         .anyRequest().denyAll()
                 )

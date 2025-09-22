@@ -1,6 +1,7 @@
 package ca.cal.leandrose.presentation.request;
 
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class RegisterStudent {
     private String lastName;
 
     @NotBlank(message = "Email name is required")
+    @Email
     private String email;
 
 
