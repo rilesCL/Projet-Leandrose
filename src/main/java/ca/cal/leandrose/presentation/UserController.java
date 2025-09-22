@@ -1,5 +1,6 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.service.AuthService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.JWTAuthResponse;
 import ca.cal.leandrose.service.dto.LoginDTO;
@@ -14,28 +15,32 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
 public class UserController {
 
-	private final UserAppService userService;
+    private final AuthService authService;
+    private final UserAppService userService;
 
-	@PostMapping("/login")
-	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto){
-		try {
-			String accessToken = userService.authenticateUser(loginDto);
-			final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
-			return ResponseEntity.accepted()
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(authResponse);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTAuthResponse());
-		}
-	}
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginDTO loginDto) {
+        try {
+            String accessToken = authService.login(loginDto);
+            final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(authResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"error\":\"Invalid credentials\"}");
+        }
+    }
 
-	@GetMapping("/me")
-	public ResponseEntity<UserDTO> getMe(HttpServletRequest request){
-		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-			userService.getMe(request.getHeader("Authorization")));
-	}
-
-
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(userService.getMe(authHeader));
+    }
 }

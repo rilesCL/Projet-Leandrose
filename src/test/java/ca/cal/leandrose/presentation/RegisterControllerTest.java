@@ -97,7 +97,6 @@ class RegisterControllerTest {
         verifyNoInteractions(employeurService);
     }
 
-
     @Test
     @DisplayName("POST /api/register/student returns 201 and student details on success")
     void testRegisterStudentSuccess() throws Exception {

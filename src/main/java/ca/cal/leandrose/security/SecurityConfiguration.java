@@ -4,6 +4,7 @@ import ca.cal.leandrose.repository.UserAppRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpMethod.POST;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Profile("!test")
 public class SecurityConfiguration {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -42,9 +44,8 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/user/login", "/emprunteur/register", "/prepose/register", "/api/register/**").permitAll()
-                        .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPRUNTEUR", "PREPOSE", "GESTIONNAIRE")
-                        .requestMatchers("/emprunteur/**").hasAuthority("EMPRUNTEUR")
-                        .requestMatchers("/prepose/**").hasAuthority("PREPOSE")
+                        .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
+                        .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
                         .anyRequest().denyAll()
                 )
