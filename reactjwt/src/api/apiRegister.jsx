@@ -38,3 +38,4 @@ export async function registerStudent(student){
     return await res.text();
 }
 
+

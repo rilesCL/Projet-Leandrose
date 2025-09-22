@@ -40,6 +40,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
+        System.out.println(userService.getMe(authHeader));
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userService.getMe(authHeader));

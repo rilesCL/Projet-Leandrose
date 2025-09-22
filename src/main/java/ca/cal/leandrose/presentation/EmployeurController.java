@@ -29,7 +29,7 @@ public class EmployeurController {
     public ResponseEntity<List<InternshipOffer>> getMyOffers(HttpServletRequest request) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 
-        if (!me.getRole().name().equals("ROLE_EMPLOYEUR")) {
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
             return ResponseEntity.status(403).build();
         }
 
@@ -46,8 +46,8 @@ public class EmployeurController {
             @RequestPart("pdfFile") MultipartFile pdfFile
     ) throws IOException {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
-
-        if (!me.getRole().name().equals("ROLE_EMPLOYEUR")) {
+        System.out.println(me.getRole().name());
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
             return ResponseEntity.status(403).build();
         }
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerStudent } from "../api/apiEmployeur";
+import { registerStudent } from "../api/apiRegister.jsx";
 import { useNavigate } from "react-router";
 
 const initialState = {
