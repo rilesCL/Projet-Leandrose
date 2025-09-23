@@ -15,7 +15,9 @@ async function handleFetch(url, options = {}) {
 }
 
 export async function uploadStageEmployeur(offer, pdfFile, token = null) {
-    if (!pdfFile) throw { response: { data: 'Fichier PDF manquant' } };
+    if (!pdfFile) {
+        throw { response: { data: 'Fichier PDF manquant' } };
+    }
 
     const url = `${API_BASE}/employeur/offers`;
     const formData = new FormData();
@@ -26,22 +28,32 @@ export async function uploadStageEmployeur(offer, pdfFile, token = null) {
     const headers = {};
     const accessToken = token || localStorage.getItem('accessToken');
     const tokenType = (localStorage.getItem('tokenType') || 'BEARER').toUpperCase();
-
-    console.log('uploadStageEmployeur - accessToken:', accessToken, 'tokenType:', tokenType);
-
     if (accessToken) {
-        const headerValue = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
-        console.log(headerValue);
-        headers['Authorization'] = headerValue;
-    } else {
-        console.warn('Aucun token disponible pour uploadStageEmployeur');
+        headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
     }
 
-    const res = await handleFetch(url, {
-        method: 'POST',
-        headers,
-        body: formData
-    });
+    try {
+        const res = await handleFetch(url, {
+            method: 'POST',
+            headers,
+            body: formData
+        });
 
-    return await res.json();
+        // handleFetch peut retourner soit un Response, soit le body déjà parsé.
+        if (res && typeof res.json === 'function') {
+            // res est un Response -> retourner le JSON
+            return await res.json();
+        }
+
+        // res est probablement déjà le body parsé -> le renvoyer tel quel
+        return res;
+    } catch (err) {
+        // err a normalement la forme { response: { data: ... } }
+        // Log pour debug
+        console.error('uploadStageEmployeur error', err);
+
+        // Rejeter une erreur structurée pour l'appelant (comportement similaire à axios)
+        const message = err?.response?.data ?? err?.message ?? 'Erreur inconnue';
+        throw { response: { data: message } };
+    }
 }

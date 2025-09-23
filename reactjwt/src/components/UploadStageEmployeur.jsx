@@ -103,7 +103,7 @@ export default function UploadStageEmployeur({ employeurId }) {
                 address: address.trim(),
                 remuneration: remuneration === "" ? null : Number(remuneration)
             };
-            const token = localStorage.getItem("authToken");
+            const token = localStorage.getItem("accessToken");
             const created = await uploadStageEmployeur(offer, pdfFile, token);
             const status = created.status || created.statut || "UNKNOWN";
             setServerMessage(`Offre enregistrée avec succès. Statut: ${status === "PUBLISHED" ? "Publiée" : status === "PENDING_VALIDATION" ? "En attente de validation" : status}`);

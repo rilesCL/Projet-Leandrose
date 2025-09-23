@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider tokenProvider;
@@ -36,6 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 tokenProvider.validateToken(token);
                 String email = tokenProvider.getEmailFromJWT(token);
+                System.out.println("emailFromToken:'" + email + "' length=" + email.length());
+                Optional<UserApp> util = userRepository.findUserAppByEmail(email);
+                System.out.println(util);
                 UserApp user = userRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         user.getEmail(), null, user.getAuthorities()

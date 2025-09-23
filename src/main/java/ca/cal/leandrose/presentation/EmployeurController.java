@@ -3,9 +3,11 @@ package ca.cal.leandrose.presentation;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
+import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.UserDTO;
+import ca.cal.leandrose.repository.EmployeurRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,6 +26,7 @@ public class EmployeurController {
 
     private final UserAppService userService;
     private final InternshipOfferService internshipOfferService;
+    private final EmployeurRepository employeurRepository;
 
     @GetMapping("/offers")
     public ResponseEntity<List<InternshipOffer>> getMyOffers(HttpServletRequest request) {
@@ -51,8 +54,8 @@ public class EmployeurController {
             return ResponseEntity.status(403).build();
         }
 
-        Employeur employeur = new Employeur();
-        employeur.setId(me.getId());
+        Employeur employeur = employeurRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
+
 
         InternshipOffer offer = internshipOfferService.createOffer(
                 offerRequest.getDescription(),
