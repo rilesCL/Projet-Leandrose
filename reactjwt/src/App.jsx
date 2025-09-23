@@ -11,6 +11,7 @@ import RegisterEtudiant from "./components/RegisterStudentForm.jsx";
 import RegisterEmployeur from "./components/RegisterEmployeurForm.jsx";
 import Login from "./components/Login.jsx";
 import UploadStageEmployeur from "./components/UploadStageEmployeur.jsx";
+import DashBoardEmployeur from "./components/DashBoardEmployeur.jsx";
 
 
 function App() {
@@ -21,9 +22,10 @@ function App() {
                 <Route path="register/etudiant" element={<RegisterEtudiant />} />
                 <Route path="register/employeur" element={<RegisterEmployeur />} />
                 <Route path="login" element={<Login />} />
-                <Route path="dashboard" element={<div className="p-8 text-center"><h1 className="text-2xl">Dashboard général</h1></div>} />
+                <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur />} />
+                <Route path="dashboard" element={<h1>DashBoard</h1>} />
                 <Route path="dashboard/student" element={<div className="p-8 text-center"><h1 className="text-2xl">Dashboard Étudiant</h1><p>Bienvenue dans votre espace étudiant!</p></div>} />
-                <Route path="dashboard/employeur" element={<UploadStageEmployeur/>} />
+                <Route path="dashboard/employeur" element={<DashBoardEmployeur/>} />
                 <Route path="dashboard/gestionnaire" element={<div className="p-8 text-center"><h1 className="text-2xl">Dashboard Gestionnaire</h1></div>} />
             </Route>
         )
