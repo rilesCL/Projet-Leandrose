@@ -245,76 +245,81 @@ const Login = () => {
     // Use Case 1: Interface principale de connexion
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
-                <h1 className="text-2xl font-semibold text-gray-800 mb-2">Connexion</h1>
-                <p className="text-sm text-gray-500 mb-6">
-                    Connectez-vous à votre compte pour accéder à votre espace personnel.
-                </p>
+            <div className="max-w-md w-full">
+                <header className="text-center mb-6">
+                    <h1 className="text-3xl font-bold text-indigo-600">LeandrOSE</h1>
+                </header>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                            <input
-                                id="email"
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChanges}
-                                className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
-                                placeholder="votre.email@exemple.com"
-                                required
-                            />
-                            {warnings.email && <div className="mt-1 text-xs text-red-600">{warnings.email}</div>}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-2">Connexion</h2>
+                    <p className="text-sm text-gray-500 mb-6">
+                        Connectez-vous à votre compte pour accéder à votre espace personnel.
+                    </p>
+                    <form onSubmit={handleSubmit}>
+                        <div className="space-y-4">
+                            <div>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChanges}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
+                                    placeholder="votre.email@exemple.com"
+                                    required
+                                />
+                                {warnings.email && <div className="mt-1 text-xs text-red-600">{warnings.email}</div>}
+                            </div>
+
+                            <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mot de passe</label>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChanges}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.password ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
+                                    placeholder="Votre mot de passe"
+                                    required
+                                />
+                                {warnings.password && <div className="mt-1 text-xs text-red-600">{warnings.password}</div>}
+                            </div>
                         </div>
 
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mot de passe</label>
-                            <input
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChanges}
-                                className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.password ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
-                                placeholder="Votre mot de passe"
-                                required
-                            />
-                            {warnings.password && <div className="mt-1 text-xs text-red-600">{warnings.password}</div>}
-                        </div>
-                    </div>
-
-                    <div className="mt-6">
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className={`w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
-                        >
-                            {isSubmitting ? "Connexion..." : "Se connecter"}
-                        </button>
-                    </div>
-
-                    <div className="mt-4 text-center space-y-2">
-                        <button
-                            type="button"
-                            onClick={() => setShowForgotPassword(true)}
-                            className="text-sm text-indigo-600 hover:underline"
-                        >
-                            Mot de passe oublié ?
-                        </button>
-
-                        <div className="text-sm text-gray-500">
-                            Pas encore de compte ?{" "}
+                        <div className="mt-6">
                             <button
-                                type="button"
-                                onClick={() => navigate("/register/etudiant")}
-                                className="text-indigo-600 hover:underline"
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
                             >
-                                S'inscrire
+                                {isSubmitting ? "Connexion..." : "Se connecter"}
                             </button>
                         </div>
-                    </div>
-                </form>
+
+                        <div className="mt-4 text-center space-y-2">
+                            <button
+                                type="button"
+                                onClick={() => setShowForgotPassword(true)}
+                                className="text-sm text-indigo-600 hover:underline"
+                            >
+                                Mot de passe oublié ?
+                            </button>
+
+                            <div className="text-sm text-gray-500">
+                                Pas encore de compte ?{" "}
+                                <button
+                                    type="button"
+                                    onClick={() => navigate("/register/etudiant")}
+                                    className="text-indigo-600 hover:underline"
+                                >
+                                    S'inscrire
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
