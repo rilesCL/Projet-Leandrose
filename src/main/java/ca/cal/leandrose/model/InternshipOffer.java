@@ -40,6 +40,6 @@ public class InternshipOffer {
     private Status status;
 
     public enum Status {
-        PENDING_VALIDATION, PUBLISHED, ASSIGNED, ARCHIVED
+        PENDING_VALIDATION, PUBLISHED, ASSIGNED, ARCHIVED, REJECTED
     }
 }
