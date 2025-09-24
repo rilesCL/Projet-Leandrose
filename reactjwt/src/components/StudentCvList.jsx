@@ -21,7 +21,6 @@ export default function StudentCvList() {
                 });
 
                 if (response.status === 404) {
-                    // No CV uploaded - this is normal
                     setCv(null);
                 } else if (response.status === 401) {
                     setError("Vous devez être connecté pour voir votre CV.");
@@ -60,9 +59,9 @@ export default function StudentCvList() {
         return (
             <div className="bg-white shadow rounded-lg p-8 text-center">
                 <div className="text-red-600 mb-4">
-                    <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <div className="mx-auto h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+                        <span className="text-red-600 text-2xl font-bold">!</span>
+                    </div>
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Erreur de chargement</h3>
                 <p className="text-red-600">{error}</p>
@@ -80,9 +79,9 @@ export default function StudentCvList() {
         return (
             <div className="bg-white shadow rounded-lg p-8 text-center">
                 <div className="text-gray-400 mb-4">
-                    <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <div className="mx-auto h-16 w-16 rounded bg-gray-100 flex items-center justify-center">
+                        <span className="text-gray-500 text-3xl">📄</span>
+                    </div>
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun CV téléversé</h3>
                 <p className="text-gray-600 mb-4">
@@ -92,9 +91,7 @@ export default function StudentCvList() {
                     href="/dashboard/student/uploadCv"
                     className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
-                    <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
+                    <span className="mr-2">➕</span>
                     Téléverser mon CV
                 </a>
             </div>
@@ -124,11 +121,9 @@ export default function StudentCvList() {
         </span>
     );
 
-    // Extract filename from path
     const getFileName = (path) => {
         if (!path) return 'CV.pdf';
         const fileName = path.split('/').pop() || path.split('\\').pop();
-        // If it's a generated filename with UUID, show a user-friendly name
         if (fileName.includes('_') && fileName.includes('-')) {
             return 'Mon_CV.pdf';
         }
@@ -178,7 +173,6 @@ export default function StudentCvList() {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 window.open(url, '_blank');
-                // Don't revoke URL immediately to allow the browser to load it
                 setTimeout(() => window.URL.revokeObjectURL(url), 10000);
             } else {
                 alert('Erreur lors de l\'ouverture du CV');
@@ -216,9 +210,9 @@ export default function StudentCvList() {
                         <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
-                                    <svg className="h-8 w-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
-                                    </svg>
+                                    <div className="h-8 w-8 bg-red-500 rounded flex items-center justify-center">
+                                        <span className="text-white text-sm font-bold">PDF</span>
+                                    </div>
                                 </div>
                                 <div className="ml-3">
                                     <div className="text-sm font-medium text-gray-900">
@@ -236,19 +230,14 @@ export default function StudentCvList() {
                                 onClick={handlePreview}
                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
-                                <svg className="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
+                                <span className="mr-1">👁</span>
                                 Aperçu
                             </button>
                             <button
                                 onClick={handleDownload}
                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             >
-                                <svg className="mr-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
+                                <span className="mr-1">⬇</span>
                                 Télécharger
                             </button>
                         </td>
@@ -263,9 +252,7 @@ export default function StudentCvList() {
                     className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
                 >
                     Téléverser un nouveau CV
-                    <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
+                    <span className="ml-1">⬆</span>
                 </a>
             </div>
         </div>
