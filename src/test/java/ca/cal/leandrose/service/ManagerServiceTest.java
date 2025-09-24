@@ -13,7 +13,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -24,6 +26,8 @@ public class ManagerServiceTest {
 
     @InjectMocks
     private ManagerService managerService;
+
+    private Cv pendingCv;
 
     private Gestionnaire gestionnaire;
 
@@ -39,6 +43,35 @@ public class ManagerServiceTest {
                 .matricule("230232")
                 .phoneNumber("514-329-3222")
                 .build();
+        pendingCv = Cv.builder()
+                .id(10L)
+                .pdfPath("path/cv.pdf")
+                .status(Cv.Status.PENDING)
+                .build();
+    }
+
+    @Test
+    void testCvAccept(){
+        when(cvRepository.findById(10L)).thenReturn(Optional.of(pendingCv));
+        when(cvRepository.save(any(Cv.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CvDto result = managerService.approveCv(10L);
+
+        assertThat(result.getStatus()).isEqualTo(Cv.Status.APPROVED);
+        verify(cvRepository, times(1)).findById(10L);
+        verify(cvRepository,times(1)).save(pendingCv);
+    }
+
+    @Test
+    void testCvReject(){
+        when(cvRepository.findById(10L)).thenReturn(Optional.of(pendingCv));
+        when(cvRepository.save(any(Cv.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CvDto result = managerService.rejectCv(10L);
+
+        assertThat(result.getStatus()).isEqualTo(Cv.Status.REJECTED);
+        verify(cvRepository, times(1)).findById(10L);
+        verify(cvRepository, times(1)).save(pendingCv);
     }
 
     @Test
