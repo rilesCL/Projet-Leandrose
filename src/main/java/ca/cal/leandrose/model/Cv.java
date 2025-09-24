@@ -25,4 +25,8 @@ public class Cv {
     public enum Status {
         APPROVED, PENDING, REJECTED
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
 }
