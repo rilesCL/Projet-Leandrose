@@ -88,4 +88,57 @@ public class InternshipOfferService {
         return internshipOfferRepository.findOffersByEmployeurId(employeurId);
     }
 
+    // Use Case 1: Liste des offres en attente avec infos entreprise
+    public List<InternshipOffer> getPendingOffersWithDetails() {
+        return internshipOfferRepository.findByStatusWithEmployeur(InternshipOffer.Status.PENDING_VALIDATION);
+    }
+    // Use Case 2: Détail complet d'une offre (existant mais améliorer)
+    public InternshipOffer getOfferDetails(Long id) {
+        return internshipOfferRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+    }
+
+    @Transactional
+    public InternshipOffer approveOffer(Long offerId, Long gestionnaireId) {
+        InternshipOffer offer = getOffer(offerId);
+
+        if (offer.getStatus() != InternshipOffer.Status.PENDING_VALIDATION) {
+            throw new IllegalStateException("Cette offre ne peut pas être approuvée");
+        }
+
+        offer.setStatus(InternshipOffer.Status.PUBLISHED);
+        offer.setValidationDate(LocalDate.now());
+
+        // Use Case 5: Notification employeur (à implémenter)
+        // notificationService.notifyEmployeurApproval(offer);
+
+        return internshipOfferRepository.save(offer);
+    }
+
+    @Transactional
+    public InternshipOffer rejectOffer(Long offerId, String rejectionComment, Long gestionnaireId) {
+        if (rejectionComment == null || rejectionComment.trim().isEmpty()) {
+            throw new IllegalArgumentException("Un commentaire est obligatoire pour rejeter une offre");
+        }
+
+        InternshipOffer offer = getOffer(offerId);
+
+        if (offer.getStatus() != InternshipOffer.Status.PENDING_VALIDATION) {
+            throw new IllegalStateException("Cette offre ne peut pas être rejetée");
+        }
+
+        offer.setStatus(InternshipOffer.Status.REJECTED);
+        offer.setRejectionComment(rejectionComment);
+        offer.setValidationDate(LocalDate.now());
+
+        // Use Case 5: Notification employeur (à implémenter)
+        // notificationService.notifyEmployeurRejection(offer, rejectionComment);
+
+        return internshipOfferRepository.save(offer);
+    }
+
+    public List<InternshipOffer> getPublishedOffersForStudents() {
+        return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED);
+    }
+
 }
