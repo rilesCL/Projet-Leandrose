@@ -43,17 +43,11 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers(POST, "/user/login", "/api/register/**").permitAll()
                         .requestMatchers(POST, "/student/**", "/employeur/**").permitAll()
-
-                        // Student CV endpoints - require authentication
                         .requestMatchers(GET, "/student/cv", "/student/cv/download").hasAuthority("STUDENT")
-
-                        // User endpoints
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
-
-                        // Role-specific endpoints
+                        .requestMatchers(GET, "/employeur/offers", "/employeur/offers/*/download").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
 

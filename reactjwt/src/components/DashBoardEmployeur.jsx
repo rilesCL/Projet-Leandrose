@@ -1,4 +1,5 @@
 import React from "react";
+import InternshipOffersList from "./InternshipOffersList";
 
 export default function DashBoardEmployeur() {
     return (
@@ -15,7 +16,7 @@ export default function DashBoardEmployeur() {
                                 href="/dashboard/employeur/createOffer"
                                 className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
-                                Téléverser offre de stage
+                                Créer une offre de stage
                             </a>
                         </nav>
                     </div>
@@ -23,11 +24,13 @@ export default function DashBoardEmployeur() {
             </header>
 
             <main className="py-10">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-4">Bienvenue</h1>
-                    <p className="text-gray-600">
-                        Ceci est une page simple avec un menu contenant un seul lien. Clique sur "Offres" pour naviguer.
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-4">Bienvenue Employeur</h1>
+                    <p className="text-gray-600 mb-6">
+                        Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.
                     </p>
+
+                    <InternshipOffersList />
                 </div>
             </main>
         </div>
