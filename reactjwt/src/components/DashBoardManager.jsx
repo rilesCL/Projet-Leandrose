@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { FaBell } from "react-icons/fa"
 import {getPendingCvs} from "../api/apiManager.jsx"
+import {Link, Outlet} from "react-router-dom"
 
 export default function DashBoardManager(){
     const [pendingCount, setPendingCount] = useState(0)
@@ -29,12 +30,15 @@ export default function DashBoardManager(){
                         </div>
                         <nav className="flex items-center space-x-4">
                             <div className="relative cursor-pointer">
-                                <FaBell className="w-6 h-6 text-gray-600 cursor-pointer left-0 hover:text-indigo-600" />
-                                {pendingCount > 0 && (
-                                    <span className="absolute -top-2 -right-2 bg-red-600 text-white">
-                                        {pendingCount}
-                                    </span>
-                                )}
+                                <Link to="cv" className="relative inline-block">
+                                    <FaBell className="w-6 h-6 text-gray-600 cursor-pointer hover:text-indigo-600" />
+
+                                    {pendingCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
+                                             {pendingCount}
+                                        </span>
+                                    )}
+                                </Link>
                             </div>
                         </nav>
                     </div>
@@ -45,6 +49,7 @@ export default function DashBoardManager(){
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h1 className="text-2xl font-semibold text-gray-900 mb-4">Bienvenue Gestionnaire</h1>
 
+                    <Outlet/>
                 </div>
             </main>
         </div>
