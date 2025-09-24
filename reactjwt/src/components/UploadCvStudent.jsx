@@ -1,27 +1,32 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { uploadCvStudent } from "../api/apiStudent";
 
 const MAX_FILE_SIZE_MB = 5;
 const BYTES_IN_KB = 1024;
 const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * BYTES_IN_MB;
+const API_BASE = 'http://localhost:8080';
 
 export default function UploadCvStudent() {
-    const navigate = useNavigate();
     const [pdfFile, setPdfFile] = useState(null);
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
     const [serverMessage, setServerMessage] = useState(null);
     const [serverMessageType, setServerMessageType] = useState(null);
 
+    // Navigation function using pure JavaScript
+    const navigateToStudent = () => {
+        window.location.href = '/dashboard/student';
+    };
+
     function validateFile() {
         const e = {};
-        if (!pdfFile) e.pdfFile = "Un fichier PDF est requis.";
-        else if (pdfFile.type !== "application/pdf" && !pdfFile.name.toLowerCase().endsWith(".pdf"))
+        if (!pdfFile) {
+            e.pdfFile = "Un fichier PDF est requis.";
+        } else if (pdfFile.type !== "application/pdf" && !pdfFile.name.toLowerCase().endsWith(".pdf")) {
             e.pdfFile = "Le fichier doit être un PDF.";
-        else if (pdfFile.size > MAX_FILE_SIZE_BYTES)
+        } else if (pdfFile.size > MAX_FILE_SIZE_BYTES) {
             e.pdfFile = `Le PDF dépasse la taille maximale de ${MAX_FILE_SIZE_MB}MB.`;
+        }
         setErrors(e);
         return Object.keys(e).length === 0;
     }
@@ -37,22 +42,54 @@ export default function UploadCvStudent() {
         setErrors(prev => ({ ...prev, pdfFile: undefined }));
     }
 
+    // Pure React upload function
+    async function uploadCv(file, token) {
+        const formData = new FormData();
+        formData.append('pdfFile', file);
+
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${API_BASE}/student/cv`, {
+            method: 'POST',
+            headers,
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Erreur ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.json();
+    }
+
     async function handleSubmit(evt) {
         evt.preventDefault();
         setServerMessage(null);
         setServerMessageType(null);
+
         if (!validateFile()) return;
 
         setSubmitting(true);
         try {
             const token = localStorage.getItem("accessToken");
-            await uploadCvStudent(pdfFile, token);
+            await uploadCv(pdfFile, token);
+
             setServerMessage("Votre CV a été téléversé avec succès.");
             setServerMessageType("success");
             setPdfFile(null);
             setErrors({});
+
+            // Clear the file input
+            const fileInput = document.getElementById('pdfFile');
+            if (fileInput) {
+                fileInput.value = '';
+            }
         } catch (err) {
-            const msg = err.response?.data || err.message || "Erreur lors du téléversement.";
+            const msg = err.message || "Erreur lors du téléversement.";
             setServerMessage(`Erreur: ${msg}`);
             setServerMessageType("error");
         } finally {
@@ -68,42 +105,110 @@ export default function UploadCvStudent() {
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="grid gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Fichier PDF (obligatoire)</label>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Fichier PDF (obligatoire)
+                            </label>
                             <div className="mt-1 flex items-center gap-3">
-                                <label htmlFor="pdfFile" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
+                                <label
+                                    htmlFor="pdfFile"
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+                                >
                                     Choisir un PDF
                                 </label>
-                                <input id="pdfFile" type="file" accept="application/pdf" onChange={handleFileChange} className="hidden" />
+                                <input
+                                    id="pdfFile"
+                                    type="file"
+                                    accept="application/pdf,.pdf"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
                                 <div className="flex-1 text-sm text-gray-700">
                                     {pdfFile ? (
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="truncate">
                                                 <span className="font-medium">{pdfFile.name}</span>
-                                                <span className="ml-2 text-gray-500 text-xs">({(pdfFile.size / BYTES_IN_MB).toFixed(2)} MB)</span>
+                                                <span className="ml-2 text-gray-500 text-xs">
+                                                    ({(pdfFile.size / BYTES_IN_MB).toFixed(2)} MB)
+                                                </span>
                                             </div>
-                                            <button type="button" onClick={() => setPdfFile(null)} className="text-sm text-red-600 hover:underline">Supprimer</button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setPdfFile(null);
+                                                    const fileInput = document.getElementById('pdfFile');
+                                                    if (fileInput) fileInput.value = '';
+                                                }}
+                                                className="text-sm text-red-600 hover:underline"
+                                            >
+                                                Supprimer
+                                            </button>
                                         </div>
                                     ) : (
-                                        <div className="text-gray-500">Aucun fichier sélectionné. PDF maximum 5MB.</div>
+                                        <div className="text-gray-500">
+                                            Aucun fichier sélectionné. PDF maximum {MAX_FILE_SIZE_MB}MB.
+                                        </div>
                                     )}
                                 </div>
                             </div>
-                            {errors.pdfFile && <p className="mt-1 text-sm text-red-600">{errors.pdfFile}</p>}
+                            {errors.pdfFile && (
+                                <p className="mt-1 text-sm text-red-600">{errors.pdfFile}</p>
+                            )}
                         </div>
 
                         <div className="flex flex-col md:flex-row gap-4 pt-4">
-                            <button type="submit" disabled={submitting} className={`inline-flex items-center justify-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${submitting ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"}`}>
-                                {submitting ? "Téléversement..." : "Téléverser mon CV"}
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className={`inline-flex items-center justify-center gap-2 px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                                    submitting
+                                        ? "bg-indigo-400 cursor-not-allowed"
+                                        : "bg-indigo-600 hover:bg-indigo-700"
+                                }`}
+                            >
+                                {submitting ? (
+                                    <>
+                                        <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Téléversement...
+                                    </>
+                                ) : (
+                                    "Téléverser mon CV"
+                                )}
                             </button>
 
-                            <button type="button" onClick={() => navigate("/dashboard/student")} className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50">
+                            <button
+                                type="button"
+                                onClick={navigateToStudent}
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                            >
                                 Retour au dashboard
                             </button>
                         </div>
 
                         {serverMessage && (
-                            <div className={`mt-2 p-3 rounded-md text-sm ${serverMessageType === "success" ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-800"}`} role="status" aria-live="polite">
-                                {serverMessage}
+                            <div
+                                className={`mt-2 p-3 rounded-md text-sm ${
+                                    serverMessageType === "success"
+                                        ? "bg-green-50 border border-green-200 text-green-800"
+                                        : "bg-red-50 border border-red-200 text-red-800"
+                                }`}
+                                role="status"
+                                aria-live="polite"
+                            >
+                                <div className="flex items-center">
+                                    {serverMessageType === "success" ? (
+                                        <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                    )}
+                                    {serverMessage}
+                                </div>
                             </div>
                         )}
                     </div>

@@ -43,11 +43,20 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(POST, "/user/login", "/student/**", "/employeur/**", "/api/register/**").permitAll()
-                        .requestMatchers(GET, "/student/cv").permitAll()
+                        // Public endpoints
+                        .requestMatchers(POST, "/user/login", "/api/register/**").permitAll()
+                        .requestMatchers(POST, "/student/**", "/employeur/**").permitAll()
+
+                        // Student CV endpoints - require authentication
+                        .requestMatchers(GET, "/student/cv", "/student/cv/download").hasAuthority("STUDENT")
+
+                        // User endpoints
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
+
+                        // Role-specific endpoints
                         .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
+
                         .anyRequest().denyAll()
                 )
 
@@ -62,7 +71,6 @@ public class SecurityConfiguration {
 
         return http.build();
     }
-
 
     @Bean
     public CorsFilter corsFilter() {

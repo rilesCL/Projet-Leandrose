@@ -12,7 +12,6 @@ export default function DashBoardStudent() {
                             <span className="text-xl font-bold text-indigo-600">LeandrOSE</span>
                         </div>
                         <nav className="flex items-center space-x-4">
-                            <Link to="/dashboard/student/uploadCv" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Téléverser mon CV</Link>
                         </nav>
                     </div>
                 </div>

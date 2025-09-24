@@ -99,6 +99,7 @@ public class CvService {
         Cv cv = Cv.builder()
                 .student(studentRef)
                 .pdfPath(targetPath.toString())
+                .status(Cv.Status.PENDING)
                 .build();
 
         Cv saved = cvRepository.save(cv);
