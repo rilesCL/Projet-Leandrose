@@ -43,7 +43,8 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(POST, "/user/login", "/emprunteur/register", "/employeur/offers", "/api/register/**").permitAll()
+                        .requestMatchers(POST, "/user/login", "/student/**", "/employeur/**", "/api/register/**").permitAll()
+                        .requestMatchers(GET, "/student/cv").permitAll()
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
                         .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")

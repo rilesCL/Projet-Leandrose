@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface CvRepository extends JpaRepository<Cv, Long> {
     Optional<Cv> findByStudentId(Long studentId);
 
-
-    void deleteByStudentId(Long studentId);
 }

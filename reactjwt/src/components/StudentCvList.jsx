@@ -1,31 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { getStudentCvs } from "../api/apiStudent";
+import { getStudentCv } from "../api/apiStudent";
 
 export default function StudentCvList() {
-    const [cvs, setCvs] = useState([]);
+    const [cv, setCv] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        async function fetchCvs() {
+        async function fetchCv() {
             setLoading(true);
             setError(null);
             try {
                 const token = localStorage.getItem("accessToken");
-                const data = await getStudentCvs(token);
-                setCvs(data || []);
+                const data = await getStudentCv(token);
+                setCv(data || null);
             } catch (err) {
-                setError(err.response?.data || "Impossible de charger vos CV.");
+                setError(err.response?.data || "Impossible de charger votre CV.");
             } finally {
                 setLoading(false);
             }
         }
-        fetchCvs();
+        fetchCv();
     }, []);
 
     if (loading) return <p className="text-gray-600">Chargement...</p>;
     if (error) return <p className="text-red-600">{error}</p>;
-    if (cvs.length === 0) return <p className="text-gray-600">Vous n’avez pas encore téléversé de CV.</p>;
+    if (!cv) return <p className="text-gray-600">Vous n’avez pas encore téléversé de CV.</p>;
+
+    const status = (cv.status || "").toString().toUpperCase();
+    const statusLabel = status === "PENDING" || status === "PENDING_VALIDATION" ? (
+        <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">En attente</span>
+    ) : status === "APPROVED" || status === "APPROUVED" ? (
+        <span className="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Approuvé</span>
+    ) : status === "REJECTED" ? (
+        <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-800">Rejeté</span>
+    ) : (
+        <span className="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">{status}</span>
+    );
 
     return (
         <div className="overflow-x-auto bg-white shadow rounded-lg">
@@ -38,19 +49,13 @@ export default function StudentCvList() {
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                {cvs.map((cv, idx) => (
-                    <tr key={idx}>
-                        <td className="px-6 py-4 text-sm text-gray-800 truncate max-w-xs">{cv.pdfPath}</td>
-                        <td className="px-6 py-4 text-sm">
-                            {cv.status === "PENDING_VALIDATION" && <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">En attente</span>}
-                            {cv.status === "APPROUVED" && <span className="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Approuvé</span>}
-                            {cv.status === "REJECTED" && <span className="px-2 py-1 text-xs rounded bg-red-100 text-red-800">Rejeté</span>}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                            <a href={cv.pdfPath} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Voir / Télécharger</a>
-                        </td>
-                    </tr>
-                ))}
+                <tr>
+                    <td className="px-6 py-4 text-sm text-gray-800 truncate max-w-xs">{cv.pdfPath}</td>
+                    <td className="px-6 py-4 text-sm">{statusLabel}</td>
+                    <td className="px-6 py-4 text-sm">
+                        <a href={cv.pdfPath} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">Voir / Télécharger</a>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
