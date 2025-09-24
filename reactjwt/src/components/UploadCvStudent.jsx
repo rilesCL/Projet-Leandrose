@@ -13,7 +13,7 @@ export default function UploadCvStudent() {
     const [serverMessage, setServerMessage] = useState(null);
     const [serverMessageType, setServerMessageType] = useState(null);
 
-    const navigateToStudent = () => {
+    const navigateToDashboard = () => {
         window.location.href = '/dashboard/student';
     };
 
@@ -171,10 +171,9 @@ export default function UploadCvStudent() {
                                     "Téléverser mon CV"
                                 )}
                             </button>
-
                             <button
                                 type="button"
-                                onClick={navigateToStudent}
+                                onClick={navigateToDashboard}
                                 className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
                             >
                                 Retour au dashboard

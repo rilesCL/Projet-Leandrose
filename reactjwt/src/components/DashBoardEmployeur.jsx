@@ -12,12 +12,6 @@ export default function DashBoardEmployeur() {
                         </div>
 
                         <nav className="flex items-center space-x-4" aria-label="Main navigation">
-                            <a
-                                href="/dashboard/employeur/createOffer"
-                                className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                Créer une offre de stage
-                            </a>
                         </nav>
                     </div>
                 </div>

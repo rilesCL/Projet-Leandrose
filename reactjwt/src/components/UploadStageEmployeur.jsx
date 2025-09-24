@@ -21,27 +21,21 @@ export default function UploadStageEmployeur({ employeurId }) {
     const [serverMessage, setServerMessage] = useState(null);
     const [serverMessageType, setServerMessageType] = useState(null);
 
+    const navigateToDashboard = () => {
+        window.location.href = '/dashboard/employeur';
+    };
+
     function validateFields() {
         const e = {};
-        if (!description.trim()) {
-            e.description = "La description est obligatoire.";
-        }
-        if (!startDate.trim()) {
-            e.startDate = "La date de début est obligatoire.";
-        } else if (!DATE_REGEX.test(startDate.trim())) {
-            e.startDate = "Le format de la date doit être JJ-MM-YYYY.";
-        }
-        if (!duration.toString().trim()) {
-            e.duration = "La durée (en semaines) est obligatoire.";
-        } else if (!Number.isInteger(Number(duration)) || Number(duration) < MIN_DURATION_WEEKS) {
+        if (!description.trim()) e.description = "La description est obligatoire.";
+        if (!startDate.trim()) e.startDate = "La date de début est obligatoire.";
+        else if (!DATE_REGEX.test(startDate.trim())) e.startDate = "Le format de la date doit être JJ-MM-YYYY.";
+        if (!duration.toString().trim()) e.duration = "La durée (en semaines) est obligatoire.";
+        else if (!Number.isInteger(Number(duration)) || Number(duration) < MIN_DURATION_WEEKS)
             e.duration = "La durée doit être un entier positif (nombre de semaines).";
-        }
-        if (!address.trim()) {
-            e.address = "La localisation (adresse) est obligatoire.";
-        }
-        if (!pdfFile) {
-            e.pdfFile = "Un fichier PDF est requis.";
-        } else {
+        if (!address.trim()) e.address = "La localisation (adresse) est obligatoire.";
+        if (!pdfFile) e.pdfFile = "Un fichier PDF est requis.";
+        else {
             const fileName = pdfFile.name.toLowerCase();
             if (pdfFile.type !== "application/pdf" && !fileName.endsWith(".pdf")) {
                 e.pdfFile = "Le fichier doit être un PDF.";
@@ -90,9 +84,8 @@ export default function UploadStageEmployeur({ employeurId }) {
         evt.preventDefault();
         setServerMessage(null);
         setServerMessageType(null);
-        if (!validateFields()) {
-            return;
-        }
+        if (!validateFields()) return;
+
         setSubmitting(true);
         try {
             const isoDate = convertDateToIso(startDate.trim());
@@ -135,13 +128,14 @@ export default function UploadStageEmployeur({ employeurId }) {
                             <textarea
                                 id="description"
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={e => setDescription(e.target.value)}
                                 rows={6}
                                 placeholder="Description détaillée du poste..."
                                 className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.description ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                             />
                             {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Date de début (JJ-MM-YYYY)</label>
@@ -149,7 +143,7 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     id="startDate"
                                     type="text"
                                     value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
+                                    onChange={e => setStartDate(e.target.value)}
                                     placeholder="JJ-MM-AAAA"
                                     className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.startDate ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                                 />
@@ -161,25 +155,27 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     id="duration"
                                     type="number"
                                     value={duration}
-                                    onChange={(e) => setDuration(e.target.value)}
+                                    onChange={e => setDuration(e.target.value)}
                                     min={MIN_DURATION_WEEKS}
                                     className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.duration ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                                 />
                                 {errors.duration && <p className="mt-1 text-sm text-red-600">{errors.duration}</p>}
                             </div>
                         </div>
+
                         <div>
                             <label htmlFor="address" className="block text-sm font-medium text-gray-700">Localisation (ville, adresse, télétravail possible)</label>
                             <input
                                 id="address"
                                 type="text"
                                 value={address}
-                                onChange={(e) => setAddress(e.target.value)}
+                                onChange={e => setAddress(e.target.value)}
                                 placeholder="Ville, adresse, télétravail possible..."
                                 className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.address ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                             />
                             {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="remuneration" className="block text-sm font-medium text-gray-700">Rémunération (facultatif)</label>
@@ -187,17 +183,18 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     id="remuneration"
                                     type="number"
                                     value={remuneration}
-                                    onChange={(e) => setRemuneration(e.target.value)}
+                                    onChange={e => setRemuneration(e.target.value)}
                                     min="0"
                                     step="0.01"
                                     className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                                 />
                             </div>
                         </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Document PDF (obligatoire)</label>
                             <div className="mt-1 flex items-center gap-3">
-                                <label htmlFor="pdfFile" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Choisir un PDF</label>
+                                <label htmlFor="pdfFile" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Choisir un PDF</label>
                                 <input id="pdfFile" type="file" accept="application/pdf" onChange={handleFileChange} className="hidden" />
                                 <div className="flex-1 text-sm text-gray-700">
                                     {pdfFile ? (
@@ -215,21 +212,26 @@ export default function UploadStageEmployeur({ employeurId }) {
                             </div>
                             {errors.pdfFile && <p className="mt-1 text-sm text-red-600">{errors.pdfFile}</p>}
                         </div>
-                        <div className="pt-4">
+
+                        <div className="flex flex-row gap-4 pt-4">
                             <button
                                 type="submit"
                                 disabled={submitting}
                                 className={`inline-flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${submitting ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition`}
                             >
-                                {submitting && (
-                                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                                    </svg>
-                                )}
+                                {submitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
                                 {submitting ? "Enregistrement..." : "Publier l'offre"}
                             </button>
+
+                            <button
+                                type="button"
+                                onClick={navigateToDashboard}
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                            >
+                                Retour au dashboard
+                            </button>
                         </div>
+
                         {serverMessage && (
                             <div className={`mt-2 p-3 rounded-md text-sm ${serverMessageType === "success" ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-800"}`} role="status" aria-live="polite">
                                 {serverMessage}
