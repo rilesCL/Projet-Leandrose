@@ -1,7 +1,7 @@
 const API_BASE = 'http://localhost:8080/gestionnaire';
 
-const accessToken =  localStorage.getItem('accessToken');
-const tokenType = (localStorage.getItem('tokenType') || 'BEARER').toUpperCase();
+const accessToken =  sessionStorage.getItem('accessToken');
+const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
 
 function getAuthHeaders(){
     return {

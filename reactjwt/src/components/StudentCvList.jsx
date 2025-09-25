@@ -11,7 +11,7 @@ export default function StudentCvList() {
             setError(null);
 
             try {
-                const token = localStorage.getItem("accessToken");
+                const token = sessionStorage.getItem("accessToken");
                 const response = await fetch('http://localhost:8080/student/cv', {
                     method: 'GET',
                     headers: {
@@ -132,7 +132,7 @@ export default function StudentCvList() {
 
     const handleDownload = async () => {
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = sessionStorage.getItem("accessToken");
             const response = await fetch('http://localhost:8080/student/cv/download', {
                 method: 'GET',
                 headers: {
@@ -161,7 +161,7 @@ export default function StudentCvList() {
 
     const handlePreview = async () => {
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = sessionStorage.getItem("accessToken");
             const response = await fetch('http://localhost:8080/student/cv/download', {
                 method: 'GET',
                 headers: {

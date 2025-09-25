@@ -1,14 +1,13 @@
 import React from "react";
 import InternshipOffersList from "./InternshipOffersList";
 import {useNavigate} from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa"
+import {FaSignOutAlt} from "react-icons/fa";
 
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate()
 
     const handleLogout = () => {
-        localStorage.clear()
         sessionStorage.clear()
         navigate("/login", {replace: true})
     }

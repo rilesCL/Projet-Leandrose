@@ -102,8 +102,8 @@ const Login = () => {
             console.log("Login response:", data);
 
             // Stocker le token
-            localStorage.setItem('accessToken', data.accessToken);
-            localStorage.setItem('tokenType', data.tokenType || 'BEARER');
+            sessionStorage.setItem('accessToken', data.accessToken);
+            sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
 
             await fetchUserInfo(data.accessToken);
 

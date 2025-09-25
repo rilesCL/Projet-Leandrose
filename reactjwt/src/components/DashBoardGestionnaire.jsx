@@ -22,7 +22,6 @@ export default function DashBoardGestionnaire(){
     }, []);
 
     const handleLogout = () => {
-        localStorage.clear()
         sessionStorage.clear()
         navigate("/login", {replace: true})
     }
