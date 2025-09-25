@@ -47,7 +47,6 @@ public class GestionnaireService {
             String lastName,
             String email,
             String rawPassword,
-            String matricule,
             String phoneNumber
     ) {
         try{
@@ -56,7 +55,6 @@ public class GestionnaireService {
                     .lastName(lastName)
                     .email(email)
                     .password(passwordEncoder.encode(rawPassword))
-                    .matricule(matricule)
                     .phoneNumber(phoneNumber)
                     .build();
 

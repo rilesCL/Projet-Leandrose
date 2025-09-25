@@ -1,4 +1,5 @@
 package ca.cal.leandrose;
+import ca.cal.leandrose.service.CvService;
 import ca.cal.leandrose.service.EmployeurService;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.StudentService;
@@ -22,11 +23,11 @@ public class LeandrOseApplication {
     @Bean
     @Profile("!test")
     @Transactional
-    public CommandLineRunner Lsc0SE(EmployeurService employeurService, StudentService studentService, GestionnaireService gestionnaireService) {
+    public CommandLineRunner Lsc0SE(EmployeurService employeurService, StudentService studentService, GestionnaireService gestionnaireService, CvService cvService) {
         return args -> {
             try {
                 employeurService.createEmployeur(
-                        "Leandro", "Schoonewolff", "wbbey@gmail.com", "mansang", "macolo", "alimentation");
+                        "Leandro", "Schoonewolff", "wbbey@gmail.com", "mansang123", "macolo", "alimentation");
                 System.out.println(employeurService.getEmployeurById(1L));
 
                 StudentDto studentDto = studentService.createStudent(
@@ -35,8 +36,9 @@ public class LeandrOseApplication {
 
 
                 gestionnaireService.createManager(
-                        "Mohamed", "Shahed", "momo@gmail.com", "password", "232901", "514-329-2222"
+                        "Mohamed", "Shahed", "momo@gmail.com", "password", "514-329-2222"
                 );
+
 
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());

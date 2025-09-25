@@ -40,7 +40,6 @@ public class GestionnaireServiceTest {
                 .lastName("Doe")
                 .email("john@company.com")
                 .password("secret")
-                .matricule("230232")
                 .phoneNumber("514-329-3222")
                 .build();
         pendingCv = Cv.builder()
