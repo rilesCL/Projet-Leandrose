@@ -272,7 +272,7 @@ export default function RegisterEtudiant() {
                                     value={form.email}
                                     onChange={handleChange}
                                     className={inputClass("email")}
-                                    placeholder="prenom.nom@etu.uqam.ca"
+                                    placeholder="prenom.nom@etu.email.ca"
                                     aria-invalid={!!errors.email}
                                     aria-describedby={errors.email ? "email-error" : undefined}
                                 />
