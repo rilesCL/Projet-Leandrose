@@ -3,6 +3,7 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,10 +20,12 @@ import java.util.Optional;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 class InternshipOfferServiceTest {
 
     @Mock
@@ -91,7 +94,7 @@ class InternshipOfferServiceTest {
                 });
 
         // Act
-        InternshipOffer result = internshipOfferService.createOffer(
+        InternshipOfferDto result = internshipOfferService.createOfferDto(
                 "Stage en Java",
                 LocalDate.now(),
                 12,
@@ -104,7 +107,7 @@ class InternshipOfferServiceTest {
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(10L);
-        assertThat(result.getStatus()).isEqualTo(InternshipOffer.Status.PENDING_VALIDATION);
+        assertThat(result.getStatus()).isEqualTo("PENDING_VALIDATION");
 
         // Path check: OS independent + timestamp tolerant
         String expectedDir = Paths.get("uploads", "offers", "1").toString();
@@ -124,7 +127,7 @@ class InternshipOfferServiceTest {
         );
 
         // Act + Assert
-        assertThatThrownBy(() -> internshipOfferService.createOffer(
+        assertThatThrownBy(() -> internshipOfferService.createOfferDto(
                 "Stage en DevOps",
                 LocalDate.now(),
                 10,

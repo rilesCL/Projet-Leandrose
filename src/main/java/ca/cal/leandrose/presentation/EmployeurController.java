@@ -7,6 +7,8 @@ import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.UserDTO;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,34 +37,39 @@ public class EmployeurController {
     private final EmployeurRepository employeurRepository;
 
     @GetMapping("/offers")
-    public ResponseEntity<List<InternshipOffer>> getMyOffers(HttpServletRequest request) {
+    public ResponseEntity<List<InternshipOfferDto>> getMyOffers(HttpServletRequest request) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 
         if (!me.getRole().name().equals("EMPLOYEUR")) {
             return ResponseEntity.status(403).build();
         }
 
-        List<InternshipOffer> offers = internshipOfferService.getOffersByEmployeurId(me.getId());
+        List<InternshipOfferDto> offers = internshipOfferService.getOffersByEmployeurId(me.getId())
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(offers);
     }
 
     @PostMapping(value = "/offers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<InternshipOffer> uploadOffer(
+    public ResponseEntity<InternshipOfferDto> uploadOffer(
             HttpServletRequest request,
             @RequestPart("offer") InternshipOfferRequest offerRequest,
             @RequestPart("pdfFile") MultipartFile pdfFile
     ) throws IOException {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
-        System.out.println(me.getRole().name());
+
         if (!me.getRole().name().equals("EMPLOYEUR")) {
             return ResponseEntity.status(403).build();
         }
 
-        Employeur employeur = employeurRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
+        Employeur employeur = employeurRepository.findById(me.getId())
+                .orElseThrow(UserNotFoundException::new);
 
-        InternshipOffer offer = internshipOfferService.createOffer(
+        InternshipOfferDto offerDto = internshipOfferService.createOfferDto(
                 offerRequest.getDescription(),
                 LocalDate.parse(offerRequest.getStartDate()),
                 offerRequest.getDurationInWeeks(),
@@ -74,10 +81,9 @@ public class EmployeurController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(offer);
+                .body(offerDto);
     }
 
-    // Add new download endpoint
     @GetMapping("/offers/{offerId}/download")
     public ResponseEntity<Resource> downloadOffer(
             HttpServletRequest request,
@@ -90,19 +96,19 @@ public class EmployeurController {
         }
 
         try {
-            // Get the offer and verify it belongs to the current employer
             InternshipOffer offer = internshipOfferService.getOffer(offerId);
 
-            // Verify the offer belongs to the current employer
             if (!offer.getEmployeur().getId().equals(me.getId())) {
-                return ResponseEntity.status(403).build(); // Forbidden - not their offer
+                return ResponseEntity.status(403).build();
             }
 
             Path filePath = Paths.get(offer.getPdfPath());
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
-                String filename = "Offre_" + offer.getDescription().substring(0, Math.min(30, offer.getDescription().length())).replaceAll("[^a-zA-Z0-9]", "_") + ".pdf";
+                String filename = "Offre_" + offer.getDescription()
+                        .substring(0, Math.min(30, offer.getDescription().length()))
+                        .replaceAll("[^a-zA-Z0-9]", "_") + ".pdf";
 
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_PDF)

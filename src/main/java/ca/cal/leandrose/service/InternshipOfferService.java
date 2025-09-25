@@ -3,6 +3,8 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.itextpdf.text.pdf.PdfReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class InternshipOfferService {
     private static final String BASE_UPLOAD_DIR = "uploads/offers/";
 
     @Transactional
-    public InternshipOffer createOffer(
+    public InternshipOfferDto createOfferDto(
             String description,
             LocalDate startDate,
             int durationInWeeks,
@@ -69,9 +71,10 @@ public class InternshipOfferService {
                 .status(InternshipOffer.Status.PENDING_VALIDATION)
                 .build();
 
-        return internshipOfferRepository.save(offer);
-    }
+        InternshipOffer saved = internshipOfferRepository.save(offer);
 
+        return InternshipOfferMapper.toDto(saved);
+    }
 
     public InternshipOffer getOffer(Long id) {
         return internshipOfferRepository.findById(id)
@@ -87,5 +90,4 @@ public class InternshipOfferService {
     public List<InternshipOffer> getOffersByEmployeurId(Long employeurId) {
         return internshipOfferRepository.findOffersByEmployeurId(employeurId);
     }
-
 }
