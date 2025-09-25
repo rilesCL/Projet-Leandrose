@@ -77,13 +77,14 @@ export async function approveCv(cvId){
         return reponse.json()
 }
 
-export async function rejectCv(cvId){
+export async function rejectCv(cvId, comment){
         const response = await fetch(`${API_BASE}/cv/${cvId}/reject`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken,
-            }
+            },
+            body: JSON.stringify([comment])
         });
         return response.json()
 }
