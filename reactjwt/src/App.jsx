@@ -9,9 +9,8 @@ import UploadStageEmployeur from "./components/UploadStageEmployeur.jsx";
 import DashBoardEmployeur from "./components/DashBoardEmployeur.jsx";
 import DashBoardStudent from "./components/DashBoardStudent.jsx";
 import UploadCvStudent from "./components/UploadCvStudent.jsx";
-import DashBoardManager from "./components/DashBoardManager.jsx";
+import DashBoardGestionnaire from "./components/DashBoardGestionnaire.jsx";
 import PendingCvPage from "./components/PendingCvPage.jsx";
-import {Outlet} from "react-router";
 
 function App() {
     const router = createBrowserRouter(
@@ -33,11 +32,10 @@ function App() {
 
                 {/* Other dashboards */}
                 <Route path="dashboard" element={<h1>DashBoard</h1>} />
-                <Route path="dashboard/gestionnaire" element={<DashBoardManager />}>
+                <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
                 </Route>
 
-                {/*<Route path="dashboard/gestionnaire/cv" element={<PendingCvPage/>}/>*/}
 
             </Route>
         )

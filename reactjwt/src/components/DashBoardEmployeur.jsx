@@ -1,7 +1,18 @@
 import React from "react";
 import InternshipOffersList from "./InternshipOffersList";
+import {useNavigate} from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa"
+
 
 export default function DashBoardEmployeur() {
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        localStorage.clear()
+        sessionStorage.clear()
+        navigate("/login", {replace: true})
+    }
+
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-white shadow">
@@ -12,6 +23,13 @@ export default function DashBoardEmployeur() {
                         </div>
 
                         <nav className="flex items-center space-x-4" aria-label="Main navigation">
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center text-gray-600 hover:text-red-600 transition"
+                            >
+                                <FaSignOutAlt className="mr-1" />
+                                <span className="hidden sm:inline">Logout</span>
+                            </button>
                         </nav>
                     </div>
                 </div>
