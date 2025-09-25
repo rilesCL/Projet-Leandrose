@@ -1,5 +1,6 @@
 # Plan de demo de EQ04-1: En tant qu’employeur, je m’inscris
-1. Je vais sur la page `Inscription Employeur` (`/register/employeur`).
+1. J'appuie sur le bouton **"S'inscrire"** dans le menu en bas à droite.
+2. J'appuie sur le bouton **"Créez un compte employeur"**.
 2. Dans le champ **Prénom**, je rentre : Jean.
 3. Dans le champ **Nom**, je rentre : Dupont.
 4. Dans le champ **Nom de l'entreprise**, je rentre : TechCorp.
@@ -8,6 +9,7 @@
 7. Dans le champ **Mot de passe**, je rentre : Password123.
 8. J’appuie sur le bouton **"S'inscrire"**.
 9. Je vois un message de succès : *"Inscription réussie !"*.
+10. Je suis redirigé vers la page de connexion.
 
 ### Cas d'erreur :
 1. Je laisse le champ **Nom de l'entreprise** vide → un message d’erreur *"Nom de l'entreprise requis"* apparaît.
