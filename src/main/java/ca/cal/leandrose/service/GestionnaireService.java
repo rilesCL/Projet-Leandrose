@@ -2,12 +2,10 @@ package ca.cal.leandrose.service;
 
 
 import ca.cal.leandrose.model.Cv;
-import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.Gestionnaire;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.GestionnaireDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ManagerService {
+public class GestionnaireService {
     private final CvRepository cvRepository;
     private final PasswordEncoder passwordEncoder;
     private final GestionnaireRepository gestionnaireRepository;

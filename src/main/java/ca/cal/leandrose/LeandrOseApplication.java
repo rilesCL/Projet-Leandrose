@@ -1,8 +1,7 @@
 package ca.cal.leandrose;
 import ca.cal.leandrose.service.EmployeurService;
-import ca.cal.leandrose.service.ManagerService;
+import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.StudentService;
-import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.StudentDto;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +22,7 @@ public class LeandrOseApplication {
     @Bean
     @Profile("!test")
     @Transactional
-    public CommandLineRunner Lsc0SE(EmployeurService employeurService, StudentService studentService, ManagerService managerService) {
+    public CommandLineRunner Lsc0SE(EmployeurService employeurService, StudentService studentService, GestionnaireService gestionnaireService) {
         return args -> {
             try {
                 employeurService.createEmployeur(
@@ -35,7 +34,7 @@ public class LeandrOseApplication {
                 System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
 
 
-                managerService.createManager(
+                gestionnaireService.createManager(
                         "Mohamed", "Shahed", "momo@gmail.com", "password", "232901", "514-329-2222"
                 );
 

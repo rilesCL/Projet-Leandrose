@@ -19,13 +19,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class ManagerServiceTest {
+public class GestionnaireServiceTest {
 
     @Mock
     private CvRepository cvRepository;
 
     @InjectMocks
-    private ManagerService managerService;
+    private GestionnaireService gestionnaireService;
 
     private Cv pendingCv;
 
@@ -55,7 +55,7 @@ public class ManagerServiceTest {
         when(cvRepository.findById(10L)).thenReturn(Optional.of(pendingCv));
         when(cvRepository.save(any(Cv.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        CvDto result = managerService.approveCv(10L);
+        CvDto result = gestionnaireService.approveCv(10L);
 
         assertThat(result.getStatus()).isEqualTo(Cv.Status.APPROVED);
         verify(cvRepository, times(1)).findById(10L);
@@ -67,7 +67,7 @@ public class ManagerServiceTest {
         when(cvRepository.findById(10L)).thenReturn(Optional.of(pendingCv));
         when(cvRepository.save(any(Cv.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        CvDto result = managerService.rejectCv(10L);
+        CvDto result = gestionnaireService.rejectCv(10L);
 
         assertThat(result.getStatus()).isEqualTo(Cv.Status.REJECTED);
         verify(cvRepository, times(1)).findById(10L);
@@ -94,7 +94,7 @@ public class ManagerServiceTest {
                 .thenReturn(List.of(pendingCv1, pendingCv2));
 
 
-        List<CvDto> result = managerService.getPendingCvs();
+        List<CvDto> result = gestionnaireService.getPendingCvs();
 
 
         assertEquals(2, result.size());

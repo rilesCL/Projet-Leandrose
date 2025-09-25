@@ -4,7 +4,7 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.repository.CvRepository;
-import ca.cal.leandrose.service.ManagerService;
+import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.dto.CvDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -22,8 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/gestionnaire")
 @RequiredArgsConstructor
-public class ManagerController {
-    private final ManagerService service;
+public class GestionnaireController {
+    private final GestionnaireService service;
     private final CvRepository cvRepository;
 
     @PostMapping("/cv/{cvId}/approve")
