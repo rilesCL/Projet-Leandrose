@@ -7,6 +7,7 @@ import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.dto.CvDto;
+import ca.cal.leandrose.service.dto.ProgramDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -100,5 +101,10 @@ public class GestionnaireController {
             @PathVariable Long id,
             @Valid @RequestBody RejectOfferRequest request) {
         return ResponseEntity.ok(gestionnaireService.rejectOffer(id, request.getComment()));
+    }
+
+    @GetMapping("/programs")
+    public ResponseEntity<List<ProgramDto>> getPrograms() {
+        return ResponseEntity.ok(gestionnaireService.getAllPrograms());
     }
 }

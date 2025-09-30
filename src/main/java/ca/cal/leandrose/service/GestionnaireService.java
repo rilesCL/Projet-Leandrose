@@ -119,4 +119,10 @@ public class GestionnaireService {
         Program savedProgram = programRepository.save(program);
         return ProgramDto.create(program);
     }
+    public List<ProgramDto> getAllPrograms(){
+        return programRepository.findAll()
+                .stream()
+                .map(ProgramDto::create)
+                .toList();
+    }
 }
