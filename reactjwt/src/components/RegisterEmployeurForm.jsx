@@ -70,8 +70,32 @@ export default function RegisterEmployeur() {
             setForm(initialState);
             setErrors({});
             setTimeout(() => {
-                setSuccessMessage("");
-                navigate("/login");
+                fetch('http://localhost:8080/user/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: form.email, password: form.password })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        sessionStorage.setItem('accessToken', data.accessToken);
+                        sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
+                        return fetch('http://localhost:8080/user/me', {
+                            headers: { Authorization: `Bearer ${data.accessToken}` }
+                        });
+                    })
+                    .then(res => res.json())
+                    .then(userData => {
+                        switch(userData.role){
+                            case 'STUDENT':
+                                navigate("/dashboard/student");
+                                break;
+                            case 'EMPLOYEUR':
+                                navigate("/dashboard/employeur");
+                                break;
+                            default:
+                                navigate("/dashboard");
+                        }
+                    });
             }, 1500);
         } catch (err) {
             console.error(err);
