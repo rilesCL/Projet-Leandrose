@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { registerStudent } from "../api/apiRegister.jsx";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -43,6 +43,25 @@ export default function RegisterEtudiant() {
     const [globalError, setGlobalError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [programs, setPrograms] = useState([]);
+    const [loadingPrograms, setLoadingPrograms] = useState(true);
+
+    useEffect(() => {
+        const fetchPrograms = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/register/programs');
+                const data = await response.json();
+                setPrograms(data);
+            } catch (error) {
+                console.error("Error fetching programs:", error);
+                setGlobalError(t("registerEtudiant.errors.programsLoadError") || "Failed to load programs");
+            } finally {
+                setLoadingPrograms(false);
+            }
+        };
+
+        fetchPrograms();
+    }, [t]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -188,7 +207,17 @@ export default function RegisterEtudiant() {
 
                             <InputField id="email" label={t("registerEtudiant.email")} placeholder={t("registerEtudiant.placeholders.email")} value={form.email} onChange={handleChange} error={errors.email} type="email" />
 
-                            <InputField id="program" label={t("registerEtudiant.program")} placeholder={t("registerEtudiant.placeholders.program")} value={form.program} onChange={handleChange} error={errors.program} fullWidth />
+                            <SelectField
+                                id="program"
+                                label={t("registerEtudiant.program")}
+                                value={form.program}
+                                onChange={handleChange}
+                                error={errors.program}
+                                options={programs}
+                                loading={loadingPrograms}
+                                placeholder={t("registerEtudiant.placeholders.program") || "Select a program"}
+                                fullWidth
+                            />
 
                             <InputField id="password" label={t("registerEtudiant.password")} placeholder={t("registerEtudiant.placeholders.password")} value={form.password} onChange={handleChange} error={errors.password} type="password" />
 
@@ -241,6 +270,32 @@ function InputField({ id, label, placeholder, value, onChange, error, type = "te
                 aria-invalid={!!error}
                 aria-describedby={error ? `${id}-error` : undefined}
             />
+            {error && <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
+        </div>
+    );
+}
+
+function SelectField({ id, label, value, onChange, error, options, loading, placeholder, fullWidth }) {
+    const selectClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
+    return (
+        <div className={fullWidth ? "md:col-span-2" : ""}>
+            <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+            <select
+                id={id}
+                value={value}
+                onChange={onChange}
+                className={selectClass}
+                aria-invalid={!!error}
+                aria-describedby={error ? `${id}-error` : undefined}
+                disabled={loading}
+            >
+                <option value="">{loading ? "Loading programs..." : placeholder}</option>
+                {options.map((program) => (
+                    <option key={program.id} value={program.name}>
+                        {program.name}
+                    </option>
+                ))}
+            </select>
             {error && <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
     );

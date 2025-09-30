@@ -1,3 +1,4 @@
+// apiRegister.jsx
 const BASE_URL = "http://localhost:8080/api/register";
 
 async function handleFetch(url, options) {
@@ -12,16 +13,30 @@ async function handleFetch(url, options) {
         const contentType = res.headers.get("content-type");
         console.log("Content-Type:", contentType);
 
-        if (contentType && contentType.includes("application/json")) {
-            data = await res.json();
-            console.log("Parsed JSON data:", data);
+        // Check if response has content
+        const text = await res.text();
+        console.log("Response text:", text);
+
+        if (text && text.trim().length > 0) {
+            if (contentType && contentType.includes("application/json")) {
+                try {
+                    data = JSON.parse(text);
+                    console.log("Parsed JSON data:", data);
+                } catch (parseError) {
+                    console.error("JSON parse error:", parseError);
+                    data = text;
+                }
+            } else {
+                data = text;
+            }
         } else {
-            data = await res.text();
-            console.log("Text data:", data);
+            // Empty response
+            console.warn("Empty response received");
+            data = res.ok ? [] : null;
         }
 
         if (!res.ok) {
-            let errorMessage = typeof data === "string" ? data : data.error || JSON.stringify(data);
+            let errorMessage = typeof data === "string" ? data : data?.error || JSON.stringify(data);
             console.error("Error message:", errorMessage);
             throw { response: { data: errorMessage || `Erreur ${res.status}: ${res.statusText}` } };
         }
@@ -48,5 +63,12 @@ export async function registerStudent(student) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(student),
+    });
+}
+
+export async function fetchPrograms() {
+    return handleFetch(`${BASE_URL}/programs`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
     });
 }
