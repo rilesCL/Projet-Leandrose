@@ -151,12 +151,39 @@
   },
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
-    "welcome": "Bienvenue"
+    "welcome": "Bienvenue",
+    "addProgram": "Ajouter un programme"
   },
   "dashboardStudent": {
     "logout": "Se déconnecter",
     "welcome": "Bienvenue",
     "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage."
+  },
+  "programsList": {
+    "title": "Programmes Existants",
+    "description": "Consultez tous les programmes académiques actuellement enregistrés dans le système.",
+    "loading": "Chargement des programmes...",
+    "error": "Erreur",
+    "errorFetch": "Impossible de charger les programmes.",
+    "errorServer": "Erreur de connexion au serveur.",
+    "noPrograms": "Aucun programme disponible",
+    "noProgramsDescription": "Il n'y a actuellement aucun programme enregistré dans le système.",
+    "department": "Département",
+    "totalPrograms": "Total des programmes"
+  },
+  "addProgram": {
+    "pageTitle": "Gestion des Programmes",
+    "back": "Retour",
+    "newProgramTitle": "Ajouter un Nouveau Programme",
+    "newProgramDescription": "Créez un nouveau programme académique pour enrichir l'offre de formation.",
+    "programNameLabel": "Nom du programme",
+    "programNamePlaceholder": "Ex: Techniques de l'informatique",
+    "submitButton": "Ajouter le programme",
+    "submitting": "Ajout en cours...",
+    "successMessage": "Programme ajouté avec succès !",
+    "errorEmptyName": "Le nom du programme ne peut pas être vide.",
+    "errorAddProgram": "Erreur lors de l'ajout du programme.",
+    "errorServer": "Erreur de connexion au serveur."
   },
   "internshipOffersList": {
     "loading": "Chargement de vos offres...",

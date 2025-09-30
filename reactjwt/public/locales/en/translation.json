@@ -150,12 +150,39 @@
   },
   "dashboardGestionnaire": {
     "logout": "Logout",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "addProgram": "Add Program"
   },
   "dashboardStudent": {
     "logout": "Logout",
     "welcome": "Welcome",
     "description": "This is your student dashboard. You can manage your CVs and soon view internship offers."
+  },
+  "programsList": {
+    "title": "Existing Programs",
+    "description": "View all academic programs currently registered in the system.",
+    "loading": "Loading programs...",
+    "error": "Error",
+    "errorFetch": "Unable to load programs.",
+    "errorServer": "Server connection error.",
+    "noPrograms": "No programs available",
+    "noProgramsDescription": "There are currently no programs registered in the system.",
+    "department": "Department",
+    "totalPrograms": "Total programs"
+  },
+  "addProgram": {
+    "pageTitle": "Program Management",
+    "back": "Back",
+    "newProgramTitle": "Add a New Program",
+    "newProgramDescription": "Create a new academic program to enrich the training offer.",
+    "programNameLabel": "Program name",
+    "programNamePlaceholder": "E.g.: Computer Science Techniques",
+    "submitButton": "Add program",
+    "submitting": "Adding...",
+    "successMessage": "Program added successfully!",
+    "errorEmptyName": "Program name cannot be empty.",
+    "errorAddProgram": "Error adding program.",
+    "errorServer": "Server connection error."
   },
   "internshipOffersList": {
     "loading": "Loading your offers...",

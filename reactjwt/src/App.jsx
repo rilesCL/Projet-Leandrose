@@ -12,6 +12,7 @@ import UploadCvStudent from "./components/UploadCvStudent.jsx";
 import DashBoardGestionnaire from "./components/DashBoardGestionnaire.jsx";
 import PendingCvPage from "./components/PendingCvPage.jsx";
 import RegisterLanding from "./components/RegisterLanding.jsx";
+import AddProgramPage from "./components/AddProgramPage.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -30,6 +31,7 @@ function App() {
                 <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />
 
                 <Route path="dashboard" element={<h1>DashBoard</h1>} />
+                <Route path="dashboard/gestionnaire/programs" element={<AddProgramPage />} />
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
                 </Route>
