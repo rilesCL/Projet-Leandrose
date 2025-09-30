@@ -1,5 +1,26 @@
 {
   "appName": "LeandrOSE",
+  "registerLanding": {
+    "subtitle": "Choisissez le type de compte que vous souhaitez créer",
+    "student": {
+      "title": "Étudiant",
+      "description": "Trouvez votre stage idéal",
+      "feature1": "Postulez aux offres de stage",
+      "feature2": "Suivez vos candidatures",
+      "feature3": "Gérez votre profil et CV",
+      "button": "S'inscrire en tant qu'étudiant"
+    },
+    "employer": {
+      "title": "Employeur",
+      "description": "Recrutez les meilleurs talents",
+      "feature1": "Publiez des offres de stage",
+      "feature2": "Gérez vos candidats",
+      "feature3": "Trouvez les bons profils",
+      "button": "S'inscrire en tant qu'employeur"
+    },
+    "alreadyAccount": "Vous avez déjà un compte ?",
+    "login": "Se connecter"
+  },
   "registerEmployeur": {
     "title": "Inscription Employeur",
     "subtitle": "Créez un compte employeur pour publier des offres et gérer vos candidats.",

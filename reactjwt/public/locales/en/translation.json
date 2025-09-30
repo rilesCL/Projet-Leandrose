@@ -1,5 +1,26 @@
 {
   "appName": "LeandrOSE",
+  "registerLanding": {
+    "subtitle": "Choose the type of account you want to create",
+    "student": {
+      "title": "Student",
+      "description": "Find your ideal internship",
+      "feature1": "Apply to internship offers",
+      "feature2": "Track your applications",
+      "feature3": "Manage your profile and resume",
+      "button": "Register as a student"
+    },
+    "employer": {
+      "title": "Employer",
+      "description": "Recruit the best talents",
+      "feature1": "Post internship offers",
+      "feature2": "Manage your candidates",
+      "feature3": "Find the right profiles",
+      "button": "Register as an employer"
+    },
+    "alreadyAccount": "Already have an account?",
+    "login": "Log in"
+  },
   "registerEmployeur": {
     "title": "Employer Registration",
     "subtitle": "Create an employer account to post jobs and manage applicants.",

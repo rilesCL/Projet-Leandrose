@@ -190,7 +190,7 @@ const Login = () => {
     if (showForgotPassword) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                <div className="max-w-md w-full">
+                <div className="max-w-3xl w-full">
                     <header className="text-center mb-6">
                         <h1 className="text-3xl font-bold text-indigo-600">{t("appName")}</h1>
                     </header>
@@ -337,7 +337,7 @@ const Login = () => {
                                 {t("login.noAccount")}{" "}
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/register/etudiant")}
+                                    onClick={() => navigate("/register/")}
                                     className="text-indigo-600 hover:underline"
                                 >
                                     {t("login.signUp")}

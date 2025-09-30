@@ -218,10 +218,6 @@ export default function RegisterEtudiant() {
                                 {t("registerEtudiant.alreadyAccount")}{" "}
                                 <button type="button" onClick={() => navigate("/login")} className="text-indigo-600 hover:underline">{t("registerEtudiant.login")}</button>
                             </div>
-                            <div className="text-sm text-gray-500">
-                                {t("registerEtudiant.employerAccount")}{" "}
-                                <button type="button" onClick={() => navigate("/register/employeur")} className="text-indigo-600 hover:underline">{t("registerEtudiant.createEmployer")}</button>
-                            </div>
                         </div>
                     </form>
                 </div>

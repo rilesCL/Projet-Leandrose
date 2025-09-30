@@ -11,12 +11,14 @@ import DashBoardStudent from "./components/DashBoardStudent.jsx";
 import UploadCvStudent from "./components/UploadCvStudent.jsx";
 import DashBoardGestionnaire from "./components/DashBoardGestionnaire.jsx";
 import PendingCvPage from "./components/PendingCvPage.jsx";
+import RegisterLanding from "./components/RegisterLanding.jsx";
 
 function App() {
     const router = createBrowserRouter(
         createRoutesFromElements(
             <Route path="/" element={<RouteLayout />}>
                 <Route index element={<Navigate to="/login" replace />} />
+                <Route path="register" element={<RegisterLanding />} />
                 <Route path="register/etudiant" element={<RegisterEtudiant />} />
                 <Route path="register/employeur" element={<RegisterEmployeur />} />
                 <Route path="login" element={<Login />} />
