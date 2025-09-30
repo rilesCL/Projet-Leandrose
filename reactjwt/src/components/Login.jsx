@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import LanguageSelector from "./LanguageSelector.jsx";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -198,16 +199,7 @@ const Login = () => {
                     <div className="bg-white rounded-lg shadow-md p-6">
                         <div className="flex justify-between items-center mb-2">
                             <h2 className="text-2xl font-semibold text-gray-800">{t("login.forgotPasswordModal.title")}</h2>
-                            <div className="w-32">
-                                <select
-                                    value={i18n.language}
-                                    onChange={(e) => i18n.changeLanguage(e.target.value)}
-                                    className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                                    <option value="en">English</option>
-                                    <option value="fr">Français</option>
-                                </select>
-                            </div>
+                            <LanguageSelector />
                         </div>
                         <p className="text-sm text-gray-500 mb-6">{t("login.forgotPasswordModal.subtitle")}</p>
 

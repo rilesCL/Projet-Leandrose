@@ -3,6 +3,7 @@ import { registerStudent } from "../api/apiRegister.jsx";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import {FaArrowLeft} from "react-icons/fa";
+import LanguageSelector from "./LanguageSelector.jsx";
 
 const initialState = {
     firstName: "",
@@ -171,16 +172,7 @@ export default function RegisterEtudiant() {
                 <div className="bg-white rounded-lg shadow-md p-6 md:p-10">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-2xl font-semibold text-gray-800">{t("registerEtudiant.title")}</h2>
-                        <div className="w-32">
-                            <select
-                                value={i18n.language}
-                                onChange={(e) => i18n.changeLanguage(e.target.value)}
-                                className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            >
-                                <option value="en">English</option>
-                                <option value="fr">Français</option>
-                            </select>
-                        </div>
+                        <LanguageSelector />
                     </div>
 
                     <p className="text-sm text-gray-500 mb-6">{t("registerEtudiant.subtitle")}</p>

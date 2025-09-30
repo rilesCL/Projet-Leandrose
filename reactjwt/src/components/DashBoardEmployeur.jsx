@@ -3,6 +3,7 @@ import InternshipOffersList from "./InternshipOffersList";
 import { useNavigate } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import LanguageSelector from "./LanguageSelector.jsx";
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate();
@@ -57,16 +58,7 @@ export default function DashBoardEmployeur() {
                             className="flex items-center space-x-4"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
-                            <div className="w-32">
-                                <select
-                                    value={i18n.language}
-                                    onChange={(e) => i18n.changeLanguage(e.target.value)}
-                                    className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                                >
-                                    <option value="en">English</option>
-                                    <option value="fr">Français</option>
-                                </select>
-                            </div>
+                            <LanguageSelector />
 
                             <button
                                 onClick={handleLogout}
