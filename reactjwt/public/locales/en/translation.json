@@ -246,5 +246,29 @@
       "size": "The PDF exceeds the maximum size of {{max}}MB.",
       "serverError": "Error uploading CV."
     }
+  },
+  "pendingCvList": {
+    "loading": "Loading pending CVs...",
+    "noPending": "No pending CVs",
+    "title": "Pending CVs",
+    "subtitle": "Manage submitted CVs ({{count}})",
+    "unknownStudent": "Unknown student",
+    "commentPlaceholder": "Comment (required for rejection)",
+    "table": {
+      "student": "Student",
+      "cv": "CV",
+      "comment": "Comment",
+      "actions": "Actions"
+    },
+    "actions": {
+      "download": "Download CV",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "errors": {
+      "serverError": "Error loading CVs",
+      "commentRequired": "You must write a comment before rejecting a CV",
+      "download": "Error downloading CV"
+    }
   }
 }

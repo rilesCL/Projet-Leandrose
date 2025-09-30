@@ -246,5 +246,29 @@
       "size": "Le PDF dépasse la taille maximale de {{max}}MB.",
       "serverError": "Erreur lors du téléversement."
     }
+  },
+  "pendingCvList": {
+    "loading": "Chargement des CVs en attente...",
+    "noPending": "Aucun CV en attente",
+    "title": "CVs en attente",
+    "subtitle": "Gérez les CVs soumis ({{count}})",
+    "unknownStudent": "Étudiant inconnu",
+    "commentPlaceholder": "Commentaire (requis pour rejet)",
+    "table": {
+      "student": "Étudiant",
+      "cv": "CV",
+      "comment": "Commentaire",
+      "actions": "Actions"
+    },
+    "actions": {
+      "download": "Télécharger CV",
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    },
+    "errors": {
+      "serverError": "Erreur lors du chargement des CVs",
+      "commentRequired": "Il faut écrire un commentaire avant de rejeter un CV",
+      "download": "Erreur lors du téléchargement du CV"
+    }
   }
 }
