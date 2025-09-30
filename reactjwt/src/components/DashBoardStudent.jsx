@@ -8,7 +8,8 @@ export default function DashBoardStudent() {
     const navigate = useNavigate()
 
     const handleLogout = () => {
-        sessionStorage.clear()
+        sessionStorage.clear();
+        localStorage.clear();
         navigate("/login", {replace: true})
     }
 
