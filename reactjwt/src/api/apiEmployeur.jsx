@@ -39,20 +39,14 @@ export async function uploadStageEmployeur(offer, pdfFile, token = null) {
             body: formData
         });
 
-        // handleFetch peut retourner soit un Response, soit le body déjà parsé.
         if (res && typeof res.json === 'function') {
-            // res est un Response -> retourner le JSON
             return await res.json();
         }
 
-        // res est probablement déjà le body parsé -> le renvoyer tel quel
         return res;
     } catch (err) {
-        // err a normalement la forme { response: { data: ... } }
-        // Log pour debug
         console.error('uploadStageEmployeur error', err);
 
-        // Rejeter une erreur structurée pour l'appelant (comportement similaire à axios)
         const message = err?.response?.data ?? err?.message ?? 'Erreur inconnue';
         throw { response: { data: message } };
     }

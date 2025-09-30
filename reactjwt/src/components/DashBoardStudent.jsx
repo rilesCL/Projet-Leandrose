@@ -28,7 +28,7 @@ export default function DashBoardStudent() {
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    setUserName(data.firstName || ""); // ou `${data.firstName} ${data.lastName}`
+                    setUserName(data.firstName || "");
                 } else {
                     navigate("/login");
                 }

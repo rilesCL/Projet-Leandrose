@@ -138,12 +138,12 @@ class RegisterControllerTest {
     @Test
     @DisplayName("POST /api/register/student returns 400 for invalid input")
     void testRegisterStudentInvalidInput() throws Exception {
-        // Arrange invalid request
+        // Arrange
         RegisterStudent request = new RegisterStudent();
-        request.setFirstName(""); // Invalid
+        request.setFirstName("");
         request.setLastName("Dupont");
         request.setEmail("invalid-email");
-        request.setPassword("weak"); // too weak
+        request.setPassword("weak");
         request.setStudentNumber("STU123");
         request.setProgram("");
 

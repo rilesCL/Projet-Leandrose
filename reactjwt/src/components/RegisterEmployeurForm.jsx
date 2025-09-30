@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { registerEmployeur } from "../api/apiRegister.jsx";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { registerEmployeur } from "../api/apiRegister.jsx";
 
 const initialState = {
     firstName: "",
     lastName: "",
     email: "",
     password: "",
+    confirmPassword: "",
     companyName: "",
     field: ""
 };
@@ -24,6 +25,9 @@ function validate(values, t) {
     if (!values.password) errors.password = t("registerEmployeur.errors.password");
     else if (values.password.length < 8)
         errors.password = t("registerEmployeur.errors.passwordLength");
+    if (!values.confirmPassword) errors.confirmPassword = t("registerEmployeur.errors.confirmPassword");
+    else if (values.confirmPassword !== values.password)
+        errors.confirmPassword = t("registerEmployeur.errors.passwordMismatch");
     return errors;
 }
 
@@ -51,64 +55,49 @@ export default function RegisterEmployeur() {
         e.preventDefault();
         setGlobalError("");
         setSuccessMessage("");
+
         const v = validate(form, t);
         setErrors(v);
         if (Object.keys(v).length > 0) return;
 
         setIsSubmitting(true);
+        const formData = { ...form }; // keep a copy before resetting
+
         try {
-            await registerEmployeur(form);
+            await registerEmployeur(formData);
             setSuccessMessage(t("registerEmployeur.success"));
             setForm(initialState);
             setErrors({});
 
-            // Récupérer le token pour redirection
-            const loginResponse = await fetch('http://localhost:8080/user/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: form.email, password: form.password })
+            // Auto-login
+            const loginResponse = await fetch("http://localhost:8080/user/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: formData.email, password: formData.password })
             });
 
             if (loginResponse.ok) {
                 const data = await loginResponse.json();
-                sessionStorage.setItem('accessToken', data.accessToken);
-                sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
+                sessionStorage.setItem("accessToken", data.accessToken);
+                sessionStorage.setItem("tokenType", data.tokenType || "BEARER");
 
-                const userInfoResponse = await fetch('http://localhost:8080/user/me', {
-                    method: 'GET',
+                const userInfoResponse = await fetch("http://localhost:8080/user/me", {
                     headers: { Authorization: `Bearer ${data.accessToken}` }
                 });
 
                 if (userInfoResponse.ok) {
                     const userData = await userInfoResponse.json();
-                    switch (userData.role) {
-                        case 'STUDENT':
-                            navigate("/dashboard/student");
-                            break;
-                        case 'EMPLOYEUR':
-                            navigate("/dashboard/employeur");
-                            break;
-                        case 'GESTIONNAIRE':
-                            navigate("/dashboard/gestionnaire");
-                            break;
-                        default:
-                            navigate("/dashboard");
-                    }
+                    if (userData.role === "EMPLOYEUR") navigate("/dashboard/employeur");
+                    else navigate("/dashboard");
                 }
             }
-
         } catch (err) {
-            if (err && err.response && err.response.data) {
-                const data = err.response.data;
-                setGlobalError(typeof data === "string" ? data : t("registerEmployeur.errors.unknown"));
-            } else {
-                setGlobalError(t("registerEmployeur.errors.serverError"));
-            }
+            console.error(err);
+            setGlobalError(t("registerEmployeur.errors.serverError"));
         } finally {
             setIsSubmitting(false);
         }
     };
-
 
     const handleReset = () => {
         setForm(initialState);
@@ -116,9 +105,6 @@ export default function RegisterEmployeur() {
         setGlobalError("");
         setSuccessMessage("");
     };
-
-    const inputClass = (field) =>
-        `mt-1 block w-full rounded-md shadow-sm border ${errors[field] ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500`;
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -158,152 +144,57 @@ export default function RegisterEmployeur() {
 
                     <form onSubmit={handleSubmit} noValidate>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* First Name */}
-                            <div>
-                                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                                    {t("registerEmployeur.firstName")}
-                                </label>
-                                <input
-                                    id="firstName"
-                                    type="text"
-                                    value={form.firstName}
-                                    onChange={handleChange}
-                                    className={inputClass("firstName")}
-                                    placeholder={t("registerEmployeur.placeholders.firstName")}
-                                />
-                                {errors.firstName && <p className="mt-1 text-xs text-red-600">{errors.firstName}</p>}
-                            </div>
-
-                            {/* Last Name */}
-                            <div>
-                                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                                    {t("registerEmployeur.lastName")}
-                                </label>
-                                <input
-                                    id="lastName"
-                                    type="text"
-                                    value={form.lastName}
-                                    onChange={handleChange}
-                                    className={inputClass("lastName")}
-                                    placeholder={t("registerEmployeur.placeholders.lastName")}
-                                />
-                                {errors.lastName && <p className="mt-1 text-xs text-red-600">{errors.lastName}</p>}
-                            </div>
-
-                            {/* Company Name */}
-                            <div>
-                                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
-                                    {t("registerEmployeur.companyName")}
-                                </label>
-                                <input
-                                    id="companyName"
-                                    type="text"
-                                    value={form.companyName}
-                                    onChange={handleChange}
-                                    className={inputClass("companyName")}
-                                    placeholder={t("registerEmployeur.placeholders.companyName")}
-                                />
-                                {errors.companyName && <p className="mt-1 text-xs text-red-600">{errors.companyName}</p>}
-                            </div>
-
-                            {/* Field */}
-                            <div>
-                                <label htmlFor="field" className="block text-sm font-medium text-gray-700">
-                                    {t("registerEmployeur.field")}
-                                </label>
-                                <input
-                                    id="field"
-                                    type="text"
-                                    value={form.field}
-                                    onChange={handleChange}
-                                    className={inputClass("field")}
-                                    placeholder={t("registerEmployeur.placeholders.field")}
-                                />
-                                {errors.field && <p className="mt-1 text-xs text-red-600">{errors.field}</p>}
-                            </div>
-
-                            {/* Email */}
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                    {t("registerEmployeur.email")}
-                                </label>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    className={inputClass("email")}
-                                    placeholder={t("registerEmployeur.placeholders.email")}
-                                />
-                                {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
-                            </div>
-
-                            {/* Password */}
-                            <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                    {t("registerEmployeur.password")}
-                                </label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={form.password}
-                                    onChange={handleChange}
-                                    className={inputClass("password")}
-                                    placeholder={t("registerEmployeur.placeholders.password")}
-                                />
-                                {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
-                            </div>
+                            <InputField id="firstName" label={t("registerEmployeur.firstName")} placeholder={t("registerEmployeur.placeholders.firstName")} value={form.firstName} onChange={handleChange} error={errors.firstName} />
+                            <InputField id="lastName" label={t("registerEmployeur.lastName")} placeholder={t("registerEmployeur.placeholders.lastName")} value={form.lastName} onChange={handleChange} error={errors.lastName} />
+                            <InputField id="companyName" label={t("registerEmployeur.companyName")} placeholder={t("registerEmployeur.placeholders.companyName")} value={form.companyName} onChange={handleChange} error={errors.companyName} />
+                            <InputField id="email" label={t("registerEmployeur.email")} placeholder={t("registerEmployeur.placeholders.email")} value={form.email} onChange={handleChange} error={errors.email} type="email" />
+                            <InputField id="field" className="md:col-span-2" label={t("registerEmployeur.field")} placeholder={t("registerEmployeur.placeholders.field")} value={form.field} onChange={handleChange} error={errors.field} />
+                            <InputField id="password" label={t("registerEmployeur.password")} placeholder={t("registerEmployeur.placeholders.password")} value={form.password} onChange={handleChange} error={errors.password} type="password" />
+                            <InputField id="confirmPassword" label={t("registerEmployeur.confirmPassword")} placeholder={t("registerEmployeur.placeholders.confirmPassword")} value={form.confirmPassword} onChange={handleChange} error={errors.confirmPassword} type="password" />
                         </div>
 
-                        {/* Buttons & Links */}
                         <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div className="flex gap-2">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${
-                                        isSubmitting
-                                            ? "bg-indigo-300"
-                                            : "bg-indigo-600 hover:bg-indigo-700"
-                                    }`}
-                                >
+                                <button type="submit" disabled={isSubmitting} className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}>
                                     {isSubmitting ? t("registerEmployeur.submitting") : t("registerEmployeur.submit")}
                                 </button>
-
-                                <button
-                                    type="button"
-                                    onClick={handleReset}
-                                    disabled={isSubmitting}
-                                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
-                                >
+                                <button type="button" onClick={handleReset} disabled={isSubmitting} className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50">
                                     {t("registerEmployeur.reset")}
                                 </button>
                             </div>
 
                             <div className="text-sm text-gray-500">
                                 {t("registerEmployeur.alreadyAccount")}{" "}
-                                <button
-                                    type="button"
-                                    onClick={() => navigate("/login")}
-                                    className="text-indigo-600 hover:underline"
-                                >
-                                    {t("registerEmployeur.login")}
-                                </button>
+                                <button type="button" onClick={() => navigate("/login")} className="text-indigo-600 hover:underline">{t("registerEmployeur.login")}</button>
                             </div>
                             <div className="text-sm text-gray-500">
                                 {t("registerEmployeur.studentAccount")}{" "}
-                                <button
-                                    type="button"
-                                    onClick={() => navigate("/register/etudiant")}
-                                    className="text-indigo-600 hover:underline"
-                                >
-                                    {t("registerEmployeur.createStudent")}
-                                </button>
+                                <button type="button" onClick={() => navigate("/register/etudiant")} className="text-indigo-600 hover:underline">{t("registerEmployeur.createStudent")}</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
+        </div>
+    );
+}
+
+function InputField({ id, label, placeholder, value, onChange, error, type = "text", className = "" }) {
+    const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500`;
+    return (
+        <div className={className}>
+            <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+            <input
+                id={id}
+                type={type}
+                value={value}
+                onChange={onChange}
+                className={inputClass}
+                placeholder={placeholder}
+                aria-invalid={!!error}
+                aria-describedby={error ? `${id}-error` : undefined}
+            />
+            {error && <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
     );
 }

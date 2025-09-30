@@ -9,13 +9,15 @@
     "field": "Secteur d'activité",
     "email": "Email professionnel",
     "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
     "placeholders": {
       "firstName": "Jean",
       "lastName": "Dupont",
       "companyName": "ACME SARL",
       "field": "Informatique, Santé...",
       "email": "contact@entreprise.com",
-      "password": "Au moins 8 caractères"
+      "password": "Au moins 8 caractères",
+      "confirmPassword": "Répétez votre mot de passe"
     },
     "submit": "S'inscrire",
     "submitting": "En cours...",
@@ -34,6 +36,8 @@
       "emailInvalid": "Email invalide",
       "password": "Mot de passe requis",
       "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "confirmPassword": "Veuillez confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
       "serverError": "Impossible de se connecter au serveur",
       "unknown": "Une erreur est survenue."
     }
@@ -47,13 +51,15 @@
     "program": "Programme",
     "email": "Email étudiant",
     "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
     "placeholders": {
       "firstName": "Jean",
       "lastName": "Dupont",
       "studentNumber": "123456",
       "program": "Informatique, Gestion...",
       "email": "prenom.nom@etu.email.ca",
-      "password": "Au moins 8 caractères"
+      "password": "Au moins 8 caractères",
+      "confirmPassword": "Répétez votre mot de passe"
     },
     "submit": "S'inscrire",
     "submitting": "En cours...",
@@ -72,11 +78,13 @@
       "emailInvalid": "Email invalide",
       "password": "Mot de passe requis",
       "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "confirmPassword": "Veuillez confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
       "serverError": "Impossible de se connecter au serveur",
       "unknown": "Une erreur est survenue."
     }
   },
-  "login": {
+"login": {
     "title": "Connexion",
     "subtitle": "Connectez-vous à votre compte pour accéder à votre espace personnel.",
     "email": "Email",

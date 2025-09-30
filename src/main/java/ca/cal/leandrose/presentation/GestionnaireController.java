@@ -31,13 +31,11 @@ public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
     private final CvRepository cvRepository;
 
-    // Approuver un CV
     @PostMapping("/cv/{cvId}/approve")
     public ResponseEntity<CvDto> approveCv(@PathVariable Long cvId) {
         return ResponseEntity.ok(gestionnaireService.approveCv(cvId));
     }
 
-    // Rejeter un CV avec commentaire
     @PostMapping("/cv/{cvId}/reject")
     public ResponseEntity<CvDto> rejectCv(
             @PathVariable Long cvId,
@@ -46,25 +44,21 @@ public class GestionnaireController {
         return ResponseEntity.ok(gestionnaireService.rejectCv(cvId, comment));
     }
 
-    // Liste des offres en attente
     @GetMapping("/offers/pending")
     public ResponseEntity<List<InternshipOffer>> getPendingOffers() {
         return ResponseEntity.ok(gestionnaireService.getPendingOffers());
     }
 
-    // Liste des CVs en attente
     @GetMapping("/cvs/pending")
     public ResponseEntity<List<CvDto>> getPendingCvs() {
         return ResponseEntity.ok(gestionnaireService.getPendingCvs());
     }
 
-    // Détail d'une offre
     @GetMapping("/offers/{id}")
     public ResponseEntity<InternshipOffer> getOfferDetails(@PathVariable Long id) {
         return ResponseEntity.ok(internshipOfferService.getOffer(id));
     }
 
-    // Télécharger un CV PDF
     @GetMapping("/cv/{cvId}/download")
     public ResponseEntity<Resource> downloadCv(@PathVariable Long cvId) throws IOException {
         Cv cv = cvRepository.findById(cvId)
@@ -83,7 +77,6 @@ public class GestionnaireController {
                 .body(resource);
     }
 
-    // Télécharger le PDF d'une offre
     @GetMapping("/offers/{id}/pdf")
     public ResponseEntity<byte[]> getOfferPdf(@PathVariable Long id) {
         try {
@@ -97,13 +90,11 @@ public class GestionnaireController {
         }
     }
 
-    // Approuver une offre
     @PostMapping("/offers/{id}/approve")
     public ResponseEntity<InternshipOffer> approveOffer(@PathVariable Long id) {
         return ResponseEntity.ok(gestionnaireService.approveOffer(id));
     }
 
-    // Rejeter une offre avec commentaire
     @PostMapping("/offers/{id}/reject")
     public ResponseEntity<InternshipOffer> rejectOffer(
             @PathVariable Long id,

@@ -15,7 +15,7 @@ public class TestSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable);  // Disable CSRF for simplicity
+                .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 }

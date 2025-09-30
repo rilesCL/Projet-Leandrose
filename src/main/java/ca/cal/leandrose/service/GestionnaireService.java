@@ -38,7 +38,7 @@ public class GestionnaireService {
         Cv cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new RuntimeException("Cv non trouvé"));
         cv.setStatus(Cv.Status.REJECTED);
-        cv.setRejectionComment(comment); // ✅ Save rejection comment
+        cv.setRejectionComment(comment);
         Cv saved = cvRepository.save(cv);
         return CvDto.create(saved);
     }

@@ -49,7 +49,6 @@ class InternshipOfferServiceTest {
                 .field("IT")
                 .build();
 
-        // Ensure base folder exists
         Path baseDir = Paths.get("uploads/offers/1");
         try {
             if (Files.exists(baseDir)) {
@@ -73,7 +72,7 @@ class InternshipOfferServiceTest {
 
     @Test
     void createOffer_validPdf_savesOffer() throws Exception {
-        // Arrange: generate a valid PDF in memory
+        // Arrange
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document();
         PdfWriter.getInstance(document, baos);
@@ -89,7 +88,7 @@ class InternshipOfferServiceTest {
         when(internshipOfferRepository.save(any(InternshipOffer.class)))
                 .thenAnswer(invocation -> {
                     InternshipOffer offer = invocation.getArgument(0);
-                    offer.setId(10L); // simulate DB persistence
+                    offer.setId(10L);
                     return offer;
                 });
 
@@ -109,7 +108,6 @@ class InternshipOfferServiceTest {
         assertThat(result.getId()).isEqualTo(10L);
         assertThat(result.getStatus()).isEqualTo("PENDING_VALIDATION");
 
-        // Path check: OS independent + timestamp tolerant
         String expectedDir = Paths.get("uploads", "offers", "1").toString();
         assertThat(result.getPdfPath()).contains(expectedDir);
         assertThat(result.getPdfPath()).contains("offer.pdf_");
@@ -121,7 +119,7 @@ class InternshipOfferServiceTest {
 
     @Test
     void createOffer_invalidPdf_throwsException() {
-        // Arrange: not a valid PDF
+        // Arrange
         MockMultipartFile invalidPdf = new MockMultipartFile(
                 "file", "bad.txt", "text/plain", "hello".getBytes()
         );

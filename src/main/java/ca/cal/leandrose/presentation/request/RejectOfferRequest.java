@@ -1,4 +1,3 @@
-// RejectOfferRequest.java
 package ca.cal.leandrose.presentation.request;
 
 import lombok.Data;

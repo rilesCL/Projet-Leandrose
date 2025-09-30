@@ -55,13 +55,10 @@ public class SecurityConfiguration {
                 )
 
 
-                // Stateless session management
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // JWT Filter
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 
-                // Exception handling
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
 
         return http.build();

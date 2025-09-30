@@ -8,6 +8,7 @@ const initialState = {
     lastName: "",
     email: "",
     password: "",
+    confirmPassword: "",
     studentNumber: "",
     program: "",
 };
@@ -21,9 +22,15 @@ function validate(values, t) {
     if (!values.email.trim()) errors.email = t("registerEtudiant.errors.email");
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
         errors.email = t("registerEtudiant.errors.emailInvalid");
+
     if (!values.password) errors.password = t("registerEtudiant.errors.password");
     else if (values.password.length < 8)
         errors.password = t("registerEtudiant.errors.passwordLength");
+
+    if (!values.confirmPassword) errors.confirmPassword = t("registerEtudiant.errors.confirmPassword");
+    else if (values.confirmPassword !== values.password)
+        errors.confirmPassword = t("registerEtudiant.errors.passwordMismatch");
+
     return errors;
 }
 
@@ -66,9 +73,8 @@ export default function RegisterEtudiant() {
             setSuccessMessage(t("registerEtudiant.success"));
             setForm(initialState);
             setErrors({});
+
             setTimeout(() => {
-                setSuccessMessage("");
-                // login automatique pour récupérer rôle
                 fetch('http://localhost:8080/user/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -78,7 +84,6 @@ export default function RegisterEtudiant() {
                     .then(data => {
                         sessionStorage.setItem('accessToken', data.accessToken);
                         sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
-
                         return fetch('http://localhost:8080/user/me', {
                             headers: { Authorization: `Bearer ${data.accessToken}` }
                         });
@@ -100,30 +105,19 @@ export default function RegisterEtudiant() {
         } catch (err) {
             if (err && err.response && err.response.data) {
                 const data = err.response.data;
-                if (typeof data === "string") {
-                    setGlobalError(data);
-                } else if (typeof data === "object") {
+                if (typeof data === "string") setGlobalError(data);
+                else if (typeof data === "object") {
                     setErrors(data);
                     const firstKey = Object.keys(data)[0];
                     const el = document.getElementById(firstKey);
                     if (el) el.focus();
                     const parts = [];
                     for (const key of Object.keys(data)) {
-                        parts.push(
-                            `${key}: ${
-                                typeof data[key] === "string"
-                                    ? data[key]
-                                    : JSON.stringify(data[key])
-                            }`
-                        );
+                        parts.push(`${key}: ${typeof data[key] === "string" ? data[key] : JSON.stringify(data[key])}`);
                     }
                     setGlobalError(parts.join(" · "));
-                } else {
-                    setGlobalError(t("registerEtudiant.errors.unknown"));
-                }
-            } else {
-                setGlobalError(t("registerEtudiant.errors.serverError"));
-            }
+                } else setGlobalError(t("registerEtudiant.errors.unknown"));
+            } else setGlobalError(t("registerEtudiant.errors.serverError"));
         } finally {
             setIsSubmitting(false);
         }
@@ -135,11 +129,6 @@ export default function RegisterEtudiant() {
         setGlobalError("");
         setSuccessMessage("");
     };
-
-    const inputClass = (field) =>
-        `mt-1 block w-full rounded-md shadow-sm border ${
-            errors[field] ? "border-red-500" : "border-gray-300"
-        } focus:ring-indigo-500 focus:border-indigo-500`;
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -166,272 +155,76 @@ export default function RegisterEtudiant() {
                     <p className="text-sm text-gray-500 mb-6">{t("registerEtudiant.subtitle")}</p>
 
                     {globalError && (
-                        <div
-                            role="alert"
-                            className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 p-3 rounded"
-                        >
+                        <div role="alert" className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 p-3 rounded">
                             {globalError}
                         </div>
                     )}
 
                     {successMessage && (
-                        <div
-                            role="status"
-                            className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 p-3 rounded"
-                        >
+                        <div role="status" className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 p-3 rounded">
                             {successMessage}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} noValidate>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label
-                                    htmlFor="firstName"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    {t("registerEtudiant.firstName")}
-                                </label>
-                                <input
-                                    id="firstName"
-                                    type="text"
-                                    value={form.firstName}
-                                    onChange={handleChange}
-                                    className={inputClass("firstName")}
-                                    placeholder={t("registerEtudiant.placeholders.firstName")}
-                                    aria-invalid={!!errors.firstName}
-                                    aria-describedby={
-                                        errors.firstName ? "firstName-error" : undefined
-                                    }
-                                />
-                                {errors.firstName && (
-                                    <p
-                                        id="firstName-error"
-                                        role="alert"
-                                        className="mt-1 text-xs text-red-600"
-                                    >
-                                        {errors.firstName}
-                                    </p>
-                                )}
-                            </div>
+                            <InputField id="firstName" label={t("registerEtudiant.firstName")} placeholder={t("registerEtudiant.placeholders.firstName")} value={form.firstName} onChange={handleChange} error={errors.firstName} />
 
-                            <div>
-                                <label
-                                    htmlFor="lastName"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    {t("registerEtudiant.lastName")}
-                                </label>
-                                <input
-                                    id="lastName"
-                                    type="text"
-                                    value={form.lastName}
-                                    onChange={handleChange}
-                                    className={inputClass("lastName")}
-                                    placeholder={t("registerEtudiant.placeholders.lastName")}
-                                    aria-invalid={!!errors.lastName}
-                                    aria-describedby={errors.lastName ? "lastName-error" : undefined}
-                                />
-                                {errors.lastName && (
-                                    <p
-                                        id="lastName-error"
-                                        role="alert"
-                                        className="mt-1 text-xs text-red-600"
-                                    >
-                                        {errors.lastName}
-                                    </p>
-                                )}
-                            </div>
+                            <InputField id="lastName" label={t("registerEtudiant.lastName")} placeholder={t("registerEtudiant.placeholders.lastName")} value={form.lastName} onChange={handleChange} error={errors.lastName} />
 
-                            <div>
-                                <label
-                                    htmlFor="studentNumber"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    {t("registerEtudiant.studentNumber")}
-                                </label>
-                                <input
-                                    id="studentNumber"
-                                    type="text"
-                                    value={form.studentNumber}
-                                    onChange={handleChange}
-                                    className={inputClass("studentNumber")}
-                                    placeholder={t("registerEtudiant.placeholders.studentNumber")}
-                                    aria-invalid={!!errors.studentNumber}
-                                    aria-describedby={
-                                        errors.studentNumber ? "studentNumber-error" : undefined
-                                    }
-                                />
-                                {errors.studentNumber && (
-                                    <p
-                                        id="studentNumber-error"
-                                        role="alert"
-                                        className="mt-1 text-xs text-red-600"
-                                    >
-                                        {errors.studentNumber}
-                                    </p>
-                                )}
-                            </div>
+                            <InputField id="studentNumber" label={t("registerEtudiant.studentNumber")} placeholder={t("registerEtudiant.placeholders.studentNumber")} value={form.studentNumber} onChange={handleChange} error={errors.studentNumber} />
 
-                            <div>
-                                <label
-                                    htmlFor="program"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    {t("registerEtudiant.program")}
-                                </label>
-                                <input
-                                    id="program"
-                                    type="text"
-                                    value={form.program}
-                                    onChange={handleChange}
-                                    className={inputClass("program")}
-                                    placeholder={t("registerEtudiant.placeholders.program")}
-                                    aria-invalid={!!errors.program}
-                                    aria-describedby={errors.program ? "program-error" : undefined}
-                                />
-                                {errors.program && (
-                                    <p
-                                        id="program-error"
-                                        role="alert"
-                                        className="mt-1 text-xs text-red-600"
-                                    >
-                                        {errors.program}
-                                    </p>
-                                )}
-                            </div>
+                            <InputField id="email" label={t("registerEtudiant.email")} placeholder={t("registerEtudiant.placeholders.email")} value={form.email} onChange={handleChange} error={errors.email} type="email" />
 
-                            <div>
-                                <label
-                                    htmlFor="email"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    {t("registerEtudiant.email")}
-                                </label>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    className={inputClass("email")}
-                                    placeholder={t("registerEtudiant.placeholders.email")}
-                                    aria-invalid={!!errors.email}
-                                    aria-describedby={errors.email ? "email-error" : undefined}
-                                />
-                                {errors.email && (
-                                    <p
-                                        id="email-error"
-                                        role="alert"
-                                        className="mt-1 text-xs text-red-600"
-                                    >
-                                        {errors.email}
-                                    </p>
-                                )}
-                            </div>
+                            <InputField id="program" label={t("registerEtudiant.program")} placeholder={t("registerEtudiant.placeholders.program")} value={form.program} onChange={handleChange} error={errors.program} fullWidth />
 
-                            <div>
-                                <label
-                                    htmlFor="password"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    {t("registerEtudiant.password")}
-                                </label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={form.password}
-                                    onChange={handleChange}
-                                    className={inputClass("password")}
-                                    placeholder={t("registerEtudiant.placeholders.password")}
-                                    aria-invalid={!!errors.password}
-                                    aria-describedby={errors.password ? "password-error" : undefined}
-                                />
-                                {errors.password && (
-                                    <p
-                                        id="password-error"
-                                        role="alert"
-                                        className="mt-1 text-xs text-red-600"
-                                    >
-                                        {errors.password}
-                                    </p>
-                                )}
-                            </div>
+                            <InputField id="password" label={t("registerEtudiant.password")} placeholder={t("registerEtudiant.placeholders.password")} value={form.password} onChange={handleChange} error={errors.password} type="password" />
+
+                            <InputField id="confirmPassword" label={t("registerEtudiant.confirmPassword")} placeholder={t("registerEtudiant.placeholders.confirmPassword")} value={form.confirmPassword} onChange={handleChange} error={errors.confirmPassword} type="password" />
                         </div>
 
                         <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div className="flex gap-2">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${
-                                        isSubmitting
-                                            ? "bg-indigo-300"
-                                            : "bg-indigo-600 hover:bg-indigo-700"
-                                    }`}
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <svg
-                                                className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <circle
-                                                    className="opacity-25"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="currentColor"
-                                                    strokeWidth="4"
-                                                ></circle>
-                                                <path
-                                                    className="opacity-75"
-                                                    fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                                                ></path>
-                                            </svg>
-                                            {t("registerEtudiant.submitting")}
-                                        </>
-                                    ) : (
-                                        t("registerEtudiant.submit")
-                                    )}
+                                <button type="submit" disabled={isSubmitting} className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}>
+                                    {isSubmitting ? t("registerEtudiant.submitting") : t("registerEtudiant.submit")}
                                 </button>
-
-                                <button
-                                    type="button"
-                                    onClick={handleReset}
-                                    disabled={isSubmitting}
-                                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
-                                >
+                                <button type="button" onClick={handleReset} disabled={isSubmitting} className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50">
                                     {t("registerEtudiant.reset")}
                                 </button>
                             </div>
 
                             <div className="text-sm text-gray-500">
                                 {t("registerEtudiant.alreadyAccount")}{" "}
-                                <button
-                                    type="button"
-                                    onClick={() => navigate("/login")}
-                                    className="text-indigo-600 hover:underline"
-                                >
-                                    {t("registerEtudiant.login")}
-                                </button>
+                                <button type="button" onClick={() => navigate("/login")} className="text-indigo-600 hover:underline">{t("registerEtudiant.login")}</button>
                             </div>
                             <div className="text-sm text-gray-500">
                                 {t("registerEtudiant.employerAccount")}{" "}
-                                <button
-                                    type="button"
-                                    onClick={() => navigate("/register/employeur")}
-                                    className="text-indigo-600 hover:underline"
-                                >
-                                    {t("registerEtudiant.createEmployer")}
-                                </button>
+                                <button type="button" onClick={() => navigate("/register/employeur")} className="text-indigo-600 hover:underline">{t("registerEtudiant.createEmployer")}</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
+        </div>
+    );
+}
+
+function InputField({ id, label, placeholder, value, onChange, error, type = "text", fullWidth }) {
+    const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500`;
+    return (
+        <div className={fullWidth ? "md:col-span-2" : ""}>
+            <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+            <input
+                id={id}
+                type={type}
+                value={value}
+                onChange={onChange}
+                className={inputClass}
+                placeholder={placeholder}
+                aria-invalid={!!error}
+                aria-describedby={error ? `${id}-error` : undefined}
+            />
+            {error && <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
     );
 }

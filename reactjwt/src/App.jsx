@@ -16,21 +16,17 @@ function App() {
     const router = createBrowserRouter(
         createRoutesFromElements(
             <Route path="/" element={<RouteLayout />}>
-                {/* Login/Registration routes */}
                 <Route index element={<Navigate to="/login" replace />} />
                 <Route path="register/etudiant" element={<RegisterEtudiant />} />
                 <Route path="register/employeur" element={<RegisterEmployeur />} />
                 <Route path="login" element={<Login />} />
 
-                {/* Employeur routes */}
                 <Route path="dashboard/employeur" element={<DashBoardEmployeur />} />
                 <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur />} />
 
-                {/* Student routes */}
                 <Route path="dashboard/student" element={<DashBoardStudent />} />
                 <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />
 
-                {/* Other dashboards */}
                 <Route path="dashboard" element={<h1>DashBoard</h1>} />
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />

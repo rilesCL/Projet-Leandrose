@@ -64,10 +64,8 @@ class StudentServiceTest {
         assertEquals("STU001", dto.getStudentNumber());
         assertEquals("Computer Science", dto.getProgram());
 
-        // Verify that passwordEncoder.encode was called
         verify(passwordEncoder).encode(rawPassword);
 
-        // Verify that studentRepository.save was called with correct data
         ArgumentCaptor<Student> captor = ArgumentCaptor.forClass(Student.class);
         verify(studentRepository).save(captor.capture());
         assertEquals(encodedPassword, captor.getValue().getPassword());

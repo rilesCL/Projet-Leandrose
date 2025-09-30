@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @WebMvcTest(controllers = UserController.class)
-@AutoConfigureMockMvc(addFilters = false) // disable security
+@AutoConfigureMockMvc(addFilters = false)
 class UserControllerTest {
 
     @Autowired
