@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+
 export default function RegisterLanding() {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
