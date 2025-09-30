@@ -270,5 +270,38 @@
       "commentRequired": "Il faut écrire un commentaire avant de rejeter un CV",
       "download": "Erreur lors du téléchargement du CV"
     }
+  },
+  "pendingOffers": {
+    "loading": "Chargement des offres en attente...",
+    "noPending": "Aucune offre en attente",
+    "title": "Offres en attente",
+    "subtitle": "Gérez les offres en attente ({{count}})",
+    "unknownTitle": "Titre non disponible",
+    "unknownCompany": "Entreprise inconnue",
+    "noDate": "Non définie",
+    "commentPlaceholder": "Commentaire (requis pour rejet)",
+    "table": {
+      "title": "Titre",
+      "company": "Entreprise",
+      "status": "Statut",
+      "comment": "Commentaire",
+      "actions": "Actions"
+    },
+    "actions": {
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "downloadPdf": "Télécharger PDF"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Publiée",
+      "rejected": "Rejetée",
+      "unknown": "Inconnu"
+    },
+    "errors": {
+      "serverError": "Erreur lors du chargement des offres",
+      "commentRequired": "Il faut écrire un commentaire avant de rejeter l'offre",
+      "download": "Erreur lors du téléchargement de l'offre"
+    }
   }
 }

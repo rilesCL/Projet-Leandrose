@@ -270,5 +270,38 @@
       "commentRequired": "You must write a comment before rejecting a CV",
       "download": "Error downloading CV"
     }
+  },
+  "pendingOffers": {
+    "loading": "Loading pending offers...",
+    "noPending": "No pending offers",
+    "title": "Pending Offers",
+    "subtitle": "Manage pending offers ({{count}})",
+    "unknownTitle": "Title not available",
+    "unknownCompany": "Unknown company",
+    "noDate": "Not defined",
+    "commentPlaceholder": "Comment (required for rejection)",
+    "table": {
+      "title": "Title",
+      "company": "Company",
+      "status": "Status",
+      "comment": "Comment",
+      "actions": "Actions"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "downloadPdf": "Download PDF"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Published",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "errors": {
+      "serverError": "Error loading offers",
+      "commentRequired": "You must write a comment before rejecting an offer",
+      "download": "Error downloading the offer"
+    }
   }
 }
