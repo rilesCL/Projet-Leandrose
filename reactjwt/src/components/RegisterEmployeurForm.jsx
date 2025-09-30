@@ -61,39 +61,28 @@ export default function RegisterEmployeur() {
         if (Object.keys(v).length > 0) return;
 
         setIsSubmitting(true);
-        const formData = { ...form }; // keep a copy before resetting
+        const formData = { ...form };
 
         try {
             await registerEmployeur(formData);
             setSuccessMessage(t("registerEmployeur.success"));
             setForm(initialState);
             setErrors({});
-
-            // Auto-login
-            const loginResponse = await fetch("http://localhost:8080/user/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: formData.email, password: formData.password })
-            });
-
-            if (loginResponse.ok) {
-                const data = await loginResponse.json();
-                sessionStorage.setItem("accessToken", data.accessToken);
-                sessionStorage.setItem("tokenType", data.tokenType || "BEARER");
-
-                const userInfoResponse = await fetch("http://localhost:8080/user/me", {
-                    headers: { Authorization: `Bearer ${data.accessToken}` }
-                });
-
-                if (userInfoResponse.ok) {
-                    const userData = await userInfoResponse.json();
-                    if (userData.role === "EMPLOYEUR") navigate("/dashboard/employeur");
-                    else navigate("/dashboard");
-                }
-            }
+            setTimeout(() => {
+                setSuccessMessage("");
+                navigate("/login");
+            }, 1500);
         } catch (err) {
             console.error(err);
-            setGlobalError(t("registerEmployeur.errors.serverError"));
+            const message = err.response?.data;
+
+            const errorText = typeof message === 'object' ? message.error : message;
+
+            if (errorText?.includes("déjà utilisé")) {
+                setGlobalError(t("registerEmployeur.errors.emailUsed"));
+            } else {
+                setGlobalError(errorText || t("registerEmployeur.errors.serverError"));
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -180,7 +169,7 @@ export default function RegisterEmployeur() {
 }
 
 function InputField({ id, label, placeholder, value, onChange, error, type = "text", className = "" }) {
-    const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500`;
+    const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
     return (
         <div className={className}>
             <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>

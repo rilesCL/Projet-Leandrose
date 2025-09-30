@@ -27,22 +27,23 @@ public class EmployeurService {
             String companyName,
             String field
     ) {
-        try{
-            Employeur employeur = Employeur.builder()
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .password(passwordEncoder.encode(rawPassword))
-                    .companyName(companyName)
-                    .field(field)
-                    .build();
+        if (employeurRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Cet email est déjà utilisé");
+        }
 
-            Employeur savedEmployeur = employeurRepository.save(employeur);
-            return EmployeurDto.create(savedEmployeur);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+        Employeur employeur = Employeur.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .password(passwordEncoder.encode(rawPassword))
+                .companyName(companyName)
+                .field(field)
+                .build();
+
+        Employeur savedEmployeur = employeurRepository.save(employeur);
+        return EmployeurDto.create(savedEmployeur);
     }
-    }
+
     @Transactional
     public EmployeurDto getEmployeurById(Long id){
         if (id == null){

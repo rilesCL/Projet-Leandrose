@@ -105,19 +105,30 @@ export default function RegisterEtudiant() {
         } catch (err) {
             if (err && err.response && err.response.data) {
                 const data = err.response.data;
-                if (typeof data === "string") setGlobalError(data);
-                else if (typeof data === "object") {
+
+                const errorText = typeof data === 'object' ? data.error : data;
+
+                if (typeof errorText === "string") {
+                    if (errorText.includes("déjà utilisé")) {
+                        setGlobalError(t("registerEtudiant.errors.emailUsed"));
+                    } else {
+                        setGlobalError(errorText);
+                    }
+                } else if (typeof data === "object" && !data.error) {
                     setErrors(data);
                     const firstKey = Object.keys(data)[0];
                     const el = document.getElementById(firstKey);
                     if (el) el.focus();
-                    const parts = [];
-                    for (const key of Object.keys(data)) {
-                        parts.push(`${key}: ${typeof data[key] === "string" ? data[key] : JSON.stringify(data[key])}`);
-                    }
+                    const parts = Object.keys(data).map(
+                        key => `${key}: ${typeof data[key] === "string" ? data[key] : JSON.stringify(data[key])}`
+                    );
                     setGlobalError(parts.join(" · "));
-                } else setGlobalError(t("registerEtudiant.errors.unknown"));
-            } else setGlobalError(t("registerEtudiant.errors.serverError"));
+                } else {
+                    setGlobalError(t("registerEtudiant.errors.unknown"));
+                }
+            } else {
+                setGlobalError(t("registerEtudiant.errors.serverError"));
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -186,7 +197,17 @@ export default function RegisterEtudiant() {
                         <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div className="flex gap-2">
                                 <button type="submit" disabled={isSubmitting} className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}>
-                                    {isSubmitting ? t("registerEtudiant.submitting") : t("registerEtudiant.submit")}
+                                    {isSubmitting ? (
+                                        <>
+                                            <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                            </svg>
+                                            {t("registerEtudiant.submitting")}
+                                        </>
+                                    ) : (
+                                        t("registerEtudiant.submit")
+                                    )}
                                 </button>
                                 <button type="button" onClick={handleReset} disabled={isSubmitting} className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50">
                                     {t("registerEtudiant.reset")}
@@ -210,7 +231,7 @@ export default function RegisterEtudiant() {
 }
 
 function InputField({ id, label, placeholder, value, onChange, error, type = "text", fullWidth }) {
-    const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500`;
+    const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
     return (
         <div className={fullWidth ? "md:col-span-2" : ""}>
             <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>

@@ -38,6 +38,7 @@
       "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
       "confirmPassword": "Veuillez confirmer votre mot de passe",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "emailUsed": "Cet email est déjà utilisé",
       "serverError": "Impossible de se connecter au serveur",
       "unknown": "Une erreur est survenue."
     }
@@ -80,6 +81,7 @@
       "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
       "confirmPassword": "Veuillez confirmer votre mot de passe",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "emailUsed": "Cet email est déjà utilisé",
       "serverError": "Impossible de se connecter au serveur",
       "unknown": "Une erreur est survenue."
     }

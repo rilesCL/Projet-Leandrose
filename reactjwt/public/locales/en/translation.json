@@ -39,6 +39,7 @@
       "confirmPassword": "Please confirm your password",
       "passwordMismatch": "Passwords do not match",
       "serverError": "Unable to connect to the server",
+      "emailUsed": "Email is already in use",
       "unknown": "An error occurred."
     }
   },
@@ -80,6 +81,7 @@
       "passwordLength": "Password must be at least 8 characters",
       "confirmPassword": "Please confirm your password",
       "passwordMismatch": "Passwords do not match",
+        "emailUsed": "Email is already in use",
       "serverError": "Unable to connect to the server",
       "unknown": "An error occurred."
     }

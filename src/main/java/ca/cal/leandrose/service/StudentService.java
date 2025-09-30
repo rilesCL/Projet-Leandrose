@@ -27,23 +27,23 @@ public class StudentService {
             String rawPassword,
             String studentNumber,
             String program
-    ){
-        try{
-            Student student = Student.builder()
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .password(passwordEncoder.encode(rawPassword))
-                    .studentNumber(studentNumber)
-                    .program(program)
-                    .build();
-            Student savedStudent = studentRepository.save(student);
-            return StudentDto.create(savedStudent);
-        } catch(Exception e){
-            throw new RuntimeException(e);
+    ) {
+        if (studentRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Cet email est déjà utilisé");
         }
-    }
 
+        Student student = Student.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .password(passwordEncoder.encode(rawPassword))
+                .studentNumber(studentNumber)
+                .program(program)
+                .build();
+
+        Student savedStudent = studentRepository.save(student);
+        return StudentDto.create(savedStudent);
+    }
     @Transactional
     public StudentDto getStudentById(Long id) {
         if (id == null) {
