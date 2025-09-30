@@ -24,6 +24,10 @@ public interface InternshipOfferRepository extends JpaRepository<InternshipOffer
     """)
     List<InternshipOffer> findByStatusWithEmployeur(@Param("status") InternshipOffer.Status status);
 
-    // AJOUTER: Méthode simple pour filtrer par statut
+    @Query("""
+        select o from InternshipOffer o
+        where o.status = :status
+        order by o.startDate desc
+    """)
     List<InternshipOffer> findByStatusOrderByStartDateDesc(InternshipOffer.Status status);
 }

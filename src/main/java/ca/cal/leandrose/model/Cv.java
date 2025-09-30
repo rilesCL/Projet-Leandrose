@@ -21,6 +21,7 @@ public class Cv {
 
     private Student student;
     private String pdfPath;
+    private String rejectionComment;
 
     public enum Status {
         APPROVED, PENDING, REJECTED

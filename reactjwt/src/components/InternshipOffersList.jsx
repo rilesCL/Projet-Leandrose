@@ -13,7 +13,7 @@ export default function InternshipOffersList() {
             setError(null);
 
             try {
-                const token = localStorage.getItem("accessToken");
+                const token = sessionStorage.getItem("accessToken");
                 const response = await fetch(`${API_BASE}/employeur/offers`, {
                     method: 'GET',
                     headers: {
@@ -89,7 +89,7 @@ export default function InternshipOffersList() {
 
     const handleDownloadOffer = async (offerId, description) => {
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = sessionStorage.getItem("accessToken");
             const response = await fetch(`${API_BASE}/employeur/offers/${offerId}/download`, {
                 method: 'GET',
                 headers: {

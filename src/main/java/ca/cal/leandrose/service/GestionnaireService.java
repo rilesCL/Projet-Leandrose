@@ -1,6 +1,5 @@
 package ca.cal.leandrose.service;
 
-
 import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.model.Gestionnaire;
 import ca.cal.leandrose.model.InternshipOffer;
@@ -26,26 +25,25 @@ public class GestionnaireService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public CvDto approveCv(Long cvId){
+    public CvDto approveCv(Long cvId) {
         Cv cv = cvRepository.findById(cvId)
-                .orElseThrow(()-> new RuntimeException("Cv non trouvé"));
+                .orElseThrow(() -> new RuntimeException("Cv non trouvé"));
         cv.setStatus(Cv.Status.APPROVED);
         Cv saved = cvRepository.save(cv);
-
         return CvDto.create(saved);
     }
 
     @Transactional
-    public CvDto rejectCv(Long cvId){
+    public CvDto rejectCv(Long cvId, String comment) {
         Cv cv = cvRepository.findById(cvId)
-                .orElseThrow(()-> new RuntimeException("Cv non trouvé"));
+                .orElseThrow(() -> new RuntimeException("Cv non trouvé"));
         cv.setStatus(Cv.Status.REJECTED);
+        cv.setRejectionComment(comment); // ✅ Save rejection comment
         Cv saved = cvRepository.save(cv);
-
         return CvDto.create(saved);
     }
 
-    public List<CvDto> getPendingCvs(){
+    public List<CvDto> getPendingCvs() {
         return cvRepository.findByStatus(Cv.Status.PENDING)
                 .stream()
                 .map(CvDto::create)
@@ -93,23 +91,17 @@ public class GestionnaireService {
 
     @Transactional
     public GestionnaireDto createGestionnaire(
-            String firstName, String lastName, String email, String rawPassword,
-            String matricule, String phoneNumber) {
+            String firstName, String lastName, String email, String rawPassword, String phoneNumber) {
 
-        try {
-            Gestionnaire gestionnaire = Gestionnaire.builder()
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .password(passwordEncoder.encode(rawPassword))
-                    .matricule(matricule)
-                    .phoneNumber(phoneNumber)
-                    .build();
+        Gestionnaire gestionnaire = Gestionnaire.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .password(passwordEncoder.encode(rawPassword))
+                .phoneNumber(phoneNumber)
+                .build();
 
-            Gestionnaire savedGestionnaire = gestionnaireRepository.save(gestionnaire);
-            return GestionnaireDto.create(savedGestionnaire);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Gestionnaire savedGestionnaire = gestionnaireRepository.save(gestionnaire);
+        return GestionnaireDto.create(savedGestionnaire);
     }
 }

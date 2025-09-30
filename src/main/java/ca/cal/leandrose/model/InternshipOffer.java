@@ -15,8 +15,6 @@ public class InternshipOffer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
 
     @Column(nullable = false, length = 50)
     private String description;
@@ -55,5 +53,13 @@ public class InternshipOffer {
 
     public enum Status {
         PENDING_VALIDATION, PUBLISHED, ASSIGNED, ARCHIVED, REJECTED
+    }
+
+    public Long getEmployeurId() {
+        return employeur != null ? employeur.getId() : null;
+    }
+
+    public String getCompanyName() {
+        return employeur != null ? employeur.getCompanyName() : null;
     }
 }

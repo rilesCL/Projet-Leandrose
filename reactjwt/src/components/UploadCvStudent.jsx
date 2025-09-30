@@ -73,7 +73,7 @@ export default function UploadCvStudent() {
 
         setSubmitting(true);
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = sessionStorage.getItem("accessToken");
             await uploadCv(pdfFile, token);
 
             setServerMessage("Votre CV a été téléversé avec succès.");
