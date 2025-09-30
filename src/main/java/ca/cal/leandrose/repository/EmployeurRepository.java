@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmployeurRepository extends JpaRepository<Employeur, Long> {
 
-    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END FROM Employeur e WHERE e.credentials.email = :email")
+    @Query("select case when count(e) > 0 then true else false end from Employeur e where e.credentials.email = :email")
     boolean existsByEmail(@Param("email") String email);
 }
