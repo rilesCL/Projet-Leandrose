@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import PendingCvPage from "./PendingCvPage";
-import PendingOffersPage from "./PendingOffersPage.jsx"; // unchanged
+import PendingOffersPage from "./PendingOffersPage.jsx";
+import LanguageSelector from "./LanguageSelector.jsx";
 
 export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
+    const [userName, setUserName] = useState("");
 
     const handleLogout = () => {
         sessionStorage.clear();
@@ -13,30 +17,66 @@ export default function DashBoardGestionnaire() {
         navigate("/login", { replace: true });
     };
 
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const token = sessionStorage.getItem('accessToken');
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+            try {
+                const res = await fetch('http://localhost:8080/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserName(data.firstName || "");
+                } else {
+                    navigate("/login");
+                }
+            } catch (error) {
+                console.error("User fetch error:", error);
+                navigate("/login");
+            }
+        };
+        fetchUserInfo();
+    }, [navigate]);
+
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <span className="text-xl font-bold text-indigo-600">LeandrOSE</span>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center text-gray-600 hover:text-red-600 transition"
-                        >
-                            <FaSignOutAlt className="mr-1" />
-                            <span className="hidden sm:inline">Logout</span>
-                        </button>
+                        <span className="text-xl font-bold text-indigo-600">{t("appName")}</span>
+
+                        <nav className="flex items-center space-x-4">
+                            <LanguageSelector />
+
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center text-gray-600 hover:text-red-600 transition"
+                            >
+                                <FaSignOutAlt className="mr-1" />
+                                <span className="hidden sm:inline">{t("dashboardGestionnaire.logout")}</span>
+                            </button>
+                        </nav>
                     </div>
                 </div>
             </header>
 
             <main className="py-10">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
                     <h1 className="text-2xl font-semibold text-gray-900 mb-4">
-                        Bienvenue Gestionnaire
+                        {t("dashboardGestionnaire.welcome")} {userName}!
                     </h1>
-
-                    {/* Show pending CVs immediately */}
+                    <div className="flex justify-center mb-6">
+                        <button
+                            onClick={() => navigate("/dashboard/gestionnaire/programs")}
+                            className="flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+                        >
+                            {t("dashboardGestionnaire.addProgram")}
+                        </button>
+                    </div>
                     <PendingCvPage />
                     <div className="my-8 border-t border-gray-300"></div>
                     <PendingOffersPage />

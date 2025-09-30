@@ -9,7 +9,6 @@ class UserAppTest {
 
     @Test
     void testUserAppGetters() {
-        // Using Employeur as a concrete implementation
         Employeur employeur = Employeur.builder()
                 .id(1L)
                 .firstName("John")
@@ -47,7 +46,6 @@ class UserAppTest {
 
     @Test
     void testUserAppGettersWithStudent() {
-        // Using Student as a concrete implementation
         Student student = Student.builder()
                 .id(2L)
                 .firstName("Marie")

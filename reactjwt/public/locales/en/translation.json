@@ -1,0 +1,361 @@
+{
+  "appName": "LeandrOSE",
+  "registerLanding": {
+    "subtitle": "Choose the type of account you want to create",
+    "student": {
+      "title": "Student",
+      "description": "Find your ideal internship",
+      "feature1": "Apply to internship offers",
+      "feature2": "Track your applications",
+      "feature3": "Manage your profile and resume",
+      "button": "Register as a student"
+    },
+    "employer": {
+      "title": "Employer",
+      "description": "Recruit the best talents",
+      "feature1": "Post internship offers",
+      "feature2": "Manage your candidates",
+      "feature3": "Find the right profiles",
+      "button": "Register as an employer"
+    },
+    "alreadyAccount": "Already have an account?",
+    "login": "Log in"
+  },
+  "registerEmployeur": {
+    "title": "Employer Registration",
+    "subtitle": "Create an employer account to post jobs and manage applicants.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "companyName": "Company name",
+    "field": "Industry",
+    "email": "Work email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "companyName": "ACME Ltd",
+      "field": "IT, Healthcare...",
+      "email": "contact@company.com",
+      "password": "At least 8 characters",
+      "confirmPassword": "Repeat your password"
+    },
+    "submit": "Sign up",
+    "submitting": "Submitting...",
+    "reset": "Reset",
+    "studentAccount": "Are you a student?",
+    "createStudent": "Create a student account",
+    "success": "Registration successful!",
+    "errors": {
+      "firstName": "First name is required",
+      "lastName": "Last name is required",
+      "companyName": "Company name is required",
+      "field": "Industry is required",
+      "email": "Email is required",
+      "emailInvalid": "Invalid email",
+      "password": "Password is required",
+      "passwordLength": "Password must be at least 8 characters",
+      "confirmPassword": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "serverError": "Unable to connect to the server",
+      "emailUsed": "Email is already in use",
+      "unknown": "An error occurred."
+    }
+  },
+  "registerEtudiant": {
+    "title": "Student Registration",
+    "subtitle": "Create a student account to apply for internships and track your applications.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "studentNumber": "Student number",
+    "program": "Program",
+    "email": "Student email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "studentNumber": "123456",
+      "program": "Computer Science, Business...",
+      "email": "firstname.lastname@stu.email.ca",
+      "password": "At least 8 characters",
+      "confirmPassword": "Repeat your password"
+    },
+    "submit": "Sign up",
+    "submitting": "Submitting...",
+    "reset": "Reset",
+    "employerAccount": "Are you an employer?",
+    "createEmployer": "Create an employer account",
+    "success": "Registration successful!",
+    "errors": {
+      "firstName": "First name is required",
+      "lastName": "Last name is required",
+      "studentNumber": "Student number is required",
+      "program": "Program is required",
+      "email": "Email is required",
+      "emailInvalid": "Invalid email",
+      "password": "Password is required",
+      "passwordLength": "Password must be at least 8 characters",
+      "confirmPassword": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+        "emailUsed": "Email is already in use",
+      "serverError": "Unable to connect to the server",
+      "unknown": "An error occurred."
+    }
+  },
+"login": {
+    "title": "Log in",
+    "subtitle": "Log in to your account to access your personal space.",
+    "email": "Email",
+    "password": "Password",
+    "placeholders": {
+      "email": "your.email@example.com",
+      "password": "Your password"
+    },
+    "submit": "Log in",
+    "submitting": "Logging in...",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account yet?",
+    "signUp": "Sign up",
+    "errors": {
+      "emailInvalid": "Invalid email",
+      "passwordRequired": "Password is required",
+      "invalidCredentials": "Invalid email or password",
+      "userNotFound": "User not found",
+      "connectionError": "Connection error",
+      "serverError": "Unable to connect to the server"
+    },
+    "forgotPasswordModal": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to receive a reset link.",
+      "email": "Email",
+      "submit": "Send",
+      "submitting": "Sending...",
+      "back": "Back",
+      "success": "A reset email has been sent to your address.",
+      "errors": {
+        "emailRequired": "Please enter your email",
+        "emailNotFound": "Email not found",
+        "sendError": "Error sending email"
+      }
+    }
+  },
+  "dashboardEmployeur": {
+    "logout": "Logout",
+    "welcome": "Welcome",
+    "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
+    "navigation": {
+      "mainNavigation": "Main navigation"
+    }
+  },
+  "dashboardGestionnaire": {
+    "logout": "Logout",
+    "welcome": "Welcome",
+    "addProgram": "Add Program"
+  },
+  "dashboardStudent": {
+    "logout": "Logout",
+    "welcome": "Welcome",
+    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers."
+  },
+  "programsList": {
+    "title": "Existing Programs",
+    "description": "View all academic programs currently registered in the system.",
+    "loading": "Loading programs...",
+    "error": "Error",
+    "errorFetch": "Unable to load programs.",
+    "errorServer": "Server connection error.",
+    "noPrograms": "No programs available",
+    "noProgramsDescription": "There are currently no programs registered in the system.",
+    "department": "Department",
+    "totalPrograms": "Total programs"
+  },
+  "addProgram": {
+    "pageTitle": "Program Management",
+    "back": "Back",
+    "newProgramTitle": "Add a New Program",
+    "newProgramDescription": "Create a new academic program to enrich the training offer.",
+    "programNameLabel": "Program name",
+    "programNamePlaceholder": "E.g.: Computer Science Techniques",
+    "submitButton": "Add program",
+    "submitting": "Adding...",
+    "successMessage": "Program added successfully!",
+    "errorEmptyName": "Program name cannot be empty.",
+    "errorAddProgram": "Error adding program.",
+    "errorServer": "Server connection error."
+  },
+  "internshipOffersList": {
+    "loading": "Loading your offers...",
+    "errorTitle": "Loading error",
+    "retry": "Retry",
+    "noOffersTitle": "No published offers",
+    "noOffersDescription": "You haven't published any internship offers yet. Create your first offer to attract candidates.",
+    "createOffer": "Create an offer",
+    "title": "My Internship Offers",
+    "subtitle": "Manage your published offers",
+    "offer": "offer",
+    "offers": "offers",
+    "table": {
+      "description": "Description",
+      "startDate": "Start date",
+      "duration": "Duration",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "published": "Published",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "notDefined": "Not defined",
+    "notSpecified": "Not specified",
+    "week": "week",
+    "weeks": "weeks",
+    "downloadError": "Error downloading the offer",
+    "createNewOffer": "Create a new offer",
+    "errors": {
+      "unauthorized": "You must be logged in to view your offers.",
+      "forbidden": "You do not have the necessary permissions.",
+      "serverError": "Unable to connect to the server. Check your internet connection."
+    }
+  },
+  "uploadStageEmployeur": {
+    "title": "Publish an internship offer",
+    "description": "Job description",
+    "descriptionPlaceholder": "Detailed job description...",
+    "startDate": "Start date (DD-MM-YYYY)",
+    "startDatePlaceholder": "DD-MM-YYYY",
+    "duration": "Duration (in weeks)",
+    "address": "Location (city, address, remote possible)",
+    "addressPlaceholder": "City, address, remote possible...",
+    "remuneration": "Remuneration (optional)",
+    "pdfDocument": "PDF document (required)",
+    "choosePdf": "Choose a PDF",
+    "noFileSelected": "No file selected. Maximum 5MB PDF.",
+    "remove": "Remove",
+    "submit": "Publish the offer",
+    "submitting": "Saving...",
+    "backToDashboard": "Back to dashboard",
+    "successMessage": "Offer saved successfully. Status:",
+    "statusPublished": "Published",
+    "statusPending": "Pending validation",
+    "errors": {
+      "description": "Description is required.",
+      "startDate": "Start date is required.",
+      "startDateFormat": "Date format must be DD-MM-YYYY.",
+      "duration": "Duration (in weeks) is required.",
+      "durationInvalid": "Duration must be a positive integer (number of weeks).",
+      "address": "Location (address) is required.",
+      "pdfRequired": "A PDF file is required.",
+      "pdfFormat": "The file must be a PDF.",
+      "pdfSize": "PDF exceeds maximum size of 5MB.",
+      "serverError": "Error during registration."
+    }
+  },
+  "studentCvList": {
+    "loading": "Loading your CVs...",
+    "errorTitle": "Loading error",
+    "retry": "Retry",
+    "unauthorized": "You must be logged in to view your CV.",
+    "forbidden": "You do not have the necessary permissions.",
+    "serverError": "Unable to connect to the server. Check your internet connection.",
+    "title": "My CVs",
+    "subtitle": "Manage your uploaded CVs",
+    "noCvTitle": "No CV uploaded",
+    "noCvDescription": "You haven't uploaded a CV yet. Upload your CV to apply for internships.",
+    "uploadCv": "Upload my CV",
+    "table": {
+      "file": "File",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "actions": {
+      "preview": "Preview",
+      "download": "Download",
+      "uploadNew": "Upload a new CV"
+    },
+    "downloadError": "Error downloading CV",
+    "previewError": "Error opening CV"
+  },
+  "uploadCvStudent": {
+    "title": "Upload my CV",
+    "fileLabel": "PDF file (required)",
+    "choosePdf": "Choose a PDF",
+    "noFileSelected": "No file selected. Maximum {{max}}MB PDF.",
+    "remove": "Remove",
+    "submit": "Upload my CV",
+    "submitting": "Uploading...",
+    "backToDashboard": "Back to dashboard",
+    "successMessage": "Your CV has been uploaded successfully.",
+    "errors": {
+      "required": "A PDF file is required.",
+      "format": "The file must be a PDF.",
+      "size": "The PDF exceeds the maximum size of {{max}}MB.",
+      "serverError": "Error uploading CV."
+    }
+  },
+  "pendingCvList": {
+    "loading": "Loading pending CVs...",
+    "noPending": "No pending CVs",
+    "title": "Pending CVs",
+    "subtitle": "Manage submitted CVs ({{count}})",
+    "unknownStudent": "Unknown student",
+    "commentPlaceholder": "Comment (required for rejection)",
+    "table": {
+      "student": "Student",
+      "cv": "CV",
+      "comment": "Comment",
+      "actions": "Actions"
+    },
+    "actions": {
+      "download": "Download CV",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "errors": {
+      "serverError": "Error loading CVs",
+      "commentRequired": "You must write a comment before rejecting a CV",
+      "download": "Error downloading CV"
+    }
+  },
+  "pendingOffers": {
+    "loading": "Loading pending offers...",
+    "noPending": "No pending offers",
+    "title": "Pending Offers",
+    "subtitle": "Manage pending offers ({{count}})",
+    "unknownTitle": "Title not available",
+    "unknownCompany": "Unknown company",
+    "noDate": "Not defined",
+    "commentPlaceholder": "Comment (required for rejection)",
+    "table": {
+      "title": "Title",
+      "company": "Company",
+      "status": "Status",
+      "comment": "Comment",
+      "actions": "Actions"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "downloadPdf": "Download PDF"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Published",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "errors": {
+      "serverError": "Error loading offers",
+      "commentRequired": "You must write a comment before rejecting an offer",
+      "download": "Error downloading the offer"
+    }
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "appName": "LeandrOSE",
+  "registerLanding": {
+    "subtitle": "Choisissez le type de compte que vous souhaitez créer",
+    "student": {
+      "title": "Étudiant",
+      "description": "Trouvez votre stage idéal",
+      "feature1": "Postulez aux offres de stage",
+      "feature2": "Suivez vos candidatures",
+      "feature3": "Gérez votre profil et CV",
+      "button": "S'inscrire en tant qu'étudiant"
+    },
+    "employer": {
+      "title": "Employeur",
+      "description": "Recrutez les meilleurs talents",
+      "feature1": "Publiez des offres de stage",
+      "feature2": "Gérez vos candidats",
+      "feature3": "Trouvez les bons profils",
+      "button": "S'inscrire en tant qu'employeur"
+    },
+    "alreadyAccount": "Vous avez déjà un compte ?",
+    "login": "Se connecter"
+  },
+  "registerEmployeur": {
+    "title": "Inscription Employeur",
+    "subtitle": "Créez un compte employeur pour publier des offres et gérer vos candidats.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "companyName": "Nom de l'entreprise",
+    "field": "Secteur d'activité",
+    "email": "Email professionnel",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "placeholders": {
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "companyName": "ACME SARL",
+      "field": "Informatique, Santé...",
+      "email": "contact@entreprise.com",
+      "password": "Au moins 8 caractères",
+      "confirmPassword": "Répétez votre mot de passe"
+    },
+    "submit": "S'inscrire",
+    "submitting": "En cours...",
+    "reset": "Réinitialiser",
+    "studentAccount": "Vous êtes étudiant ?",
+    "createStudent": "Créez un compte étudiant",
+    "success": "Inscription réussie !",
+    "errors": {
+      "firstName": "Prénom requis",
+      "lastName": "Nom requis",
+      "companyName": "Nom de l'entreprise requis",
+      "field": "Secteur d'activité requis",
+      "email": "Email requis",
+      "emailInvalid": "Email invalide",
+      "password": "Mot de passe requis",
+      "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "confirmPassword": "Veuillez confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "emailUsed": "Cet email est déjà utilisé",
+      "serverError": "Impossible de se connecter au serveur",
+      "unknown": "Une erreur est survenue."
+    }
+  },
+  "registerEtudiant": {
+    "title": "Inscription Étudiant",
+    "subtitle": "Créez un compte étudiant pour postuler aux offres de stage et suivre vos candidatures.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "studentNumber": "Numéro de matricule",
+    "program": "Programme",
+    "email": "Email étudiant",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "placeholders": {
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "studentNumber": "123456",
+      "program": "Informatique, Gestion...",
+      "email": "prenom.nom@etu.email.ca",
+      "password": "Au moins 8 caractères",
+      "confirmPassword": "Répétez votre mot de passe"
+    },
+    "submit": "S'inscrire",
+    "submitting": "En cours...",
+    "reset": "Réinitialiser",
+    "alreadyAccount": "Déjà un compte ?",
+    "login": "Se connecter",
+    "employerAccount": "Vous êtes employeur ?",
+    "createEmployer": "Créez un compte employeur",
+    "success": "Inscription réussie !",
+    "errors": {
+      "firstName": "Prénom requis",
+      "lastName": "Nom requis",
+      "studentNumber": "Numéro de matricule requis",
+      "program": "Programme requis",
+      "email": "Email requis",
+      "emailInvalid": "Email invalide",
+      "password": "Mot de passe requis",
+      "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "confirmPassword": "Veuillez confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "emailUsed": "Cet email est déjà utilisé",
+      "serverError": "Impossible de se connecter au serveur",
+      "unknown": "Une erreur est survenue."
+    }
+  },
+"login": {
+    "title": "Connexion",
+    "subtitle": "Connectez-vous à votre compte pour accéder à votre espace personnel.",
+    "email": "Email",
+    "password": "Mot de passe",
+    "placeholders": {
+      "email": "votre.email@exemple.com",
+      "password": "Votre mot de passe"
+    },
+    "submit": "Se connecter",
+    "submitting": "Connexion...",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ?",
+    "signUp": "S'inscrire",
+    "errors": {
+      "emailInvalid": "Email invalide",
+      "passwordRequired": "Mot de passe requis",
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "userNotFound": "Utilisateur introuvable",
+      "connectionError": "Erreur de connexion",
+      "serverError": "Impossible de se connecter au serveur"
+    },
+    "forgotPasswordModal": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Entrez votre email pour recevoir un lien de réinitialisation.",
+      "email": "Email",
+      "submit": "Envoyer",
+      "submitting": "Envoi...",
+      "success": "Un email de réinitialisation a été envoyé à votre adresse.",
+      "errors": {
+        "emailRequired": "Veuillez entrer votre email",
+        "emailNotFound": "Email non trouvé",
+        "sendError": "Erreur lors de l'envoi de l'email"
+      }
+    }
+  },
+  "dashboardEmployeur": {
+    "logout": "Se déconnecter",
+    "welcome": "Bienvenue",
+    "description": "Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.",
+    "navigation": {
+      "mainNavigation": "Navigation principale"
+    }
+  },
+  "dashboardGestionnaire": {
+    "logout": "Se déconnecter",
+    "welcome": "Bienvenue",
+    "addProgram": "Ajouter un programme"
+  },
+  "dashboardStudent": {
+    "logout": "Se déconnecter",
+    "welcome": "Bienvenue",
+    "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage."
+  },
+  "programsList": {
+    "title": "Programmes Existants",
+    "description": "Consultez tous les programmes académiques actuellement enregistrés dans le système.",
+    "loading": "Chargement des programmes...",
+    "error": "Erreur",
+    "errorFetch": "Impossible de charger les programmes.",
+    "errorServer": "Erreur de connexion au serveur.",
+    "noPrograms": "Aucun programme disponible",
+    "noProgramsDescription": "Il n'y a actuellement aucun programme enregistré dans le système.",
+    "department": "Département",
+    "totalPrograms": "Total des programmes"
+  },
+  "addProgram": {
+    "pageTitle": "Gestion des Programmes",
+    "back": "Retour",
+    "newProgramTitle": "Ajouter un Nouveau Programme",
+    "newProgramDescription": "Créez un nouveau programme académique pour enrichir l'offre de formation.",
+    "programNameLabel": "Nom du programme",
+    "programNamePlaceholder": "Ex: Techniques de l'informatique",
+    "submitButton": "Ajouter le programme",
+    "submitting": "Ajout en cours...",
+    "successMessage": "Programme ajouté avec succès !",
+    "errorEmptyName": "Le nom du programme ne peut pas être vide.",
+    "errorAddProgram": "Erreur lors de l'ajout du programme.",
+    "errorServer": "Erreur de connexion au serveur."
+  },
+  "internshipOffersList": {
+    "loading": "Chargement de vos offres...",
+    "errorTitle": "Erreur de chargement",
+    "retry": "Réessayer",
+    "noOffersTitle": "Aucune offre publiée",
+    "noOffersDescription": "Vous n'avez pas encore publié d'offres de stage. Créez votre première offre pour attirer des candidats.",
+    "createOffer": "Créer une offre",
+    "title": "Mes Offres de Stage",
+    "subtitle": "Gérez vos offres publiées",
+    "offer": "offre",
+    "offers": "offres",
+    "table": {
+      "description": "Description",
+      "startDate": "Date de début",
+      "duration": "Durée",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "En attente",
+      "published": "Publiée",
+      "rejected": "Rejetée",
+      "unknown": "Inconnu"
+    },
+    "notDefined": "Non définie",
+    "notSpecified": "Lieu non spécifié",
+    "week": "semaine",
+    "weeks": "semaines",
+    "downloadError": "Erreur lors du téléchargement de l'offre",
+    "createNewOffer": "Créer une nouvelle offre",
+    "errors": {
+      "unauthorized": "Vous devez être connecté pour voir vos offres.",
+      "forbidden": "Vous n'avez pas les permissions nécessaires.",
+      "serverError": "Impossible de se connecter au serveur. Vérifiez votre connexion internet."
+    }
+  },
+  "uploadStageEmployeur": {
+    "title": "Publier une offre de stage",
+    "description": "Description du poste",
+    "descriptionPlaceholder": "Description détaillée du poste...",
+    "startDate": "Date de début (JJ-MM-AAAA)",
+    "startDatePlaceholder": "JJ-MM-AAAA",
+    "duration": "Durée (en semaines)",
+    "address": "Localisation (ville, adresse, télétravail possible)",
+    "addressPlaceholder": "Ville, adresse, télétravail possible...",
+    "remuneration": "Rémunération (facultatif)",
+    "pdfDocument": "Document PDF (obligatoire)",
+    "choosePdf": "Choisir un PDF",
+    "noFileSelected": "Aucun fichier sélectionné. PDF maximum 5MB.",
+    "remove": "Supprimer",
+    "submit": "Publier l'offre",
+    "submitting": "Enregistrement...",
+    "backToDashboard": "Retour au dashboard",
+    "successMessage": "Offre enregistrée avec succès. Statut:",
+    "statusPublished": "Publiée",
+    "statusPending": "En attente de validation",
+    "errors": {
+      "description": "La description est obligatoire.",
+      "startDate": "La date de début est obligatoire.",
+      "startDateFormat": "Le format de la date doit être JJ-MM-YYYY.",
+      "duration": "La durée (en semaines) est obligatoire.",
+      "durationInvalid": "La durée doit être un entier positif (nombre de semaines).",
+      "address": "La localisation (adresse) est obligatoire.",
+      "pdfRequired": "Un fichier PDF est requis.",
+      "pdfFormat": "Le fichier doit être un PDF.",
+      "pdfSize": "Le PDF dépasse la taille maximale de 5MB.",
+      "serverError": "Erreur lors de l'enregistrement."
+    }
+  },
+  "studentCvList": {
+    "loading": "Chargement de vos CVs...",
+    "errorTitle": "Erreur de chargement",
+    "retry": "Réessayer",
+    "unauthorized": "Vous devez être connecté pour voir votre CV.",
+    "forbidden": "Vous n'avez pas les permissions nécessaires.",
+    "serverError": "Impossible de se connecter au serveur. Vérifiez votre connexion internet.",
+    "title": "Mes CVs",
+    "subtitle": "Gérez vos CVs téléversés",
+    "noCvTitle": "Aucun CV téléversé",
+    "noCvDescription": "Vous n'avez pas encore téléversé de CV. Téléversez votre CV pour postuler aux offres de stage.",
+    "uploadCv": "Téléverser mon CV",
+    "table": {
+      "file": "Fichier",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "unknown": "Inconnu"
+    },
+    "actions": {
+      "preview": "Aperçu",
+      "download": "Télécharger",
+      "uploadNew": "Téléverser un nouveau CV"
+    },
+    "downloadError": "Erreur lors du téléchargement du CV",
+    "previewError": "Erreur lors de l'ouverture du CV"
+  },
+  "uploadCvStudent": {
+    "title": "Téléverser mon CV",
+    "fileLabel": "Fichier PDF (obligatoire)",
+    "choosePdf": "Choisir un PDF",
+    "noFileSelected": "Aucun fichier sélectionné. PDF maximum {{max}}MB.",
+    "remove": "Supprimer",
+    "submit": "Téléverser mon CV",
+    "submitting": "Téléversement...",
+    "backToDashboard": "Retour au dashboard",
+    "successMessage": "Votre CV a été téléversé avec succès.",
+    "errors": {
+      "required": "Un fichier PDF est requis.",
+      "format": "Le fichier doit être un PDF.",
+      "size": "Le PDF dépasse la taille maximale de {{max}}MB.",
+      "serverError": "Erreur lors du téléversement."
+    }
+  },
+  "pendingCvList": {
+    "loading": "Chargement des CVs en attente...",
+    "noPending": "Aucun CV en attente",
+    "title": "CVs en attente",
+    "subtitle": "Gérez les CVs soumis ({{count}})",
+    "unknownStudent": "Étudiant inconnu",
+    "commentPlaceholder": "Commentaire (requis pour rejet)",
+    "table": {
+      "student": "Étudiant",
+      "cv": "CV",
+      "comment": "Commentaire",
+      "actions": "Actions"
+    },
+    "actions": {
+      "download": "Télécharger CV",
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    },
+    "errors": {
+      "serverError": "Erreur lors du chargement des CVs",
+      "commentRequired": "Il faut écrire un commentaire avant de rejeter un CV",
+      "download": "Erreur lors du téléchargement du CV"
+    }
+  },
+  "pendingOffers": {
+    "loading": "Chargement des offres en attente...",
+    "noPending": "Aucune offre en attente",
+    "title": "Offres en attente",
+    "subtitle": "Gérez les offres en attente ({{count}})",
+    "unknownTitle": "Titre non disponible",
+    "unknownCompany": "Entreprise inconnue",
+    "noDate": "Non définie",
+    "commentPlaceholder": "Commentaire (requis pour rejet)",
+    "table": {
+      "title": "Titre",
+      "company": "Entreprise",
+      "status": "Statut",
+      "comment": "Commentaire",
+      "actions": "Actions"
+    },
+    "actions": {
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "downloadPdf": "Télécharger PDF"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Publiée",
+      "rejected": "Rejetée",
+      "unknown": "Inconnu"
+    },
+    "errors": {
+      "serverError": "Erreur lors du chargement des offres",
+      "commentRequired": "Il faut écrire un commentaire avant de rejeter l'offre",
+      "download": "Erreur lors du téléchargement de l'offre"
+    }
+  }
+}

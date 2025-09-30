@@ -1,6 +1,5 @@
 const API_BASE = 'http://localhost:8080/gestionnaire';
 
-// Always read the latest token from sessionStorage
 function getAuthHeaders() {
     const accessToken = sessionStorage.getItem('accessToken');
     const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();

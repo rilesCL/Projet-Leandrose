@@ -1,7 +1,5 @@
-// Pure React API functions using only built-in fetch API
 const API_BASE = 'http://localhost:8080';
 
-// Helper function to handle fetch responses
 async function handleApiResponse(response) {
     if (!response.ok) {
         const errorText = await response.text();
@@ -10,7 +8,6 @@ async function handleApiResponse(response) {
     return response;
 }
 
-// Get authorization headers
 function getAuthHeaders(token = null) {
     const accessToken = token || sessionStorage.getItem('accessToken');
     const headers = {
@@ -24,7 +21,6 @@ function getAuthHeaders(token = null) {
     return headers;
 }
 
-// Upload CV function
 export async function uploadCvStudent(pdfFile, token = null) {
     if (!pdfFile) {
         throw new Error('Fichier PDF manquant');
@@ -53,7 +49,6 @@ export async function uploadCvStudent(pdfFile, token = null) {
     }
 }
 
-// Get student CV function
 export async function getStudentCv(token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/cv`, {
@@ -62,7 +57,7 @@ export async function getStudentCv(token = null) {
         });
 
         if (response.status === 404) {
-            return null; // No CV found
+            return null;
         }
 
         await handleApiResponse(response);
@@ -72,7 +67,6 @@ export async function getStudentCv(token = null) {
     }
 }
 
-// Download CV function
 export async function downloadStudentCv(token = null) {
     try {
         const accessToken = token || sessionStorage.getItem('accessToken');

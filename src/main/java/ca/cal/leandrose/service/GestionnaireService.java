@@ -3,11 +3,14 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.model.Gestionnaire;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
+import ca.cal.leandrose.repository.ProgramRepository;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.GestionnaireDto;
+import ca.cal.leandrose.service.dto.ProgramDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ public class GestionnaireService {
     private final InternshipOfferRepository internshipOfferRepository;
     private final GestionnaireRepository gestionnaireRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProgramRepository programRepository;
 
     @Transactional
     public CvDto approveCv(Long cvId) {
@@ -38,7 +42,7 @@ public class GestionnaireService {
         Cv cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new RuntimeException("Cv non trouvé"));
         cv.setStatus(Cv.Status.REJECTED);
-        cv.setRejectionComment(comment); // ✅ Save rejection comment
+        cv.setRejectionComment(comment);
         Cv saved = cvRepository.save(cv);
         return CvDto.create(saved);
     }
@@ -103,5 +107,22 @@ public class GestionnaireService {
 
         Gestionnaire savedGestionnaire = gestionnaireRepository.save(gestionnaire);
         return GestionnaireDto.create(savedGestionnaire);
+    }
+    @Transactional
+    public ProgramDto addProgram(String programName){
+        if (programName == null || programName.trim().isEmpty()){
+            throw new IllegalArgumentException("Le nom du programme ne peut pas être vide");
+        }
+        Program program = Program.builder()
+                .name(programName)
+                .build();
+        Program savedProgram = programRepository.save(program);
+        return ProgramDto.create(savedProgram);
+    }
+    public List<ProgramDto> getAllPrograms(){
+        return programRepository.findAll()
+                .stream()
+                .map(ProgramDto::create)
+                .toList();
     }
 }

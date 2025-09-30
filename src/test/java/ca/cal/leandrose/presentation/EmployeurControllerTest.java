@@ -149,7 +149,7 @@ class EmployeurControllerTest {
                 .build();
 
         Mockito.when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        Mockito.when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur)); // <-- important
+        Mockito.when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
         Mockito.when(internshipOfferService.createOfferDto(
                 anyString(), any(), anyInt(), anyString(), anyFloat(), any(Employeur.class), any()
         )).thenReturn(savedOffer);

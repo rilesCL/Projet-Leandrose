@@ -64,10 +64,8 @@ class EmployeurServiceTest {
         assertEquals("TechCorp", dto.getCompanyName());
         assertEquals("IT", dto.getField());
 
-        // Verify that passwordEncoder.encode was called
         verify(passwordEncoder).encode(rawPassword);
 
-        // Verify that employeurRepository.save was called with correct data
         ArgumentCaptor<Employeur> captor = ArgumentCaptor.forClass(Employeur.class);
         verify(employeurRepository).save(captor.capture());
         assertEquals(encodedPassword, captor.getValue().getPassword());

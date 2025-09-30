@@ -71,7 +71,6 @@ public class StudentController {
         try {
             cvDto = cvService.getCvByStudentId(student.getId());
         } catch (RuntimeException e) {
-            // Return 404 with proper JSON response for no CV found
             return ResponseEntity.status(404)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(null);
@@ -79,7 +78,6 @@ public class StudentController {
         return ResponseEntity.ok().body(cvDto);
     }
 
-    // Add new endpoint to serve PDF files
     @GetMapping("/cv/download")
     public ResponseEntity<Resource> downloadCv(
             @RequestHeader(name = "Authorization", required = false) String authorization

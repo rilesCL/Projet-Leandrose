@@ -1,6 +1,6 @@
-// src/components/UploadStageEmployeur.jsx
 import React, { useState } from "react";
 import { uploadStageEmployeur } from "../api/apiEmployeur";
+import { useTranslation } from "react-i18next";
 
 const MAX_FILE_SIZE_MB = 5;
 const BYTES_IN_KB = 1024;
@@ -10,6 +10,7 @@ const MIN_DURATION_WEEKS = 1;
 const DATE_REGEX = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/;
 
 export default function UploadStageEmployeur({ employeurId }) {
+    const { t } = useTranslation();
     const [description, setDescription] = useState("");
     const [startDate, setStartDate] = useState("");
     const [duration, setDuration] = useState("");
@@ -27,20 +28,20 @@ export default function UploadStageEmployeur({ employeurId }) {
 
     function validateFields() {
         const e = {};
-        if (!description.trim()) e.description = "La description est obligatoire.";
-        if (!startDate.trim()) e.startDate = "La date de début est obligatoire.";
-        else if (!DATE_REGEX.test(startDate.trim())) e.startDate = "Le format de la date doit être JJ-MM-YYYY.";
-        if (!duration.toString().trim()) e.duration = "La durée (en semaines) est obligatoire.";
+        if (!description.trim()) e.description = t("uploadStageEmployeur.errors.description");
+        if (!startDate.trim()) e.startDate = t("uploadStageEmployeur.errors.startDate");
+        else if (!DATE_REGEX.test(startDate.trim())) e.startDate = t("uploadStageEmployeur.errors.startDateFormat");
+        if (!duration.toString().trim()) e.duration = t("uploadStageEmployeur.errors.duration");
         else if (!Number.isInteger(Number(duration)) || Number(duration) < MIN_DURATION_WEEKS)
-            e.duration = "La durée doit être un entier positif (nombre de semaines).";
-        if (!address.trim()) e.address = "La localisation (adresse) est obligatoire.";
-        if (!pdfFile) e.pdfFile = "Un fichier PDF est requis.";
+            e.duration = t("uploadStageEmployeur.errors.durationInvalid");
+        if (!address.trim()) e.address = t("uploadStageEmployeur.errors.address");
+        if (!pdfFile) e.pdfFile = t("uploadStageEmployeur.errors.pdfRequired");
         else {
             const fileName = pdfFile.name.toLowerCase();
             if (pdfFile.type !== "application/pdf" && !fileName.endsWith(".pdf")) {
-                e.pdfFile = "Le fichier doit être un PDF.";
+                e.pdfFile = t("uploadStageEmployeur.errors.pdfFormat");
             } else if (pdfFile.size > MAX_FILE_SIZE_BYTES) {
-                e.pdfFile = `Le PDF dépasse la taille maximale de ${MAX_FILE_SIZE_MB}MB.`;
+                e.pdfFile = t("uploadStageEmployeur.errors.pdfSize");
             }
         }
         setErrors(e);
@@ -63,12 +64,12 @@ export default function UploadStageEmployeur({ employeurId }) {
         }
         const fileName = file.name.toLowerCase();
         if (file.type !== "application/pdf" && !fileName.endsWith(".pdf")) {
-            setErrors(prev => ({ ...prev, pdfFile: "Le fichier doit être un PDF." }));
+            setErrors(prev => ({ ...prev, pdfFile: t("uploadStageEmployeur.errors.pdfFormat") }));
             setPdfFile(null);
             return;
         }
         if (file.size > MAX_FILE_SIZE_BYTES) {
-            setErrors(prev => ({ ...prev, pdfFile: `Le PDF dépasse la taille maximale de ${MAX_FILE_SIZE_MB}MB.` }));
+            setErrors(prev => ({ ...prev, pdfFile: t("uploadStageEmployeur.errors.pdfSize") }));
             setPdfFile(null);
             return;
         }
@@ -99,7 +100,8 @@ export default function UploadStageEmployeur({ employeurId }) {
             const token = sessionStorage.getItem("accessToken");
             const created = await uploadStageEmployeur(offer, pdfFile, token);
             const status = created.status || created.statut || "UNKNOWN";
-            setServerMessage(`Offre enregistrée avec succès. Statut: ${status === "PUBLISHED" ? "Publiée" : status === "PENDING_VALIDATION" ? "En attente de validation" : status}`);
+            const statusText = status === "PUBLISHED" ? t("uploadStageEmployeur.statusPublished") : status === "PENDING_VALIDATION" ? t("uploadStageEmployeur.statusPending") : status;
+            setServerMessage(`${t("uploadStageEmployeur.successMessage")} ${statusText}`);
             setServerMessageType("success");
             setDescription("");
             setStartDate("");
@@ -109,8 +111,8 @@ export default function UploadStageEmployeur({ employeurId }) {
             setPdfFile(null);
             setErrors({});
         } catch (err) {
-            const msg = err.response?.data?.message || err.response?.data || err.message || "Erreur lors de l'enregistrement.";
-            setServerMessage(`Erreur: ${msg}`);
+            const msg = err.response?.data?.message || err.response?.data || err.message || t("uploadStageEmployeur.errors.serverError");
+            setServerMessage(`${t("uploadStageEmployeur.errors.serverError")} ${msg}`);
             setServerMessageType("error");
         } finally {
             setSubmitting(false);
@@ -120,17 +122,20 @@ export default function UploadStageEmployeur({ employeurId }) {
     return (
         <div className="max-w-3xl mx-auto my-8">
             <div className="bg-white shadow-lg rounded-lg p-8">
-                <h2 className="text-2xl font-semibold mb-4 text-gray-800">Publier une offre de stage</h2>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t("uploadStageEmployeur.title")}</h2>
+
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="grid grid-cols-1 gap-6">
                         <div>
-                            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description du poste</label>
+                            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                                {t("uploadStageEmployeur.description")}
+                            </label>
                             <textarea
                                 id="description"
                                 value={description}
                                 onChange={e => setDescription(e.target.value)}
                                 rows={6}
-                                placeholder="Description détaillée du poste..."
+                                placeholder={t("uploadStageEmployeur.descriptionPlaceholder")}
                                 className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.description ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                             />
                             {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
@@ -138,19 +143,23 @@ export default function UploadStageEmployeur({ employeurId }) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Date de début (JJ-MM-YYYY)</label>
+                                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                                    {t("uploadStageEmployeur.startDate")}
+                                </label>
                                 <input
                                     id="startDate"
                                     type="text"
                                     value={startDate}
                                     onChange={e => setStartDate(e.target.value)}
-                                    placeholder="JJ-MM-AAAA"
+                                    placeholder={t("uploadStageEmployeur.startDatePlaceholder")}
                                     className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.startDate ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                                 />
                                 {errors.startDate && <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>}
                             </div>
                             <div>
-                                <label htmlFor="duration" className="block text-sm font-medium text-gray-700">Durée (en semaines)</label>
+                                <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
+                                    {t("uploadStageEmployeur.duration")}
+                                </label>
                                 <input
                                     id="duration"
                                     type="number"
@@ -164,13 +173,15 @@ export default function UploadStageEmployeur({ employeurId }) {
                         </div>
 
                         <div>
-                            <label htmlFor="address" className="block text-sm font-medium text-gray-700">Localisation (ville, adresse, télétravail possible)</label>
+                            <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                                {t("uploadStageEmployeur.address")}
+                            </label>
                             <input
                                 id="address"
                                 type="text"
                                 value={address}
                                 onChange={e => setAddress(e.target.value)}
-                                placeholder="Ville, adresse, télétravail possible..."
+                                placeholder={t("uploadStageEmployeur.addressPlaceholder")}
                                 className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.address ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                             />
                             {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
@@ -178,7 +189,9 @@ export default function UploadStageEmployeur({ employeurId }) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="remuneration" className="block text-sm font-medium text-gray-700">Rémunération (facultatif)</label>
+                                <label htmlFor="remuneration" className="block text-sm font-medium text-gray-700">
+                                    {t("uploadStageEmployeur.remuneration")}
+                                </label>
                                 <input
                                     id="remuneration"
                                     type="number"
@@ -192,9 +205,13 @@ export default function UploadStageEmployeur({ employeurId }) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Document PDF (obligatoire)</label>
+                            <label className="block text-sm font-medium text-gray-700">
+                                {t("uploadStageEmployeur.pdfDocument")}
+                            </label>
                             <div className="mt-1 flex items-center gap-3">
-                                <label htmlFor="pdfFile" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Choisir un PDF</label>
+                                <label htmlFor="pdfFile" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 cursor-pointer">
+                                    {t("uploadStageEmployeur.choosePdf")}
+                                </label>
                                 <input id="pdfFile" type="file" accept="application/pdf" onChange={handleFileChange} className="hidden" />
                                 <div className="flex-1 text-sm text-gray-700">
                                     {pdfFile ? (
@@ -203,10 +220,12 @@ export default function UploadStageEmployeur({ employeurId }) {
                                                 <span className="font-medium">{pdfFile.name}</span>
                                                 <span className="ml-2 text-gray-500 text-xs">({(pdfFile.size / BYTES_IN_MB).toFixed(2)} MB)</span>
                                             </div>
-                                            <button type="button" onClick={clearFile} className="text-sm text-red-600 hover:underline">Supprimer</button>
+                                            <button type="button" onClick={clearFile} className="text-sm text-red-600 hover:underline">
+                                                {t("uploadStageEmployeur.remove")}
+                                            </button>
                                         </div>
                                     ) : (
-                                        <div className="text-gray-500">Aucun fichier sélectionné. PDF maximum 5MB.</div>
+                                        <div className="text-gray-500">{t("uploadStageEmployeur.noFileSelected")}</div>
                                     )}
                                 </div>
                             </div>
@@ -220,7 +239,7 @@ export default function UploadStageEmployeur({ employeurId }) {
                                 className={`inline-flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${submitting ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition`}
                             >
                                 {submitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
-                                {submitting ? "Enregistrement..." : "Publier l'offre"}
+                                {submitting ? t("uploadStageEmployeur.submitting") : t("uploadStageEmployeur.submit")}
                             </button>
 
                             <button
@@ -228,7 +247,7 @@ export default function UploadStageEmployeur({ employeurId }) {
                                 onClick={navigateToDashboard}
                                 className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
                             >
-                                Retour au dashboard
+                                {t("uploadStageEmployeur.backToDashboard")}
                             </button>
                         </div>
 

@@ -5,10 +5,13 @@ import ca.cal.leandrose.model.auth.Role;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class EmployeurDto extends UserDTO {
     private String companyName;
     private String field;
+    private Map<String, String> error;
 
     @Builder
     public EmployeurDto(Long id, String firstName, String lastname, String email, String password, Role role, String companyName, String field) {

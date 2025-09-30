@@ -5,10 +5,13 @@ import ca.cal.leandrose.model.auth.Role;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 public class StudentDto extends UserDTO{
     private String studentNumber;
     private String program;
+    private Map<String,String> error;
 
     @Builder
     public StudentDto(Long id, String firstName, String lastName, String email, Role role, String studentNumber, String program) {
@@ -18,6 +21,10 @@ public class StudentDto extends UserDTO{
     }
 
     public StudentDto(){}
+
+    public StudentDto(String error){
+        this.error = Map.of("error", error);
+    }
 
     public static StudentDto create(Student student){
     return StudentDto.builder()

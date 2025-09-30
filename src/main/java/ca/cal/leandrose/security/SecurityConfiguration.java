@@ -44,7 +44,9 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/user/login", "/api/register/**").permitAll()
-                        .requestMatchers(POST, "/student/**").permitAll()
+                        .requestMatchers(GET, "/api/register/programs").permitAll()
+                        .requestMatchers(GET, "/gestionnaire/**").hasAuthority("GESTIONNAIRE")
+                        .requestMatchers(POST, "/student/**").hasAuthority("STUDENT")
                         .requestMatchers(POST, "/employeur/offers").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/student/cv", "/student/cv/download").hasAuthority("STUDENT")
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
@@ -55,13 +57,10 @@ public class SecurityConfiguration {
                 )
 
 
-                // Stateless session management
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // JWT Filter
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 
-                // Exception handling
                 .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
 
         return http.build();
