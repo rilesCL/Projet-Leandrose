@@ -36,9 +36,9 @@ export default function AddProgramPage() {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "text/plain"  // Changé de application/json à text/plain
+                    "Content-Type": "text/plain"
                 },
-                body: programName  // Envoi direct sans JSON.stringify
+                body: programName.trim()
             });
 
             if (response.ok) {
