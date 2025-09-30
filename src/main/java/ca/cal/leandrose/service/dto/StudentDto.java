@@ -20,15 +20,15 @@ public class StudentDto extends UserDTO{
     public StudentDto(){}
 
     public static StudentDto create(Student student){
-        return StudentDto.builder()
-                .id(student.getId())
-                .firstName(student.getFirstName())
-                .lastName(student.getLastName())
-                .email(student.getEmail())
-                .role(student.getRole())
-                .studentNumber(student.getStudentNumber())
-                .program(student.getProgram())
-                .build();
+    return StudentDto.builder()
+        .id(student.getId())
+        .firstName(student.getFirstName())
+        .lastName(student.getLastName())
+        .email(student.getEmail())
+        .role(student.getRole())
+        .studentNumber(student.getStudentNumber())
+        .program(student.getProgram())
+        .build();
     }
 
     public static StudentDto empty() {

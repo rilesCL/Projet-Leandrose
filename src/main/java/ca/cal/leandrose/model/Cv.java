@@ -30,4 +30,11 @@ public class Cv {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    public String getStudentName() {
+        if (student != null) {
+            return student.getFirstName() + " " + student.getLastName();
+        }
+        return null;
+    }
 }
