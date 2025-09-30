@@ -37,5 +37,43 @@
       "serverError": "Unable to connect to the server",
       "unknown": "An error occurred."
     }
+  },
+  "registerEtudiant": {
+    "title": "Student Registration",
+    "subtitle": "Create a student account to apply for internships and track your applications.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "studentNumber": "Student number",
+    "program": "Program",
+    "email": "Student email",
+    "password": "Password",
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "studentNumber": "123456",
+      "program": "Computer Science, Business...",
+      "email": "firstname.lastname@stu.email.ca",
+      "password": "At least 8 characters"
+    },
+    "submit": "Sign up",
+    "submitting": "Submitting...",
+    "reset": "Reset",
+    "alreadyAccount": "Already have an account?",
+    "login": "Log in",
+    "employerAccount": "Are you an employer?",
+    "createEmployer": "Create an employer account",
+    "success": "Registration successful!",
+    "errors": {
+      "firstName": "First name is required",
+      "lastName": "Last name is required",
+      "studentNumber": "Student number is required",
+      "program": "Program is required",
+      "email": "Email is required",
+      "emailInvalid": "Invalid email",
+      "password": "Password is required",
+      "passwordLength": "Password must be at least 8 characters",
+      "serverError": "Unable to connect to the server",
+      "unknown": "An error occurred."
+    }
   }
 }

@@ -37,5 +37,43 @@
       "serverError": "Impossible de se connecter au serveur",
       "unknown": "Une erreur est survenue."
     }
+  },
+  "registerEtudiant": {
+    "title": "Inscription Étudiant",
+    "subtitle": "Créez un compte étudiant pour postuler aux offres de stage et suivre vos candidatures.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "studentNumber": "Numéro de matricule",
+    "program": "Programme",
+    "email": "Email étudiant",
+    "password": "Mot de passe",
+    "placeholders": {
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "studentNumber": "123456",
+      "program": "Informatique, Gestion...",
+      "email": "prenom.nom@etu.email.ca",
+      "password": "Au moins 8 caractères"
+    },
+    "submit": "S'inscrire",
+    "submitting": "En cours...",
+    "reset": "Réinitialiser",
+    "alreadyAccount": "Déjà un compte ?",
+    "login": "Se connecter",
+    "employerAccount": "Vous êtes employeur ?",
+    "createEmployer": "Créez un compte employeur",
+    "success": "Inscription réussie !",
+    "errors": {
+      "firstName": "Prénom requis",
+      "lastName": "Nom requis",
+      "studentNumber": "Numéro de matricule requis",
+      "program": "Programme requis",
+      "email": "Email requis",
+      "emailInvalid": "Email invalide",
+      "password": "Mot de passe requis",
+      "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "serverError": "Impossible de se connecter au serveur",
+      "unknown": "Une erreur est survenue."
+    }
   }
 }
