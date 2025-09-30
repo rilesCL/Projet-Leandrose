@@ -112,5 +112,139 @@
         "sendError": "Erreur lors de l'envoi de l'email"
       }
     }
+  },
+  "dashboardEmployeur": {
+    "logout": "Se déconnecter",
+    "welcome": "Bienvenue Employeur",
+    "description": "Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.",
+    "navigation": {
+      "mainNavigation": "Navigation principale"
+    }
+  },
+  "dashboardGestionnaire": {
+    "logout": "Se déconnecter",
+    "welcome": "Bienvenue Gestionnaire"
+  },
+  "dashboardStudent": {
+    "logout": "Se déconnecter",
+    "welcome": "Bienvenue Étudiant",
+    "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage."
+  },
+  "internshipOffersList": {
+    "loading": "Chargement de vos offres...",
+    "errorTitle": "Erreur de chargement",
+    "retry": "Réessayer",
+    "noOffersTitle": "Aucune offre publiée",
+    "noOffersDescription": "Vous n'avez pas encore publié d'offres de stage. Créez votre première offre pour attirer des candidats.",
+    "createOffer": "Créer une offre",
+    "title": "Mes Offres de Stage",
+    "subtitle": "Gérez vos offres publiées",
+    "offer": "offre",
+    "offers": "offres",
+    "table": {
+      "description": "Description",
+      "startDate": "Date de début",
+      "duration": "Durée",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "En attente",
+      "published": "Publiée",
+      "rejected": "Rejetée",
+      "unknown": "Inconnu"
+    },
+    "notDefined": "Non définie",
+    "notSpecified": "Lieu non spécifié",
+    "week": "semaine",
+    "weeks": "semaines",
+    "downloadError": "Erreur lors du téléchargement de l'offre",
+    "createNewOffer": "Créer une nouvelle offre",
+    "errors": {
+      "unauthorized": "Vous devez être connecté pour voir vos offres.",
+      "forbidden": "Vous n'avez pas les permissions nécessaires.",
+      "serverError": "Impossible de se connecter au serveur. Vérifiez votre connexion internet."
+    }
+  },
+  "uploadStageEmployeur": {
+    "title": "Publier une offre de stage",
+    "description": "Description du poste",
+    "descriptionPlaceholder": "Description détaillée du poste...",
+    "startDate": "Date de début (JJ-MM-AAAA)",
+    "startDatePlaceholder": "JJ-MM-AAAA",
+    "duration": "Durée (en semaines)",
+    "address": "Localisation (ville, adresse, télétravail possible)",
+    "addressPlaceholder": "Ville, adresse, télétravail possible...",
+    "remuneration": "Rémunération (facultatif)",
+    "pdfDocument": "Document PDF (obligatoire)",
+    "choosePdf": "Choisir un PDF",
+    "noFileSelected": "Aucun fichier sélectionné. PDF maximum 5MB.",
+    "remove": "Supprimer",
+    "submit": "Publier l'offre",
+    "submitting": "Enregistrement...",
+    "backToDashboard": "Retour au dashboard",
+    "successMessage": "Offre enregistrée avec succès. Statut:",
+    "statusPublished": "Publiée",
+    "statusPending": "En attente de validation",
+    "errors": {
+      "description": "La description est obligatoire.",
+      "startDate": "La date de début est obligatoire.",
+      "startDateFormat": "Le format de la date doit être JJ-MM-YYYY.",
+      "duration": "La durée (en semaines) est obligatoire.",
+      "durationInvalid": "La durée doit être un entier positif (nombre de semaines).",
+      "address": "La localisation (adresse) est obligatoire.",
+      "pdfRequired": "Un fichier PDF est requis.",
+      "pdfFormat": "Le fichier doit être un PDF.",
+      "pdfSize": "Le PDF dépasse la taille maximale de 5MB.",
+      "serverError": "Erreur lors de l'enregistrement."
+    }
+  },
+  "studentCvList": {
+    "loading": "Chargement de vos CVs...",
+    "errorTitle": "Erreur de chargement",
+    "retry": "Réessayer",
+    "unauthorized": "Vous devez être connecté pour voir votre CV.",
+    "forbidden": "Vous n'avez pas les permissions nécessaires.",
+    "serverError": "Impossible de se connecter au serveur. Vérifiez votre connexion internet.",
+    "title": "Mes CVs",
+    "subtitle": "Gérez vos CVs téléversés",
+    "noCvTitle": "Aucun CV téléversé",
+    "noCvDescription": "Vous n'avez pas encore téléversé de CV. Téléversez votre CV pour postuler aux offres de stage.",
+    "uploadCv": "Téléverser mon CV",
+    "table": {
+      "file": "Fichier",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "unknown": "Inconnu"
+    },
+    "actions": {
+      "preview": "Aperçu",
+      "download": "Télécharger",
+      "uploadNew": "Téléverser un nouveau CV"
+    },
+    "downloadError": "Erreur lors du téléchargement du CV",
+    "previewError": "Erreur lors de l'ouverture du CV"
+  },
+  "uploadCvStudent": {
+    "title": "Téléverser mon CV",
+    "fileLabel": "Fichier PDF (obligatoire)",
+    "choosePdf": "Choisir un PDF",
+    "noFileSelected": "Aucun fichier sélectionné. PDF maximum {{max}}MB.",
+    "remove": "Supprimer",
+    "submit": "Téléverser mon CV",
+    "submitting": "Téléversement...",
+    "backToDashboard": "Retour au dashboard",
+    "successMessage": "Votre CV a été téléversé avec succès.",
+    "errors": {
+      "required": "Un fichier PDF est requis.",
+      "format": "Le fichier doit être un PDF.",
+      "size": "Le PDF dépasse la taille maximale de {{max}}MB.",
+      "serverError": "Erreur lors du téléversement."
+    }
   }
 }

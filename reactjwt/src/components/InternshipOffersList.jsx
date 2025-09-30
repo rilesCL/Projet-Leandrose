@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const API_BASE = 'http://localhost:8080';
 
 export default function InternshipOffersList() {
+    const { t } = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -23,25 +25,25 @@ export default function InternshipOffersList() {
                 });
 
                 if (response.status === 401) {
-                    setError("Vous devez être connecté pour voir vos offres.");
+                    setError(t("internshipOffersList.errors.unauthorized"));
                 } else if (response.status === 403) {
-                    setError("Vous n'avez pas les permissions nécessaires.");
+                    setError(t("internshipOffersList.errors.forbidden"));
                 } else if (!response.ok) {
                     const errorText = await response.text();
-                    setError(errorText || `Erreur ${response.status}: ${response.statusText}`);
+                    setError(errorText || `${t("internshipOffersList.errorTitle")} ${response.status}: ${response.statusText}`);
                 } else {
                     const data = await response.json();
                     setOffers(Array.isArray(data) ? data : []);
                 }
             } catch (err) {
-                setError("Impossible de se connecter au serveur. Vérifiez votre connexion internet.");
+                setError(t("internshipOffersList.errors.serverError"));
             } finally {
                 setLoading(false);
             }
         }
 
         fetchOffers();
-    }, []);
+    }, [t]);
 
     const getStatusLabel = (status) => {
         const statusUpper = (status || "").toString().toUpperCase();
@@ -50,38 +52,38 @@ export default function InternshipOffersList() {
             return (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                     <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
-                    En attente
+                    {t("internshipOffersList.status.pending")}
                 </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
             return (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
                     <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2"></span>
-                    Publiée
+                    {t("internshipOffersList.status.published")}
                 </span>
             );
         } else if (statusUpper === "REJECTED") {
             return (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">
                     <span className="w-2 h-2 bg-red-500 rounded-full inline-block mr-2"></span>
-                    Rejetée
+                    {t("internshipOffersList.status.rejected")}
                 </span>
             );
         } else {
             return (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
                     <span className="w-2 h-2 bg-gray-500 rounded-full inline-block mr-2"></span>
-                    {statusUpper || 'Inconnu'}
+                    {statusUpper || t("internshipOffersList.status.unknown")}
                 </span>
             );
         }
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'Non définie';
+        if (!dateString) return t("internshipOffersList.notDefined");
         try {
             const date = new Date(dateString);
-            return date.toLocaleDateString('fr-FR');
+            return date.toLocaleDateString(t === 'fr' ? 'fr-FR' : 'en-US');
         } catch {
             return dateString;
         }
@@ -108,11 +110,11 @@ export default function InternshipOffersList() {
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
             } else {
-                alert('Erreur lors du téléchargement de l\'offre');
+                alert(t("internshipOffersList.downloadError"));
             }
         } catch (error) {
             console.error('Download error:', error);
-            alert('Erreur lors du téléchargement de l\'offre');
+            alert(t("internshipOffersList.downloadError"));
         }
     };
 
@@ -123,7 +125,7 @@ export default function InternshipOffersList() {
                     <div className="h-4 bg-gray-200 rounded w-1/4 mx-auto mb-4"></div>
                     <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
                 </div>
-                <p className="text-gray-600 mt-4">Chargement de vos offres...</p>
+                <p className="text-gray-600 mt-4">{t("internshipOffersList.loading")}</p>
             </div>
         );
     }
@@ -136,13 +138,13 @@ export default function InternshipOffersList() {
                         <span className="text-red-600 text-2xl font-bold">!</span>
                     </div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Erreur de chargement</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t("internshipOffersList.errorTitle")}</h3>
                 <p className="text-red-600">{error}</p>
                 <button
                     onClick={() => window.location.reload()}
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                 >
-                    Réessayer
+                    {t("internshipOffersList.retry")}
                 </button>
             </div>
         );
@@ -156,16 +158,14 @@ export default function InternshipOffersList() {
                         <span className="text-gray-500 text-3xl">📋</span>
                     </div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune offre publiée</h3>
-                <p className="text-gray-600 mb-4">
-                    Vous n'avez pas encore publié d'offres de stage. Créez votre première offre pour attirer des candidats.
-                </p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t("internshipOffersList.noOffersTitle")}</h3>
+                <p className="text-gray-600 mb-4">{t("internshipOffersList.noOffersDescription")}</p>
                 <a
                     href="/dashboard/employeur/createOffer"
                     className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
                     <span className="mr-2">➕</span>
-                    Créer une offre
+                    {t("internshipOffersList.createOffer")}
                 </a>
             </div>
         );
@@ -174,8 +174,10 @@ export default function InternshipOffersList() {
     return (
         <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">Mes Offres de Stage</h3>
-                <p className="text-sm text-gray-600">Gérez vos offres publiées ({offers.length} offre{offers.length > 1 ? 's' : ''})</p>
+                <h3 className="text-lg font-medium text-gray-900">{t("internshipOffersList.title")}</h3>
+                <p className="text-sm text-gray-600">
+                    {t("internshipOffersList.subtitle")} ({offers.length} {offers.length > 1 ? t("internshipOffersList.offers") : t("internshipOffersList.offer")})
+                </p>
             </div>
 
             <div className="overflow-x-auto">
@@ -183,19 +185,19 @@ export default function InternshipOffersList() {
                     <thead className="bg-gray-50">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Description
+                            {t("internshipOffersList.table.description")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date de début
+                            {t("internshipOffersList.table.startDate")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Durée
+                            {t("internshipOffersList.table.duration")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Statut
+                            {t("internshipOffersList.table.status")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
+                            {t("internshipOffersList.table.actions")}
                         </th>
                     </tr>
                     </thead>
@@ -211,10 +213,10 @@ export default function InternshipOffersList() {
                                     </div>
                                     <div className="ml-3">
                                         <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
-                                            {offer.description || 'Description non disponible'}
+                                            {offer.description || t("internshipOffersList.notDefined")}
                                         </div>
                                         <div className="text-sm text-gray-500">
-                                            {offer.address || 'Lieu non spécifié'}
+                                            {offer.address || t("internshipOffersList.notSpecified")}
                                         </div>
                                     </div>
                                 </div>
@@ -223,7 +225,7 @@ export default function InternshipOffersList() {
                                 {formatDate(offer.startDate)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {offer.durationInWeeks || 0} semaine{(offer.durationInWeeks || 0) > 1 ? 's' : ''}
+                                {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 {getStatusLabel(offer.status)}
@@ -248,7 +250,7 @@ export default function InternshipOffersList() {
                     href="/dashboard/employeur/createOffer"
                     className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
                 >
-                    Créer une nouvelle offre
+                    {t("internshipOffersList.createNewOffer")}
                     <span className="ml-1">➕</span>
                 </a>
             </div>

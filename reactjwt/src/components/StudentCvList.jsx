@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function StudentCvList() {
+    const { t } = useTranslation();
     const [cv, setCv] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,36 +14,36 @@ export default function StudentCvList() {
 
             try {
                 const token = sessionStorage.getItem("accessToken");
-                const response = await fetch('http://localhost:8080/student/cv', {
-                    method: 'GET',
+                const response = await fetch("http://localhost:8080/student/cv", {
+                    method: "GET",
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
                 });
 
                 if (response.status === 404) {
                     setCv(null);
                 } else if (response.status === 401) {
-                    setError("Vous devez être connecté pour voir votre CV.");
+                    setError(t("studentCvList.unauthorized"));
                 } else if (response.status === 403) {
-                    setError("Vous n'avez pas les permissions nécessaires.");
+                    setError(t("studentCvList.forbidden"));
                 } else if (!response.ok) {
                     const errorText = await response.text();
-                    setError(errorText || `Erreur ${response.status}: ${response.statusText}`);
+                    setError(errorText || t("studentCvList.serverError"));
                 } else {
                     const data = await response.json();
                     setCv(data || null);
                 }
             } catch (err) {
-                setError("Impossible de se connecter au serveur. Vérifiez votre connexion internet.");
+                setError(t("studentCvList.serverError"));
             } finally {
                 setLoading(false);
             }
         }
 
         fetchCv();
-    }, []);
+    }, [t]);
 
     if (loading) {
         return (
@@ -50,7 +52,7 @@ export default function StudentCvList() {
                     <div className="h-4 bg-gray-200 rounded w-1/4 mx-auto mb-4"></div>
                     <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
                 </div>
-                <p className="text-gray-600 mt-4">Chargement de vos CVs...</p>
+                <p className="text-gray-600 mt-4">{t("studentCvList.loading")}</p>
             </div>
         );
     }
@@ -63,13 +65,15 @@ export default function StudentCvList() {
                         <span className="text-red-600 text-2xl font-bold">!</span>
                     </div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Erreur de chargement</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {t("studentCvList.errorTitle")}
+                </h3>
                 <p className="text-red-600">{error}</p>
                 <button
                     onClick={() => window.location.reload()}
                     className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                 >
-                    Réessayer
+                    {t("studentCvList.retry")}
                 </button>
             </div>
         );
@@ -83,49 +87,52 @@ export default function StudentCvList() {
                         <span className="text-gray-500 text-3xl">📄</span>
                     </div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun CV téléversé</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {t("studentCvList.noCvTitle")}
+                </h3>
                 <p className="text-gray-600 mb-4">
-                    Vous n'avez pas encore téléversé de CV. Téléversez votre CV pour postuler aux offres de stage.
+                    {t("studentCvList.noCvDescription")}
                 </p>
                 <a
                     href="/dashboard/student/uploadCv"
                     className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
                     <span className="mr-2">➕</span>
-                    Téléverser mon CV
+                    {t("studentCvList.uploadCv")}
                 </a>
             </div>
         );
     }
 
     const status = (cv.status || "").toString().toUpperCase();
-    const statusLabel = status === "PENDING" || status === "PENDING_VALIDATION" ? (
-        <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
-            <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
-            En attente
-        </span>
-    ) : status === "APPROVED" || status === "APPROUVED" ? (
-        <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
-            <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2"></span>
-            Approuvé
-        </span>
-    ) : status === "REJECTED" ? (
-        <span className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">
-            <span className="w-2 h-2 bg-red-500 rounded-full inline-block mr-2"></span>
-            Rejeté
-        </span>
-    ) : (
-        <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
-            <span className="w-2 h-2 bg-gray-500 rounded-full inline-block mr-2"></span>
-            {status || 'Inconnu'}
-        </span>
-    );
+    const statusLabel =
+        status === "PENDING" || status === "PENDING_VALIDATION" ? (
+            <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
+                {t("studentCvList.status.pending")}
+            </span>
+        ) : status === "APPROVED" || status === "APPROUVED" ? (
+            <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2"></span>
+                {t("studentCvList.status.approved")}
+            </span>
+        ) : status === "REJECTED" ? (
+            <span className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">
+                <span className="w-2 h-2 bg-red-500 rounded-full inline-block mr-2"></span>
+                {t("studentCvList.status.rejected")}
+            </span>
+        ) : (
+            <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
+                <span className="w-2 h-2 bg-gray-500 rounded-full inline-block mr-2"></span>
+                {t("studentCvList.status.unknown")}
+            </span>
+        );
 
     const getFileName = (path) => {
-        if (!path) return 'CV.pdf';
-        const fileName = path.split('/').pop() || path.split('\\').pop();
-        if (fileName.includes('_') && fileName.includes('-')) {
-            return 'Mon_CV.pdf';
+        if (!path) return "CV.pdf";
+        const fileName = path.split("/").pop() || path.split("\\").pop();
+        if (fileName.includes("_") && fileName.includes("-")) {
+            return "Mon_CV.pdf";
         }
         return fileName;
     };
@@ -133,17 +140,20 @@ export default function StudentCvList() {
     const handleDownload = async () => {
         try {
             const token = sessionStorage.getItem("accessToken");
-            const response = await fetch('http://localhost:8080/student/cv/download', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            const response = await fetch(
+                "http://localhost:8080/student/cv/download",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            });
+            );
 
             if (response.ok) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
+                const a = document.createElement("a");
                 a.href = url;
                 a.download = getFileName(cv.pdfPath);
                 document.body.appendChild(a);
@@ -151,43 +161,48 @@ export default function StudentCvList() {
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
             } else {
-                alert('Erreur lors du téléchargement du CV');
+                alert(t("studentCvList.downloadError"));
             }
         } catch (error) {
-            console.error('Download error:', error);
-            alert('Erreur lors du téléchargement du CV');
+            alert(t("studentCvList.downloadError"));
         }
     };
 
     const handlePreview = async () => {
         try {
             const token = sessionStorage.getItem("accessToken");
-            const response = await fetch('http://localhost:8080/student/cv/download', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            const response = await fetch(
+                "http://localhost:8080/student/cv/download",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
-            });
+            );
 
             if (response.ok) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
-                window.open(url, '_blank');
+                window.open(url, "_blank");
                 setTimeout(() => window.URL.revokeObjectURL(url), 10000);
             } else {
-                alert('Erreur lors de l\'ouverture du CV');
+                alert(t("studentCvList.previewError"));
             }
         } catch (error) {
-            console.error('Preview error:', error);
-            alert('Erreur lors de l\'ouverture du CV');
+            alert(t("studentCvList.previewError"));
         }
     };
 
     return (
         <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">Mon CV</h3>
-                <p className="text-sm text-gray-600">Gérez votre CV téléversé</p>
+                <h3 className="text-lg font-medium text-gray-900">
+                    {t("studentCvList.title")}
+                </h3>
+                <p className="text-sm text-gray-600">
+                    {t("studentCvList.subtitle")}
+                </p>
             </div>
 
             <div className="overflow-x-auto">
@@ -195,13 +210,13 @@ export default function StudentCvList() {
                     <thead className="bg-gray-50">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Fichier
+                            {t("studentCvList.table.file")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Statut
+                            {t("studentCvList.table.status")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
+                            {t("studentCvList.table.actions")}
                         </th>
                     </tr>
                     </thead>
@@ -211,14 +226,18 @@ export default function StudentCvList() {
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
                                     <div className="h-8 w-8 bg-red-500 rounded flex items-center justify-center">
-                                        <span className="text-white text-sm font-bold">PDF</span>
+                                            <span className="text-white text-sm font-bold">
+                                                PDF
+                                            </span>
                                     </div>
                                 </div>
                                 <div className="ml-3">
                                     <div className="text-sm font-medium text-gray-900">
                                         {getFileName(cv.pdfPath)}
                                     </div>
-                                    <div className="text-sm text-gray-500">PDF</div>
+                                    <div className="text-sm text-gray-500">
+                                        PDF
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -228,17 +247,17 @@ export default function StudentCvList() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                             <button
                                 onClick={handlePreview}
-                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
                             >
                                 <span className="mr-1">👁</span>
-                                Aperçu
+                                {t("studentCvList.actions.preview")}
                             </button>
                             <button
                                 onClick={handleDownload}
-                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200"
                             >
                                 <span className="mr-1">⬇</span>
-                                Télécharger
+                                {t("studentCvList.actions.download")}
                             </button>
                         </td>
                     </tr>
@@ -251,7 +270,7 @@ export default function StudentCvList() {
                     href="/dashboard/student/uploadCv"
                     className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
                 >
-                    Téléverser un nouveau CV
+                    {t("studentCvList.actions.uploadNew")}
                     <span className="ml-1">⬆</span>
                 </a>
             </div>

@@ -120,5 +120,131 @@
     "navigation": {
       "mainNavigation": "Main navigation"
     }
+  },
+  "dashboardGestionnaire": {
+    "logout": "Logout",
+    "welcome": "Welcome Manager"
+  },
+  "dashboardStudent": {
+    "logout": "Logout",
+    "welcome": "Welcome Student",
+    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers."
+  },
+  "internshipOffersList": {
+    "loading": "Loading your offers...",
+    "errorTitle": "Loading error",
+    "retry": "Retry",
+    "noOffersTitle": "No published offers",
+    "noOffersDescription": "You haven't published any internship offers yet. Create your first offer to attract candidates.",
+    "createOffer": "Create an offer",
+    "title": "My Internship Offers",
+    "subtitle": "Manage your published offers",
+    "offer": "offer",
+    "offers": "offers",
+    "table": {
+      "description": "Description",
+      "startDate": "Start date",
+      "duration": "Duration",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "published": "Published",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "notDefined": "Not defined",
+    "notSpecified": "Not specified",
+    "week": "week",
+    "weeks": "weeks",
+    "downloadError": "Error downloading the offer",
+    "createNewOffer": "Create a new offer",
+    "errors": {
+      "unauthorized": "You must be logged in to view your offers.",
+      "forbidden": "You do not have the necessary permissions.",
+      "serverError": "Unable to connect to the server. Check your internet connection."
+    }
+  },
+  "uploadStageEmployeur": {
+    "title": "Publish an internship offer",
+    "description": "Job description",
+    "descriptionPlaceholder": "Detailed job description...",
+    "startDate": "Start date (DD-MM-YYYY)",
+    "startDatePlaceholder": "DD-MM-YYYY",
+    "duration": "Duration (in weeks)",
+    "address": "Location (city, address, remote possible)",
+    "addressPlaceholder": "City, address, remote possible...",
+    "remuneration": "Remuneration (optional)",
+    "pdfDocument": "PDF document (required)",
+    "choosePdf": "Choose a PDF",
+    "noFileSelected": "No file selected. Maximum 5MB PDF.",
+    "remove": "Remove",
+    "submit": "Publish the offer",
+    "submitting": "Saving...",
+    "backToDashboard": "Back to dashboard",
+    "successMessage": "Offer saved successfully. Status:",
+    "statusPublished": "Published",
+    "statusPending": "Pending validation",
+    "errors": {
+      "description": "Description is required.",
+      "startDate": "Start date is required.",
+      "startDateFormat": "Date format must be DD-MM-YYYY.",
+      "duration": "Duration (in weeks) is required.",
+      "durationInvalid": "Duration must be a positive integer (number of weeks).",
+      "address": "Location (address) is required.",
+      "pdfRequired": "A PDF file is required.",
+      "pdfFormat": "The file must be a PDF.",
+      "pdfSize": "PDF exceeds maximum size of 5MB.",
+      "serverError": "Error during registration."
+    }
+  },
+  "studentCvList": {
+    "loading": "Loading your CVs...",
+    "errorTitle": "Loading error",
+    "retry": "Retry",
+    "unauthorized": "You must be logged in to view your CV.",
+    "forbidden": "You do not have the necessary permissions.",
+    "serverError": "Unable to connect to the server. Check your internet connection.",
+    "title": "My CVs",
+    "subtitle": "Manage your uploaded CVs",
+    "noCvTitle": "No CV uploaded",
+    "noCvDescription": "You haven't uploaded a CV yet. Upload your CV to apply for internships.",
+    "uploadCv": "Upload my CV",
+    "table": {
+      "file": "File",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "actions": {
+      "preview": "Preview",
+      "download": "Download",
+      "uploadNew": "Upload a new CV"
+    },
+    "downloadError": "Error downloading CV",
+    "previewError": "Error opening CV"
+  },
+  "uploadCvStudent": {
+    "title": "Upload my CV",
+    "fileLabel": "PDF file (required)",
+    "choosePdf": "Choose a PDF",
+    "noFileSelected": "No file selected. Maximum {{max}}MB PDF.",
+    "remove": "Remove",
+    "submit": "Upload my CV",
+    "submitting": "Uploading...",
+    "backToDashboard": "Back to dashboard",
+    "successMessage": "Your CV has been uploaded successfully.",
+    "errors": {
+      "required": "A PDF file is required.",
+      "format": "The file must be a PDF.",
+      "size": "The PDF exceeds the maximum size of {{max}}MB.",
+      "serverError": "Error uploading CV."
+    }
   }
 }
