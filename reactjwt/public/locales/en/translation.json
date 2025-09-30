@@ -1,0 +1,41 @@
+{
+  "appName": "LeandrOSE",
+  "registerEmployeur": {
+    "title": "Employer Registration",
+    "subtitle": "Create an employer account to post jobs and manage applicants.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "companyName": "Company name",
+    "field": "Industry",
+    "email": "Work email",
+    "password": "Password",
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "companyName": "ACME Ltd",
+      "field": "IT, Healthcare...",
+      "email": "contact@company.com",
+      "password": "At least 8 characters"
+    },
+    "submit": "Sign up",
+    "submitting": "Submitting...",
+    "reset": "Reset",
+    "alreadyAccount": "Already have an account?",
+    "login": "Log in",
+    "studentAccount": "Are you a student?",
+    "createStudent": "Create a student account",
+    "success": "Registration successful!",
+    "errors": {
+      "firstName": "First name is required",
+      "lastName": "Last name is required",
+      "companyName": "Company name is required",
+      "field": "Industry is required",
+      "email": "Email is required",
+      "emailInvalid": "Invalid email",
+      "password": "Password is required",
+      "passwordLength": "Password must be at least 8 characters",
+      "serverError": "Unable to connect to the server",
+      "unknown": "An error occurred."
+    }
+  }
+}
