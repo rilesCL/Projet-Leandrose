@@ -21,6 +21,7 @@ public class Cv {
 
     private Student student;
     private String pdfPath;
+    private String rejectionComment;
 
     public enum Status {
         APPROVED, PENDING, REJECTED
@@ -29,4 +30,11 @@ public class Cv {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    public String getStudentName() {
+        if (student != null) {
+            return student.getFirstName() + " " + student.getLastName();
+        }
+        return null;
+    }
 }

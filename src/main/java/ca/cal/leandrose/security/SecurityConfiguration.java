@@ -44,15 +44,16 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, "/user/login", "/api/register/**").permitAll()
-                        .requestMatchers(POST, "/student/**", "/employeur/**").permitAll()
+                        .requestMatchers(POST, "/student/**").permitAll()
+                        .requestMatchers(POST, "/employeur/offers").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/student/cv", "/student/cv/download").hasAuthority("STUDENT")
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
                         .requestMatchers(GET, "/employeur/offers", "/employeur/offers/*/download").hasAuthority("EMPLOYEUR")
-                        .requestMatchers("/employeur/**").hasAuthority("EMPLOYEUR")
-                        .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
 
+                        .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
                         .anyRequest().denyAll()
                 )
+
 
                 // Stateless session management
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

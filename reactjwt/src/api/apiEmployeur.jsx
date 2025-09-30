@@ -26,8 +26,8 @@ export async function uploadStageEmployeur(offer, pdfFile, token = null) {
     formData.append('pdfFile', pdfFile);
 
     const headers = {};
-    const accessToken = token || localStorage.getItem('accessToken');
-    const tokenType = (localStorage.getItem('tokenType') || 'BEARER').toUpperCase();
+    const accessToken = token || sessionStorage.getItem('accessToken');
+    const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
     if (accessToken) {
         headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
     }

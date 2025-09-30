@@ -5,14 +5,12 @@ import ca.cal.leandrose.model.auth.Role;
 import lombok.Builder;
 
 public class GestionnaireDto extends UserDTO {
-    private String matricule;
     private String phoneNumber;;
 
     @Builder
     public GestionnaireDto(Long id, String firstName, String lastname,
-                           String email, Role role, String matricule, String phoneNumber) {
+                           String email, Role role, String phoneNumber) {
         super(id, firstName, lastname, email, role);
-        this.matricule = matricule;
         this.phoneNumber = phoneNumber;
     }
 
@@ -25,7 +23,6 @@ public class GestionnaireDto extends UserDTO {
                 .lastname(gestionnaire.getLastName())
                 .email(gestionnaire.getEmail())
                 .role(gestionnaire.getRole())
-                .matricule(gestionnaire.getMatricule())
                 .phoneNumber(gestionnaire.getPhoneNumber())
                 .build();
     }

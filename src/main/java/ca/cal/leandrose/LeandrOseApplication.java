@@ -1,7 +1,10 @@
 package ca.cal.leandrose;
+import ca.cal.leandrose.service.CvService;
 import ca.cal.leandrose.service.EmployeurService;
 import ca.cal.leandrose.service.StudentService;
+import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.dto.StudentDto;
+import ca.cal.leandrose.service.dto.GestionnaireDto;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +24,11 @@ public class LeandrOseApplication {
     @Bean
     @Profile("!test")
     @Transactional
-    public CommandLineRunner Lsc0SE(EmployeurService employeurService, StudentService studentService) {
+    public CommandLineRunner Lsc0SE(
+            EmployeurService employeurService,
+            StudentService studentService,
+            GestionnaireService gestionnaireService) {
+
         return args -> {
             try {
                 employeurService.createEmployeur(
@@ -31,6 +38,11 @@ public class LeandrOseApplication {
                 StudentDto studentDto = studentService.createStudent(
                         "Ghilas", "Amr", "ghil.amr@student.com", "Password123", "STU001", "Computer Science");
                 System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
+
+
+                GestionnaireDto gestionnaireDto = gestionnaireService.createGestionnaire(
+                        "Jean", "Dupont", "gestionnaire@test.com", "Password123!", "514-123-4567");
+                System.out.println("Gestionnaire créé: " + gestionnaireDto);
 
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());

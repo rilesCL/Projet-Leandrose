@@ -16,5 +16,6 @@ public class InternshipOfferDto {
     private Float remuneration;
     private String status;
     private Long employeurId;
+    private String companyName;
     private String pdfPath;
 }

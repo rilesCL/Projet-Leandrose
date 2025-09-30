@@ -108,7 +108,6 @@ class AuthServiceTest {
                 .lastName("Manager")
                 .email("manager@test.com")
                 .password("encoded-pass")
-                .matricule("GSNumber")
                 .build();
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_GESTIONNAIRE"));

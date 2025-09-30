@@ -12,7 +12,7 @@ async function handleApiResponse(response) {
 
 // Get authorization headers
 function getAuthHeaders(token = null) {
-    const accessToken = token || localStorage.getItem('accessToken');
+    const accessToken = token || sessionStorage.getItem('accessToken');
     const headers = {
         'Content-Type': 'application/json'
     };
@@ -34,7 +34,7 @@ export async function uploadCvStudent(pdfFile, token = null) {
     formData.append('pdfFile', pdfFile);
 
     const headers = {};
-    const accessToken = token || localStorage.getItem('accessToken');
+    const accessToken = token || sessionStorage.getItem('accessToken');
     if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
     }
@@ -75,7 +75,7 @@ export async function getStudentCv(token = null) {
 // Download CV function
 export async function downloadStudentCv(token = null) {
     try {
-        const accessToken = token || localStorage.getItem('accessToken');
+        const accessToken = token || sessionStorage.getItem('accessToken');
         const headers = {};
 
         if (accessToken) {

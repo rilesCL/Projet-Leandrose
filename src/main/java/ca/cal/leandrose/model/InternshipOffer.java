@@ -15,6 +15,7 @@ public class InternshipOffer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @Column(nullable = false, length = 50)
     private String description;
 
@@ -23,6 +24,11 @@ public class InternshipOffer {
 
     @Column(nullable = false)
     private int durationInWeeks;
+
+    @ManyToOne
+    private Gestionnaire validatedBy;
+
+    private LocalDate validationDate;
 
     @Column(nullable = false)
     private String address;
@@ -39,7 +45,21 @@ public class InternshipOffer {
     @Column(nullable = false)
     private Status status;
 
+    @Column
+    private String requiredSkills;
+
+    @Column
+    private String rejectionComment;
+
     public enum Status {
         PENDING_VALIDATION, PUBLISHED, ASSIGNED, ARCHIVED, REJECTED
+    }
+
+    public Long getEmployeurId() {
+        return employeur != null ? employeur.getId() : null;
+    }
+
+    public String getCompanyName() {
+        return employeur != null ? employeur.getCompanyName() : null;
     }
 }

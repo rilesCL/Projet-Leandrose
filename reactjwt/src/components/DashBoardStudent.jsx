@@ -1,8 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import StudentCvList from "./StudentCvList";
+import { FaSignOutAlt } from "react-icons/fa"
 
 export default function DashBoardStudent() {
+
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        sessionStorage.clear();
+        localStorage.clear();
+        navigate("/login", {replace: true})
+    }
+
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-white shadow">
@@ -12,6 +22,13 @@ export default function DashBoardStudent() {
                             <span className="text-xl font-bold text-indigo-600">LeandrOSE</span>
                         </div>
                         <nav className="flex items-center space-x-4">
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center text-gray-600 hover:text-red-600 transition"
+                            >
+                                <FaSignOutAlt className="mr-1" />
+                                <span className="hidden sm:inline">Logout</span>
+                            </button>
                         </nav>
                     </div>
                 </div>
