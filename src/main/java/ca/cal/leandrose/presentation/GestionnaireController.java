@@ -107,4 +107,16 @@ public class GestionnaireController {
     public ResponseEntity<List<ProgramDto>> getPrograms() {
         return ResponseEntity.ok(gestionnaireService.getAllPrograms());
     }
+    @PostMapping("/addProgram")
+    public ResponseEntity<ProgramDto> addProgram(@RequestBody String programName) {
+        try {
+            ProgramDto programDto = gestionnaireService.addProgram(programName);
+            return ResponseEntity.ok(programDto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ProgramDto(e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(new ProgramDto("Erreur serveur"));
+        }
+    }
 }
