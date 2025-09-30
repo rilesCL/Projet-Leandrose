@@ -117,7 +117,7 @@ public class GestionnaireService {
                 .name(programName)
                 .build();
         Program savedProgram = programRepository.save(program);
-        return ProgramDto.create(program);
+        return ProgramDto.create(savedProgram);
     }
     public List<ProgramDto> getAllPrograms(){
         return programRepository.findAll()
