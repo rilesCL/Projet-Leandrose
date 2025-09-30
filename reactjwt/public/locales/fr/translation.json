@@ -75,5 +75,42 @@
       "serverError": "Impossible de se connecter au serveur",
       "unknown": "Une erreur est survenue."
     }
+  },
+  "login": {
+    "title": "Connexion",
+    "subtitle": "Connectez-vous à votre compte pour accéder à votre espace personnel.",
+    "email": "Email",
+    "password": "Mot de passe",
+    "placeholders": {
+      "email": "votre.email@exemple.com",
+      "password": "Votre mot de passe"
+    },
+    "submit": "Se connecter",
+    "submitting": "Connexion...",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ?",
+    "signUp": "S'inscrire",
+    "errors": {
+      "emailInvalid": "Email invalide",
+      "passwordRequired": "Mot de passe requis",
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "userNotFound": "Utilisateur introuvable",
+      "connectionError": "Erreur de connexion",
+      "serverError": "Impossible de se connecter au serveur"
+    },
+    "forgotPasswordModal": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Entrez votre email pour recevoir un lien de réinitialisation.",
+      "email": "Email",
+      "submit": "Envoyer",
+      "submitting": "Envoi...",
+      "back": "Retour",
+      "success": "Un email de réinitialisation a été envoyé à votre adresse.",
+      "errors": {
+        "emailRequired": "Veuillez entrer votre email",
+        "emailNotFound": "Email non trouvé",
+        "sendError": "Erreur lors de l'envoi de l'email"
+      }
+    }
   }
 }

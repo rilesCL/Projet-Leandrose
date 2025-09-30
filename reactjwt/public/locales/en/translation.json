@@ -75,5 +75,50 @@
       "serverError": "Unable to connect to the server",
       "unknown": "An error occurred."
     }
+  },
+  "login": {
+    "title": "Log in",
+    "subtitle": "Log in to your account to access your personal space.",
+    "email": "Email",
+    "password": "Password",
+    "placeholders": {
+      "email": "your.email@example.com",
+      "password": "Your password"
+    },
+    "submit": "Log in",
+    "submitting": "Logging in...",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account yet?",
+    "signUp": "Sign up",
+    "errors": {
+      "emailInvalid": "Invalid email",
+      "passwordRequired": "Password is required",
+      "invalidCredentials": "Invalid email or password",
+      "userNotFound": "User not found",
+      "connectionError": "Connection error",
+      "serverError": "Unable to connect to the server"
+    },
+    "forgotPasswordModal": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to receive a reset link.",
+      "email": "Email",
+      "submit": "Send",
+      "submitting": "Sending...",
+      "back": "Back",
+      "success": "A reset email has been sent to your address.",
+      "errors": {
+        "emailRequired": "Please enter your email",
+        "emailNotFound": "Email not found",
+        "sendError": "Error sending email"
+      }
+    }
+  },
+  "dashboardEmployeur": {
+    "logout": "Logout",
+    "welcome": "Welcome Employer",
+    "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
+    "navigation": {
+      "mainNavigation": "Main navigation"
+    }
   }
 }

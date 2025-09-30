@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -18,20 +20,19 @@ const Login = () => {
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
 
-    // Use Case 2: Validation des informations
     const validateUser = () => {
         let isValid = true;
         let updatedWarnings = { ...warnings };
 
         if (!validateEmail()) {
-            updatedWarnings.email = "Email invalide";
+            updatedWarnings.email = t("login.errors.emailInvalid");
             isValid = false;
         } else {
             updatedWarnings.email = "";
         }
 
         if (!validatePassword()) {
-            updatedWarnings.password = "Mot de passe requis";
+            updatedWarnings.password = t("login.errors.passwordRequired");
             isValid = false;
         } else {
             updatedWarnings.password = "";
@@ -63,7 +64,6 @@ const Login = () => {
         }
     };
 
-    // Use Case 3: Validation via API
     const fetchLogin = async () => {
         setIsSubmitting(true);
         try {
@@ -81,19 +81,18 @@ const Login = () => {
             });
 
             if (!response.ok) {
-                // Use Case 4: Gestion des erreurs
                 switch (response.status) {
                     case 401:
                         setWarnings({
-                            email: "Email ou mot de passe incorrect",
-                            password: "Email ou mot de passe incorrect"
+                            email: t("login.errors.invalidCredentials"),
+                            password: t("login.errors.invalidCredentials")
                         });
                         break;
                     case 404:
-                        setWarnings({ email: "Utilisateur introuvable", password: "" });
+                        setWarnings({ email: t("login.errors.userNotFound"), password: "" });
                         break;
                     default:
-                        setWarnings({ email: "Erreur de connexion", password: "" });
+                        setWarnings({ email: t("login.errors.connectionError"), password: "" });
                 }
                 return;
             }
@@ -101,7 +100,6 @@ const Login = () => {
             const data = await response.json();
             console.log("Login response:", data);
 
-            // Stocker le token
             sessionStorage.setItem('accessToken', data.accessToken);
             sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
 
@@ -110,7 +108,7 @@ const Login = () => {
         } catch (error) {
             console.error("Login error:", error);
             setWarnings({
-                email: "Impossible de se connecter au serveur",
+                email: t("login.errors.serverError"),
                 password: ""
             });
         } finally {
@@ -118,9 +116,8 @@ const Login = () => {
         }
     };
 
-
     const fetchUserInfo = async (token) => {
-        console.log("Token envoyé:", token); // DEBUG
+        console.log("Token envoyé:", token);
 
         try {
             const response = await fetch('http://localhost:8080/user/me', {
@@ -131,12 +128,11 @@ const Login = () => {
                 },
             });
 
-            console.log("Response status:", response.status); // DEBUG
+            console.log("Response status:", response.status);
 
             if (response.ok) {
                 const userData = await response.json();
-                console.log("User data:", userData); // DEBUG
-
+                console.log("User data:", userData);
 
                 switch (userData.role) {
                     case 'STUDENT':
@@ -156,16 +152,15 @@ const Login = () => {
                 navigate("/dashboard");
             }
         } catch (error) {
-            console.error("User info error:", error); // DEBUG
+            console.error("User info error:", error);
             navigate("/dashboard");
         }
     };
 
-    // Use Case 6: Mot de passe oublié
     const handleForgotPassword = async (e) => {
         e.preventDefault();
         if (!forgotPasswordEmail.trim()) {
-            setWarnings({ ...warnings, email: "Veuillez entrer votre email" });
+            setWarnings({ ...warnings, email: t("login.forgotPasswordModal.errors.emailRequired") });
             return;
         }
 
@@ -178,87 +173,116 @@ const Login = () => {
             });
 
             if (response.ok) {
-                alert("Un email de réinitialisation a été envoyé à votre adresse.");
+                alert(t("login.forgotPasswordModal.success"));
                 setShowForgotPassword(false);
                 setForgotPasswordEmail("");
                 setWarnings({ email: "", password: "" });
             } else {
-                setWarnings({ ...warnings, email: "Email non trouvé" });
+                setWarnings({ ...warnings, email: t("login.forgotPasswordModal.errors.emailNotFound") });
             }
         } catch (error) {
-            setWarnings({ ...warnings, email: "Erreur lors de l'envoi de l'email" });
+            setWarnings({ ...warnings, email: t("login.forgotPasswordModal.errors.sendError") });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Interface mot de passe oublié
     if (showForgotPassword) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
-                    <h1 className="text-2xl font-semibold text-gray-800 mb-2">Mot de passe oublié</h1>
-                    <p className="text-sm text-gray-500 mb-6">
-                        Entrez votre email pour recevoir un lien de réinitialisation.
-                    </p>
+                <div className="max-w-md w-full">
+                    <header className="text-center mb-6">
+                        <h1 className="text-3xl font-bold text-indigo-600">{t("appName")}</h1>
+                    </header>
 
-                    <form onSubmit={handleForgotPassword}>
-                        <div className="mb-4">
-                            <label htmlFor="forgotEmail" className="block text-sm font-medium text-gray-700">Email</label>
-                            <input
-                                id="forgotEmail"
-                                type="email"
-                                value={forgotPasswordEmail}
-                                onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                                className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
-                                placeholder="votre.email@exemple.com"
-                            />
-                            {warnings.email && <div className="mt-1 text-xs text-red-600">{warnings.email}</div>}
+                    <div className="bg-white rounded-lg shadow-md p-6">
+                        <div className="flex justify-between items-center mb-2">
+                            <h2 className="text-2xl font-semibold text-gray-800">{t("login.forgotPasswordModal.title")}</h2>
+                            <div className="w-32">
+                                <select
+                                    value={i18n.language}
+                                    onChange={(e) => i18n.changeLanguage(e.target.value)}
+                                    className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                                    <option value="en">English</option>
+                                    <option value="fr">Français</option>
+                                </select>
+                            </div>
                         </div>
+                        <p className="text-sm text-gray-500 mb-6">{t("login.forgotPasswordModal.subtitle")}</p>
 
-                        <div className="flex gap-2">
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className={`flex-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
-                            >
-                                {isSubmitting ? "Envoi..." : "Envoyer"}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setShowForgotPassword(false);
-                                    setWarnings({ email: "", password: "" });
-                                    setForgotPasswordEmail("");
-                                }}
-                                className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
-                            >
-                                Retour
-                            </button>
-                        </div>
-                    </form>
+                        <form onSubmit={handleForgotPassword}>
+                            <div className="mb-4">
+                                <label htmlFor="forgotEmail" className="block text-sm font-medium text-gray-700">
+                                    {t("login.forgotPasswordModal.email")}
+                                </label>
+                                <input
+                                    id="forgotEmail"
+                                    type="email"
+                                    value={forgotPasswordEmail}
+                                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
+                                    placeholder={t("login.placeholders.email")}
+                                />
+                                {warnings.email && <div className="mt-1 text-xs text-red-600">{warnings.email}</div>}
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`flex-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                >
+                                    {isSubmitting ? t("login.forgotPasswordModal.submitting") : t("login.forgotPasswordModal.submit")}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowForgotPassword(false);
+                                        setWarnings({ email: "", password: "" });
+                                        setForgotPasswordEmail("");
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
+                                >
+                                    {t("login.forgotPasswordModal.back")}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    // Use Case 1: Interface principale de connexion
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 <header className="text-center mb-6">
-                    <h1 className="text-3xl font-bold text-indigo-600">LeandrOSE</h1>
+                    <h1 className="text-3xl font-bold text-indigo-600">{t("appName")}</h1>
                 </header>
 
                 <div className="bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-2">Connexion</h2>
-                    <p className="text-sm text-gray-500 mb-6">
-                        Connectez-vous à votre compte pour accéder à votre espace personnel.
-                    </p>
+                    <div className="flex justify-between items-center mb-2">
+                        <h2 className="text-2xl font-semibold text-gray-800">{t("login.title")}</h2>
+                        <div className="w-32">
+                            <select
+                                value={i18n.language}
+                                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                                className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                                <option value="en">English</option>
+                                <option value="fr">Français</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p className="text-sm text-gray-500 mb-6">{t("login.subtitle")}</p>
+
                     <form onSubmit={handleSubmit}>
                         <div className="space-y-4">
                             <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                    {t("login.email")}
+                                </label>
                                 <input
                                     id="email"
                                     type="email"
@@ -266,14 +290,16 @@ const Login = () => {
                                     value={formData.email}
                                     onChange={handleChanges}
                                     className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
-                                    placeholder="votre.email@exemple.com"
+                                    placeholder={t("login.placeholders.email")}
                                     required
                                 />
                                 {warnings.email && <div className="mt-1 text-xs text-red-600">{warnings.email}</div>}
                             </div>
 
                             <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mot de passe</label>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                    {t("login.password")}
+                                </label>
                                 <input
                                     id="password"
                                     type="password"
@@ -281,7 +307,7 @@ const Login = () => {
                                     value={formData.password}
                                     onChange={handleChanges}
                                     className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.password ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
-                                    placeholder="Votre mot de passe"
+                                    placeholder={t("login.placeholders.password")}
                                     required
                                 />
                                 {warnings.password && <div className="mt-1 text-xs text-red-600">{warnings.password}</div>}
@@ -294,7 +320,7 @@ const Login = () => {
                                 disabled={isSubmitting}
                                 className={`w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
                             >
-                                {isSubmitting ? "Connexion..." : "Se connecter"}
+                                {isSubmitting ? t("login.submitting") : t("login.submit")}
                             </button>
                         </div>
 
@@ -304,17 +330,17 @@ const Login = () => {
                                 onClick={() => setShowForgotPassword(true)}
                                 className="text-sm text-indigo-600 hover:underline"
                             >
-                                Mot de passe oublié ?
+                                {t("login.forgotPassword")}
                             </button>
 
                             <div className="text-sm text-gray-500">
-                                Pas encore de compte ?{" "}
+                                {t("login.noAccount")}{" "}
                                 <button
                                     type="button"
                                     onClick={() => navigate("/register/etudiant")}
                                     className="text-indigo-600 hover:underline"
                                 >
-                                    S'inscrire
+                                    {t("login.signUp")}
                                 </button>
                             </div>
                         </div>
