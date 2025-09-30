@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { registerEmployeur } from "../api/apiRegister.jsx";
+import {FaArrowLeft} from "react-icons/fa";
 
 const initialState = {
     firstName: "",
@@ -153,8 +154,7 @@ export default function RegisterEmployeur() {
                             </div>
 
                             <div className="text-sm text-gray-500">
-                                {t("registerEmployeur.alreadyAccount")}{" "}
-                                <button type="button" onClick={() => navigate("/login")} className="text-indigo-600 hover:underline">{t("registerEmployeur.login")}</button>
+                                <button type="button" onClick={() => navigate("/register")} className="text-indigo-600 hover:underline"><FaArrowLeft></FaArrowLeft></button>
                             </div>
                         </div>
                     </form>

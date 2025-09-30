@@ -43,8 +43,6 @@
     "submit": "S'inscrire",
     "submitting": "En cours...",
     "reset": "Réinitialiser",
-    "alreadyAccount": "Déjà un compte ?",
-    "login": "Se connecter",
     "studentAccount": "Vous êtes étudiant ?",
     "createStudent": "Créez un compte étudiant",
     "success": "Inscription réussie !",
@@ -135,7 +133,6 @@
       "email": "Email",
       "submit": "Envoyer",
       "submitting": "Envoi...",
-      "back": "Retour",
       "success": "Un email de réinitialisation a été envoyé à votre adresse.",
       "errors": {
         "emailRequired": "Veuillez entrer votre email",
