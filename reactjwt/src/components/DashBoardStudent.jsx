@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import StudentCvList from "./StudentCvList";
 import { FaSignOutAlt } from "react-icons/fa";
@@ -7,12 +7,38 @@ import { FaSignOutAlt } from "react-icons/fa";
 export default function DashBoardStudent() {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
+    const [userName, setUserName] = useState("");
 
     const handleLogout = () => {
         sessionStorage.clear();
         localStorage.clear();
         navigate("/login", { replace: true });
     };
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            const token = sessionStorage.getItem('accessToken');
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+            try {
+                const res = await fetch('http://localhost:8080/user/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserName(data.firstName || ""); // ou `${data.firstName} ${data.lastName}`
+                } else {
+                    navigate("/login");
+                }
+            } catch (error) {
+                console.error("User fetch error:", error);
+                navigate("/login");
+            }
+        };
+        fetchUserInfo();
+    }, [navigate]);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -48,7 +74,9 @@ export default function DashBoardStudent() {
 
             <main className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-4">{t("dashboardStudent.welcome")}</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-4">
+                        {t("dashboardStudent.welcome")} {userName}!
+                    </h1>
                     <p className="text-gray-600 mb-6">
                         {t("dashboardStudent.description")}
                     </p>

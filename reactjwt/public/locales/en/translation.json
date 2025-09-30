@@ -115,7 +115,7 @@
   },
   "dashboardEmployeur": {
     "logout": "Logout",
-    "welcome": "Welcome Employer",
+    "welcome": "Welcome",
     "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
     "navigation": {
       "mainNavigation": "Main navigation"
@@ -123,11 +123,11 @@
   },
   "dashboardGestionnaire": {
     "logout": "Logout",
-    "welcome": "Welcome Manager"
+    "welcome": "Welcome"
   },
   "dashboardStudent": {
     "logout": "Logout",
-    "welcome": "Welcome Student",
+    "welcome": "Welcome",
     "description": "This is your student dashboard. You can manage your CVs and soon view internship offers."
   },
   "internshipOffersList": {

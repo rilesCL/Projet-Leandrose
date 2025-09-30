@@ -61,18 +61,46 @@ export default function RegisterEmployeur() {
             setSuccessMessage(t("registerEmployeur.success"));
             setForm(initialState);
             setErrors({});
-            setTimeout(() => {
-                setSuccessMessage("");
-                navigate("/");
-            }, 1500);
+
+            // Récupérer le token pour redirection
+            const loginResponse = await fetch('http://localhost:8080/user/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: form.email, password: form.password })
+            });
+
+            if (loginResponse.ok) {
+                const data = await loginResponse.json();
+                sessionStorage.setItem('accessToken', data.accessToken);
+                sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
+
+                const userInfoResponse = await fetch('http://localhost:8080/user/me', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${data.accessToken}` }
+                });
+
+                if (userInfoResponse.ok) {
+                    const userData = await userInfoResponse.json();
+                    switch (userData.role) {
+                        case 'STUDENT':
+                            navigate("/dashboard/student");
+                            break;
+                        case 'EMPLOYEUR':
+                            navigate("/dashboard/employeur");
+                            break;
+                        case 'GESTIONNAIRE':
+                            navigate("/dashboard/gestionnaire");
+                            break;
+                        default:
+                            navigate("/dashboard");
+                    }
+                }
+            }
+
         } catch (err) {
             if (err && err.response && err.response.data) {
                 const data = err.response.data;
-                if (typeof data === "string") {
-                    setGlobalError(data);
-                } else {
-                    setGlobalError(t("registerEmployeur.errors.unknown"));
-                }
+                setGlobalError(typeof data === "string" ? data : t("registerEmployeur.errors.unknown"));
             } else {
                 setGlobalError(t("registerEmployeur.errors.serverError"));
             }
@@ -80,6 +108,7 @@ export default function RegisterEmployeur() {
             setIsSubmitting(false);
         }
     };
+
 
     const handleReset = () => {
         setForm(initialState);

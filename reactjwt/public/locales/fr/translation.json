@@ -115,7 +115,7 @@
   },
   "dashboardEmployeur": {
     "logout": "Se déconnecter",
-    "welcome": "Bienvenue Employeur",
+    "welcome": "Bienvenue",
     "description": "Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.",
     "navigation": {
       "mainNavigation": "Navigation principale"
@@ -123,11 +123,11 @@
   },
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
-    "welcome": "Bienvenue Gestionnaire"
+    "welcome": "Bienvenue"
   },
   "dashboardStudent": {
     "logout": "Se déconnecter",
-    "welcome": "Bienvenue Étudiant",
+    "welcome": "Bienvenue",
     "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage."
   },
   "internshipOffersList": {
