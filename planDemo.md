@@ -66,3 +66,6 @@
 ### Cas d'erreur :
 1. Dans le champ Email, je rentre cet email invalide: ghil.amr
 2. Dans le champ Mot de passe, je rentre un mot de passe invalide(moins de 8 caractères ou qui n'est pas le bon): Paswdr
+3. 
+
+# Plan de demo de EQ04-3: En tant qu'employeur, je téléverse mon offre de stage.
