@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { uploadStageEmployeur } from "../api/apiEmployeur";
 import { useTranslation } from "react-i18next";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const MAX_FILE_SIZE_MB = 5;
 const BYTES_IN_KB = 1024;
@@ -146,13 +149,28 @@ export default function UploadStageEmployeur({ employeurId }) {
                                 <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
                                     {t("uploadStageEmployeur.startDate")}
                                 </label>
-                                <input
+                                <DatePicker
                                     id="startDate"
-                                    type="text"
-                                    value={startDate}
-                                    onChange={e => setStartDate(e.target.value)}
-                                    placeholder={t("uploadStageEmployeur.startDatePlaceholder")}
+                                    selected={startDate ? new Date(startDate.split('-').reverse().join('-')) : null}
+                                    onChange={(date) => {
+                                        if (date) {
+                                            const day = String(date.getDate()).padStart(2, '0');
+                                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                                            const year = date.getFullYear();
+                                            setStartDate(`${day}-${month}-${year}`);
+                                        } else {
+                                            setStartDate('');
+                                        }
+                                    }}
+                                    minDate={new Date()}
+                                    dateFormat="dd-MM-yyyy"
+                                    placeholderText={t("uploadStageEmployeur.startDatePlaceholder")}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
                                     className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.startDate ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
+                                    wrapperClassName="w-full"
+                                    calendarClassName="shadow-lg"
                                 />
                                 {errors.startDate && <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>}
                             </div>
