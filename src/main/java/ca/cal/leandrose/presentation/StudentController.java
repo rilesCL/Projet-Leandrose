@@ -1,10 +1,15 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.Student;
+import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
+import ca.cal.leandrose.service.CandidatureService;
 import ca.cal.leandrose.service.CvService;
+import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.UserAppService;
+import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +26,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -29,6 +35,8 @@ public class StudentController {
     private final CvService cvService;
     private final StudentRepository studentRepository;
     private final UserAppService userService;
+    private final CandidatureService candidatureService;
+    private final InternshipOfferService internshipOfferService;
 
     @PostMapping(value = "/cv")
     public ResponseEntity<CvDto> uploadCv(
@@ -116,5 +124,78 @@ public class StudentController {
         } catch (RuntimeException | MalformedURLException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/offers")
+    public ResponseEntity<List<InternshipOffer>> getPublishedOffers() {
+        List<InternshipOffer> offers = internshipOfferService.getPublishedOffersForStudents();
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(offers);
+    }
+
+    @GetMapping("/offers/{id}")
+    public ResponseEntity<InternshipOffer> getOfferDetails(@PathVariable Long id) {
+        InternshipOffer offer = internshipOfferService.getOffer(id);
+
+        if (offer.getStatus() != InternshipOffer.Status.PUBLISHED) {
+            return ResponseEntity.status(403).build();
+        }
+
+        return ResponseEntity.ok(offer);
+    }
+
+    @PostMapping("/offers/{offerId}/apply")
+    public ResponseEntity<CandidatureDto> applyToOffer(
+            HttpServletRequest request,
+            @PathVariable Long offerId,
+            @RequestParam Long cvId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            CandidatureDto candidature = candidatureService.postuler(
+                    me.getId(), offerId, cvId);
+            return ResponseEntity.ok(candidature);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/applications")
+    public ResponseEntity<List<CandidatureDto>> getMyCandidatures(
+            HttpServletRequest request) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<CandidatureDto> candidatures =
+                candidatureService.getCandidaturesByStudent(me.getId());
+        return ResponseEntity.ok(candidatures);
+    }
+
+  @GetMapping("/offers/{id}/pdf")
+  public ResponseEntity<byte[]> downloadOfferPdf(@PathVariable Long id) {
+    try {
+      InternshipOffer offer = internshipOfferService.getOffer(id);
+
+      if (offer.getStatus() != InternshipOffer.Status.PUBLISHED) {
+        return ResponseEntity.status(403).build();
+      }
+
+      byte[] pdfData = internshipOfferService.getOfferPdf(id);
+      return ResponseEntity.ok()
+          .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+          .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=offer_" + id + ".pdf")
+          .body(pdfData);
+    } catch (Exception e) {
+      return ResponseEntity.notFound().build();
+    }
     }
 }

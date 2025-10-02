@@ -90,4 +90,10 @@ public class InternshipOfferService {
     public List<InternshipOffer> getOffersByEmployeurId(Long employeurId) {
         return internshipOfferRepository.findOffersByEmployeurId(employeurId);
     }
+
+    public List<InternshipOffer> getPublishedOffersForStudents() {
+        return internshipOfferRepository.findByStatusOrderByStartDateDesc(
+                InternshipOffer.Status.PUBLISHED
+        );
+    }
 }
