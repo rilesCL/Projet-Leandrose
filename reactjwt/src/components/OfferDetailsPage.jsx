@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {getOfferDetails, downloadOfferPdf} from "../api/apiGestionnaire.jsx";
+import {useTranslation} from "react-i18next";
 
 
 export default function OfferDetailsPage(){
     const {id} = useParams()
+    const {t} = useTranslation()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
     const [offer, setOffer] = useState(null)
@@ -26,7 +28,7 @@ export default function OfferDetailsPage(){
 
             }
             catch(err){
-                setError("Failed to load offer details" + err)
+                setError(t("pendingOffers.errors.serverError") + err)
             }
             finally{
                 setLoading(false)
@@ -39,12 +41,9 @@ export default function OfferDetailsPage(){
         return <p className="text-red-500 p-6">{error}</p>
     }
     if(loading){
-        return <p className="p-6">loading...</p>
+        return <p className="p-6">{t("pendingOffers.loading")}</p>
     }
 
-    if (!offer){
-        return <p className="p-6">No offer found</p>
-    }
 
     return (
         <div className="p-6">
@@ -52,24 +51,24 @@ export default function OfferDetailsPage(){
                 onClick={() => navigate(-1)}
                 className="mb-4 text-indigo-600 hover:underline"
             >
-                ← Back
+                ← {t("offerPagesDetails.back")}
             </button>
 
             <div className="space-y-2">
-                <h2>Employer Contact</h2>
+                <h2>{t("offerPagesDetails.contact")}</h2>
                 <p>
                     {offer.employeur.firstName} {offer.employeur.lastName}
                 </p>
-                <p>Courriel: {offer.employeur.email}</p>
-                <p><strong>Company:</strong> {offer.employeur.companyName}</p>
-                <p><strong>Description:</strong> {offer.description}</p>
-                <p><strong>Duration:</strong> {offer.durationInWeeks} weeks</p>
-                <p><strong>Start Date:</strong> {new Date(offer.startDate).toLocaleDateString()}</p>
-                <p><strong>Address:</strong> {offer.address}</p>
+                <p><strong>{t("offerPagesDetails.email")}:</strong> {offer.employeur.email}</p>
+                <p><strong>{t("pendingOffers.table.company")}:</strong> {offer.employeur.companyName}</p>
+                <p><strong>{t("pendingOffers.table.title")}:</strong> {offer.description}</p>
+                <p><strong>{t("offerPagesDetails.email")}:</strong> {offer.durationInWeeks} weeks</p>
+                <p><strong>{t("offerPagesDetails.start_date")}:</strong> {new Date(offer.startDate).toLocaleDateString()}</p>
+                <p><strong>{t("offerPagesDetails.address")}:</strong> {offer.address}</p>
                <button
                     onClick={() => handleDownload(offer.id)}
                     className="text-blue-600 underline">
-                   Download PDF
+                   {t("pendingOffers.actions.downloadPdf")}
                </button>
             </div>
         </div>

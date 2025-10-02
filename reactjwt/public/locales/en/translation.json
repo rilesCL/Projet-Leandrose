@@ -359,5 +359,15 @@
       "commentRequired": "You must write a comment before rejecting an offer",
       "download": "Error downloading the offer"
     }
+  },
+  "offerPagesDetails": {
+    "title": "Internship Offers",
+    "details": "Details",
+    "back": "Back",
+    "contact": "Employer Contact",
+    "email": "Email",
+    "duration": "Duration",
+    "start_date": "Start Date",
+    "address": "Address"
   }
 }

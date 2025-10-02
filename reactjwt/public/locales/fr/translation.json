@@ -360,5 +360,15 @@
       "commentRequired": "Il faut écrire un commentaire avant de rejeter l'offre",
       "download": "Erreur lors du téléchargement de l'offre"
     }
+  },
+  "offerPagesDetails": {
+    "title": "Offert de Stage",
+    "details": "Détails",
+    "contact": "Contact Employeur",
+    "back": "Précédent",
+    "email": "Courriel",
+    "duration": "Duration",
+    "start_date": "Début de date",
+    "address": "Adresse"
   }
 }

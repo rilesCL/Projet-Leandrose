@@ -1,11 +1,16 @@
 import React, {useEffect, useState} from "react";
 import {getApprovedOffers, getRejectedOffers} from "../api/apiGestionnaire.jsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 export default function OffersPage() {
+    const { t } = useTranslation()
     const [offers, setOffers] = useState([]);
     const [filter, setFilter] = useState("approved");
     const [error, setError] = useState("");
+    const navigate = useNavigate()
+
+
 
     useEffect(() => {
         async function loadOffers() {
@@ -16,7 +21,7 @@ export default function OffersPage() {
                 setOffers(data);
             } catch (err) {
                 console.error(err);
-                setError("Failed to load offers");
+                setError(t("pendingOffers.errors.serverError"));
             }
         }
         loadOffers();
@@ -24,7 +29,7 @@ export default function OffersPage() {
 
     return (
         <div className="p-6">
-            <h2 className="text-xl font-bold mb-4">Internship Offers</h2>
+            <h2 className="text-xl font-bold mb-4">{t("offerPagesDetails.title")}</h2>
 
             {/* Filter buttons */}
             <div className="flex gap-4 mb-6">
@@ -34,7 +39,7 @@ export default function OffersPage() {
                         filter === "approved" ? "bg-green-600 text-white" : "bg-gray-200"
                     }`}
                 >
-                    Approved
+                    {t("pendingOffers.status.approved")}
                 </button>
                 <button
                     onClick={() => setFilter("rejected")}
@@ -42,7 +47,7 @@ export default function OffersPage() {
                         filter === "rejected" ? "bg-red-600 text-white" : "bg-gray-200"
                     }`}
                 >
-                    Rejected
+                    {t("pendingOffers.status.rejected")}
                 </button>
             </div>
 
@@ -51,9 +56,9 @@ export default function OffersPage() {
             <table className="w-full border-collapse border border-gray-300 text-sm">
                 <thead className="bg-gray-100">
                 <tr>
-                    <th className="border px-2 py-1">Company</th>
-                    <th className="border px-2 py-1">Status</th>
-                    <th className="border px-2 py-1">Actions</th>
+                    <th className="border px-2 py-1">{t("pendingOffers.table.company")}</th>
+                    <th className="border px-2 py-1">{t("pendingOffers.table.status")}</th>
+                    <th className="border px-2 py-1">{t("pendingOffers.table.actions")}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -66,13 +71,24 @@ export default function OffersPage() {
                                 to={`/dashboard/gestionnaire/offers/${offer.id}`}
                                 className="text-blue-600 hover:underline"
                             >
-                                Details
+                                {t("offerPagesDetails.details")}
                             </Link>
                         </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+
+            <div className="p-5">
+                <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                >
+                    {t("uploadStageEmployeur.backToDashboard")}
+                </button>
+            </div>
+
         </div>
     );
 }
