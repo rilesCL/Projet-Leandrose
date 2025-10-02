@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {getApprovedOffers, getRejectedOffers, getOfferDetails} from "../api/apiGestionnaire.jsx";
+import {getApprovedOffers, getRejectedOffers} from "../api/apiGestionnaire.jsx";
+import {Link} from "react-router-dom";
 
 export default function OffersPage() {
     const [offers, setOffers] = useState([]);
@@ -50,32 +51,24 @@ export default function OffersPage() {
             <table className="w-full border-collapse border border-gray-300 text-sm">
                 <thead className="bg-gray-100">
                 <tr>
-                    <th className="border px-2 py-1">Title</th>
                     <th className="border px-2 py-1">Company</th>
-                    <th className="border px-2 py-1">PDF</th>
                     <th className="border px-2 py-1">Status</th>
+                    <th className="border px-2 py-1">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {offers.map((offer) => (
                     <tr key={offer.id} className="hover:bg-gray-50">
-                        <td className="border px-2 py-1">{offer.description}</td>
                         <td className="border px-2 py-1">{offer.companyName}</td>
-                        <td className="border px-2 py-1">
-                            {offer.pdfPath ? (
-                                <a
-                                    href={`http://localhost:8080/${offer.pdfPath}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 underline"
-                                >
-                                    PDF
-                                </a>
-                            ) : (
-                                "—"
-                            )}
-                        </td>
                         <td className="border px-2 py-1">{offer.status}</td>
+                        <td>
+                            <Link
+                                to={`/dashboard/gestionnaire/offers/${offer.id}`}
+                                className="text-blue-600 hover:underline"
+                            >
+                                Details
+                            </Link>
+                        </td>
                     </tr>
                 ))}
                 </tbody>

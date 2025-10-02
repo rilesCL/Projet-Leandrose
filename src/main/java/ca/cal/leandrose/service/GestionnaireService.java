@@ -92,6 +92,12 @@ public class GestionnaireService {
     public List<InternshipOffer> getPendingOffers() {
         return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PENDING_VALIDATION);
     }
+    public List<InternshipOffer> getRejectedoffers(){
+        return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED);
+    }
+    public List<InternshipOffer> getApprovedOffers(){
+        return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED);
+    }
 
     @Transactional
     public GestionnaireDto createGestionnaire(

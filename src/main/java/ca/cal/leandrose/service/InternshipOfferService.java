@@ -3,9 +3,11 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
+import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.itextpdf.text.pdf.PdfReader;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +83,12 @@ public class InternshipOfferService {
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
     }
 
+    public InternshipOfferDto getOfferDetails(Long id){
+        InternshipOffer offer = internshipOfferRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Offer not found with id" + id));
+        return toDto(offer);
+    }
+
     public byte[] getOfferPdf(Long id) throws IOException {
         InternshipOffer offer = getOffer(id);
         Path path = Paths.get(offer.getPdfPath());
@@ -89,5 +97,20 @@ public class InternshipOfferService {
 
     public List<InternshipOffer> getOffersByEmployeurId(Long employeurId) {
         return internshipOfferRepository.findOffersByEmployeurId(employeurId);
+    }
+
+    private InternshipOfferDto toDto(InternshipOffer offer){
+        return InternshipOfferDto.builder()
+                .id(offer.getId())
+                .description(offer.getDescription())
+                .startDate(offer.getStartDate())
+                .durationInWeeks(offer.getDurationInWeeks())
+                .address(offer.getAddress())
+                .remuneration(offer.getRemuneration())
+                .status(String.valueOf(offer.getStatus()))
+                .pdfPath(offer.getPdfPath())
+                .employeur(EmployeurDto.create(offer.getEmployeur()))
+                 .build();
+
     }
 }

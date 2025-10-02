@@ -18,4 +18,6 @@ public class InternshipOfferDto {
     private Long employeurId;
     private String companyName;
     private String pdfPath;
+
+    private EmployeurDto employeur;
 }

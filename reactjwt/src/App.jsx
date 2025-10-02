@@ -13,6 +13,8 @@ import DashBoardGestionnaire from "./components/DashBoardGestionnaire.jsx";
 import PendingCvPage from "./components/PendingCvPage.jsx";
 import RegisterLanding from "./components/RegisterLanding.jsx";
 import AddProgramPage from "./components/AddProgramPage.jsx";
+import OffersPage from "./components/OffersPage.jsx";
+import OfferDetailsPage from "./components/OfferDetailsPage.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -35,6 +37,10 @@ function App() {
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
                 </Route>
+                <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
+                <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage/>}/>
+
+
 
 
             </Route>
