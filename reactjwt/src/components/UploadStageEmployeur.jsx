@@ -10,6 +10,8 @@ const BYTES_IN_KB = 1024;
 const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * BYTES_IN_MB;
 const MIN_DURATION_WEEKS = 1;
+const MAX_DURATION_WEEKS = 120;
+const MIN_REMUNERATION = 0;
 const DATE_REGEX = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/;
 
 export default function UploadStageEmployeur({ employeurId }) {
@@ -37,8 +39,12 @@ export default function UploadStageEmployeur({ employeurId }) {
         if (!duration.toString().trim()) e.duration = t("uploadStageEmployeur.errors.duration");
         else if (!Number.isInteger(Number(duration)) || Number(duration) < MIN_DURATION_WEEKS)
             e.duration = t("uploadStageEmployeur.errors.durationInvalid");
+        else if (Number(duration) > MAX_DURATION_WEEKS)
+            e.duration = t("uploadStageEmployeur.errors.durationInvalidMax")
         if (!address.trim()) e.address = t("uploadStageEmployeur.errors.address");
         if (!pdfFile) e.pdfFile = t("uploadStageEmployeur.errors.pdfRequired");
+        if(remuneration < MIN_REMUNERATION)
+            e.remuneration = t("uploadStageEmployeur.errors.remunerationMin")
         else {
             const fileName = pdfFile.name.toLowerCase();
             if (pdfFile.type !== "application/pdf" && !fileName.endsWith(".pdf")) {
@@ -184,6 +190,7 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     value={duration}
                                     onChange={e => setDuration(e.target.value)}
                                     min={MIN_DURATION_WEEKS}
+                                    max={MAX_DURATION_WEEKS}
                                     className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.duration ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                                 />
                                 {errors.duration && <p className="mt-1 text-sm text-red-600">{errors.duration}</p>}
@@ -215,10 +222,11 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     type="number"
                                     value={remuneration}
                                     onChange={e => setRemuneration(e.target.value)}
-                                    min="0"
+                                    min={MIN_REMUNERATION}
                                     step="0.01"
                                     className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
                                 />
+                                {errors.remuneration && <p className="mt-1 text-sm text-red-600">{errors.remuneration}</p>}
                             </div>
                         </div>
 
