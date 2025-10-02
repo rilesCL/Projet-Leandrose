@@ -1,9 +1,12 @@
 package ca.cal.leandrose.service;
 
 
+import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.model.Student;
+import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
+import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.StudentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +20,7 @@ import java.util.Optional;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CvRepository cvRepository;
 
 
     @Transactional
@@ -46,7 +50,7 @@ public class StudentService {
     }
     @Transactional
     public StudentDto getStudentById(Long id) {
-        if (id == null) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException();
         }
         Optional<Student> student = studentRepository.findById(id);
@@ -55,4 +59,5 @@ public class StudentService {
         }
         return StudentDto.create(student.get());
     }
+
 }

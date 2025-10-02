@@ -70,6 +70,7 @@ public class StudentController {
         CvDto cvDto;
         try {
             cvDto = cvService.getCvByStudentId(student.getId());
+            System.out.println(cvDto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(404)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -117,4 +118,6 @@ public class StudentController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 }

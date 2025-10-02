@@ -110,6 +110,8 @@ public class CvService {
     public CvDto getCvByStudentId(Long studentId) {
         Cv cv = cvRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new RuntimeException("CV non trouvé pour l'étudiant " + studentId));
-        return CvDto.create(cv);
+        CvDto cvDto = CvDto.create(cv);
+        cvDto.setRejectionComment(cv.getRejectionComment());
+        return cvDto;
     }
 }

@@ -40,7 +40,7 @@ public class GestionnaireController {
     @PostMapping("/cv/{cvId}/reject")
     public ResponseEntity<CvDto> rejectCv(
             @PathVariable Long cvId,
-            @RequestBody(required = false) String comment
+            @RequestBody String comment
     ) {
         return ResponseEntity.ok(gestionnaireService.rejectCv(cvId, comment));
     }
