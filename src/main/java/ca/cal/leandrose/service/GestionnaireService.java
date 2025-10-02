@@ -10,7 +10,9 @@ import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.repository.ProgramRepository;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.GestionnaireDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.dto.ProgramDto;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -92,11 +94,20 @@ public class GestionnaireService {
     public List<InternshipOffer> getPendingOffers() {
         return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PENDING_VALIDATION);
     }
-    public List<InternshipOffer> getRejectedoffers(){
-        return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED);
+    public List<InternshipOfferDto> getRejectedoffers(){
+        return internshipOfferRepository
+                .findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
+
     }
-    public List<InternshipOffer> getApprovedOffers(){
-        return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED);
+    public List<InternshipOfferDto> getApprovedOffers(){
+        return internshipOfferRepository
+                .findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
     }
 
     @Transactional

@@ -52,11 +52,11 @@ public class GestionnaireController {
     }
 
     @GetMapping("/offers/approved")
-    public ResponseEntity<List<InternshipOffer>> getApprovedOffers(){
+    public ResponseEntity<List<InternshipOfferDto>> getApprovedOffers(){
         return ResponseEntity.ok(gestionnaireService.getApprovedOffers());
     }
     @GetMapping("/offers/reject")
-    public ResponseEntity<List<InternshipOffer>> getRejectedOffers(){
+    public ResponseEntity<List<InternshipOfferDto>> getRejectedOffers(){
         return ResponseEntity.ok(gestionnaireService.getRejectedoffers());
     }
     @GetMapping("/cvs/pending")
