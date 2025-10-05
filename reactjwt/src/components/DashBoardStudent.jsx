@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import StudentCvList from "./StudentCvList";
 import { FaSignOutAlt } from "react-icons/fa";
 import LanguageSelector from "./LanguageSelector.jsx";
+import StudentInternshipOffersList from "./StudentInternshipOffersList.jsx";
 
 export default function DashBoardStudent() {
     const navigate = useNavigate();
@@ -74,6 +75,9 @@ export default function DashBoardStudent() {
                     </p>
 
                     <StudentCvList />
+                    <div className="mt-8">
+                        <StudentInternshipOffersList />
+                    </div>
                 </div>
             </main>
         </div>

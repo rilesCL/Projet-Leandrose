@@ -62,4 +62,18 @@ public class InternshipOffer {
     public String getCompanyName() {
         return employeur != null ? employeur.getCompanyName() : null;
     }
+
+    public String getEmployeurFirstName() {
+        return employeur != null ? employeur.getFirstName() : null;
+    }
+
+    public String getEmployeurLastName() {
+        return employeur != null ? employeur.getLastName() : null;
+    }
+
+    public String getEmployeurEmail() {
+        return employeur != null && employeur.getCredentials() != null
+                ? employeur.getCredentials().getEmail()
+                : null;
+    }
 }
