@@ -157,7 +157,12 @@
   "dashboardStudent": {
     "logout": "Se déconnecter",
     "welcome": "Bienvenue",
-    "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage."
+    "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage.",
+    "tabs": {
+      "offers": "Offres",
+      "cv": "Mon CV",
+      "applications": "Mes candidatures"
+    }
   },
   "programsList": {
     "title": "Programmes Existants",
@@ -358,5 +363,67 @@
       "commentRequired": "Il faut écrire un commentaire avant de rejeter l'offre",
       "download": "Erreur lors du téléchargement de l'offre"
     }
+  },
+  "studentApplicationsList": {
+    "loading": "Chargement de vos candidatures...",
+    "error": "Impossible de charger vos candidatures",
+    "retry": "Réessayer",
+    "emptyTitle": "Aucune candidature",
+    "emptyDescription": "Vous n'avez pas encore postulé à une offre.",
+    "btnViewOffers": "Voir les offres",
+    "title": "Mes candidatures",
+    "count": "{{count}} candidature{{suffix}}",
+    "table": {
+      "offer": "Offre",
+      "company": "Entreprise",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "En attente",
+      "accepted": "Acceptée",
+      "rejected": "Refusée",
+      "unknown": "Inconnu"
+    },
+    "viewOffer": "Voir l'offre"
+  },
+  "offerDetail": {
+    "back": "Retour aux offres",
+    "location": "Lieu",
+    "startDate": "Date de début",
+    "duration": "Durée",
+    "durationWeeks": "{{weeks}} semaine{{plural}}",
+    "remuneration": "Rémunération",
+    "employerContact": "Contact de l'employeur",
+    "downloadPdf": "Télécharger le document PDF",
+    "applySection": "Postuler à cette offre",
+    "needApprovedCv": "Vous devez téléverser un CV approuvé pour postuler.",
+    "pendingCv": "Votre CV est en attente d'approbation. Vous pourrez postuler une fois approuvé.",
+    "applyErrorGeneric": "Erreur lors de la candidature.",
+    "applyBtn": "Postuler à cette offre",
+    "applySending": "Envoi en cours...",
+    "alreadyApplied": "Déjà postulée",
+    "appliedSuccess": "Candidature envoyée avec succès ! L'employeur examinera votre dossier.",
+    "notDefined": "Non définie",
+    "notSpecified": "Non spécifié"
+  },
+  "studentOffersList": {
+    "loading": "Chargement des offres...",
+    "errorTitle": "Erreur",
+    "errorMessage": "Impossible de charger les offres de stage",
+    "retry": "Réessayer",
+    "emptyTitle": "Aucune offre disponible",
+    "emptyDescription": "Il n'y a pas d'offres de stage publiées pour le moment.",
+    "table": {
+      "description": "Description",
+      "company": "Entreprise",
+      "location": "Lieu",
+      "startDate": "Date de début",
+      "duration": "Durée",
+      "actions": "Actions"
+    },
+    "viewDetails": "Voir détails",
+    "weeks": "semaine{{plural}}"
   }
 }

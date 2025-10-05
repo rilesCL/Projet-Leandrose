@@ -2,7 +2,6 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.Student;
-import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.CandidatureService;

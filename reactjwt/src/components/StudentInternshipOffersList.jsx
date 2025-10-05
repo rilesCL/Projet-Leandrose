@@ -15,7 +15,6 @@ export default function StudentInternshipOffersList() {
         async function fetchOffers() {
             setLoading(true);
             setError(null);
-
             try {
                 const data = await getPublishedOffers();
                 setOffers(Array.isArray(data) ? data : []);
@@ -26,7 +25,6 @@ export default function StudentInternshipOffersList() {
                 setLoading(false);
             }
         }
-
         fetchOffers();
     }, []);
 
@@ -94,24 +92,12 @@ export default function StudentInternshipOffersList() {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                     <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Description
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Entreprise
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Lieu
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date de début
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Durée
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entreprise</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lieu</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date de début</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durée</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -125,27 +111,15 @@ export default function StudentInternshipOffersList() {
                                         </div>
                                     </div>
                                     <div className="ml-3">
-                                        <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
-                                            {offer.description || "Non défini"}
-                                        </div>
-                                        <div className="text-sm text-gray-500">
-                                            {offer.address || "Non spécifié"}
-                                        </div>
+                                        <div className="text-sm font-medium text-gray-900 truncate max-w-xs">{offer.description || "Non défini"}</div>
+                                        <div className="text-sm text-gray-500">{offer.address || "Non spécifié"}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td className="px-6 py-4 text-sm text-gray-900">
-                                {offer.companyName || "N/A"}
-                            </td>
-                            <td className="px-6 py-4 text-sm text-gray-900">
-                                {offer.address || "Non spécifié"}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {formatDate(offer.startDate)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {offer.durationInWeeks} semaine{offer.durationInWeeks > 1 ? 's' : ''}
-                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{offer.companyName || "N/A"}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{offer.address || "Non spécifié"}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(offer.startDate)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{offer.durationInWeeks} semaine{offer.durationInWeeks > 1 ? 's' : ''}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button
                                     onClick={() => navigate(`/dashboard/student/offers/${offer.id}`)}

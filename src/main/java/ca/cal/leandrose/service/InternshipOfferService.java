@@ -91,6 +91,7 @@ public class InternshipOfferService {
         return internshipOfferRepository.findOffersByEmployeurId(employeurId);
     }
 
+
     public List<InternshipOffer> getPublishedOffersForStudents() {
         return internshipOfferRepository.findByStatusOrderByStartDateDesc(
                 InternshipOffer.Status.PUBLISHED

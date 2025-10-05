@@ -60,7 +60,7 @@ export default function OfferDetailPage() {
     };
 
     const handleApply = async () => {
-        if (alreadyApplied) return; // sécurité
+        if (alreadyApplied) return;
 
         if (!cv) {
             setApplyError("Vous devez avoir un CV approuvé pour postuler");
@@ -119,7 +119,7 @@ export default function OfferDetailPage() {
 
     return (
         <div className="max-w-4xl mx-auto">
-            {/* En-tête */}
+
             <div className="bg-white shadow rounded-lg mb-6">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <button
@@ -165,7 +165,7 @@ export default function OfferDetailPage() {
                     <p className="text-gray-600">{offer.employeurEmail}</p>
                 </div>
 
-                {/* Bouton PDF */}
+
                 <div className="px-6 py-4 border-t border-gray-200">
                     <button
                         onClick={handleDownloadPdf}
@@ -185,12 +185,6 @@ export default function OfferDetailPage() {
                         <p className="text-green-800">
                             Candidature envoyée avec succès ! L'employeur examinera votre dossier.
                         </p>
-                        <button
-                            onClick={() => navigate('/dashboard/student/applications')}
-                            className="mt-3 text-indigo-600 hover:text-indigo-900"
-                        >
-                            Voir mes candidatures
-                        </button>
                     </div>
                 ) : (
                     <>
@@ -226,12 +220,6 @@ export default function OfferDetailPage() {
                             }`}
                         >
                             {applySuccess ? 'Candidature envoyée' : alreadyApplied ? 'Déjà postulée' : applying ? 'Envoi en cours...' : 'Postuler à cette offre'}
-                        </button>
-                        <button
-                            onClick={() => navigate('/dashboard/student/applications')}
-                            className="w-full mt-3 px-4 py-2 rounded-md font-medium bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50"
-                        >
-                            Voir mes candidatures
                         </button>
                     </>
                 )}

@@ -96,7 +96,7 @@ export default function ApplicationsPage() {
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune candidature</h3>
                 <p className="text-gray-600 mb-4">Vous n'avez pas encore postulé à d'offres de stage.</p>
                 <button
-                    onClick={() => navigate('/dashboard/student/offers')}
+                    onClick={() => navigate('/dashboard/student')}
                     className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
                 >
                     Voir les offres disponibles

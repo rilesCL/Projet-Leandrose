@@ -156,7 +156,12 @@
   "dashboardStudent": {
     "logout": "Logout",
     "welcome": "Welcome",
-    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers."
+    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
+    "tabs": {
+      "offers": "Offers",
+      "cv": "My CV",
+      "applications": "My Applications"
+    }
   },
   "programsList": {
     "title": "Existing Programs",
@@ -357,5 +362,67 @@
       "commentRequired": "You must write a comment before rejecting an offer",
       "download": "Error downloading the offer"
     }
+  },
+  "studentApplicationsList": {
+    "loading": "Loading your applications...",
+    "error": "Unable to load your applications",
+    "retry": "Retry",
+    "emptyTitle": "No applications",
+    "emptyDescription": "You have not applied to any offer yet.",
+    "btnViewOffers": "View offers",
+    "title": "My Applications",
+    "count": "{{count}} application{{suffix}}",
+    "table": {
+      "offer": "Offer",
+      "company": "Company",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "viewOffer": "View offer"
+  },
+  "offerDetail": {
+    "back": "Back to offers",
+    "location": "Location",
+    "startDate": "Start date",
+    "duration": "Duration",
+    "durationWeeks": "{{weeks}} week{{plural}}",
+    "remuneration": "Remuneration",
+    "employerContact": "Employer contact",
+    "downloadPdf": "Download PDF document",
+    "applySection": "Apply to this offer",
+    "needApprovedCv": "You must upload an approved CV to apply.",
+    "pendingCv": "Your CV is pending approval. You can apply once approved.",
+    "applyErrorGeneric": "Error while applying.",
+    "applyBtn": "Apply to this offer",
+    "applySending": "Sending...",
+    "alreadyApplied": "Already applied",
+    "appliedSuccess": "Application sent successfully! The employer will review your profile.",
+    "notDefined": "Not defined",
+    "notSpecified": "Not specified"
+  },
+  "studentOffersList": {
+    "loading": "Loading offers...",
+    "errorTitle": "Error",
+    "errorMessage": "Unable to load internship offers",
+    "retry": "Retry",
+    "emptyTitle": "No available offers",
+    "emptyDescription": "There are no published internship offers at the moment.",
+    "table": {
+      "description": "Description",
+      "company": "Company",
+      "location": "Location",
+      "startDate": "Start date",
+      "duration": "Duration",
+      "actions": "Actions"
+    },
+    "viewDetails": "View details",
+    "weeks": "week{{plural}}"
   }
 }
