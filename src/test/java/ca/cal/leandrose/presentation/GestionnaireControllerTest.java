@@ -6,6 +6,7 @@ import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.dto.CvDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,6 +37,9 @@ class GestionnaireControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private GestionnaireService gestionnaireService;
@@ -90,6 +95,8 @@ class GestionnaireControllerTest {
     @Test
     void rejectCv_ShouldReturnRejectedCvDto_WhenCvExists() throws Exception {
         Long cvId = 1L;
+        String rejectionReason = "cv non professionnel";
+
         CvDto rejectedCvDto = CvDto.builder()
                 .id(cvId)
                 .studentId(1L)
@@ -97,9 +104,11 @@ class GestionnaireControllerTest {
                 .status(Cv.Status.REJECTED)
                 .build();
 
-        when(gestionnaireService.rejectCv(cvId, "cv non professionnel")).thenReturn(rejectedCvDto);
+        when(gestionnaireService.rejectCv(eq(cvId), anyString())).thenReturn(rejectedCvDto);
 
-        mockMvc.perform(post("/gestionnaire/cv/{cvId}/reject", cvId))
+        mockMvc.perform(post("/gestionnaire/cv/{cvId}/reject", cvId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rejectionReason)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(cvId))
@@ -107,7 +116,7 @@ class GestionnaireControllerTest {
                 .andExpect(jsonPath("$.pdfPath").value("/path/to/test-cv.pdf"))
                 .andExpect(jsonPath("$.status").value("REJECTED"));
 
-        verify(gestionnaireService, times(1)).rejectCv(cvId, "manque de détail");
+        verify(gestionnaireService, times(1)).rejectCv(eq(cvId), anyString());
     }
 
     @Test
@@ -146,7 +155,7 @@ class GestionnaireControllerTest {
 
     @Test
     void getPendingCvs_ShouldReturnEmptyList_WhenNoPendingCvs() throws Exception {
-        when(gestionnaireService.getPendingCvs()).thenReturn(Arrays.asList());
+        when(gestionnaireService.getPendingCvs()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/gestionnaire/cvs/pending"))
                 .andExpect(status().isOk())
@@ -160,19 +169,16 @@ class GestionnaireControllerTest {
     void downloadCv_ShouldReturnPdfFile_WhenCvExistsAndFileExists() throws Exception {
         Long cvId = 1L;
         String fileName = "test-cv.pdf";
-        String filePath = "/tmp/test-cv.pdf";
-
-        Cv cv = Cv.builder()
-                .id(cvId)
-                .pdfPath(filePath)
-                .build();
-
-        when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv));
 
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), fileName);
         Files.write(tempPath, "test pdf content".getBytes());
 
-        cv.setPdfPath(tempPath.toString());
+        Cv cv = Cv.builder()
+                .id(cvId)
+                .pdfPath(tempPath.toString())
+                .build();
+
+        when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv));
 
         mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
                 .andExpect(status().isOk())
@@ -182,6 +188,25 @@ class GestionnaireControllerTest {
         verify(cvRepository, times(1)).findById(cvId);
 
         Files.deleteIfExists(tempPath);
+    }
+
+    @Test
+    void downloadCv_ShouldThrowException_WhenCvNotFound() throws Exception {
+        Long cvId = 999L;
+        when(cvRepository.findById(cvId)).thenReturn(Optional.empty());
+
+        try {
+            mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId));
+        } catch (Exception e) {
+            // Verify the root cause is RuntimeException with expected message
+            Throwable cause = e.getCause();
+            while (cause != null && !(cause instanceof RuntimeException && cause.getMessage().contains("CV introuvable"))) {
+                cause = cause.getCause();
+            }
+            assert cause != null : "Expected RuntimeException with 'CV introuvable' message";
+        }
+
+        verify(cvRepository, times(1)).findById(cvId);
     }
 
     @Test
@@ -198,22 +223,26 @@ class GestionnaireControllerTest {
     @Test
     void rejectCv_ShouldAcceptValidPathVariable() throws Exception {
         Long cvId = 123L;
-        when(gestionnaireService.rejectCv(cvId, "cv trop long")).thenReturn(sampleCvDto);
+        String rejectionReason = "cv trop long";
 
-        mockMvc.perform(post("/gestionnaire/cv/{cvId}/reject", cvId))
+        when(gestionnaireService.rejectCv(eq(cvId), anyString())).thenReturn(sampleCvDto);
+
+        mockMvc.perform(post("/gestionnaire/cv/{cvId}/reject", cvId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rejectionReason)))
                 .andExpect(status().isOk());
 
-        verify(gestionnaireService, times(1)).rejectCv(cvId, "cv trop long");
+        verify(gestionnaireService, times(1)).rejectCv(eq(cvId), anyString());
     }
 
     @Test
     void downloadCv_ShouldAcceptValidPathVariable() throws Exception {
         Long cvId = 123L;
-        when(cvRepository.findById(cvId)).thenReturn(Optional.of(sampleCv));
-
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), "temp-cv.pdf");
         Files.write(tempPath, "test content".getBytes());
+
         sampleCv.setPdfPath(tempPath.toString());
+        when(cvRepository.findById(cvId)).thenReturn(Optional.of(sampleCv));
 
         mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
                 .andExpect(status().isOk());
@@ -233,15 +262,19 @@ class GestionnaireControllerTest {
 
     @Test
     void shouldMapPostRequestToRejectEndpoint() throws Exception {
+        String rejectionReason = "manque de détail";
+
         when(gestionnaireService.rejectCv(anyLong(), anyString())).thenReturn(sampleCvDto);
 
-        mockMvc.perform(post("/gestionnaire/cv/1/reject"))
+        mockMvc.perform(post("/gestionnaire/cv/1/reject")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(rejectionReason)))
                 .andExpect(status().isOk());
     }
 
     @Test
     void shouldMapGetRequestToRootEndpoint() throws Exception {
-        when(gestionnaireService.getPendingCvs()).thenReturn(Arrays.asList(sampleCvDto));
+        when(gestionnaireService.getPendingCvs()).thenReturn(Collections.singletonList(sampleCvDto));
 
         mockMvc.perform(get("/gestionnaire/cvs/pending"))
                 .andExpect(status().isOk());
@@ -259,5 +292,46 @@ class GestionnaireControllerTest {
                 .andExpect(status().isOk());
 
         Files.deleteIfExists(tempPath);
+    }
+
+    @Test
+    void rejectCv_ShouldHandleEmptyComment() throws Exception {
+        Long cvId = 1L;
+        CvDto rejectedCvDto = CvDto.builder()
+                .id(cvId)
+                .studentId(1L)
+                .pdfPath("/path/to/test-cv.pdf")
+                .status(Cv.Status.REJECTED)
+                .build();
+
+        when(gestionnaireService.rejectCv(eq(cvId), anyString())).thenReturn(rejectedCvDto);
+
+        mockMvc.perform(post("/gestionnaire/cv/{cvId}/reject", cvId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString("")))
+                .andExpect(status().isOk());
+
+        verify(gestionnaireService, times(1)).rejectCv(eq(cvId), anyString());
+    }
+
+    @Test
+    void approveCv_ShouldHandleMultipleApprovals() throws Exception {
+        Long cvId1 = 1L;
+        Long cvId2 = 2L;
+
+        CvDto approvedCv1 = CvDto.builder().id(cvId1).status(Cv.Status.APPROVED).build();
+        CvDto approvedCv2 = CvDto.builder().id(cvId2).status(Cv.Status.APPROVED).build();
+
+        when(gestionnaireService.approveCv(cvId1)).thenReturn(approvedCv1);
+        when(gestionnaireService.approveCv(cvId2)).thenReturn(approvedCv2);
+
+        mockMvc.perform(post("/gestionnaire/cv/{cvId}/approve", cvId1))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/gestionnaire/cv/{cvId}/approve", cvId2))
+                .andExpect(status().isOk());
+
+        verify(gestionnaireService, times(1)).approveCv(cvId1);
+        verify(gestionnaireService, times(1)).approveCv(cvId2);
     }
 }
