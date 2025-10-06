@@ -3,6 +3,7 @@ package ca.cal.leandrose.presentation;
 import ca.cal.leandrose.presentation.request.RegisterEmployeur;
 import ca.cal.leandrose.presentation.request.RegisterStudent;
 import ca.cal.leandrose.service.EmployeurService;
+import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.StudentService;
 import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.StudentDto;
@@ -38,6 +39,9 @@ class RegisterControllerTest {
 
     @MockitoBean
     private StudentService studentService;
+
+    @MockitoBean
+    private GestionnaireService gestionnaireService;
 
     @Test
     @DisplayName("POST /api/register/employeur returns 201 and employer details on success")
@@ -79,16 +83,16 @@ class RegisterControllerTest {
     @Test
     @DisplayName("POST /api/register/employeur returns 400 for invalid input")
     void testRegisterEmployeurInvalidInput() throws Exception {
-        //Arrange
+        // Arrange
         RegisterEmployeur request = new RegisterEmployeur();
-        request.setFirstName("");
+        request.setFirstName(""); // Invalid: empty
         request.setLastName("Doe");
-        request.setEmail("invalid-email");
-        request.setPassword("pass");
+        request.setEmail("invalid-email"); // Invalid: not a valid email format
+        request.setPassword("pass"); // Invalid: too short (less than 8 characters)
         request.setCompanyName("TechCorp");
         request.setField("IT");
 
-        // Act
+        // Act + Assert
         mockMvc.perform(post("/api/register/employeur")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -140,12 +144,54 @@ class RegisterControllerTest {
     void testRegisterStudentInvalidInput() throws Exception {
         // Arrange
         RegisterStudent request = new RegisterStudent();
-        request.setFirstName("");
+        request.setFirstName(""); // Invalid: empty
         request.setLastName("Dupont");
-        request.setEmail("invalid-email");
-        request.setPassword("weak");
-        request.setStudentNumber("STU123");
-        request.setProgram("");
+        request.setEmail("invalid-email"); // Invalid: not a valid email format
+        request.setPassword("weak"); // Invalid: too short
+        request.setStudentNumber("STU123"); // Possibly invalid depending on validation rules
+        request.setProgram(""); // Invalid: empty
+
+        // Act + Assert
+        mockMvc.perform(post("/api/register/student")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(studentService);
+    }
+
+    @Test
+    @DisplayName("POST /api/register/employeur returns 400 when email is null")
+    void testRegisterEmployeurNullEmail() throws Exception {
+        // Arrange
+        RegisterEmployeur request = new RegisterEmployeur();
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setEmail(null); // Invalid: null email
+        request.setPassword("password123");
+        request.setCompanyName("TechCorp");
+        request.setField("IT");
+
+        // Act + Assert
+        mockMvc.perform(post("/api/register/employeur")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(employeurService);
+    }
+
+    @Test
+    @DisplayName("POST /api/register/student returns 400 when required fields are null")
+    void testRegisterStudentNullFields() throws Exception {
+        // Arrange
+        RegisterStudent request = new RegisterStudent();
+        request.setFirstName(null);
+        request.setLastName("Dupont");
+        request.setEmail(null);
+        request.setPassword("Password123!");
+        request.setStudentNumber(null);
+        request.setProgram("Informatique");
 
         // Act + Assert
         mockMvc.perform(post("/api/register/student")

@@ -35,7 +35,6 @@ function App() {
                 <Route path="dashboard/student/applications" element={<ApplicationsPage />} />
 
                 <Route path="dashboard" element={<h1>DashBoard</h1>} />
-                <Route path="dashboard/gestionnaire/programs" element={<AddProgramPage />} />
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
                     <Route path="offers" element={<StudentInternshipOffersList />} />
