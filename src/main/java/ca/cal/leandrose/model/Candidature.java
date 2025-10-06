@@ -41,6 +41,9 @@ public class Candidature {
     @Column(nullable = false)
     private LocalDate applicationDate;
 
+    public Long getEmployeurId() {
+        return internshipOffer.getEmployeurId();
+    }
 
 
     public enum Status {

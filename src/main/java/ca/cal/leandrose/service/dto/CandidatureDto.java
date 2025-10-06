@@ -21,6 +21,7 @@ public class CandidatureDto {
     private Long offerId;
     private String offerDescription;
     private String companyName;
+    private Long employeurId;
     private Long cvId;
     private Candidature.Status status;
     private LocalDate applicationDate;
@@ -28,6 +29,7 @@ public class CandidatureDto {
     public static Student getStudentFromCandidature(Candidature candidature) {
         return candidature.getStudent();
     }
+
     public static InternshipOffer getOfferFromCandidature(Candidature candidature) {
         return candidature.getInternshipOffer();
     }
@@ -48,6 +50,7 @@ public class CandidatureDto {
                 .cvId(getCvFromCandidature(candidature).getId())
                 .status(candidature.getStatus())
                 .applicationDate(candidature.getApplicationDate())
+                .employeurId(candidature.getEmployeurId())  // ✅ Loi de Déméter respectée
                 .build();
     }
 }

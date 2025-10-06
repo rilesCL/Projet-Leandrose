@@ -2,6 +2,7 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.Convocation;
+import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.repository.ConvocationRepository;
 import ca.cal.leandrose.service.dto.ConvocationDto;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +12,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class ConvocationService {
     private final ConvocationRepository convocationRepository;
+    private final CandidatureRepository candidatureRepository;
 
-    public void addConvocation(Candidature candidature, LocalDateTime convocationDate, String location, String message) {
-        if (candidature == null) {
-            throw new IllegalArgumentException("La candidature ne peut pas être nulle");
-        }
+    public void addConvocation(Long candidatureId, LocalDateTime convocationDate, String location, String message) {
+        Candidature candidature = candidatureRepository.findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature non trouvée"));
 
         if (convocationDate == null) {
             throw new IllegalArgumentException("La date de convocation ne peut pas être nulle");
@@ -42,16 +44,14 @@ public class ConvocationService {
                 : message;
 
         candidature.setStatus(Candidature.Status.CONVENED);
-        Convocation convocation = new Convocation(candidature, convocationDate, finalMessage, location);
+        Convocation convocation = new Convocation(candidature, convocationDate, location, finalMessage);
         convocationRepository.save(convocation);
     }
 
     public List<ConvocationDto> getAllConvocationsByInterShipOfferId(Long internshipOfferId) {
-        List<Convocation> convocations = convocationRepository.findConvocationByInternShipOfferId(internshipOfferId);
-        List<ConvocationDto> convocationDtos = new ArrayList<>();
-        for (Convocation convocation : convocations) {
-            convocationDtos.add(ConvocationDto.create(convocation));
-        }
-        return convocationDtos;
+        return convocationRepository.findByCandidatureInternshipOfferId(internshipOfferId)
+                .stream()
+                .map(ConvocationDto::create)
+                .toList();
     }
 }

@@ -9,24 +9,21 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class Convocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     @OneToOne
     @JoinColumn(name = "candidature_id", nullable = false, unique = true)
-    Candidature candidature;
+    private Candidature candidature;
     @Column(nullable = false)
-    LocalDateTime convocationDate;
+    private LocalDateTime convocationDate;
     @Column(nullable = false)
-    String location;
+    private String location;
     @Column(nullable = false)
-    String personnalMessage;
+    private String personnalMessage;
 
     public Convocation (Candidature candidature, LocalDateTime convocationDate, String location, String personnalMessage) {
         this.personnalMessage = personnalMessage;

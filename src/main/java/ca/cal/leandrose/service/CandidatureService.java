@@ -62,4 +62,10 @@ public class CandidatureService {
                 .map(CandidatureDto::fromEntity)
                 .toList();
     }
+
+    public CandidatureDto getCandidatureById(Long candidatureId) {
+        Candidature candidature = candidatureRepository.findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature non trouvée avec l'ID: " + candidatureId));
+        return CandidatureDto.fromEntity(candidature);
+    }
 }

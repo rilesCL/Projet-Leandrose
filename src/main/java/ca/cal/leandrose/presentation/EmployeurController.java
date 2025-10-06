@@ -1,11 +1,17 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.presentation.request.ConvocationRequest;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
+import ca.cal.leandrose.service.CandidatureService;
+import ca.cal.leandrose.service.ConvocationService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.UserAppService;
+import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.ConvocationDto;
 import ca.cal.leandrose.service.dto.UserDTO;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
@@ -35,6 +41,8 @@ public class EmployeurController {
     private final UserAppService userService;
     private final InternshipOfferService internshipOfferService;
     private final EmployeurRepository employeurRepository;
+    private final CandidatureService candidatureService;
+    private final ConvocationService convocationService;
 
     @GetMapping("/offers")
     public ResponseEntity<List<InternshipOfferDto>> getMyOffers(HttpServletRequest request) {
@@ -128,6 +136,70 @@ public class EmployeurController {
             }
         } catch (RuntimeException | MalformedURLException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/offers/{offerId}/convocations")
+    public ResponseEntity<List<ConvocationDto>> getConvocationsByOffer(
+            HttpServletRequest request,
+            @PathVariable Long offerId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            InternshipOffer offer = internshipOfferService.getOffer(offerId);
+
+            if (!offer.getEmployeur().getId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            List<ConvocationDto> convocations = convocationService.getAllConvocationsByInterShipOfferId(offerId);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(convocations);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @PostMapping("/candidatures/{candidatureId}/convocations")
+    public ResponseEntity<?> createConvocation(
+            HttpServletRequest request,
+            @PathVariable Long candidatureId,
+            @RequestBody ConvocationRequest convocationRequest
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
+
+            if (!candidatureDto.getEmployeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            convocationService.addConvocation(
+                    candidatureId,
+                    convocationRequest.getConvocationDate(),
+                    convocationRequest.getLocation(),
+                    convocationRequest.getMessage()
+            );
+
+            return ResponseEntity.ok().body("Convocation créée avec succès");
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors de la création de la convocation");
         }
     }
 }
