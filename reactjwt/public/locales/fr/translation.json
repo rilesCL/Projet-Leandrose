@@ -247,7 +247,7 @@
       "startDateFormat": "Le format de la date doit être JJ-MM-YYYY.",
       "duration": "La durée (en semaines) est obligatoire.",
       "durationInvalid": "La durée doit être un entier positif (nombre de semaines).",
-      "durationInvalidMax": "La duration ne dois pas dépasser 120 semaines",
+      "durationInvalidMax": "La duration ne dois pas dépasser 52 semaines",
       "remunerationMin": "La rémunération ne doit pas être inférieur à 0",
       "address": "La localisation (adresse) est obligatoire.",
       "pdfRequired": "Un fichier PDF est requis.",

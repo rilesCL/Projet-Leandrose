@@ -246,7 +246,7 @@
       "startDateFormat": "Date format must be DD-MM-YYYY.",
       "duration": "Duration (in weeks) is required.",
       "durationInvalid": "Duration must be a positive integer (number of weeks).",
-      "durationInvalidMax": "The duration must must not exceed 120 weeks",
+      "durationInvalidMax": "The duration must must not exceed 52 weeks",
       "remunerationMin": "The remuneration must not be lower than 0",
       "address": "Location (address) is required.",
       "pdfRequired": "A PDF file is required.",
