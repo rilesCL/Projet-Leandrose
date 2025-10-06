@@ -31,6 +31,9 @@ public class Candidature {
     @JoinColumn(nullable = false)
     private Cv cv;
 
+    @OneToOne(mappedBy = "candidature", cascade = CascadeType.ALL, optional = true)
+    private Convocation convocation;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
