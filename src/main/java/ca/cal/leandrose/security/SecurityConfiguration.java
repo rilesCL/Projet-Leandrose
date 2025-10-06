@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                         .requestMatchers(GET, "/api/register/programs").permitAll()
                         .requestMatchers(GET, "/gestionnaire/**").hasAuthority("GESTIONNAIRE")
                         .requestMatchers(POST, "/student/**").hasAuthority("STUDENT")
+                        .requestMatchers(GET, "/student/offers", "/student/offers/*", "/student/offers/*/pdf", "/student/applications").hasAuthority("STUDENT")
                         .requestMatchers(POST, "/employeur/offers").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/student/cv", "/student/cv/download").hasAuthority("STUDENT")
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
