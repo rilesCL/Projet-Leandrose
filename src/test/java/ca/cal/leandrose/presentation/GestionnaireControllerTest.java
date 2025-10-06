@@ -6,6 +6,7 @@ import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.dto.CvDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -47,12 +49,14 @@ class GestionnaireControllerTest {
 
     private CvDto sampleCvDto;
     private Cv sampleCv;
+    private InternshipOfferDto internshipOfferDto;
 
     @BeforeEach
     void setUp() {
         sampleCvDto = CvDto.builder()
                 .id(1L)
                 .studentId(1L)
+                .studentName("John Doe")
                 .pdfPath("/path/to/test-cv.pdf")
                 .status(Cv.Status.APPROVED)
                 .build();
@@ -62,6 +66,19 @@ class GestionnaireControllerTest {
                 .pdfPath("/path/to/test-cv.pdf")
                 .status(Cv.Status.PENDING)
                 .build();
+        internshipOfferDto = InternshipOfferDto.builder()
+                .id(1L)
+                .description("Test offer")
+                .startDate(LocalDate.of(2025,1,1))
+                .durationInWeeks(12)
+                .address("123 Main ST")
+                .remuneration(15f)
+                .status("PUBLISHED")
+                .employeurId(20L)
+                .companyName("TechCorp")
+                .pdfPath("/docs/offer.pdf")
+                .build();
+
     }
 
     @Test
@@ -259,5 +276,35 @@ class GestionnaireControllerTest {
                 .andExpect(status().isOk());
 
         Files.deleteIfExists(tempPath);
+    }
+
+    @Test
+    void getApprovedOffers_returnList() throws Exception{
+        when(gestionnaireService.getApprovedOffers()).thenReturn(List.of(internshipOfferDto));
+        mockMvc.perform(get("/gestionnaire/offers/approved"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].companyName").value("TechCorp"));
+
+    }
+
+    @Test
+    void getRejectedOffers_returnedList() throws Exception{
+        internshipOfferDto.setStatus("REJECTED");
+
+        when(gestionnaireService.getRejectedoffers()).thenReturn(List.of(internshipOfferDto));
+        mockMvc.perform(get("/gestionnaire/offers/reject"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("REJECTED"));
+    }
+
+    @Test
+    void getOfferDetails_returnOffers() throws Exception{
+        when(internshipOfferService.getOfferDetails(1L)).thenReturn(internshipOfferDto);
+        mockMvc.perform(get("/gestionnaire/offers/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.companyName").value("TechCorp"))
+                .andExpect(jsonPath("description").value("Test offer"));
     }
 }
