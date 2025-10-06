@@ -1,13 +1,13 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.presentation.request.RejectOfferRequest;
 import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.ProgramDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -40,7 +40,7 @@ public class GestionnaireController {
     @PostMapping("/cv/{cvId}/reject")
     public ResponseEntity<CvDto> rejectCv(
             @PathVariable Long cvId,
-            @RequestBody(required = false) String comment
+            @RequestBody String comment
     ) {
         return ResponseEntity.ok(gestionnaireService.rejectCv(cvId, comment));
     }
@@ -104,19 +104,8 @@ public class GestionnaireController {
     }
 
     @GetMapping("/programs")
-    public ResponseEntity<List<ProgramDto>> getPrograms() {
+    public ResponseEntity<List<Program>> getPrograms() {
         return ResponseEntity.ok(gestionnaireService.getAllPrograms());
     }
-    @PostMapping("/addProgram")
-    public ResponseEntity<ProgramDto> addProgram(@RequestBody String programName) {
-        try {
-            ProgramDto programDto = gestionnaireService.addProgram(programName);
-            return ResponseEntity.ok(programDto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new ProgramDto(e.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(new ProgramDto("Erreur serveur"));
-        }
-    }
+
 }

@@ -12,7 +12,6 @@ import UploadCvStudent from "./components/UploadCvStudent.jsx";
 import DashBoardGestionnaire from "./components/DashBoardGestionnaire.jsx";
 import PendingCvPage from "./components/PendingCvPage.jsx";
 import RegisterLanding from "./components/RegisterLanding.jsx";
-import AddProgramPage from "./components/AddProgramPage.jsx";
 import OfferDetailPage from "./components/OfferDetailPage.jsx";
 import StudentInternshipOffersList from "./components/StudentInternshipOffersList.jsx";
 import ApplicationsPage from "./components/ApplicationsPage.jsx";

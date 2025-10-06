@@ -44,10 +44,6 @@ public class LeandrOseApplication {
                         "Jean", "Dupont", "gestionnaire@test.com", "Password123!", "514-123-4567");
                 System.out.println("Gestionnaire créé: " + gestionnaireDto);
 
-                gestionnaireService.addProgram("Informatique");
-                gestionnaireService.addProgram("Génie civil");
-                gestionnaireService.addProgram("Soins infirmiers");
-
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());
                 e.printStackTrace();

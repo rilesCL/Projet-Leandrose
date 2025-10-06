@@ -12,4 +12,5 @@ public interface CvRepository extends JpaRepository<Cv, Long> {
     Optional<Cv> findByStudentId(Long studentId);
 
     List<Cv> findByStatus(Cv.Status status);
+    Optional<Cv> findByStudentIdAndStatus(Long id, Cv.Status status);
 }
