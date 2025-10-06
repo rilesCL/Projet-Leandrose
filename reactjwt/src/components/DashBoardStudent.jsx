@@ -12,7 +12,6 @@ export default function DashBoardStudent() {
     const { t } = useTranslation();
     const [userName, setUserName] = useState("");
 
-
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(window.location.search);
         const raw = (params.get('tab') || params.get('section') || 'offers').toLowerCase();
@@ -84,11 +83,11 @@ export default function DashBoardStudent() {
                     </h1>
                     <p className="text-gray-600 mb-6">{t("dashboardStudent.description")}</p>
 
-                    {/* Trois boutons simples */}
+                    {/* Tab buttons with translation */}
                     <div className="flex flex-wrap gap-3 mb-8">
-                        <Btn target="offers">Offres</Btn>
-                        <Btn target="cv">Mon CV</Btn>
-                        <Btn target="applications">Mes candidatures</Btn>
+                        <Btn target="offers">{t("dashboardStudent.tabs.offers")}</Btn>
+                        <Btn target="cv">{t("dashboardStudent.tabs.cv")}</Btn>
+                        <Btn target="applications">{t("dashboardStudent.tabs.applications")}</Btn>
                     </div>
 
                     {section === 'offers' && (
