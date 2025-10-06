@@ -55,7 +55,7 @@ public class EmployeurController {
     }
 
     @PostMapping(value = "/offers", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<InternshipOfferDto> uploadOffer(
+    public ResponseEntity<?> uploadOffer(
             HttpServletRequest request,
             @RequestPart("offer") InternshipOfferRequest offerRequest,
             @RequestPart("pdfFile") MultipartFile pdfFile
@@ -64,6 +64,15 @@ public class EmployeurController {
 
         if (!me.getRole().name().equals("EMPLOYEUR")) {
             return ResponseEntity.status(403).build();
+        }
+
+        // Add validation
+        if (offerRequest.getDescription() == null || offerRequest.getDescription().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("La description est requise");
+        }
+
+        if (offerRequest.getDescription().length() > 50) {
+            return ResponseEntity.badRequest().body("La description ne doit pas dépasser 50 caractères");
         }
 
         Employeur employeur = employeurRepository.findById(me.getId())

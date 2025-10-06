@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-
 const MAX_FILE_SIZE_MB = 5;
 const BYTES_IN_KB = 1024;
 const BYTES_IN_MB = BYTES_IN_KB * BYTES_IN_KB;
@@ -12,6 +11,7 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * BYTES_IN_MB;
 const MIN_DURATION_WEEKS = 1;
 const MAX_DURATION_WEEKS = 52;
 const MIN_REMUNERATION = 0;
+const MAX_DESCRIPTION_LENGTH = 50;
 const DATE_REGEX = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/;
 
 export default function UploadStageEmployeur({ employeurId }) {
@@ -33,19 +33,33 @@ export default function UploadStageEmployeur({ employeurId }) {
 
     function validateFields() {
         const e = {};
-        if (!description.trim()) e.description = t("uploadStageEmployeur.errors.description");
-        if (!startDate.trim()) e.startDate = t("uploadStageEmployeur.errors.startDate");
-        else if (!DATE_REGEX.test(startDate.trim())) e.startDate = t("uploadStageEmployeur.errors.startDateFormat");
-        if (!duration.toString().trim()) e.duration = t("uploadStageEmployeur.errors.duration");
-        else if (!Number.isInteger(Number(duration)) || Number(duration) < MIN_DURATION_WEEKS)
+        if (!description.trim()) {
+            e.description = t("uploadStageEmployeur.errors.description");
+        } else if (description.trim().length > MAX_DESCRIPTION_LENGTH) {
+            e.description = t("uploadStageEmployeur.errors.descriptionTooLong", { max: MAX_DESCRIPTION_LENGTH });
+        }
+
+        if (!startDate.trim()) {
+            e.startDate = t("uploadStageEmployeur.errors.startDate");
+        } else if (!DATE_REGEX.test(startDate.trim())) {
+            e.startDate = t("uploadStageEmployeur.errors.startDateFormat");
+        }
+
+        if (!duration.toString().trim()) {
+            e.duration = t("uploadStageEmployeur.errors.duration");
+        } else if (!Number.isInteger(Number(duration)) || Number(duration) < MIN_DURATION_WEEKS) {
             e.duration = t("uploadStageEmployeur.errors.durationInvalid");
-        else if (Number(duration) > MAX_DURATION_WEEKS)
-            e.duration = t("uploadStageEmployeur.errors.durationInvalidMax")
-        if (!address.trim()) e.address = t("uploadStageEmployeur.errors.address");
-        if (!pdfFile) e.pdfFile = t("uploadStageEmployeur.errors.pdfRequired");
-        if(remuneration < MIN_REMUNERATION)
-            e.remuneration = t("uploadStageEmployeur.errors.remunerationMin")
-        else {
+        } else if (Number(duration) > MAX_DURATION_WEEKS) {
+            e.duration = t("uploadStageEmployeur.errors.durationInvalidMax");
+        }
+
+        if (!address.trim()) {
+            e.address = t("uploadStageEmployeur.errors.address");
+        }
+
+        if (!pdfFile) {
+            e.pdfFile = t("uploadStageEmployeur.errors.pdfRequired");
+        } else {
             const fileName = pdfFile.name.toLowerCase();
             if (pdfFile.type !== "application/pdf" && !fileName.endsWith(".pdf")) {
                 e.pdfFile = t("uploadStageEmployeur.errors.pdfFormat");
@@ -53,6 +67,11 @@ export default function UploadStageEmployeur({ employeurId }) {
                 e.pdfFile = t("uploadStageEmployeur.errors.pdfSize");
             }
         }
+
+        if (remuneration !== "" && remuneration < MIN_REMUNERATION) {
+            e.remuneration = t("uploadStageEmployeur.errors.remunerationMin");
+        }
+
         setErrors(e);
         return Object.keys(e).length === 0;
     }
@@ -109,7 +128,11 @@ export default function UploadStageEmployeur({ employeurId }) {
             const token = sessionStorage.getItem("accessToken");
             const created = await uploadStageEmployeur(offer, pdfFile, token);
             const status = created.status || created.statut || "UNKNOWN";
-            const statusText = status === "PUBLISHED" ? t("uploadStageEmployeur.statusPublished") : status === "PENDING_VALIDATION" ? t("uploadStageEmployeur.statusPending") : status;
+            const statusText = status === "PUBLISHED"
+                ? t("uploadStageEmployeur.statusPublished")
+                : status === "PENDING_VALIDATION"
+                    ? t("uploadStageEmployeur.statusPending")
+                    : status;
             setServerMessage(`${t("uploadStageEmployeur.successMessage")} ${statusText}`);
             setServerMessageType("success");
             setDescription("");
@@ -138,12 +161,16 @@ export default function UploadStageEmployeur({ employeurId }) {
                         <div>
                             <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                                 {t("uploadStageEmployeur.description")}
+                                <span className="text-gray-500 text-xs ml-2">
+                                    ({description.length}/{MAX_DESCRIPTION_LENGTH})
+                                </span>
                             </label>
                             <textarea
                                 id="description"
                                 value={description}
                                 onChange={e => setDescription(e.target.value)}
                                 rows={6}
+                                maxLength={MAX_DESCRIPTION_LENGTH}
                                 placeholder={t("uploadStageEmployeur.descriptionPlaceholder")}
                                 className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.description ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                             />
@@ -224,7 +251,7 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     onChange={e => setRemuneration(e.target.value)}
                                     min={MIN_REMUNERATION}
                                     step="0.01"
-                                    className="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                                    className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.remuneration ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                                 />
                                 {errors.remuneration && <p className="mt-1 text-sm text-red-600">{errors.remuneration}</p>}
                             </div>

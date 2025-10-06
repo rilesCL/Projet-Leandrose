@@ -308,7 +308,8 @@
       "pdfRequired": "Un fichier PDF est requis.",
       "pdfFormat": "Le fichier doit être un PDF.",
       "pdfSize": "Le PDF dépasse la taille maximale de 5MB.",
-      "serverError": "Erreur lors de l'enregistrement."
+      "serverError": "Erreur lors de l'enregistrement.",
+      "descriptionTooLong": "La description ne doit pas dépasser {{max}} caractères"
     }
   },
   "studentCvList": {

@@ -307,7 +307,9 @@
       "pdfRequired": "A PDF file is required.",
       "pdfFormat": "The file must be a PDF.",
       "pdfSize": "PDF exceeds maximum size of 5MB.",
-      "serverError": "Error during registration."
+      "serverError": "Error during registration.",
+      "descriptionTooLong": "The description size shouldn't be above {{max}} caracters"
+
     }
   },
   "studentCvList": {
