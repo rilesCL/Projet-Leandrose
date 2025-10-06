@@ -3,6 +3,7 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.CandidatureEmployeurDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -300,5 +301,181 @@ class CandidatureServiceTest {
         // Assert
         assertNotNull(candidatures);
         assertTrue(candidatures.isEmpty());
+    }
+
+    // ===== TESTS POUR LES FONCTIONNALITÉS EMPLOYEUR =====
+
+    @Test
+    void getCandidaturesByOffer_ShouldReturnCandidaturesForSpecificOffer() {
+        // Arrange
+        candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Créer un 2e étudiant et une 2e candidature pour la même offre
+        Student student2 = studentRepository.save(Student.builder()
+                .firstName("Bob")
+                .lastName("Smith")
+                .email("bob@test.com")
+                .password("password")
+                .studentNumber("654321")
+                .program("Computer Science")
+                .build());
+
+        Cv cv2 = cvRepository.save(Cv.builder()
+                .student(student2)
+                .pdfPath("/path/to/cv2.pdf")
+                .status(Cv.Status.APPROVED)
+                .build());
+
+        candidatureService.postuler(student2.getId(), testOffer.getId(), cv2.getId());
+
+        // Act
+        List<CandidatureEmployeurDto> candidatures =
+                candidatureService.getCandidaturesByOffer(testOffer.getId());
+
+        // Assert
+        assertEquals(2, candidatures.size());
+        assertTrue(candidatures.stream()
+                .anyMatch(c -> c.getStudentLastName().equals("Martin")));
+        assertTrue(candidatures.stream()
+                .anyMatch(c -> c.getStudentLastName().equals("Smith")));
+        assertTrue(candidatures.stream()
+                .allMatch(c -> c.getOfferId().equals(testOffer.getId())));
+    }
+
+    @Test
+    void getCandidaturesByOffer_ShouldReturnEmptyList_WhenNoCandidatures() {
+        // Act
+        List<CandidatureEmployeurDto> candidatures =
+                candidatureService.getCandidaturesByOffer(testOffer.getId());
+
+        // Assert
+        assertNotNull(candidatures);
+        assertTrue(candidatures.isEmpty());
+    }
+
+    @Test
+    void getCandidaturesByEmployeur_ShouldReturnAllCandidaturesForAllOffers() {
+        // Arrange
+        candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Créer une 2e offre du même employeur
+        InternshipOffer offer2 = offerRepository.save(InternshipOffer.builder()
+                .description("Stage Data Science")
+                .startDate(LocalDate.of(2025, 9, 1))
+                .durationInWeeks(10)
+                .address("789 Rue Test")
+                .employeur(testOffer.getEmployeur())
+                .pdfPath("/path/to/offer2.pdf")
+                .status(InternshipOffer.Status.PUBLISHED)
+                .build());
+
+        // Créer un 2e étudiant
+        Student student2 = studentRepository.save(Student.builder()
+                .firstName("Charlie")
+                .lastName("Brown")
+                .email("charlie@test.com")
+                .password("password")
+                .studentNumber("111222")
+                .program("Data Science")
+                .build());
+
+        Cv cv2 = cvRepository.save(Cv.builder()
+                .student(student2)
+                .pdfPath("/path/to/cv2.pdf")
+                .status(Cv.Status.APPROVED)
+                .build());
+
+        candidatureService.postuler(student2.getId(), offer2.getId(), cv2.getId());
+
+        // Act
+        List<CandidatureEmployeurDto> candidatures =
+                candidatureService.getCandidaturesByEmployeur(testOffer.getEmployeur().getId());
+
+        // Assert
+        assertEquals(2, candidatures.size());
+        assertTrue(candidatures.stream()
+                .anyMatch(c -> c.getOfferDescription().equals("Stage développement web")));
+        assertTrue(candidatures.stream()
+                .anyMatch(c -> c.getOfferDescription().equals("Stage Data Science")));
+    }
+
+    @Test
+    void getCandidaturesByEmployeur_ShouldNotReturnOtherEmployeursCandidatures() {
+        // Arrange
+        candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Créer un autre employeur et une autre offre
+        Employeur employeur2 = employeurRepository.save(Employeur.builder()
+                .firstName("Jane")
+                .lastName("Manager")
+                .email("jane@company.com")
+                .password("password")
+                .companyName("OtherCorp")
+                .field("Finance")
+                .build());
+
+        InternshipOffer otherOffer = offerRepository.save(InternshipOffer.builder()
+                .description("Stage Finance")
+                .startDate(LocalDate.of(2025, 7, 1))
+                .durationInWeeks(8)
+                .address("999 Rue Autre")
+                .employeur(employeur2)
+                .pdfPath("/path/to/other.pdf")
+                .status(InternshipOffer.Status.PUBLISHED)
+                .build());
+
+        Student student2 = studentRepository.save(Student.builder()
+                .firstName("David")
+                .lastName("Lee")
+                .email("david@test.com")
+                .password("password")
+                .studentNumber("333444")
+                .program("Finance")
+                .build());
+
+        Cv cv2 = cvRepository.save(Cv.builder()
+                .student(student2)
+                .pdfPath("/path/to/cv3.pdf")
+                .status(Cv.Status.APPROVED)
+                .build());
+
+        candidatureService.postuler(student2.getId(), otherOffer.getId(), cv2.getId());
+
+        // Act
+        List<CandidatureEmployeurDto> candidatures1 =
+                candidatureService.getCandidaturesByEmployeur(testOffer.getEmployeur().getId());
+        List<CandidatureEmployeurDto> candidatures2 =
+                candidatureService.getCandidaturesByEmployeur(employeur2.getId());
+
+        // Assert
+        assertEquals(1, candidatures1.size());
+        assertEquals("Stage développement web", candidatures1.get(0).getOfferDescription());
+
+        assertEquals(1, candidatures2.size());
+        assertEquals("Stage Finance", candidatures2.get(0).getOfferDescription());
+    }
+
+    @Test
+    void candidatureEmployeurDto_ShouldContainAllNecessaryFields() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act
+        List<CandidatureEmployeurDto> candidatures =
+                candidatureService.getCandidaturesByOffer(testOffer.getId());
+
+        // Assert
+        CandidatureEmployeurDto dto = candidatures.get(0);
+        assertNotNull(dto.getId());
+        assertEquals("Alice", dto.getStudentFirstName());
+        assertEquals("Martin", dto.getStudentLastName());
+        assertEquals("Computer Science", dto.getStudentProgram());
+        assertEquals(LocalDate.now(), dto.getApplicationDate());
+        assertEquals(Candidature.Status.PENDING, dto.getStatus());
+        assertNotNull(dto.getCvId());
+        assertEquals("APPROVED", dto.getCvStatus());
+        assertEquals(testOffer.getId(), dto.getOfferId());
+        assertEquals("Stage développement web", dto.getOfferDescription());
     }
 }

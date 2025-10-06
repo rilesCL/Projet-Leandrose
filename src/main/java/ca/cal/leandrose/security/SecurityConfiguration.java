@@ -52,6 +52,8 @@ public class SecurityConfiguration {
                         .requestMatchers(GET, "/student/cv", "/student/cv/download").hasAuthority("STUDENT")
                         .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT")
                         .requestMatchers(GET, "/employeur/offers", "/employeur/offers/*/download").hasAuthority("EMPLOYEUR")
+                        .requestMatchers(GET, "/employeur/offers/*/candidatures", "/employeur/candidatures", "/employeur/candidatures/*/cv")
+                        .hasAuthority("EMPLOYEUR")
 
                         .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
                         .anyRequest().denyAll()

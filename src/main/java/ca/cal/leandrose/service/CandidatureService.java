@@ -3,6 +3,7 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.CandidatureEmployeurDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,22 @@ public class CandidatureService {
         return candidatureRepository.findByStudentIdOrderByApplicationDateDesc(studentId)
                 .stream()
                 .map(CandidatureDto::fromEntity)
+                .toList();
+    }
+
+    // Use Case 3 : Candidatures pour une offre spécifique
+    public List<CandidatureEmployeurDto> getCandidaturesByOffer(Long offerId) {
+        return candidatureRepository.findByInternshipOfferIdOrderByApplicationDateDesc(offerId)
+                .stream()
+                .map(CandidatureEmployeurDto::fromEntity)
+                .toList();
+    }
+
+    // Use Case 2 : Toutes les candidatures de toutes mes offres
+    public List<CandidatureEmployeurDto> getCandidaturesByEmployeur(Long employeurId) {
+        return candidatureRepository.findByEmployeurIdOrderByApplicationDateDesc(employeurId)
+                .stream()
+                .map(CandidatureEmployeurDto::fromEntity)
                 .toList();
     }
 }

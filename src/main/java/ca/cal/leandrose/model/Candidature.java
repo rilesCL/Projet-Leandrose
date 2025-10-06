@@ -38,10 +38,15 @@ public class Candidature {
     @Column(nullable = false)
     private LocalDate applicationDate;
 
+    @Column(length = 2000)
+    private String feedback;
+
     public enum Status {
         PENDING,    // En attente de réponse employeur
         ACCEPTED,   // Acceptée par l'employeur
-        REJECTED    // Rejetée par l'employeur
+        REJECTED,    // Rejetée par l'employeur
+        RETAINED,    // Retenue (shortlist)
+        TO_REVIEW,   // Marquée « À étudier »
     }
 
 }
