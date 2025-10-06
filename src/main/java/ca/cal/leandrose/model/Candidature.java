@@ -38,10 +38,14 @@ public class Candidature {
     @Column(nullable = false)
     private LocalDate applicationDate;
 
+
+
     public enum Status {
         PENDING,
         ACCEPTED,
+        CONVENED,
         REJECTED
     }
+
 
 }

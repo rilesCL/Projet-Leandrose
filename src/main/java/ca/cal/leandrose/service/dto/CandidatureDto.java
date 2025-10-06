@@ -1,6 +1,9 @@
 package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Candidature;
+import ca.cal.leandrose.model.Cv;
+import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Student;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,17 +25,27 @@ public class CandidatureDto {
     private Candidature.Status status;
     private LocalDate applicationDate;
 
+    public static Student getStudentFromCandidature(Candidature candidature) {
+        return candidature.getStudent();
+    }
+    public static InternshipOffer getOfferFromCandidature(Candidature candidature) {
+        return candidature.getInternshipOffer();
+    }
+
+    public static Cv getCvFromCandidature(Candidature candidature) {
+        return candidature.getCv();
+    }
 
     public static CandidatureDto fromEntity(Candidature candidature) {
         return CandidatureDto.builder()
                 .id(candidature.getId())
-                .studentId(candidature.getStudent().getId())
-                .studentName(candidature.getStudent().getFirstName() + " " +
-                        candidature.getStudent().getLastName())
-                .offerId(candidature.getInternshipOffer().getId())
-                .offerDescription(candidature.getInternshipOffer().getDescription())
-                .companyName(candidature.getInternshipOffer().getCompanyName())
-                .cvId(candidature.getCv().getId())
+                .studentId(getStudentFromCandidature(candidature).getId())
+                .studentName(getStudentFromCandidature(candidature).getFirstName() + " " +
+                        getStudentFromCandidature(candidature).getLastName())
+                .offerId(getOfferFromCandidature(candidature).getId())
+                .offerDescription(getOfferFromCandidature(candidature).getDescription())
+                .companyName(getOfferFromCandidature(candidature).getCompanyName())
+                .cvId(getCvFromCandidature(candidature).getId())
                 .status(candidature.getStatus())
                 .applicationDate(candidature.getApplicationDate())
                 .build();
