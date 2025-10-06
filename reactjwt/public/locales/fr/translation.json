@@ -532,6 +532,30 @@
     "duration": "Durée",
     "actions": "Actions",
     "viewDetails": "Voir détails"
+  },
+  "StudentApplicationsList": {
+    "loadError": "Impossible de charger vos candidatures",
+    "retry": "Réessayer",
+    "noDate": "Non définie",
+    "status": {
+      "pending": "En attente",
+      "accepted": "Acceptée",
+      "rejected": "Refusée"
+    },
+    "noApplicationsTitle": "Aucune candidature",
+    "noApplicationsText": "Vous n'avez pas encore postulé à une offre.",
+    "viewOffers": "Voir les offres",
+    "title": "Mes candidatures",
+    "applicationCount": "{{count}} candidature",
+    "applicationCount_plural": "{{count}} candidatures",
+    "table": {
+      "offer": "Offre",
+      "company": "Entreprise",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "viewOffer": "Voir l'offre"
   }
 }
 

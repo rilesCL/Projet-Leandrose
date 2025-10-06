@@ -531,6 +531,31 @@
     "duration": "Duration",
     "actions": "Actions",
     "viewDetails": "View details"
+  },
+  "StudentApplicationsList": {
+    "loadError": "Unable to load your applications",
+    "retry": "Retry",
+    "noDate": "Not defined",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "noApplicationsTitle": "No applications yet",
+    "noApplicationsText": "You haven't applied to any offers yet.",
+    "viewOffers": "View offers",
+    "title": "My applications",
+    "applicationCount": "{{count}} application",
+    "applicationCount_plural": "{{count}} applications",
+    "table": {
+      "offer": "Offer",
+      "company": "Company",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "viewOffer": "View offer"
   }
 }
+
 
