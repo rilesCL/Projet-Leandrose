@@ -8,6 +8,7 @@ export default function PendingOffersPage() {
     const [comments, setComments] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
 
     useEffect(() => {
         async function fetchOffers() {
@@ -82,6 +83,11 @@ export default function PendingOffersPage() {
         try {
             await approveOffer(offerId);
             setPendingOffers((prev) => prev.filter((o) => o.id !== offerId));
+            setValidationErrors((prev) => {
+                const updated = { ...prev };
+                delete updated[offerId];
+                return updated;
+            });
         } catch (err) {
             console.error(err);
         }
@@ -90,12 +96,17 @@ export default function PendingOffersPage() {
     const handleReject = async (offerId) => {
         const comment = comments[offerId] || "";
         if (!comment.trim()) {
-            setError("commentRequired");
+            setValidationErrors((prev) => ({ ...prev, [offerId]: "commentRequired" }));
             return;
         }
         try {
             await rejectOffer(offerId, comment);
             setPendingOffers((prev) => prev.filter((o) => o.id !== offerId));
+            setValidationErrors((prev) => {
+                const updated = { ...prev };
+                delete updated[offerId];
+                return updated;
+            });
         } catch (err) {
             console.error(err);
         }
@@ -103,6 +114,14 @@ export default function PendingOffersPage() {
 
     const handleCommentChange = (offerId, value) => {
         setComments((prev) => ({ ...prev, [offerId]: value }));
+        // Clear validation error when user starts typing
+        if (validationErrors[offerId]) {
+            setValidationErrors((prev) => {
+                const updated = { ...prev };
+                delete updated[offerId];
+                return updated;
+            });
+        }
     };
 
     if (loading) return <div className="p-8 text-center">{t("pendingOffers.loading")}</div>;
@@ -155,23 +174,30 @@ export default function PendingOffersPage() {
                             </td>
                             <td className="px-6 py-4">{getStatusLabel(offer.status)}</td>
                             <td className="px-6 py-4">
-                  <textarea
-                      value={comments[offer.id] || ""}
-                      onChange={(e) => handleCommentChange(offer.id, e.target.value)}
-                      className="w-full h-20 border rounded p-2 resize-none"
-                      placeholder={t("pendingOffers.commentPlaceholder")}
-                  />
+                                <textarea
+                                    value={comments[offer.id] || ""}
+                                    onChange={(e) => handleCommentChange(offer.id, e.target.value)}
+                                    className={`w-full h-20 border rounded p-2 resize-none ${
+                                        validationErrors[offer.id] ? "border-red-500" : ""
+                                    }`}
+                                    placeholder={t("pendingOffers.commentPlaceholder")}
+                                />
+                                {validationErrors[offer.id] && (
+                                    <p className="mt-1 text-xs text-red-600">
+                                        {t(`pendingOffers.errors.${validationErrors[offer.id]}`)}
+                                    </p>
+                                )}
                             </td>
                             <td className="px-6 py-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                                 <button
                                     onClick={() => handleApprove(offer.id)}
-                                    className="bg-green-500 text-white px-3 py-1 rounded w-full md:w-auto"
+                                    className="bg-green-500 text-white px-3 py-1 rounded w-full md:w-auto hover:bg-green-600"
                                 >
                                     {t("pendingOffers.actions.approve")}
                                 </button>
                                 <button
                                     onClick={() => handleReject(offer.id)}
-                                    className="bg-red-500 text-white px-3 py-1 rounded w-full md:w-auto"
+                                    className="bg-red-500 text-white px-3 py-1 rounded w-full md:w-auto hover:bg-red-600"
                                 >
                                     {t("pendingOffers.actions.reject")}
                                 </button>
