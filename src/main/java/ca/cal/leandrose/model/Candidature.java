@@ -39,9 +39,9 @@ public class Candidature {
     private LocalDate applicationDate;
 
     public enum Status {
-        PENDING,    // En attente de réponse employeur
-        ACCEPTED,   // Acceptée par l'employeur
-        REJECTED    // Rejetée par l'employeur
+        PENDING,
+        ACCEPTED,
+        REJECTED
     }
 
 }

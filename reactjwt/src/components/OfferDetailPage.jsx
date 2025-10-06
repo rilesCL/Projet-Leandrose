@@ -118,7 +118,7 @@ export default function OfferDetailPage() {
                     <div>
                         <h3 className="text-sm font-medium text-gray-500">{t("OfferDetailPage.remuneration")}</h3>
                         <p className="mt-1 text-gray-900">
-                            {offer.remuneration ? `${offer.remuneration} $ / ${t("OfferDetailPage.week")}` : t("OfferDetailPage.noRemuneration")}
+                            {offer.remuneration ? `${offer.remuneration} $ / ${t("OfferDetailPage.hour")}` : t("OfferDetailPage.noRemuneration")}
                         </p>
                     </div>
                 </div>
