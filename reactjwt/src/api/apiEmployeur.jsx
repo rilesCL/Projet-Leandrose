@@ -51,3 +51,37 @@ export async function uploadStageEmployeur(offer, pdfFile, token = null) {
         throw { response: { data: message } };
     }
 }
+
+export async function getEmployerCandidatures(token = null) {
+    const accessToken = token || sessionStorage.getItem('accessToken');
+    const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
+    const headers = {};
+    if (accessToken) {
+        headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
+    }
+    const res = await handleFetch(`${API_BASE}/employeur/candidatures`, { headers });
+    return res.json();
+}
+
+export async function getOfferCandidatures(offerId, token = null) {
+    const accessToken = token || sessionStorage.getItem('accessToken');
+    const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
+    const headers = {};
+    if (accessToken) {
+        headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
+    }
+    const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/candidatures`, { headers });
+    return res.json();
+}
+
+export async function downloadCandidateCv(candidatureId, token = null) {
+    const accessToken = token || sessionStorage.getItem('accessToken');
+    const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
+    const headers = {};
+    if (accessToken) {
+        headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
+    }
+    const res = await handleFetch(`${API_BASE}/employeur/candidatures/${candidatureId}/cv`, { headers });
+    const blob = await res.blob();
+    return blob;
+}

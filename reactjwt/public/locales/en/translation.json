@@ -530,6 +530,38 @@
     "duration": "Duration",
     "actions": "Actions",
     "viewDetails": "View details"
+  },
+  "employerCandidatures": {
+    "navLink": "My applications",
+    "titleAll": "All applications",
+    "titleOffer": "Offer applications",
+    "backToOffers": "Back to my offers",
+    "emptyTitle": "No applications",
+    "emptyDescription": "No applications have been received yet for your offers.",
+    "downloadError": "Error downloading CV",
+    "updateError": "Error updating status",
+    "updating": "Updating...",
+    "confirmChange": "Confirm change to {{status}}?",
+    "candidaturesCount": "application(s)",
+    "table": {
+      "student": "Student",
+      "program": "Program",
+      "offer": "Offer",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "downloadCv": "Download CV",
+      "accept": "Accept",
+      "reject": "Reject"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "TO_REVIEW": "To review",
+      "RETAINED": "Shortlisted",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected"
+    }
   }
 }
-

@@ -531,6 +531,41 @@
     "duration": "Durée",
     "actions": "Actions",
     "viewDetails": "Voir détails"
+  },
+  "employerCandidatures": {
+    "navLink": "Mes candidatures",
+    "titleAll": "Toutes les candidatures",
+    "titleOffer": "Candidatures de l'offre",
+    "backToOffers": "Retour à mes offres",
+    "emptyTitle": "Aucune candidature",
+    "emptyDescription": "Aucune candidature n'a encore été reçue pour vos offres.",
+    "downloadError": "Erreur lors du téléchargement du CV",
+    "updateError": "Erreur lors de la mise à jour du statut",
+    "updating": "Mise à jour...",
+    "confirmChange": "Confirmer le changement vers {{status}} ?",
+    "candidaturesCount": "candidature(s)",
+    "table": {
+      "student": "Étudiant",
+      "program": "Programme",
+      "offer": "Offre",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "actions": {
+      "downloadCv": "Télécharger CV",
+      "accept": "Accepter",
+      "reject": "Refuser",
+      "toReview": "À étudier",
+      "retain": "Retenir"
+    },
+    "status": {
+      "PENDING": "En attente",
+      "TO_REVIEW": "À étudier",
+      "RETAINED": "Retenue",
+      "ACCEPTED": "Acceptée",
+      "REJECTED": "Rejetée"
+    },
+    "feedbackPrompt": "Ajouter un commentaire (optionnel) :"
   }
 }
-
