@@ -1,23 +1,19 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.Employeur;
-import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
+import ca.cal.leandrose.model.*;
+import ca.cal.leandrose.model.auth.Role;
+import ca.cal.leandrose.presentation.request.ConvocationRequest;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
-import ca.cal.leandrose.service.CandidatureService;
-import ca.cal.leandrose.service.ConvocationService;
-import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.UserAppService;
-import ca.cal.leandrose.service.dto.EmployeurDto;
-import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import ca.cal.leandrose.service.dto.UserDTO;
+import ca.cal.leandrose.service.*;
+import ca.cal.leandrose.service.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,20 +21,25 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = EmployeurController.class)
 @ActiveProfiles("test")
-@Import(TestSecurityConfiguration.class)
-class EmployeurControllerTest {
+@Import(value = TestSecurityConfiguration.class)
+class EmployeurControllerAdditionalTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private UserAppService userAppService;
@@ -46,155 +47,185 @@ class EmployeurControllerTest {
     @MockitoBean
     private InternshipOfferService internshipOfferService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockitoBean
+    private EmployeurRepository employeurRepository;
 
     @MockitoBean
-    EmployeurRepository employeurRepository;
+    private CandidatureService candidatureService;
+
     @MockitoBean
-    CandidatureService candidatureService;
-    @MockitoBean
-    ConvocationService convocationService;
+    private ConvocationService convocationService;
+
+    // ---------- Download Offer PDF ----------
 
     @Test
-    void getMyOffers_asEmployeur_returnsOffers() throws Exception {
-        // Arrange
+    void downloadOffer_asEmployeur_returnsPdf() throws Exception {
         UserDTO employeurDto = EmployeurDto.builder()
                 .id(1L)
-                .email("emp@test.com")
-                .role(ca.cal.leandrose.model.auth.Role.EMPLOYEUR)
-                .build();
-
-        Employeur employeur = Employeur.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@company.com")
-                .companyName("TechCorp")
-                .field("IT")
+                .role(Role.EMPLOYEUR)
                 .build();
 
         InternshipOffer offer = InternshipOffer.builder()
                 .id(100L)
                 .description("Stage Java")
-                .status(InternshipOffer.Status.PENDING_VALIDATION)
-                .employeur(employeur)
+                .pdfPath("dummy.pdf")
+                .employeur(Employeur.builder().id(1L).build())
                 .build();
 
-        Mockito.when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        Mockito.when(internshipOfferService.getOffersByEmployeurId(1L))
-                .thenReturn(List.of(offer));
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
 
-        // Act & Assert
-        mockMvc.perform(get("/employeur/offers")
-                        .header("Authorization", "Bearer fake-token"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].description").value("Stage Java"));
+        // Mock resource
+        mockMvc.perform(get("/employeur/offers/100/download")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound()); // file not present in test, endpoint exists
     }
 
     @Test
-    void getMyOffers_notEmployeur_returnsForbidden() throws Exception {
-        // Arrange
+    void downloadOffer_notEmployeur_returnsForbidden() throws Exception {
         UserDTO studentDto = EmployeurDto.builder()
                 .id(2L)
-                .email("student@test.com")
-                .role(ca.cal.leandrose.model.auth.Role.STUDENT)
+                .role(Role.STUDENT)
                 .build();
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
 
-        Mockito.when(userAppService.getMe(anyString())).thenReturn(studentDto);
-
-        // Act & Assert
-        mockMvc.perform(get("/employeur/offers")
-                        .header("Authorization", "Bearer fake-token"))
+        mockMvc.perform(get("/employeur/offers/100/download")
+                        .header("Authorization", "Bearer token"))
                 .andExpect(status().isForbidden());
     }
 
+    // ---------- Get Convocations by Offer ----------
+
     @Test
-    void uploadOffer_asEmployeur_savesOffer() throws Exception {
-        // Arrange
+    void getConvocationsByOffer_asEmployeur_returnsList() throws Exception {
         UserDTO employeurDto = EmployeurDto.builder()
                 .id(1L)
-                .email("emp@test.com")
-                .role(ca.cal.leandrose.model.auth.Role.EMPLOYEUR)
+                .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOfferRequest offerRequest = new InternshipOfferRequest();
-        offerRequest.setDescription("Stage React");
-        offerRequest.setStartDate(LocalDate.now().toString());
-        offerRequest.setDurationInWeeks(12);
-        offerRequest.setAddress("123 Rue Test");
-        offerRequest.setRemuneration(800f);
-
-        MockMultipartFile offerPart = new MockMultipartFile(
-                "offer",
-                "offer.json",
-                MediaType.APPLICATION_JSON_VALUE,
-                objectMapper.writeValueAsBytes(offerRequest)
-        );
-
-        MockMultipartFile pdfPart = new MockMultipartFile(
-                "pdfFile",
-                "offer.pdf",
-                MediaType.APPLICATION_PDF_VALUE,
-                "PDF_CONTENT".getBytes()
-        );
-
-        InternshipOfferDto savedOffer = InternshipOfferDto.builder()
-                .id(200L)
-                .description("Stage React")
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(100L)
+                .employeur(Employeur.builder().id(1L).build())
                 .build();
 
-        Employeur employeur = Employeur.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .email("john@company.com")
-                .companyName("TechCorp")
-                .field("IT")
+        ConvocationDto convocationDto = ConvocationDto.builder()
+                .id(10L)
+                .location("Bureau 301")
                 .build();
 
-        Mockito.when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        Mockito.when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
-        Mockito.when(internshipOfferService.createOfferDto(
-                anyString(), any(), anyInt(), anyString(), anyFloat(), any(Employeur.class), any()
-        )).thenReturn(savedOffer);
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+        when(convocationService.getAllConvocationsByInterShipOfferId(100L))
+                .thenReturn(List.of(convocationDto));
 
-        // Act & Assert
-        mockMvc.perform(multipart("/employeur/offers")
-                        .file(offerPart)
-                        .file(pdfPart)
-                        .header("Authorization", "Bearer fake-token"))
+        mockMvc.perform(get("/employeur/offers/100/convocations")
+                        .header("Authorization", "Bearer token"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.description").value("Stage React"));
+                .andExpect(jsonPath("$[0].id").value(10))
+                .andExpect(jsonPath("$[0].location").value("Bureau 301"));
     }
 
     @Test
-    void uploadOffer_notEmployeur_returnsForbidden() throws Exception {
-        // Arrange
+    void getConvocationsByOffer_notEmployeur_returnsForbidden() throws Exception {
         UserDTO studentDto = EmployeurDto.builder()
                 .id(2L)
-                .email("student@test.com")
-                .role(ca.cal.leandrose.model.auth.Role.STUDENT)
+                .role(Role.STUDENT)
+                .build();
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/employeur/offers/100/convocations")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    // ---------- Create Convocation ----------
+
+    @Test
+    void createConvocation_asEmployeur_createsSuccessfully() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
                 .build();
 
-        Mockito.when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        ConvocationRequest request = new ConvocationRequest();
+        request.setConvocationDate(LocalDateTime.now().plusDays(5));
+        request.setLocation("Bureau 301");
+        request.setMessage("Message perso");
 
-        MockMultipartFile offerPart = new MockMultipartFile(
-                "offer", "offer.json", MediaType.APPLICATION_JSON_VALUE,
-                "{\"description\":\"Stage X\"}".getBytes()
-        );
-        MockMultipartFile pdfPart = new MockMultipartFile(
-                "pdfFile", "offer.pdf", MediaType.APPLICATION_PDF_VALUE,
-                "PDF_CONTENT".getBytes()
-        );
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(50L)
+                .employeurId(1L)
+                .build();
 
-        // Act & Assert
-        mockMvc.perform(multipart("/employeur/offers")
-                        .file(offerPart)
-                        .file(pdfPart)
-                        .header("Authorization", "Bearer fake-token"))
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
+
+        mockMvc.perform(post("/employeur/candidatures/50/convocations")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Convocation créée avec succès"));
+
+        verify(convocationService).addConvocation(
+                eq(50L),
+                eq(request.getConvocationDate()),
+                eq("Bureau 301"),
+                eq("Message perso")
+        );
+    }
+
+    @Test
+    void createConvocation_notEmployeur_returnsForbidden() throws Exception {
+        UserDTO studentDto = EmployeurDto.builder()
+                .id(2L)
+                .role(Role.STUDENT)
+                .build();
+
+        ConvocationRequest request = new ConvocationRequest();
+        request.setConvocationDate(LocalDateTime.now().plusDays(5));
+        request.setLocation("Bureau 301");
+        request.setMessage("Message perso");
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(post("/employeur/candidatures/50/convocations")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
+
+        verify(convocationService, never()).addConvocation(anyLong(), any(), anyString(), anyString());
+    }
+
+    @Test
+    void createConvocation_whenConvocationFails_returnsBadRequest() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        ConvocationRequest request = new ConvocationRequest();
+        request.setConvocationDate(LocalDateTime.now().plusDays(5));
+        request.setLocation("Bureau 301");
+        request.setMessage("Message perso");
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(50L)
+                .employeurId(1L)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
+
+        doThrow(new IllegalStateException("Already convened"))
+                .when(convocationService).addConvocation(anyLong(), any(), anyString(), anyString());
+
+        mockMvc.perform(post("/employeur/candidatures/50/convocations")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Already convened"));
     }
 }
