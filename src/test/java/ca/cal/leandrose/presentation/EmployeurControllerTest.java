@@ -2,28 +2,22 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.model.auth.Role;
-import ca.cal.leandrose.presentation.request.ConvocationRequest;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -105,7 +99,7 @@ class EmployeurControllerTest {
                 .employeur(Employeur.builder().id(1L).build())
                 .build();
 
-        ConvocationDto convocationDto = ConvocationDto.builder()
+        ca.cal.leandrose.service.dto.ConvocationDto convocationDto = ca.cal.leandrose.service.dto.ConvocationDto.builder()
                 .id(10L)
                 .location("Bureau 301")
                 .build();
@@ -143,7 +137,7 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        ConvocationRequest request = new ConvocationRequest();
+    ca.cal.leandrose.service.dto.ConvocationDto request = new ca.cal.leandrose.service.dto.ConvocationDto();
         request.setConvocationDate(LocalDateTime.now().plusDays(5));
         request.setLocation("Bureau 301");
         request.setMessage("Message perso");
@@ -178,7 +172,7 @@ class EmployeurControllerTest {
                 .role(Role.STUDENT)
                 .build();
 
-        ConvocationRequest request = new ConvocationRequest();
+    ca.cal.leandrose.service.dto.ConvocationDto request = new ca.cal.leandrose.service.dto.ConvocationDto();
         request.setConvocationDate(LocalDateTime.now().plusDays(5));
         request.setLocation("Bureau 301");
         request.setMessage("Message perso");
@@ -201,7 +195,7 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        ConvocationRequest request = new ConvocationRequest();
+        ConvocationDto request = new ConvocationDto();
         request.setConvocationDate(LocalDateTime.now().plusDays(5));
         request.setLocation("Bureau 301");
         request.setMessage("Message perso");

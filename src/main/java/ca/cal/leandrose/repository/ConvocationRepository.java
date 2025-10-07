@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface ConvocationRepository extends JpaRepository<Convocation, Long> {
 
-    List<Convocation> findByCandidatureInternshipOfferId(Long id);
+    List<Convocation> findByCandidature_InternshipOffer_Id(Long candidatureInternshipOfferId);
 }

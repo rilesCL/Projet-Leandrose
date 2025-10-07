@@ -1,25 +1,24 @@
 package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Convocation;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConvocationDto {
     private Long id;
     private Long candidatureId;
     private LocalDateTime convocationDate;
     private String location;
+    private String message;
 
-    public ConvocationDto(Long id, Long candidatureId, LocalDateTime convocationDate, String location) {
-        this.id = id;
-        this.candidatureId = candidatureId;
-        this.convocationDate = convocationDate;
-        this.location = location;
-    }
     public static ConvocationDto create(Convocation convocation) {
         return ConvocationDto.builder()
                 .id(convocation.getId())

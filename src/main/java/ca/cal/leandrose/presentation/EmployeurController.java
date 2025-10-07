@@ -1,9 +1,7 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.presentation.request.ConvocationRequest;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.CandidatureService;
@@ -168,10 +166,10 @@ public class EmployeurController {
 
 
     @PostMapping("/candidatures/{candidatureId}/convocations")
-    public ResponseEntity<?> createConvocation(
+    public ResponseEntity<String> createConvocation(
             HttpServletRequest request,
             @PathVariable Long candidatureId,
-            @RequestBody ConvocationRequest convocationRequest
+            @RequestBody ConvocationDto convocationRequest
     ) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 

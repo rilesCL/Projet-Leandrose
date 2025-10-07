@@ -49,7 +49,7 @@ public class ConvocationService {
     }
 
     public List<ConvocationDto> getAllConvocationsByInterShipOfferId(Long internshipOfferId) {
-        return convocationRepository.findByCandidatureInternshipOfferId(internshipOfferId)
+        return convocationRepository.findByCandidature_InternshipOffer_Id(internshipOfferId)
                 .stream()
                 .map(ConvocationDto::create)
                 .toList();
