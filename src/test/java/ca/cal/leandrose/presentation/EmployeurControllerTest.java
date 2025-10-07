@@ -5,6 +5,8 @@ import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
+import ca.cal.leandrose.service.CandidatureService;
+import ca.cal.leandrose.service.ConvocationService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.EmployeurDto;
@@ -49,6 +51,10 @@ class EmployeurControllerTest {
 
     @MockitoBean
     EmployeurRepository employeurRepository;
+    @MockitoBean
+    CandidatureService candidatureService;
+    @MockitoBean
+    ConvocationService convocationService;
 
     @Test
     void getMyOffers_asEmployeur_returnsOffers() throws Exception {
