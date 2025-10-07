@@ -118,10 +118,8 @@ class CvServiceTest {
         );
         CvDto second = cvService.uploadCv(testStudent.getId(), file2);
 
-        // First file should be deleted
         assertFalse(Files.exists(firstPath));
 
-        // Only one CV in repository
         assertEquals(1, cvRepository.findAll().size());
         assertEquals(second.getId(), cvRepository.findAll().get(0).getId());
     }

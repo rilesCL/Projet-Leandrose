@@ -1,4 +1,3 @@
-// apiRegister.jsx
 const BASE_URL = "http://localhost:8080/api/register";
 
 async function handleFetch(url, options) {
@@ -12,8 +11,6 @@ async function handleFetch(url, options) {
         let data;
         const contentType = res.headers.get("content-type");
         console.log("Content-Type:", contentType);
-
-        // Check if response has content
         const text = await res.text();
         console.log("Response text:", text);
 
@@ -30,7 +27,6 @@ async function handleFetch(url, options) {
                 data = text;
             }
         } else {
-            // Empty response
             console.warn("Empty response received");
             data = res.ok ? [] : null;
         }

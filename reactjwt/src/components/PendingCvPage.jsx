@@ -63,7 +63,6 @@ export default function PendingCvPage() {
 
     const handleCommentChange = (cvId, value) => {
         setComments((prev) => ({ ...prev, [cvId]: value }));
-        // Clear validation error when user starts typing
         if (validationErrors[cvId]) {
             setValidationErrors((prev) => {
                 const updated = { ...prev };

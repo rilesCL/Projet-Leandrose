@@ -39,7 +39,6 @@ class CandidatureServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Créer un employeur
         Employeur employeur = employeurRepository.save(Employeur.builder()
                 .firstName("Jean")
                 .lastName("Boss")
@@ -49,7 +48,6 @@ class CandidatureServiceTest {
                 .field("Informatique")
                 .build());
 
-        // Créer un étudiant
         testStudent = studentRepository.save(Student.builder()
                 .firstName("Alice")
                 .lastName("Martin")
@@ -59,7 +57,6 @@ class CandidatureServiceTest {
                 .program("Computer Science")
                 .build());
 
-        // Créer une offre publiée
         testOffer = offerRepository.save(InternshipOffer.builder()
                 .description("Stage développement web")
                 .startDate(LocalDate.of(2025, 6, 1))
@@ -71,7 +68,6 @@ class CandidatureServiceTest {
                 .status(InternshipOffer.Status.PUBLISHED)
                 .build());
 
-        // Créer un CV approuvé
         testCv = cvRepository.save(Cv.builder()
                 .student(testStudent)
                 .pdfPath("/path/to/cv.pdf")
@@ -125,7 +121,7 @@ class CandidatureServiceTest {
 
     @Test
     void postuler_ShouldThrowException_WhenCvNotApproved() {
-        // Arrange - Sauvegarder directement dans une variable finale
+        // Arrange
         final Cv pendingCv = cvRepository.save(Cv.builder()
                 .student(testStudent)
                 .pdfPath("/path/to/pending_cv.pdf")

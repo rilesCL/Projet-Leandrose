@@ -85,7 +85,6 @@ export default function RegisterEmployeur() {
             setSuccessMessage(t("registerEmployeur.success"));
             setForm(initialState);
 
-            // Auto-login after registration
             setTimeout(async () => {
                 const loginRes = await fetch("http://localhost:8080/user/login", {
                     method: "POST",

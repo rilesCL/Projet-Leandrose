@@ -74,7 +74,6 @@ public class EmployeurController {
             return ResponseEntity.status(403).build();
         }
 
-        // Add validation
         if (offerRequest.getDescription() == null || offerRequest.getDescription().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("La description est requise");
         }

@@ -198,7 +198,7 @@ class GestionnaireControllerTest {
         try {
             mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId));
         } catch (Exception e) {
-            // Verify the root cause is RuntimeException with expected message
+
             Throwable cause = e.getCause();
             while (cause != null && !(cause instanceof RuntimeException && cause.getMessage().contains("CV introuvable"))) {
                 cause = cause.getCause();

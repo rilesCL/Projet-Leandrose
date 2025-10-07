@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = EmployeurController.class)
 @ActiveProfiles("test")
 @Import(value = TestSecurityConfiguration.class)
-class EmployeurControllerAdditionalTest {
+class EmployeurControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,7 +56,6 @@ class EmployeurControllerAdditionalTest {
     @MockitoBean
     private ConvocationService convocationService;
 
-    // ---------- Download Offer PDF ----------
 
     @Test
     void downloadOffer_asEmployeur_returnsPdf() throws Exception {
@@ -75,7 +74,6 @@ class EmployeurControllerAdditionalTest {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(internshipOfferService.getOffer(100L)).thenReturn(offer);
 
-        // Mock resource
         mockMvc.perform(get("/employeur/offers/100/download")
                         .header("Authorization", "Bearer token"))
                 .andExpect(status().isNotFound()); // file not present in test, endpoint exists
@@ -94,7 +92,6 @@ class EmployeurControllerAdditionalTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ---------- Get Convocations by Offer ----------
 
     @Test
     void getConvocationsByOffer_asEmployeur_returnsList() throws Exception {
@@ -138,7 +135,6 @@ class EmployeurControllerAdditionalTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ---------- Create Convocation ----------
 
     @Test
     void createConvocation_asEmployeur_createsSuccessfully() throws Exception {

@@ -94,7 +94,6 @@ export default function RegisterEtudiant() {
             setForm(initialState);
             setErrors({});
 
-            // Auto-login after registration
             setTimeout(async () => {
                 const loginRes = await fetch("http://localhost:8080/user/login", {
                     method: "POST",

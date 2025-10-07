@@ -134,7 +134,6 @@ export async function getOfferDetails(offerId, token = null) {
 
             await handleApiResponse(response);
 
-            // Télécharger le fichier
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');

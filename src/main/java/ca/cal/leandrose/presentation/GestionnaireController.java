@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/gestionnaire")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
+@CrossOrigin(origins = {"http://localhost:5173"})
 @RequiredArgsConstructor
 public class GestionnaireController {
 

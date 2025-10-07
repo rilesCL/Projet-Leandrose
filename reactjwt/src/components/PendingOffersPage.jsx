@@ -114,7 +114,6 @@ export default function PendingOffersPage() {
 
     const handleCommentChange = (offerId, value) => {
         setComments((prev) => ({ ...prev, [offerId]: value }));
-        // Clear validation error when user starts typing
         if (validationErrors[offerId]) {
             setValidationErrors((prev) => {
                 const updated = { ...prev };

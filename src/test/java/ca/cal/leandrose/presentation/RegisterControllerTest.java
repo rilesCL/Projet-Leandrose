@@ -85,10 +85,10 @@ class RegisterControllerTest {
     void testRegisterEmployeurInvalidInput() throws Exception {
         // Arrange
         RegisterEmployeur request = new RegisterEmployeur();
-        request.setFirstName(""); // Invalid: empty
+        request.setFirstName("");
         request.setLastName("Doe");
-        request.setEmail("invalid-email"); // Invalid: not a valid email format
-        request.setPassword("pass"); // Invalid: too short (less than 8 characters)
+        request.setEmail("invalid-email");
+        request.setPassword("pass");
         request.setCompanyName("TechCorp");
         request.setField("IT");
 
@@ -144,12 +144,12 @@ class RegisterControllerTest {
     void testRegisterStudentInvalidInput() throws Exception {
         // Arrange
         RegisterStudent request = new RegisterStudent();
-        request.setFirstName(""); // Invalid: empty
+        request.setFirstName("");
         request.setLastName("Dupont");
-        request.setEmail("invalid-email"); // Invalid: not a valid email format
-        request.setPassword("weak"); // Invalid: too short
-        request.setStudentNumber("STU123"); // Possibly invalid depending on validation rules
-        request.setProgram(""); // Invalid: empty
+        request.setEmail("invalid-email");
+        request.setPassword("weak");
+        request.setStudentNumber("STU123");
+        request.setProgram("");
 
         // Act + Assert
         mockMvc.perform(post("/api/register/student")

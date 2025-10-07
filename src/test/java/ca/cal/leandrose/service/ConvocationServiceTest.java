@@ -189,7 +189,6 @@ class ConvocationServiceTest {
 
     @Test
     void addMultipleConvocations_ShouldReturnMultipleDtos() {
-        // Create another student and candidature
         Student student2 = studentRepository.save(Student.builder()
                 .firstName("Bob")
                 .lastName("Smith")
