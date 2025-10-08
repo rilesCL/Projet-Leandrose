@@ -56,7 +56,7 @@ export default function DashBoardGestionnaire() {
                                 to="/dashboard/gestionnaire/offers"
                                 className="flex items-center text-gray-600 hover:text-indigo-600 transition"
                             >
-                                Offers
+                                {t("dashboardGestionnaire.offer")}
                             </Link>
 
                             <button

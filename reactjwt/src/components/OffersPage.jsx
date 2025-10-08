@@ -65,7 +65,7 @@ export default function OffersPage() {
                 {offers.map((offer) => (
                     <tr key={offer.id} className="hover:bg-gray-50">
                         <td className="border px-2 py-1">{offer.companyName}</td>
-                        <td className="border px-2 py-1">{offer.status}</td>
+                        <td className="border px-2 py-1">{t(`offerPagesDetails.status.${offer.status}`)}</td>
                         <td>
                             <Link
                                 to={`/dashboard/gestionnaire/offers/${offer.id}`}

@@ -151,7 +151,8 @@
   "dashboardGestionnaire": {
     "logout": "Logout",
     "welcome": "Welcome",
-    "addProgram": "Add Program"
+    "addProgram": "Add Program",
+    "offer":  "Offer"
   },
   "dashboardStudent": {
     "logout": "Logout",
@@ -368,6 +369,10 @@
     "email": "Email",
     "duration": "Duration",
     "start_date": "Start Date",
-    "address": "Address"
+    "address": "Address",
+    "status": {
+      "REJECTED": "Rejected",
+      "PUBLISHED": "Approved"
+    }
   }
 }
