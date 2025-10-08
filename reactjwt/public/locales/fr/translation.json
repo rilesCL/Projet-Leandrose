@@ -418,6 +418,7 @@
   },
   "studentApplicationsList": {
     "loading": "Chargement de vos candidatures...",
+    "loadError": "Impossible de charger vos candidatures",
     "error": "Impossible de charger vos candidatures",
     "retry": "Réessayer",
     "emptyTitle": "Aucune candidature",
@@ -425,6 +426,7 @@
     "btnViewOffers": "Voir les offres",
     "title": "Mes candidatures",
     "count": "{{count}} candidature(s)",
+    "noDate": "Non définie",
     "table": {
       "offer": "Offre",
       "company": "Entreprise",
@@ -434,13 +436,26 @@
     },
     "status": {
       "pending": "En attente",
+      "PENDING": "En attente",
+      "CONVENED": "Convoqué",
       "accepted": "Acceptée",
+      "ACCEPTED": "Acceptée",
       "rejected": "Refusée",
+      "REJECTED": "Rejetée",
       "unknown": "Inconnu"
     },
     "viewOffer": "Voir l'offre",
     "noApplicationsTitle": "Aucune candidature",
-    "noApplicationsText": "Vous n'avez pas encore postulé à d'offres de stage."
+    "noApplicationsText": "Vous n'avez pas encore postulé à d'offres de stage.",
+    "convocationModal": {
+      "title": "Détails de la convocation",
+      "description": "Vous avez été convoqué pour un entretien.",
+      "date": "Date et heure",
+      "location": "Lieu",
+      "message": "Message de l'employeur",
+      "noInfo": "Aucune information de convocation disponible.",
+      "close": "Fermer"
+    }
   },
   "offerDetail": {
     "back": "Retour aux offres",

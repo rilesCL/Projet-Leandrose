@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -50,6 +51,19 @@ public class ConvocationService {
 
     public List<ConvocationDto> getAllConvocationsByInterShipOfferId(Long internshipOfferId) {
         return convocationRepository.findByCandidature_InternshipOffer_Id(internshipOfferId)
+                .stream()
+                .map(ConvocationDto::create)
+                .toList();
+    }
+
+
+    public Optional<ConvocationDto> getConvocationByCandidatureId(Long candidatureId) {
+        return convocationRepository.findByCandidatureId(candidatureId)
+                .map(ConvocationDto::create);
+    }
+
+    public List<ConvocationDto> getConvocationsByStudentId(Long studentId) {
+        return convocationRepository.findByCandidature_Student_Id(studentId)
                 .stream()
                 .map(ConvocationDto::create)
                 .toList();

@@ -16,6 +16,14 @@ export default function OfferCandidaturesList() {
         location: '',
         message: ''
     });
+    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+    const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ show: false, message: '', type: 'success' });
+        }, 3000);
+    };
 
     const load = useCallback(async () => {
         setLoading(true); setError(null);
@@ -39,7 +47,9 @@ export default function OfferCandidaturesList() {
             a.download = `CV-${baseName}.pdf`;
             document.body.appendChild(a); a.click();
             document.body.removeChild(a); window.URL.revokeObjectURL(url);
-        } catch (e) { alert(t('employerCandidatures.downloadError')); }
+        } catch (e) {
+            showToast(t('employerCandidatures.downloadError'), 'error');
+        }
     };
 
     const openConvocationModal = (candidature) => {
@@ -64,26 +74,21 @@ export default function OfferCandidaturesList() {
 
         try {
             await createConvocation(selectedCandidature.id, convocationForm);
-            alert(t('employerCandidatures.convocationSuccess'));
+            showToast(t('employerCandidatures.convocationSuccess'), 'success');
             closeConvocationModal();
             load();
         } catch (error) {
-            alert(error?.response?.data || t('employerCandidatures.convocationError'));
+            showToast(error?.response?.data || t('employerCandidatures.convocationError'), 'error');
         }
     };
 
     const handleReject = async (candidature) => {
-        const displayName = [candidature.studentFirstName, candidature.studentLastName].filter(Boolean).join(' ') || 'cet étudiant';
-        if (!window.confirm(t('employerCandidatures.confirmReject', { name: displayName }))) {
-            return;
-        }
-
         try {
             await rejectCandidature(candidature.id);
-            alert(t('employerCandidatures.rejectSuccess'));
-            load(); // Recharger les candidatures
+            showToast(t('employerCandidatures.rejectSuccess'), 'success');
+            load();
         } catch (error) {
-            alert(error?.response?.data || t('employerCandidatures.rejectError'));
+            showToast(error?.response?.data || t('employerCandidatures.rejectError'), 'error');
         }
     };
 
@@ -91,8 +96,8 @@ export default function OfferCandidaturesList() {
         <span className='text-xs font-medium text-gray-700'>{t(`employerCandidatures.status.${status}`)}</span>
     );
 
-    const canConvoke = (status) => status === 'EN_ATTENTE' || status === 'PENDING';
-    const canReject = (status) => status === 'EN_ATTENTE' || status === 'PENDING' || status === 'CONVOQUE';
+    const canConvoke = (status) => status === 'PENDING';
+    const canReject = (status) => status === 'PENDING' || status === 'CONVENED';
 
     if (loading) return <div className='bg-white p-6 shadow rounded text-center'>{t('internshipOffersList.loading')}</div>;
     if (error) return <div className='bg-white p-6 shadow rounded text-center text-red-600'>
@@ -136,10 +141,12 @@ export default function OfferCandidaturesList() {
                         {candidatures.map(c => {
                             const date = c.applicationDate ? new Date(c.applicationDate).toLocaleDateString() : '-';
                             const displayName = [c.studentFirstName, c.studentLastName].filter(Boolean).join(' ') || '-';
+                            const programDisplay = c.studentProgram ? t(c.studentProgram) : '-';
+
                             return (
                                 <tr key={c.id} className='hover:bg-gray-50'>
                                     <td className='px-4 py-2 text-sm'>{displayName}</td>
-                                    <td className='px-4 py-2 text-sm text-gray-600'>{c.studentProgram || '-'}</td>
+                                    <td className='px-4 py-2 text-sm text-gray-600'>{programDisplay}</td>
                                     <td className='px-4 py-2 text-sm text-gray-600'>{date}</td>
                                     <td className='px-4 py-2 text-sm'>{renderStatus(c.status)}</td>
                                     <td className='px-4 py-2 text-sm space-x-2'>
@@ -167,9 +174,21 @@ export default function OfferCandidaturesList() {
 
             {/* Modal de convocation */}
             {showConvocationModal && selectedCandidature && (
-                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-                    <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-md'>
-                        <h3 className='text-lg font-semibold mb-4'>
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50' onClick={closeConvocationModal}>
+                    <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative' onClick={(e) => e.stopPropagation()}>
+                        {/* Bouton X pour fermer */}
+                        <button
+                            type='button'
+                            onClick={closeConvocationModal}
+                            className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors'
+                            aria-label='Close'
+                        >
+                            <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                            </svg>
+                        </button>
+
+                        <h3 className='text-lg font-semibold mb-4 pr-8'>
                             {t('employerCandidatures.convocationModal.title')} - {[selectedCandidature.studentFirstName, selectedCandidature.studentLastName].filter(Boolean).join(' ')}
                         </h3>
                         <form onSubmit={handleConvocationSubmit}>
@@ -225,6 +244,26 @@ export default function OfferCandidaturesList() {
                             </div>
                         </form>
                     </div>
+                </div>
+            )}
+
+            {/* Toast notification */}
+            {toast.show && (
+                <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${
+                    toast.type === 'success'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
+                }`}>
+                    {toast.type === 'success' ? (
+                        <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                        </svg>
+                    ) : (
+                        <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                        </svg>
+                    )}
+                    <span className='font-medium'>{toast.message}</span>
                 </div>
             )}
         </>

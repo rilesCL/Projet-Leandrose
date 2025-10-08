@@ -414,33 +414,47 @@
       "commentRequired": "You must write a comment before rejecting an offer",
       "download": "Error downloading the offer"
     }
+  },"studentApplicationsList": {
+  "loading": "Loading your applications...",
+  "loadError": "Unable to load your applications",
+  "error": "Unable to load your applications",
+  "retry": "Retry",
+  "emptyTitle": "No applications",
+  "emptyDescription": "You have not applied to any offer yet.",
+  "btnViewOffers": "View offers",
+  "title": "My Applications",
+  "count": "{{count}} application(s)",
+  "noDate": "Not set",
+  "table": {
+    "offer": "Offer",
+    "company": "Company",
+    "date": "Date",
+    "status": "Status",
+    "actions": "Actions"
   },
-  "studentApplicationsList": {
-    "loading": "Loading your applications...",
-    "error": "Unable to load your applications",
-    "retry": "Retry",
-    "emptyTitle": "No applications",
-    "emptyDescription": "You have not applied to any offer yet.",
-    "btnViewOffers": "View offers",
-    "title": "My Applications",
-    "count": "{{count}} application(s)",
-    "table": {
-      "offer": "Offer",
-      "company": "Company",
-      "date": "Date",
-      "status": "Status",
-      "actions": "Actions"
-    },
-    "status": {
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "rejected": "Rejected",
-      "unknown": "Unknown"
-    },
-    "viewOffer": "View offer",
-    "noApplicationsTitle": "No applications",
-    "noApplicationsText": "You haven't applied to any internship offers yet."
+  "status": {
+    "pending": "Pending",
+    "PENDING": "Pending",
+    "CONVENED": "Interview Scheduled",
+    "accepted": "Accepted",
+    "ACCEPTED": "Accepted",
+    "rejected": "Rejected",
+    "REJECTED": "Rejected",
+    "unknown": "Unknown"
   },
+  "viewOffer": "View offer",
+  "noApplicationsTitle": "No applications",
+  "noApplicationsText": "You have not applied to any offer yet.",
+  "convocationModal": {
+    "title": "Interview Details",
+    "description": "You have been invited for an interview.",
+    "date": "Date and Time",
+    "location": "Location",
+    "message": "Employer's Message",
+    "noInfo": "No interview information available.",
+    "close": "Close"
+  }
+},
   "offerDetail": {
     "back": "Back to offers",
     "location": "Location",

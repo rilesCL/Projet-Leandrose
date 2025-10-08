@@ -163,6 +163,32 @@ export async function getOfferDetails(offerId, token = null) {
         }
     }
 
+export async function getMyConvocations(token = null) {
+    const accessToken = token || sessionStorage.getItem('accessToken');
+    const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
+    const headers = {};
+
+    if (accessToken) {
+        headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/student/convocations`, {
+            method: 'GET',
+            headers
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Erreur ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération des convocations');
+    }
+}
+
 
     export async function getMyCandidatures(token = null) {
         try {

@@ -5,11 +5,9 @@ import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
-import ca.cal.leandrose.service.CandidatureService;
-import ca.cal.leandrose.service.CvService;
-import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.UserAppService;
+import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.ConvocationDto;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +35,7 @@ public class StudentController {
     private final UserAppService userService;
     private final CandidatureService candidatureService;
     private final InternshipOfferService internshipOfferService;
+    private final ConvocationService convocationService;
 
     @PostMapping(value = "/cv")
     public ResponseEntity<CvDto> uploadCv(
@@ -204,5 +203,19 @@ public class StudentController {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/convocations")
+    public ResponseEntity<List<ConvocationDto>> getMyConvocations(HttpServletRequest request) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<ConvocationDto> convocations = convocationService.getConvocationsByStudentId(me.getId());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(convocations);
     }
 }
