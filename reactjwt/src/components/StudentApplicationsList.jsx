@@ -21,7 +21,7 @@ export default function StudentApplicationsList() {
                     setCandidatures(Array.isArray(data) ? data : []);
                 }
             } catch (e) {
-                if (!cancelled) setError(t("StudentApplicationsList.loadError"));
+                if (!cancelled) setError(t("studentApplicationsList.loadError"));
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -31,7 +31,7 @@ export default function StudentApplicationsList() {
     }, [t]);
 
     const formatDate = (dateString) => {
-        if (!dateString) return t("StudentApplicationsList.noDate");
+        if (!dateString) return t("studentApplicationsList.noDate");
         return new Date(dateString).toLocaleDateString();
     };
 
@@ -40,11 +40,11 @@ export default function StudentApplicationsList() {
         const base = 'px-3 py-1 text-xs font-medium rounded-full border';
         switch (s) {
             case 'PENDING':
-                return <span className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("StudentApplicationsList.status.pending")}</span>;
+                return <span className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("studentApplicationsList.status.pending")}</span>;
             case 'ACCEPTED':
-                return <span className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("StudentApplicationsList.status.accepted")}</span>;
+                return <span className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("studentApplicationsList.status.accepted")}</span>;
             case 'REJECTED':
-                return <span className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("StudentApplicationsList.status.rejected")}</span>;
+                return <span className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("studentApplicationsList.status.rejected")}</span>;
             default:
                 return <span className={`${base} bg-gray-100 text-gray-800 border-gray-200`}>{s}</span>;
         }
@@ -68,7 +68,7 @@ export default function StudentApplicationsList() {
             <div className="bg-white shadow rounded-lg p-6 text-center">
                 <p className="text-red-600 mb-4">{error}</p>
                 <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 text-white rounded">
-                    {t("StudentApplicationsList.retry")}
+                    {t("studentApplicationsList.retry")}
                 </button>
             </div>
         );
@@ -78,14 +78,8 @@ export default function StudentApplicationsList() {
         return (
             <div className="bg-white shadow rounded-lg p-6 text-center">
                 <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center text-2xl">📄</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">{t("StudentApplicationsList.noApplicationsTitle")}</h3>
-                <p className="text-gray-600 mb-4">{t("StudentApplicationsList.noApplicationsText")}</p>
-                <button
-                    onClick={() => navigate('/dashboard/student')}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                >
-                    {t("StudentApplicationsList.viewOffers")}
-                </button>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t("studentApplicationsList.noApplicationsTitle")}</h3>
+                <p className="text-gray-600 mb-4">{t("studentApplicationsList.noApplicationsText")}</p>
             </div>
         );
     }
@@ -94,9 +88,9 @@ export default function StudentApplicationsList() {
         <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-medium text-gray-900">{t("StudentApplicationsList.title")}</h3>
+                    <h3 className="text-lg font-medium text-gray-900">{t("studentApplicationsList.title")}</h3>
                     <p className="text-sm text-gray-600">
-                        {t("StudentApplicationsList.applicationCount", { count: candidatures.length })}
+                        {t("studentApplicationsList.count", { count: candidatures.length })}
                     </p>
                 </div>
             </div>
@@ -104,11 +98,11 @@ export default function StudentApplicationsList() {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                     <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentApplicationsList.table.offer")}</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentApplicationsList.table.company")}</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentApplicationsList.table.date")}</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentApplicationsList.table.status")}</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentApplicationsList.table.actions")}</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.offer")}</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.company")}</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.date")}</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.status")}</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.actions")}</th>
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -123,7 +117,7 @@ export default function StudentApplicationsList() {
                                     onClick={() => navigate(`/dashboard/student/offers/${c.offerId}`)}
                                     className="text-indigo-600 hover:text-indigo-900"
                                 >
-                                    {t("StudentApplicationsList.viewOffer")}
+                                    {t("studentApplicationsList.viewOffer")}
                                 </button>
                             </td>
                         </tr>

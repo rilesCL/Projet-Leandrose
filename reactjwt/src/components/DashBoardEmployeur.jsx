@@ -59,9 +59,6 @@ export default function DashBoardEmployeur() {
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
                             <LanguageSelector />
-                            <Link to="/dashboard/employeur/candidatures" className="text-sm font-medium text-indigo-600 hover:text-indigo-800">
-                                {t("employerCandidatures.navLink")}
-                            </Link>
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"

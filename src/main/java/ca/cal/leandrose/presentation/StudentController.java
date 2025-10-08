@@ -1,6 +1,7 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
@@ -126,8 +127,15 @@ public class StudentController {
     }
 
     @GetMapping("/offers")
-    public ResponseEntity<List<InternshipOffer>> getPublishedOffers() {
-        List<InternshipOffer> offers = internshipOfferService.getPublishedOffersForStudents();
+    public ResponseEntity<List<InternshipOffer>> getPublishedOffers(HttpServletRequest request) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
+        List<InternshipOffer> offers = internshipOfferService.getPublishedOffersForStudents(student.getProgram());
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(offers);
@@ -179,22 +187,22 @@ public class StudentController {
         return ResponseEntity.ok(candidatures);
     }
 
-  @GetMapping("/offers/{id}/pdf")
-  public ResponseEntity<byte[]> downloadOfferPdf(@PathVariable Long id) {
-    try {
-      InternshipOffer offer = internshipOfferService.getOffer(id);
+    @GetMapping("/offers/{id}/pdf")
+    public ResponseEntity<byte[]> downloadOfferPdf(@PathVariable Long id) {
+        try {
+            InternshipOffer offer = internshipOfferService.getOffer(id);
 
-      if (offer.getStatus() != InternshipOffer.Status.PUBLISHED) {
-        return ResponseEntity.status(403).build();
-      }
+            if (offer.getStatus() != InternshipOffer.Status.PUBLISHED) {
+                return ResponseEntity.status(403).build();
+            }
 
-      byte[] pdfData = internshipOfferService.getOfferPdf(id);
-      return ResponseEntity.ok()
-          .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-          .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=offer_" + id + ".pdf")
-          .body(pdfData);
-    } catch (Exception e) {
-      return ResponseEntity.notFound().build();
-    }
+            byte[] pdfData = internshipOfferService.getOfferPdf(id);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=offer_" + id + ".pdf")
+                    .body(pdfData);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

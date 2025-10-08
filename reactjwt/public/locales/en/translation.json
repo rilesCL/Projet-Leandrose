@@ -98,12 +98,12 @@
       "passwordLength": "Password must be at least 8 characters",
       "confirmPassword": "Please confirm your password",
       "passwordMismatch": "Passwords do not match",
-        "emailUsed": "Email is already in use",
+      "emailUsed": "Email is already in use",
       "serverError": "Unable to connect to the server",
       "unknown": "An error occurred."
     }
   },
-"login": {
+  "login": {
     "title": "Log in",
     "subtitle": "Log in to your account to access your personal space.",
     "email": "Email",
@@ -423,7 +423,7 @@
     "emptyDescription": "You have not applied to any offer yet.",
     "btnViewOffers": "View offers",
     "title": "My Applications",
-    "count": "{{count}} application{{suffix}}",
+    "count": "{{count}} application(s)",
     "table": {
       "offer": "Offer",
       "company": "Company",
@@ -437,7 +437,9 @@
       "rejected": "Rejected",
       "unknown": "Unknown"
     },
-    "viewOffer": "View offer"
+    "viewOffer": "View offer",
+    "noApplicationsTitle": "No applications",
+    "noApplicationsText": "You haven't applied to any internship offers yet."
   },
   "offerDetail": {
     "back": "Back to offers",
@@ -530,6 +532,56 @@
     "duration": "Duration",
     "actions": "Actions",
     "viewDetails": "View details"
+  },
+    "employerCandidatures": {
+    "navLink": "My applications",
+    "titleAll": "All applications",
+    "titleOffer": "Offer applications",
+    "backToOffers": "Back to my offers",
+    "emptyTitle": "No applications",
+    "emptyDescription": "No applications have been received yet for your offers.",
+    "downloadError": "Error downloading CV",
+    "updateError": "Error updating status",
+    "updating": "Updating...",
+    "confirmChange": "Confirm change to {{status}}?",
+    "confirmReject": "Are you sure you want to reject {{name}}?",
+    "rejectSuccess": "Application successfully rejected.",
+    "rejectError": "Error rejecting application.",
+    "convocationSuccess": "Convocation successfully sent.",
+    "convocationError": "Error sending convocation.",
+    "candidaturesCount": "{{count}} application",
+    "candidaturesCount_plural": "{{count}} applications",
+    "table": {
+      "student": "Student",
+      "program": "Program",
+      "offer": "Offer",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "downloadCv": "Download CV",
+      "accept": "Accept",
+      "reject": "Reject",
+      "toReview": "To review",
+      "retain": "Retain"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "TO_REVIEW": "To review",
+      "RETAINED": "Shortlisted",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "EN_ATTENTE": "Pending",
+      "CONVENED": "Shortlisted"
+    },
+    "convocationModal": {
+      "title": "Convocation",
+      "date": "Date and time",
+      "location": "Location",
+      "message": "Message (optional)",
+      "cancel": "Cancel",
+      "submit": "Send convocation"
+    }
   }
 }
-

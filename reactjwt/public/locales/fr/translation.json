@@ -105,7 +105,7 @@
       "unknown": "Une erreur est survenue."
     }
   },
-"login": {
+  "login": {
     "title": "Connexion",
     "subtitle": "Connectez-vous à votre compte pour accéder à votre espace personnel.",
     "email": "Email",
@@ -424,7 +424,7 @@
     "emptyDescription": "Vous n'avez pas encore postulé à une offre.",
     "btnViewOffers": "Voir les offres",
     "title": "Mes candidatures",
-    "count": "{{count}} candidature{{suffix}}",
+    "count": "{{count}} candidature(s)",
     "table": {
       "offer": "Offre",
       "company": "Entreprise",
@@ -438,7 +438,9 @@
       "rejected": "Refusée",
       "unknown": "Inconnu"
     },
-    "viewOffer": "Voir l'offre"
+    "viewOffer": "Voir l'offre",
+    "noApplicationsTitle": "Aucune candidature",
+    "noApplicationsText": "Vous n'avez pas encore postulé à d'offres de stage."
   },
   "offerDetail": {
     "back": "Retour aux offres",
@@ -531,6 +533,56 @@
     "duration": "Durée",
     "actions": "Actions",
     "viewDetails": "Voir détails"
+  },
+  "employerCandidatures": {
+    "navLink": "Mes candidatures",
+    "titleAll": "Toutes les candidatures",
+    "titleOffer": "Candidatures de l'offre",
+    "backToOffers": "Retour à mes offres",
+    "emptyTitle": "Aucune candidature",
+    "emptyDescription": "Aucune candidature n’a encore été reçue pour vos offres.",
+    "downloadError": "Erreur lors du téléchargement du CV",
+    "updateError": "Erreur lors de la mise à jour du statut",
+    "updating": "Mise à jour...",
+    "confirmChange": "Confirmer le changement vers {{status}} ?",
+    "confirmReject": "Êtes-vous sûr de vouloir rejeter {{name}} ?",
+    "rejectSuccess": "Candidature rejetée avec succès.",
+    "rejectError": "Erreur lors du rejet de la candidature.",
+    "convocationSuccess": "Convocation envoyée avec succès.",
+    "convocationError": "Erreur lors de l’envoi de la convocation.",
+    "candidaturesCount": "{{count}} candidature",
+    "candidaturesCount_plural": "{{count}} candidatures",
+    "table": {
+      "student": "Étudiant",
+      "program": "Programme",
+      "offer": "Offre",
+      "date": "Date",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "actions": {
+      "downloadCv": "Télécharger le CV",
+      "accept": "Accepter",
+      "reject": "Rejeter",
+      "toReview": "À revoir",
+      "retain": "Retenir"
+    },
+    "status": {
+      "PENDING": "En attente",
+      "TO_REVIEW": "À revoir",
+      "RETAINED": "Retenu",
+      "ACCEPTED": "Accepté",
+      "REJECTED": "Rejeté",
+      "EN_ATTENTE": "En attente",
+      "CONVENED": "Convoqué"
+    },
+    "convocationModal": {
+      "title": "Convocation",
+      "date": "Date et heure",
+      "location": "Lieu",
+      "message": "Message (facultatif)",
+      "cancel": "Annuler",
+      "submit": "Envoyer la convocation"
+    }
   }
 }
-

@@ -114,7 +114,7 @@ export default function OfferCandidaturesList() {
                 <div className='px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
                     <div>
                         <h2 className='text-lg font-semibold'>{t('employerCandidatures.titleOffer')} #{offerId}</h2>
-                        <p className='text-sm text-gray-500'>{candidatures.length} {t('employerCandidatures.candidaturesCount', { count: candidatures.length })}</p>
+                        <p className='text-sm text-gray-500'>{t('employerCandidatures.candidaturesCount', { count: candidatures.length })}</p>
                     </div>
                     <div className='flex gap-4'>
                         <Link to='/dashboard/employeur' className='text-sm text-indigo-600 hover:text-indigo-800'>{t('employerCandidatures.backToOffers')}</Link>
@@ -148,7 +148,7 @@ export default function OfferCandidaturesList() {
                                         </button>
                                         {canConvoke(c.status) && (
                                             <button onClick={() => openConvocationModal(c)} className='px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200'>
-                                                {t('employerCandidatures.actions.convoke')}
+                                                {t('employerCandidatures.actions.retain')}
                                             </button>
                                         )}
                                         {canReject(c.status) && (

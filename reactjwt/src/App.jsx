@@ -15,7 +15,6 @@ import RegisterLanding from "./components/RegisterLanding.jsx";
 import OfferDetailPage from "./components/OfferDetailPage.jsx";
 import StudentInternshipOffersList from "./components/StudentInternshipOffersList.jsx";
 import ApplicationsPage from "./components/ApplicationsPage.jsx";
-import EmployeurCandidaturesList from "./components/EmployeurCandidaturesList.jsx";
 import OfferCandidaturesList from "./components/OfferCandidaturesList.jsx";
 
 function App() {
@@ -30,7 +29,6 @@ function App() {
 
                 <Route path="dashboard/employeur" element={<DashBoardEmployeur />} />
                 <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur />} />
-                <Route path="dashboard/employeur/candidatures" element={<EmployeurCandidaturesList />} />
                 <Route path="dashboard/employeur/offers/:offerId/candidatures" element={<OfferCandidaturesList />} />
 
                 <Route path="dashboard/student" element={<DashBoardStudent />} />

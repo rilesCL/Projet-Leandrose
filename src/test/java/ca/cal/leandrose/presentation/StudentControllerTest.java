@@ -1,6 +1,7 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
@@ -36,7 +37,6 @@ class StudentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @MockitoBean
     private CvService cvService;
 
@@ -58,20 +58,49 @@ class StudentControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-
     @Test
     void getPublishedOffers_returnsList() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder().id(10L).description("Stage A").build();
-        when(internshipOfferService.getPublishedOffersForStudents()).thenReturn(List.of(offer));
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+        Student student = Student.builder()
+                .id(1L)
+                .program(String.valueOf(Program.COMPUTER_SCIENCE))
+                .build();
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(10L)
+                .description("Stage A")
+                .build();
 
-        mockMvc.perform(get("/student/offers"))
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(internshipOfferService.getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE)))
+                .thenReturn(List.of(offer));
+
+        mockMvc.perform(get("/student/offers")
+                        .header("Authorization", "Bearer token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(10));
+
+        verify(internshipOfferService).getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE));
+    }
+
+    @Test
+    void getPublishedOffers_notStudent_returnsForbidden() throws Exception {
+        UserDTO dto = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+        when(userAppService.getMe(anyString())).thenReturn(dto);
+
+        mockMvc.perform(get("/student/offers")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(internshipOfferService, never()).getPublishedOffersForStudents(any());
     }
 
     @Test
     void getOfferDetails_publishedOffer_returnsOk() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder().id(20L).status(InternshipOffer.Status.PUBLISHED).build();
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(20L)
+                .status(InternshipOffer.Status.PUBLISHED)
+                .build();
         when(internshipOfferService.getOffer(20L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/20"))
@@ -81,7 +110,10 @@ class StudentControllerTest {
 
     @Test
     void getOfferDetails_notPublished_returnsForbidden() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder().id(21L).status(InternshipOffer.Status.REJECTED).build();
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(21L)
+                .status(InternshipOffer.Status.REJECTED)
+                .build();
         when(internshipOfferService.getOffer(21L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/21"))
@@ -196,10 +228,12 @@ class StudentControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-
     @Test
     void downloadOfferPdf_published_returnsPdf() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder().id(100L).status(InternshipOffer.Status.PUBLISHED).build();
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(100L)
+                .status(InternshipOffer.Status.PUBLISHED)
+                .build();
         when(internshipOfferService.getOffer(100L)).thenReturn(offer);
         when(internshipOfferService.getOfferPdf(100L)).thenReturn("PDF_CONTENT".getBytes());
 
@@ -210,7 +244,10 @@ class StudentControllerTest {
 
     @Test
     void downloadOfferPdf_notPublished_returnsForbidden() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder().id(101L).status(InternshipOffer.Status.PENDING_VALIDATION).build();
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(101L)
+                .status(InternshipOffer.Status.PENDING_VALIDATION)
+                .build();
         when(internshipOfferService.getOffer(101L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/101/pdf"))

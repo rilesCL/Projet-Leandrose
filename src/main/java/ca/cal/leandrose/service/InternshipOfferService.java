@@ -2,6 +2,7 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
@@ -92,9 +93,7 @@ public class InternshipOfferService {
     }
 
 
-    public List<InternshipOffer> getPublishedOffersForStudents() {
-        return internshipOfferRepository.findByStatusOrderByStartDateDesc(
-                InternshipOffer.Status.PUBLISHED
-        );
+    public List<InternshipOffer> getPublishedOffersForStudents(String program) {
+        return internshipOfferRepository.findPublishedByProgram(program);
     }
 }

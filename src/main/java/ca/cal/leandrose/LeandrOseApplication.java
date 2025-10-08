@@ -1,4 +1,5 @@
 package ca.cal.leandrose;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.service.CvService;
 import ca.cal.leandrose.service.EmployeurService;
 import ca.cal.leandrose.service.StudentService;
@@ -29,27 +30,36 @@ public class LeandrOseApplication {
             StudentService studentService,
             GestionnaireService gestionnaireService) {
 
-        return args -> {
-            try {
-                employeurService.createEmployeur(
-                        "Leandro", "Schoonewolff", "wbbey@gmail.com", "mansang", "macolo", "alimentation");
-                System.out.println(employeurService.getEmployeurById(1L));
+    return args -> {
+      try {
+        employeurService.createEmployeur(
+            "Leandro",
+            "Schoonewolff",
+            "wbbey@gmail.com",
+            "mansang",
+            "macolo",
+            Program.COMPUTER_SCIENCE.getTranslationKey());
+        System.out.println(employeurService.getEmployeurById(1L));
 
-                StudentDto studentDto = studentService.createStudent(
-                        "Ghilas", "Amr", "ghil.amr@student.com", "Password123", "STU001", "Computer Science");
-                System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
+        StudentDto studentDto =
+            studentService.createStudent(
+                "Ghilas",
+                "Amr",
+                "ghil.amr@student.com",
+                "Password123",
+                "STU001",
+                Program.COMPUTER_SCIENCE.getTranslationKey());
+        System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
 
+        GestionnaireDto gestionnaireDto =
+            gestionnaireService.createGestionnaire(
+                "Jean", "Dupont", "gestionnaire@test.com", "Password123!", "514-123-4567");
+        System.out.println("Gestionnaire créé: " + gestionnaireDto);
 
-                GestionnaireDto gestionnaireDto = gestionnaireService.createGestionnaire(
-                        "Jean", "Dupont", "gestionnaire@test.com", "Password123!", "514-123-4567");
-                System.out.println("Gestionnaire créé: " + gestionnaireDto);
-
-
-
-            } catch (Exception e) {
-                System.err.println("Erreur générale non prévue: " + e.getMessage());
-                e.printStackTrace();
-            }
-        };
+      } catch (Exception e) {
+        System.err.println("Erreur générale non prévue: " + e.getMessage());
+        e.printStackTrace();
+      }
+    };
     }
 }
