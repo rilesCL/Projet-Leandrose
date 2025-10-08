@@ -2,6 +2,7 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.model.auth.Role;
+import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
@@ -49,6 +50,9 @@ class EmployeurControllerTest {
 
     @MockitoBean
     private ConvocationService convocationService;
+
+    @MockitoBean
+    CandidatureRepository candidatureRepository;
 
 
     @Test

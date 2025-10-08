@@ -3,12 +3,14 @@ package ca.cal.leandrose.service.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 
 import java.time.LocalDate;
 
 @Data
 @Builder
+@Getter
 @AllArgsConstructor
 public class InternshipOfferDto {
     private Long id;

@@ -68,6 +68,33 @@ export async function rejectCv(cvId, comment) {
     return response.json();
 }
 
+async function fetchwithAuthOffers(url) {
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
+
+        if (!response.ok) throw new Error(`HTTP erreur! Status ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error("Erreur fetching offers: ", error);
+        throw error;
+    }
+}
+
+export async function getApprovedOffers(){
+    return fetchwithAuthOffers(`${API_BASE}/offers/approved`)
+}
+
+export async function getRejectedOffers(){
+    return fetchwithAuthOffers(`${API_BASE}/offers/reject`)
+}
+
+export async function getOfferDetails(id){
+    return fetchwithAuthOffers(`${API_BASE}/offers/${id}`)
+}
+
 export async function getPendingOffers() {
     try {
         const response = await fetch(`${API_BASE}/offers/pending`, {
