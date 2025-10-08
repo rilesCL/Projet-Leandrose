@@ -3,6 +3,7 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.CandidatureEmployeurDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,5 +68,37 @@ public class CandidatureService {
         Candidature candidature = candidatureRepository.findById(candidatureId)
                 .orElseThrow(() -> new RuntimeException("Candidature non trouvée avec l'ID: " + candidatureId));
         return CandidatureDto.fromEntity(candidature);
+    }
+
+    public List<CandidatureEmployeurDto> getCandidaturesByOffer(Long offerId) {
+        return candidatureRepository.findByInternshipOfferIdOrderByApplicationDateDesc(offerId)
+                .stream()
+                .map(CandidatureEmployeurDto::fromEntity)
+                .toList();
+    }
+
+
+    public List<CandidatureEmployeurDto> getCandidaturesByEmployeur(Long employeurId) {
+        return candidatureRepository.findByEmployeurIdOrderByApplicationDateDesc(employeurId)
+                .stream()
+                .map(CandidatureEmployeurDto::fromEntity)
+                .toList();
+    }
+
+    @Transactional
+    public void rejectCandidature(Long candidatureId) {
+        Candidature candidature = candidatureRepository.findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature non trouvée avec l'ID: " + candidatureId));
+
+        if (candidature.getStatus() == Candidature.Status.REJECTED) {
+            throw new IllegalStateException("Cette candidature est déjà rejetée");
+        }
+
+        if (candidature.getStatus() == Candidature.Status.ACCEPTED) {
+            throw new IllegalStateException("Impossible de rejeter une candidature déjà acceptée");
+        }
+
+        candidature.setStatus(Candidature.Status.REJECTED);
+        candidatureRepository.save(candidature);
     }
 }

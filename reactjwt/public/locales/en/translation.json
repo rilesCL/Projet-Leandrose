@@ -301,15 +301,13 @@
       "startDateFormat": "Date format must be DD-MM-YYYY.",
       "duration": "Duration (in weeks) is required.",
       "durationInvalid": "Duration must be a positive integer (number of weeks).",
-      "durationInvalidMax": "The duration must must not exceed 52 weeks",
+      "durationInvalidMax": "The duration must must not exceed 120 weeks",
       "remunerationMin": "The remuneration must not be lower than 0",
       "address": "Location (address) is required.",
       "pdfRequired": "A PDF file is required.",
       "pdfFormat": "The file must be a PDF.",
       "pdfSize": "PDF exceeds maximum size of 5MB.",
-      "serverError": "Error during registration.",
-      "descriptionTooLong": "The description size shouldn't be above {{max}} caracters"
-
+      "serverError": "Error during registration."
     }
   },
   "studentCvList": {
@@ -504,8 +502,7 @@
     "startDate": "Start date",
     "duration": "Duration",
     "remuneration": "Remuneration",
-    "week": "week(s)",
-    "hour": "hour",
+    "week": "week",
     "noRemuneration": "No remuneration",
     "employerContact": "Employer contact",
     "downloadPdf": "Download PDF document",
@@ -533,31 +530,6 @@
     "duration": "Duration",
     "actions": "Actions",
     "viewDetails": "View details"
-  },
-  "StudentApplicationsList": {
-    "loadError": "Unable to load your applications",
-    "retry": "Retry",
-    "noDate": "Not defined",
-    "status": {
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "rejected": "Rejected"
-    },
-    "noApplicationsTitle": "No applications yet",
-    "noApplicationsText": "You haven't applied to any offers yet.",
-    "viewOffers": "View offers",
-    "title": "My applications",
-    "applicationCount": "{{count}} application",
-    "applicationCount_plural": "{{count}} applications",
-    "table": {
-      "offer": "Offer",
-      "company": "Company",
-      "date": "Date",
-      "status": "Status",
-      "actions": "Actions"
-    },
-    "viewOffer": "View offer"
   }
 }
-
 

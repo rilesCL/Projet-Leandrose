@@ -53,5 +53,4 @@ public class Candidature {
         REJECTED
     }
 
-
 }

@@ -302,14 +302,13 @@
       "startDateFormat": "Le format de la date doit être JJ-MM-YYYY.",
       "duration": "La durée (en semaines) est obligatoire.",
       "durationInvalid": "La durée doit être un entier positif (nombre de semaines).",
-      "durationInvalidMax": "La duration ne dois pas dépasser 52 semaines",
+      "durationInvalidMax": "La duration ne dois pas dépasser 120 semaines",
       "remunerationMin": "La rémunération ne doit pas être inférieur à 0",
       "address": "La localisation (adresse) est obligatoire.",
       "pdfRequired": "Un fichier PDF est requis.",
       "pdfFormat": "Le fichier doit être un PDF.",
       "pdfSize": "Le PDF dépasse la taille maximale de 5MB.",
-      "serverError": "Erreur lors de l'enregistrement.",
-      "descriptionTooLong": "La description ne doit pas dépasser {{max}} caractères"
+      "serverError": "Erreur lors de l'enregistrement."
     }
   },
   "studentCvList": {
@@ -504,8 +503,7 @@
     "startDate": "Date de début",
     "duration": "Durée",
     "remuneration": "Rémunération",
-    "week": "semaine(s)",
-    "hour": "heure",
+    "week": "semaine",
     "noRemuneration": "Aucune rémunération",
     "employerContact": "Contact de l'employeur",
     "downloadPdf": "Télécharger le document PDF",
@@ -533,30 +531,6 @@
     "duration": "Durée",
     "actions": "Actions",
     "viewDetails": "Voir détails"
-  },
-  "StudentApplicationsList": {
-    "loadError": "Impossible de charger vos candidatures",
-    "retry": "Réessayer",
-    "noDate": "Non définie",
-    "status": {
-      "pending": "En attente",
-      "accepted": "Acceptée",
-      "rejected": "Refusée"
-    },
-    "noApplicationsTitle": "Aucune candidature",
-    "noApplicationsText": "Vous n'avez pas encore postulé à une offre.",
-    "viewOffers": "Voir les offres",
-    "title": "Mes candidatures",
-    "applicationCount": "{{count}} candidature",
-    "applicationCount_plural": "{{count}} candidatures",
-    "table": {
-      "offer": "Offre",
-      "company": "Entreprise",
-      "date": "Date",
-      "status": "Statut",
-      "actions": "Actions"
-    },
-    "viewOffer": "Voir l'offre"
   }
 }
 

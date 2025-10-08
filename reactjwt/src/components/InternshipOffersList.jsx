@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from 'react-router-dom';
+import { getOfferCandidatures } from '../api/apiEmployeur';
 
 const API_BASE = 'http://localhost:8080';
 
 export default function InternshipOffersList() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [candidatureData, setCandidatureData] = useState({}); // { offerId: { count, preview: [] } }
+    const [loadingCounts, setLoadingCounts] = useState(false);
 
     useEffect(() => {
         async function fetchOffers() {
@@ -44,6 +49,30 @@ export default function InternshipOffersList() {
 
         fetchOffers();
     }, [t]);
+
+    // Récupère les candidatures par offre pour compter & prévisualiser
+    useEffect(() => {
+        if (!offers || offers.length === 0) return;
+        let cancelled = false;
+        async function loadCounts() {
+            setLoadingCounts(true);
+            const entries = await Promise.all(offers.map(async (o) => {
+                try {
+                    const list = await getOfferCandidatures(o.id);
+                    const preview = list.slice(0, 3).map(c => [c.studentFirstName, c.studentLastName].filter(Boolean).join(' ') || c.studentName || '?');
+                    return [o.id, { count: list.length, preview }];
+                } catch {
+                    return [o.id, { count: 0, preview: [] }];
+                }
+            }));
+            if (!cancelled) {
+                setCandidatureData(Object.fromEntries(entries));
+                setLoadingCounts(false);
+            }
+        }
+        loadCounts();
+        return () => { cancelled = true; };
+    }, [offers]);
 
     const getStatusLabel = (status) => {
         const statusUpper = (status || "").toString().toUpperCase();
@@ -197,50 +226,63 @@ export default function InternshipOffersList() {
                             {t("internshipOffersList.table.status")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t("employerCandidatures.table.candidatures", 'Candidatures')}
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("internshipOffersList.table.actions")}
                         </th>
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {offers.map((offer) => (
-                        <tr key={offer.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
-                                            <span className="text-white text-sm font-bold">📋</span>
+                    {offers.map((offer) => {
+                        const cData = candidatureData[offer.id];
+                        const count = cData ? cData.count : (loadingCounts ? '…' : 0);
+                        const preview = cData && cData.preview && cData.preview.length ? cData.preview.join(', ') : '';
+                        return (
+                            <tr key={offer.id} className="hover:bg-gray-50 cursor-pointer" onClick={(e) => { if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`); }}>
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center">
+                                        <div className="flex-shrink-0">
+                                            <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
+                                                <span className="text-white text-sm font-bold">📋</span>
+                                            </div>
+                                        </div>
+                                        <div className="ml-3">
+                                            <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                                                {offer.description || t("internshipOffersList.notDefined")}
+                                            </div>
+                                            <div className="text-xs text-gray-500">
+                                                {offer.address || t("internshipOffersList.notSpecified")}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="ml-3">
-                                        <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
-                                            {offer.description || t("internshipOffersList.notDefined")}
-                                        </div>
-                                        <div className="text-sm text-gray-500">
-                                            {offer.address || t("internshipOffersList.notSpecified")}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {formatDate(offer.startDate)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                {getStatusLabel(offer.status)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                <button
-                                    onClick={() => handleDownloadOffer(offer.id, offer.description)}
-                                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                >
-                                    <span className="mr-1">⬇</span>
-                                    PDF
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {formatDate(offer.startDate)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    {getStatusLabel(offer.status)}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span title={preview} className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
+                                        {loadingCounts && !cData ? t('internshipOffersList.loading') : count}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2" onClick={(e)=> e.stopPropagation()}>
+                                    <button
+                                        onClick={() => handleDownloadOffer(offer.id, offer.description)}
+                                        className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    >
+                                        <span className="mr-1">⬇</span>
+                                        PDF
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                     </tbody>
                 </table>
             </div>
