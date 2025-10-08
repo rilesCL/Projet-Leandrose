@@ -28,67 +28,74 @@ export default function OffersPage() {
     }, [filter]);
 
     return (
-        <div className="p-6">
-            <h2 className="text-xl font-bold mb-4">{t("offerPagesDetails.title")}</h2>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-md">
 
-            {/* Filter buttons */}
-            <div className="flex gap-4 mb-6">
-                <button
-                    onClick={() => setFilter("approved")}
-                    className={`px-3 py-1 rounded ${
-                        filter === "approved" ? "bg-green-600 text-white" : "bg-gray-200"
-                    }`}
-                >
-                    {t("pendingOffers.status.approved")}
-                </button>
-                <button
-                    onClick={() => setFilter("rejected")}
-                    className={`px-3 py-1 rounded ${
-                        filter === "rejected" ? "bg-red-600 text-white" : "bg-gray-200"
-                    }`}
-                >
-                    {t("pendingOffers.status.rejected")}
-                </button>
-            </div>
+                <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">
+                    {t("offerPagesDetails.title")}
+                </h2>
 
-            {error && <p className="text-red-500 mb-4">{error}</p>}
+                {/* Filter buttons */}
+                <div className="flex gap-4 mb-6 justify-center">
+                    <button
+                        onClick={() => setFilter("approved")}
+                        className={`px-3 py-1 rounded ${
+                            filter === "approved" ? "bg-green-600 text-white shadow-md" 
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                    >
+                        {t("pendingOffers.status.approved")}
+                    </button>
+                    <button
+                        onClick={() => setFilter("rejected")}
+                        className={`px-3 py-1 rounded ${
+                            filter === "rejected" ? "bg-red-600 text-white shadow-md" 
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        }`}
+                    >
+                        {t("pendingOffers.status.rejected")}
+                    </button>
+                </div>
 
-            <table className="w-full border-collapse border border-gray-300 text-sm">
-                <thead className="bg-gray-100">
-                <tr>
-                    <th className="border px-2 py-1">{t("pendingOffers.table.company")}</th>
-                    <th className="border px-2 py-1">{t("pendingOffers.table.status")}</th>
-                    <th className="border px-2 py-1">{t("pendingOffers.table.actions")}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {offers.map((offer) => (
-                    <tr key={offer.id} className="hover:bg-gray-50">
-                        <td className="border px-2 py-1">{offer.companyName}</td>
-                        <td className="border px-2 py-1">{t(`offerPagesDetails.status.${offer.status}`)}</td>
-                        <td>
-                            <Link
-                                to={`/dashboard/gestionnaire/offers/${offer.id}`}
-                                className="text-blue-600 hover:underline"
-                            >
-                                {t("offerPagesDetails.details")}
-                            </Link>
-                        </td>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+
+                <table className="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm text-sm">
+                    <thead className="bg-gray-50 text-gray text-left">
+                    <tr>
+                        <th className="border px-4 py-2 text-left">{t("pendingOffers.table.company")}</th>
+                        <th className="border px-4 py-2 text-left">{t("pendingOffers.table.status")}</th>
+                        <th className="border px-4 py-2 text-left">{t("pendingOffers.table.actions")}</th>
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {offers.map((offer) => (
+                        <tr key={offer.id} >
+                            <td className="border px-4 py-2">{offer.companyName}</td>
+                            <td className="border px-4 py-2">{t(`offerPagesDetails.status.${offer.status}`)}</td>
+                            <td className="border px-4 py-2">
+                                <Link
+                                    to={`/dashboard/gestionnaire/offers/${offer.id}`}
+                                    className="text-blue-600 font-medium hover:underline"
+                                >
+                                    {t("offerPagesDetails.details")}
+                                </Link>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
 
-            <div className="p-5">
-                <button
-                    type="button"
-                    onClick={() => navigate(-1)}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
-                >
-                    {t("uploadStageEmployeur.backToDashboard")}
-                </button>
+                <div className="mt-8 justify-center">
+                    <button
+                        type="button"
+                        onClick={() => navigate(-1)}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300
+                        text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                        {t("uploadStageEmployeur.backToDashboard")}
+                    </button>
+                </div>
             </div>
-
         </div>
     );
 }
