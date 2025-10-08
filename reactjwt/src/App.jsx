@@ -46,6 +46,8 @@ function App() {
                     {/*<Route path="offers/:offerId" element={<OfferDetailPage />} />*/}
                     <Route path="applications" element={<ApplicationsPage />} />
                 </Route>
+                <Route path="dashboard/student/offers" element={<StudentInternshipOffersList />} />
+                <Route path="dashboard/student/offers/:offerid" element={<OfferDetailPage />} />
                 <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
                 <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage/>}/>
 

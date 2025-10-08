@@ -157,7 +157,12 @@
   "dashboardStudent": {
     "logout": "Logout",
     "welcome": "Welcome",
-    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers."
+    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
+    "tabs": {
+      "offers": "Offers",
+      "cv": "My CV",
+      "applications": "My Applications"
+    }
   },
   "programsList": {
     "title": "Existing Programs",
@@ -359,6 +364,176 @@
       "serverError": "Error loading offers",
       "commentRequired": "You must write a comment before rejecting an offer",
       "download": "Error downloading the offer"
+    }
+  },
+  "studentApplicationsList": {
+    "loading": "Loading your applications...",
+    "error": "Unable to load your applications",
+    "retry": "Retry",
+    "emptyTitle": "No applications",
+    "emptyDescription": "You have not applied to any offer yet.",
+    "btnViewOffers": "View offers",
+    "title": "My Applications",
+    "count": "{{count}} application(s)",
+    "table": {
+      "offer": "Offer",
+      "company": "Company",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "viewOffer": "View offer",
+    "noApplicationsTitle": "No applications",
+    "noApplicationsText": "You haven't applied to any internship offers yet."
+  },
+  "offerDetail": {
+    "back": "Back to offers",
+    "location": "Location",
+    "startDate": "Start date",
+    "duration": "Duration",
+    "durationWeeks": "{{weeks}} week{{plural}}",
+    "remuneration": "Remuneration",
+    "employerContact": "Employer contact",
+    "downloadPdf": "Download PDF document",
+    "applySection": "Apply to this offer",
+    "needApprovedCv": "You must upload an approved CV to apply.",
+    "pendingCv": "Your CV is pending approval. You can apply once approved.",
+    "applyErrorGeneric": "Error while applying.",
+    "applyBtn": "Apply to this offer",
+    "applySending": "Sending...",
+    "alreadyApplied": "Already applied",
+    "appliedSuccess": "Application sent successfully! The employer will review your profile.",
+    "notDefined": "Not defined",
+    "notSpecified": "Not specified"
+  },
+  "studentOffersList": {
+    "loading": "Loading offers...",
+    "errorTitle": "Error",
+    "errorMessage": "Unable to load internship offers",
+    "retry": "Retry",
+    "emptyTitle": "No available offers",
+    "emptyDescription": "There are no published internship offers at the moment.",
+    "table": {
+      "description": "Description",
+      "company": "Company",
+      "location": "Location",
+      "startDate": "Start date",
+      "duration": "Duration",
+      "actions": "Actions"
+    },
+    "viewDetails": "View details",
+    "weeks": "week{{plural}}"
+  },
+  "ApplicationsPage": {
+    "loading": "Loading...",
+    "error": "Unable to load your applications",
+    "noApplicationsTitle": "No applications",
+    "noApplicationsText": "You haven't applied to any internship offers yet.",
+    "viewOffers": "View available offers",
+    "myApplications": "My applications",
+    "applicationsCount": "{{count}} application",
+    "applicationsCount_plural": "{{count}} applications",
+    "offer": "Offer",
+    "company": "Company",
+    "applicationDate": "Application date",
+    "status": "Status",
+    "actions": "Actions",
+    "viewOffer": "View offer",
+    "statusPending": "Pending",
+    "statusAccepted": "Accepted",
+    "statusRejected": "Rejected"
+  },
+  "OfferDetailPage": {
+    "backToOffers": "← Back to offers",
+    "location": "Location",
+    "startDate": "Start date",
+    "duration": "Duration",
+    "remuneration": "Remuneration",
+    "week": "week",
+    "hour": "hours",
+    "noRemuneration": "No remuneration",
+    "employerContact": "Employer contact",
+    "downloadPdf": "Download PDF document",
+    "applyTitle": "Apply for this offer",
+    "applyCvMissing": "You must upload an approved CV before applying.",
+    "applyCvPending": "Your CV is pending approval. You can apply once it is approved.",
+    "applyCvRejected": "Your CV was rejected. You can only apply with an approved CV.",
+    "applySuccess": "Application sent successfully! The employer will review your application.",
+    "applyButton": "Apply for this offer",
+    "applyButtonSuccess": "Application sent",
+    "applyButtonAlready": "Already applied",
+    "applyButtonLoading": "Sending..."
+  },
+  "StudentInternshipOffersList": {
+    "loading": "Loading offers...",
+    "errorTitle": "Error",
+    "errorText": "Unable to load internship offers",
+    "retry": "Retry",
+    "noOffersTitle": "No available offers",
+    "noOffersText": "No internship offers have been published yet.",
+    "availableOffers": "Available internship offers",
+    "description": "Description",
+    "place": "Location",
+    "startDate": "Start date",
+    "duration": "Duration",
+    "actions": "Actions",
+    "viewDetails": "View details"
+  },
+  "employerCandidatures": {
+    "navLink": "My applications",
+    "titleAll": "All applications",
+    "titleOffer": "Offer applications",
+    "backToOffers": "Back to my offers",
+    "emptyTitle": "No applications",
+    "emptyDescription": "No applications have been received yet for your offers.",
+    "downloadError": "Error downloading CV",
+    "updateError": "Error updating status",
+    "updating": "Updating...",
+    "confirmChange": "Confirm change to {{status}}?",
+    "confirmReject": "Are you sure you want to reject {{name}}?",
+    "rejectSuccess": "Application successfully rejected.",
+    "rejectError": "Error rejecting application.",
+    "convocationSuccess": "Convocation successfully sent.",
+    "convocationError": "Error sending convocation.",
+    "candidaturesCount": "{{count}} application",
+    "candidaturesCount_plural": "{{count}} applications",
+    "table": {
+      "student": "Student",
+      "program": "Program",
+      "offer": "Offer",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "downloadCv": "Download CV",
+      "accept": "Accept",
+      "reject": "Reject",
+      "toReview": "To review",
+      "retain": "Retain"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "TO_REVIEW": "To review",
+      "RETAINED": "Shortlisted",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "EN_ATTENTE": "Pending",
+      "CONVENED": "Shortlisted"
+    },
+    "convocationModal": {
+      "title": "Convocation",
+      "date": "Date and time",
+      "location": "Location",
+      "message": "Message (optional)",
+      "cancel": "Cancel",
+      "submit": "Send convocation"
     }
   },
   "offerPagesDetails": {

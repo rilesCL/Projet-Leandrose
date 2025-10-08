@@ -61,9 +61,9 @@ export default function OfferDetailsPage(){
                         {t("offerPagesDetails.contact")}
                     </h2>
                     <p className="text-gray-600">
-                        {offer.firstName} {offer.lastName}
+                        {offer?.employeur?.firstName} {offer?.employeur?.lastName}
                     </p>
-                    <p className="text-sm text-gray-500">{offer.email}</p>
+                    <p className="text-sm text-gray-500">{offer?.employeur?.email}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
