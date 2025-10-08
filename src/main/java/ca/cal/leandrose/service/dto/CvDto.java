@@ -12,9 +12,10 @@ public class CvDto {
     private String studentName;
     private String pdfPath;
     private Cv.Status status;
+    private String rejectionComment;
 
     @Builder
-    public CvDto(Long id, Long studentId, String pdfPath, Cv.Status status, String studentName) {
+    public CvDto(Long id, Long studentId, String pdfPath, Cv.Status status, String studentName, String rejectionComment) {
         this.studentName = studentName;
         this.id = id;
         this.studentId = studentId;
@@ -40,6 +41,7 @@ public class CvDto {
                 .status(st)
                 .build();
     }
+
 
     public static CvDto empty() {
         return new CvDto();

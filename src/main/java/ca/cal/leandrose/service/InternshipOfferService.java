@@ -3,9 +3,7 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
-import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.itextpdf.text.pdf.PdfReader;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+
+import static ca.cal.leandrose.service.mapper.InternshipOfferMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +75,7 @@ public class InternshipOfferService {
 
         InternshipOffer saved = internshipOfferRepository.save(offer);
 
-        return InternshipOfferMapper.toDto(saved);
+        return toDto(saved);
     }
 
     public InternshipOffer getOffer(Long id) {
@@ -99,18 +99,8 @@ public class InternshipOfferService {
         return internshipOfferRepository.findOffersByEmployeurId(employeurId);
     }
 
-    private InternshipOfferDto toDto(InternshipOffer offer){
-        return InternshipOfferDto.builder()
-                .id(offer.getId())
-                .description(offer.getDescription())
-                .startDate(offer.getStartDate())
-                .durationInWeeks(offer.getDurationInWeeks())
-                .address(offer.getAddress())
-                .remuneration(offer.getRemuneration())
-                .status(String.valueOf(offer.getStatus()))
-                .pdfPath(offer.getPdfPath())
-                .employeur(EmployeurDto.create(offer.getEmployeur()))
-                 .build();
 
+    public List<InternshipOffer> getPublishedOffersForStudents(String program) {
+        return internshipOfferRepository.findPublishedByProgram(program);
     }
 }

@@ -1,6 +1,7 @@
 package ca.cal.leandrose.repository;
 
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Program;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +31,12 @@ public interface InternshipOfferRepository extends JpaRepository<InternshipOffer
         order by o.startDate desc
     """)
     List<InternshipOffer> findByStatusOrderByStartDateDesc(InternshipOffer.Status status);
+
+    @Query("""
+        select o from InternshipOffer o
+        where o.status = 'PUBLISHED'
+        and o.employeur.field = :program
+        order by o.startDate desc
+    """)
+    List<InternshipOffer> findPublishedByProgram(@Param("program") String program);
 }

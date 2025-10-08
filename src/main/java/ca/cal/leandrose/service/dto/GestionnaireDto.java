@@ -5,7 +5,7 @@ import ca.cal.leandrose.model.auth.Role;
 import lombok.Builder;
 
 public class GestionnaireDto extends UserDTO {
-    private String phoneNumber;;
+    private String phoneNumber;
 
     @Builder
     public GestionnaireDto(Long id, String firstName, String lastname,

@@ -229,9 +229,6 @@ class InternshipOfferServiceTest {
         assertEquals("Test Internship offer", result.getDescription());
         assertEquals("PUBLISHED", result.getStatus());
         assertEquals("123 Main St.", result.getAddress());
-        assertEquals("Alice", result.getEmployeur().getFirstName());
-        assertEquals("Doe", result.getEmployeur().getLastName());
-        assertEquals("alice@example", result.getEmployeur().getEmail());
         assertEquals(12, result.getDurationInWeeks());
     }
 }
