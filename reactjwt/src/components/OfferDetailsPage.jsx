@@ -61,9 +61,9 @@ export default function OfferDetailsPage(){
                         {t("offerPagesDetails.contact")}
                     </h2>
                     <p className="text-gray-600">
-                        {offer.employeur.firstName} {offer.employeur.lastName}
+                        {offer.firstName} {offer.lastName}
                     </p>
-                    <p className="text-sm text-gray-500">{offer.employeur.email}</p>
+                    <p className="text-sm text-gray-500">{offer.email}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
@@ -71,7 +71,7 @@ export default function OfferDetailsPage(){
                         <p className="text-sm font-semibold text-gray-700">
                             {t("pendingOffers.table.company")}:
                         </p>
-                        <p className="text-gray-800">{offer.employeur.companyName}</p>
+                        <p className="text-gray-800">{offer.companyName}</p>
                     </div>
 
                     <div>

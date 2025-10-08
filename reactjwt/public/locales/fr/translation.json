@@ -152,7 +152,8 @@
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
     "welcome": "Bienvenue",
-    "addProgram": "Ajouter un programme"
+    "addProgram": "Ajouter un programme",
+    "offer": "offre"
   },
   "dashboardStudent": {
     "logout": "Se déconnecter",
@@ -369,6 +370,10 @@
     "email": "Courriel",
     "duration": "Duration",
     "start_date": "Début de date",
-    "address": "Adresse"
+    "address": "Adresse",
+    "status": {
+      "REJECTED": "rejeté",
+      "PUBLISHED": "approuvé"
+    }
   }
 }

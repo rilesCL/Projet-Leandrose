@@ -41,6 +41,7 @@ function App() {
                 <Route path="dashboard" element={<h1>DashBoard</h1>} />
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
+                    {/*Mis en commentaire ces deux liens. Cela brise mon lien de dashboard/gestionnaire/offers */}
                     {/*<Route path="offers" element={<StudentInternshipOffersList />} />*/}
                     {/*<Route path="offers/:offerId" element={<OfferDetailPage />} />*/}
                     <Route path="applications" element={<ApplicationsPage />} />
