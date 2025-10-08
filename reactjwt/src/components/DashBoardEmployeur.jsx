@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import InternshipOffersList from "./InternshipOffersList";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "./LanguageSelector.jsx";
@@ -59,7 +59,6 @@ export default function DashBoardEmployeur() {
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
                             <LanguageSelector />
-
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"

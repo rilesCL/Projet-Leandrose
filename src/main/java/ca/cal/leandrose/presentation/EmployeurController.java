@@ -1,11 +1,19 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.model.Candidature;
+import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
+import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
+import ca.cal.leandrose.service.CandidatureService;
+import ca.cal.leandrose.service.ConvocationService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.UserAppService;
+import ca.cal.leandrose.service.dto.CandidatureEmployeurDto;
+import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.ConvocationDto;
 import ca.cal.leandrose.service.dto.UserDTO;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
@@ -35,6 +43,9 @@ public class EmployeurController {
     private final UserAppService userService;
     private final InternshipOfferService internshipOfferService;
     private final EmployeurRepository employeurRepository;
+    private final CandidatureService candidatureService;
+    private final ConvocationService convocationService;
+    private final CandidatureRepository candidatureRepository;
 
     @GetMapping("/offers")
     public ResponseEntity<List<InternshipOfferDto>> getMyOffers(HttpServletRequest request) {
@@ -64,6 +75,14 @@ public class EmployeurController {
 
         if (!me.getRole().name().equals("EMPLOYEUR")) {
             return ResponseEntity.status(403).build();
+        }
+
+        if (offerRequest.getDescription() == null || offerRequest.getDescription().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(new InternshipOfferDto("La description est requise"));
+        }
+
+        if (offerRequest.getDescription().length() > 50) {
+            return ResponseEntity.badRequest().body(new InternshipOfferDto("La description ne doit pas dépasser 50 caractères"));
         }
 
         Employeur employeur = employeurRepository.findById(me.getId())
@@ -119,6 +138,174 @@ public class EmployeurController {
             }
         } catch (RuntimeException | MalformedURLException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/offers/{offerId}/convocations")
+    public ResponseEntity<List<ConvocationDto>> getConvocationsByOffer(
+            HttpServletRequest request,
+            @PathVariable Long offerId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            InternshipOffer offer = internshipOfferService.getOffer(offerId);
+
+            if (!offer.getEmployeur().getId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            List<ConvocationDto> convocations = convocationService.getAllConvocationsByInterShipOfferId(offerId);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(convocations);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @PostMapping("/candidatures/{candidatureId}/convocations")
+    public ResponseEntity<String> createConvocation(
+            HttpServletRequest request,
+            @PathVariable Long candidatureId,
+            @RequestBody ConvocationDto convocationRequest
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
+
+            if (!candidatureDto.getEmployeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            convocationService.addConvocation(
+                    candidatureId,
+                    convocationRequest.getConvocationDate(),
+                    convocationRequest.getLocation(),
+                    convocationRequest.getMessage()
+            );
+
+            return ResponseEntity.ok().body("Convocation créée avec succès");
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors de la création de la convocation");
+        }
+    }
+
+    @GetMapping("/offers/{offerId}/candidatures")
+    public ResponseEntity<List<CandidatureEmployeurDto>> getCandidaturesForOffer(
+            HttpServletRequest request,
+            @PathVariable Long offerId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        InternshipOffer offer = internshipOfferService.getOffer(offerId);
+        if (!offer.getEmployeur().getId().equals(me.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<CandidatureEmployeurDto> candidatures =
+                candidatureService.getCandidaturesByOffer(offerId);
+
+        return ResponseEntity.ok(candidatures);
+    }
+
+    @GetMapping("/candidatures")
+    public ResponseEntity<List<CandidatureEmployeurDto>> getAllMyCandidatures(
+            HttpServletRequest request) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<CandidatureEmployeurDto> candidatures =
+                candidatureService.getCandidaturesByEmployeur(me.getId());
+
+        return ResponseEntity.ok(candidatures);
+    }
+
+    @GetMapping("/candidatures/{candidatureId}/cv")
+    public ResponseEntity<Resource> downloadCandidateCv(
+            HttpServletRequest request,
+            @PathVariable Long candidatureId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            Candidature candidature = candidatureRepository.findById(candidatureId)
+                    .orElseThrow(() -> new RuntimeException("Candidature non trouvée"));
+
+            if (!candidature.getInternshipOffer().getEmployeur().getId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            Cv cv = candidature.getCv();
+            Path filePath = Paths.get(cv.getPdfPath());
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"CV_" + candidature.getStudent().getLastName() + ".pdf\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/candidatures/{candidatureId}/reject")
+    public ResponseEntity<String> rejectCandidature(
+            HttpServletRequest request,
+            @PathVariable Long candidatureId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
+
+            if (!candidatureDto.getEmployeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            candidatureService.rejectCandidature(candidatureId);
+
+            return ResponseEntity.ok().body("Candidature rejetée avec succès");
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors du rejet de la candidature");
         }
     }
 }

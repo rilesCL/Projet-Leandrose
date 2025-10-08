@@ -1,9 +1,8 @@
-// RegisterEmployeur.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { registerEmployeur, fetchPrograms } from "../api/apiRegister.jsx";
-import {FaArrowLeft} from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import LanguageSelector from "./LanguageSelector.jsx";
 
 const initialState = {
@@ -36,7 +35,7 @@ function validate(values, t) {
 
 export default function RegisterEmployeur() {
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [form, setForm] = useState(initialState);
     const [errors, setErrors] = useState({});
     const [globalError, setGlobalError] = useState("");
@@ -52,19 +51,18 @@ export default function RegisterEmployeur() {
                 setPrograms(data);
             } catch (error) {
                 console.error("Error fetching programs:", error);
-                setGlobalError(t("registerEmployeur.errors.programsLoadError") || "Failed to load programs");
+                setGlobalError(t("registerEmployeur.errors.programsLoadError"));
             } finally {
                 setLoadingPrograms(false);
             }
         };
-
         loadPrograms();
     }, [t]);
 
     const handleChange = (e) => {
         const { id, value } = e.target;
-        setForm(prev => ({ ...prev, [id]: value }));
-        setErrors(prev => {
+        setForm((prev) => ({ ...prev, [id]: value }));
+        setErrors((prev) => {
             const clone = { ...prev };
             delete clone[id];
             return clone;
@@ -82,46 +80,41 @@ export default function RegisterEmployeur() {
         if (Object.keys(v).length > 0) return;
 
         setIsSubmitting(true);
-        const formData = { ...form };
-
         try {
-            await registerEmployeur(formData);
+            await registerEmployeur(form);
             setSuccessMessage(t("registerEmployeur.success"));
             setForm(initialState);
-            setErrors({});
-            setTimeout(() => {
-                fetch('http://localhost:8080/user/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+
+            setTimeout(async () => {
+                const loginRes = await fetch("http://localhost:8080/user/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: form.email, password: form.password })
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        sessionStorage.setItem('accessToken', data.accessToken);
-                        sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
-                        return fetch('http://localhost:8080/user/me', {
-                            headers: { Authorization: `Bearer ${data.accessToken}` }
-                        });
-                    })
-                    .then(res => res.json())
-                    .then(userData => {
-                        switch(userData.role){
-                            case 'STUDENT':
-                                navigate("/dashboard/student");
-                                break;
-                            case 'EMPLOYEUR':
-                                navigate("/dashboard/employeur");
-                                break;
-                            default:
-                                navigate("/dashboard");
-                        }
-                    });
+                });
+                const loginData = await loginRes.json();
+                sessionStorage.setItem("accessToken", loginData.accessToken);
+                sessionStorage.setItem("tokenType", loginData.tokenType || "BEARER");
+
+                const meRes = await fetch("http://localhost:8080/user/me", {
+                    headers: { Authorization: `Bearer ${loginData.accessToken}` }
+                });
+                const userData = await meRes.json();
+
+                switch (userData.role) {
+                    case "STUDENT":
+                        navigate("/dashboard/student");
+                        break;
+                    case "EMPLOYEUR":
+                        navigate("/dashboard/employeur");
+                        break;
+                    default:
+                        navigate("/dashboard");
+                }
             }, 1500);
         } catch (err) {
             console.error(err);
             const message = err.response?.data;
-
-            const errorText = typeof message === 'object' ? message.error : message;
+            const errorText = typeof message === "object" ? message.error : message;
 
             if (errorText?.includes("déjà utilisé")) {
                 setGlobalError(t("registerEmployeur.errors.emailUsed"));
@@ -182,7 +175,8 @@ export default function RegisterEmployeur() {
                                 error={errors.field}
                                 options={programs}
                                 loading={loadingPrograms}
-                                placeholder={t("registerEmployeur.placeholders.field") || "Select a field"}
+                                placeholder={t("registerEmployeur.placeholders.field")}
+                                t={t}
                             />
                             <InputField id="password" label={t("registerEmployeur.password")} placeholder={t("registerEmployeur.placeholders.password")} value={form.password} onChange={handleChange} error={errors.password} type="password" />
                             <InputField id="confirmPassword" label={t("registerEmployeur.confirmPassword")} placeholder={t("registerEmployeur.placeholders.confirmPassword")} value={form.confirmPassword} onChange={handleChange} error={errors.confirmPassword} type="password" />
@@ -190,14 +184,22 @@ export default function RegisterEmployeur() {
 
                         <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div className="flex gap-2">
-                                <button type="submit" disabled={isSubmitting} className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                >
                                     {isSubmitting ? t("registerEmployeur.submitting") : t("registerEmployeur.submit")}
                                 </button>
-                                <button type="button" onClick={handleReset} disabled={isSubmitting} className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50">
+                                <button
+                                    type="button"
+                                    onClick={handleReset}
+                                    disabled={isSubmitting}
+                                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
+                                >
                                     {t("registerEmployeur.reset")}
                                 </button>
                             </div>
-
                             <div className="text-sm text-gray-500">
                                 <button type="button" onClick={() => navigate("/register")} className="text-indigo-600 hover:underline"><FaArrowLeft></FaArrowLeft></button>
                             </div>
@@ -214,39 +216,22 @@ function InputField({ id, label, placeholder, value, onChange, error, type = "te
     return (
         <div className={className}>
             <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
-            <input
-                id={id}
-                type={type}
-                value={value}
-                onChange={onChange}
-                className={inputClass}
-                placeholder={placeholder}
-                aria-invalid={!!error}
-                aria-describedby={error ? `${id}-error` : undefined}
-            />
+            <input id={id} type={type} value={value} onChange={onChange} className={inputClass} placeholder={placeholder} aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} />
             {error && <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
     );
 }
 
-function SelectField({ id, label, value, onChange, error, options, loading, placeholder, className = "" }) {
+function SelectField({ id, label, value, onChange, error, options, loading, placeholder, className = "", t }) {
     const selectClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
     return (
         <div className={className}>
             <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
-            <select
-                id={id}
-                value={value}
-                onChange={onChange}
-                className={selectClass}
-                aria-invalid={!!error}
-                aria-describedby={error ? `${id}-error` : undefined}
-                disabled={loading}
-            >
-                <option value="">{loading ? "Loading fields..." : placeholder}</option>
+            <select id={id} value={value} onChange={onChange} className={selectClass} aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} disabled={loading}>
+                <option value="">{loading ? t("registerEmployeur.loadingPrograms") : placeholder}</option>
                 {options.map((program) => (
-                    <option key={program.id} value={program.name}>
-                        {program.name}
+                    <option key={program} value={program}>
+                        {t(program)}
                     </option>
                 ))}
             </select>

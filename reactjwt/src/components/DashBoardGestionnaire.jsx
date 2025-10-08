@@ -76,14 +76,6 @@ export default function DashBoardGestionnaire() {
                     <h1 className="text-2xl font-semibold text-gray-900 mb-4">
                         {t("dashboardGestionnaire.welcome")} {userName}!
                     </h1>
-                    <div className="flex justify-center mb-6">
-                        <button
-                            onClick={() => navigate("/dashboard/gestionnaire/programs")}
-                            className="flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
-                        >
-                            {t("dashboardGestionnaire.addProgram")}
-                        </button>
-                    </div>
                     <PendingCvPage />
                     <div className="my-8 border-t border-gray-300"></div>
                     <PendingOffersPage />

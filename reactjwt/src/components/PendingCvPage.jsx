@@ -8,6 +8,7 @@ export default function PendingCvPage() {
     const [comments, setComments] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({});
 
     useEffect(() => {
         async function fetchCvs() {
@@ -31,6 +32,11 @@ export default function PendingCvPage() {
         try {
             await approveCv(cvId);
             setPendingCvs((prev) => prev.filter((cv) => cv.id !== cvId));
+            setValidationErrors((prev) => {
+                const updated = { ...prev };
+                delete updated[cvId];
+                return updated;
+            });
         } catch (err) {
             console.error(err);
         }
@@ -39,12 +45,17 @@ export default function PendingCvPage() {
     const handleReject = async (cvId) => {
         const comment = comments[cvId] || "";
         if (!comment.trim()) {
-            setError("commentRequired");
+            setValidationErrors((prev) => ({ ...prev, [cvId]: "commentRequired" }));
             return;
         }
         try {
             await rejectCv(cvId, comment);
             setPendingCvs((prev) => prev.filter((cv) => cv.id !== cvId));
+            setValidationErrors((prev) => {
+                const updated = { ...prev };
+                delete updated[cvId];
+                return updated;
+            });
         } catch (err) {
             console.error(err);
         }
@@ -52,6 +63,13 @@ export default function PendingCvPage() {
 
     const handleCommentChange = (cvId, value) => {
         setComments((prev) => ({ ...prev, [cvId]: value }));
+        if (validationErrors[cvId]) {
+            setValidationErrors((prev) => {
+                const updated = { ...prev };
+                delete updated[cvId];
+                return updated;
+            });
+        }
     };
 
     const handleDownload = async (cvId) => {
@@ -109,23 +127,30 @@ export default function PendingCvPage() {
                                 </button>
                             </td>
                             <td className="px-6 py-4">
-                  <textarea
-                      value={comments[cv.id] || ""}
-                      onChange={(e) => handleCommentChange(cv.id, e.target.value)}
-                      className="w-full h-20 border rounded p-2 resize-none"
-                      placeholder={t("pendingCvList.commentPlaceholder")}
-                  />
+                                <textarea
+                                    value={comments[cv.id] || ""}
+                                    onChange={(e) => handleCommentChange(cv.id, e.target.value)}
+                                    className={`w-full h-20 border rounded p-2 resize-none ${
+                                        validationErrors[cv.id] ? "border-red-500" : ""
+                                    }`}
+                                    placeholder={t("pendingCvList.commentPlaceholder")}
+                                />
+                                {validationErrors[cv.id] && (
+                                    <p className="mt-1 text-xs text-red-600">
+                                        {t(`pendingCvList.errors.${validationErrors[cv.id]}`)}
+                                    </p>
+                                )}
                             </td>
                             <td className="px-6 py-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                                 <button
                                     onClick={() => handleApprove(cv.id)}
-                                    className="bg-green-500 text-white px-3 py-1 rounded w-full md:w-auto"
+                                    className="bg-green-500 text-white px-3 py-1 rounded w-full md:w-auto hover:bg-green-600"
                                 >
                                     {t("pendingCvList.actions.approve")}
                                 </button>
                                 <button
                                     onClick={() => handleReject(cv.id)}
-                                    className="bg-red-500 text-white px-3 py-1 rounded w-full md:w-auto"
+                                    className="bg-red-500 text-white px-3 py-1 rounded w-full md:w-auto hover:bg-red-600"
                                 >
                                     {t("pendingCvList.actions.reject")}
                                 </button>

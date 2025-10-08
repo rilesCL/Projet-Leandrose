@@ -28,6 +28,7 @@ public class InternshipOffer {
     @ManyToOne
     private Gestionnaire validatedBy;
 
+    @Column
     private LocalDate validationDate;
 
     @Column(nullable = false)
@@ -46,9 +47,6 @@ public class InternshipOffer {
     private Status status;
 
     @Column
-    private String requiredSkills;
-
-    @Column
     private String rejectionComment;
 
     public enum Status {
@@ -61,5 +59,19 @@ public class InternshipOffer {
 
     public String getCompanyName() {
         return employeur != null ? employeur.getCompanyName() : null;
+    }
+
+    public String getEmployeurFirstName() {
+        return employeur != null ? employeur.getFirstName() : null;
+    }
+
+    public String getEmployeurLastName() {
+        return employeur != null ? employeur.getLastName() : null;
+    }
+
+    public String getEmployeurEmail() {
+        return employeur != null && employeur.getCredentials() != null
+                ? employeur.getCredentials().getEmail()
+                : null;
     }
 }
