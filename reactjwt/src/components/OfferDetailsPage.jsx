@@ -58,7 +58,7 @@ export default function OfferDetailsPage(){
 
                 <div className="border-b pb-4 mb-6">
                     <h2 className="text-2xl font-bold text-gray-800">
-                        {t("offerPagesDetails.contact")}
+                        {t("offerPagesDetails.info")}
                     </h2>
                     <p className="text-gray-600">
                         {offer?.employeur?.firstName} {offer?.employeur?.lastName}
@@ -97,7 +97,16 @@ export default function OfferDetailsPage(){
                         </p>
                     </div>
 
-                    <div className="col-span-2">
+                    <div>
+                        <p className="text-sm font-semibold text-gray-700">
+                            {t("OfferDetailPage.remuneration")}:
+                        </p>
+                        <p className="text-gray-800">
+                            {offer.remuneration ? `${offer.remuneration} $ / ${t("OfferDetailPage.hour")}` : t("OfferDetailPage.noRemuneration")}
+                        </p>
+                    </div>
+
+                    <div>
                         <p className="text-sm font-semibold text-gray-700">
                             {t("offerPagesDetails.address")}:
                         </p>

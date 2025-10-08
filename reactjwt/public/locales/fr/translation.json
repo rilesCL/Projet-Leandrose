@@ -538,9 +538,9 @@
     }
   },
   "offerPagesDetails": {
-    "title": "Offert de Stage",
+    "title": "Offre de Stage",
     "details": "Détails",
-    "contact": "Contact Employeur",
+    "info": "Infos offre de stage",
     "back": "Précédent",
     "email": "Courriel",
     "duration": "Duration",

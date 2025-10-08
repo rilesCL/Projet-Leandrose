@@ -62,16 +62,16 @@ export default function OffersPage() {
                 <table className="w-full border border-gray-300 rounded-lg overflow-hidden shadow-sm text-sm">
                     <thead className="bg-gray-50 text-gray text-left">
                     <tr>
+                        <th className="border px-4 py-2 text-left">{t("pendingOffers.table.title")}</th>
                         <th className="border px-4 py-2 text-left">{t("pendingOffers.table.company")}</th>
-                        <th className="border px-4 py-2 text-left">{t("pendingOffers.table.status")}</th>
                         <th className="border px-4 py-2 text-left">{t("pendingOffers.table.actions")}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {offers.map((offer) => (
                         <tr key={offer.id} >
+                            <td className="border px-4 py-2">{offer.description}</td>
                             <td className="border px-4 py-2">{offer.companyName}</td>
-                            <td className="border px-4 py-2">{t(`offerPagesDetails.status.${offer.status}`)}</td>
                             <td className="border px-4 py-2">
                                 <Link
                                     to={`/dashboard/gestionnaire/offers/${offer.id}`}
