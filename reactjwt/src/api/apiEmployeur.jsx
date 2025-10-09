@@ -103,18 +103,34 @@ export async function createConvocation(candidatureId, convocationData, token = 
     return res.text();
 }
 
-export async function rejectCandidature(candidatureId, token = null) {
+export async function acceptCandidature(candidatureId, token = null) {
     const accessToken = token || sessionStorage.getItem('accessToken');
     const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
-    const headers = {
-        'Content-Type': 'application/json'
-    };
+    const headers = {};
     if (accessToken) {
         headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
     }
-    const res = await handleFetch(`${API_BASE}/employeur/candidatures/${candidatureId}/reject`, {
-        method: 'PUT',
+
+    const res = await handleFetch(`${API_BASE}/employeur/candidatures/${candidatureId}/accept`, {
+        method: 'POST',
         headers
     });
-    return res.text();
+
+    return res.json();
+}
+
+export async function rejectCandidature(candidatureId, token = null) {
+    const accessToken = token || sessionStorage.getItem('accessToken');
+    const tokenType = (sessionStorage.getItem('tokenType') || 'BEARER').toUpperCase();
+    const headers = {};
+    if (accessToken) {
+        headers['Authorization'] = tokenType.startsWith('BEARER') ? `Bearer ${accessToken}` : accessToken;
+    }
+
+    const res = await handleFetch(`${API_BASE}/employeur/candidatures/${candidatureId}/reject`, {
+        method: 'POST',
+        headers
+    });
+
+    return res.json();
 }

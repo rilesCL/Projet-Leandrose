@@ -7,6 +7,7 @@ import ca.cal.leandrose.service.dto.CandidatureEmployeurDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,7 +22,6 @@ public class CandidatureService {
 
     @Transactional
     public CandidatureDto postuler(Long studentId, Long offerId, Long cvId) {
-
         candidatureRepository.findByStudentIdAndInternshipOfferId(studentId, offerId)
                 .ifPresent(c -> {
                     throw new IllegalStateException("Vous avez déjà postulé à cette offre");
@@ -53,7 +53,6 @@ public class CandidatureService {
                 .build();
 
         Candidature saved = candidatureRepository.save(candidature);
-
         return CandidatureDto.fromEntity(saved);
     }
 
@@ -77,7 +76,6 @@ public class CandidatureService {
                 .toList();
     }
 
-
     public List<CandidatureEmployeurDto> getCandidaturesByEmployeur(Long employeurId) {
         return candidatureRepository.findByEmployeurIdOrderByApplicationDateDesc(employeurId)
                 .stream()
@@ -100,5 +98,27 @@ public class CandidatureService {
 
         candidature.setStatus(Candidature.Status.REJECTED);
         candidatureRepository.save(candidature);
+    }
+
+    @Transactional
+    public CandidatureDto accept(Long candidatureId) {
+        Candidature cand = candidatureRepository
+                .findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature introuvable ou non autorisée"));
+
+        cand.setStatus(Candidature.Status.ACCEPTED);
+        Candidature saved = candidatureRepository.save(cand);
+        return CandidatureDto.fromEntity(saved);
+    }
+
+    @Transactional
+    public CandidatureDto reject(Long candidatureId) {
+        Candidature cand = candidatureRepository
+                .findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature introuvable ou non autorisée"));
+
+        cand.setStatus(Candidature.Status.REJECTED);
+        Candidature saved = candidatureRepository.save(cand);
+        return CandidatureDto.fromEntity(saved);
     }
 }

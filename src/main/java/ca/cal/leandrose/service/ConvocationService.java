@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +44,8 @@ public class ConvocationService {
                 : message;
 
         candidature.setStatus(Candidature.Status.CONVENED);
+        candidatureRepository.save(candidature);
+
         Convocation convocation = new Convocation(candidature, convocationDate, location, finalMessage);
         convocationRepository.save(convocation);
     }
@@ -55,7 +56,6 @@ public class ConvocationService {
                 .map(ConvocationDto::create)
                 .toList();
     }
-
 
     public Optional<ConvocationDto> getConvocationByCandidatureId(Long candidatureId) {
         return convocationRepository.findByCandidatureId(candidatureId)
