@@ -97,7 +97,7 @@ export default function OfferCandidaturesList() {
     );
 
     const canConvoke = (status) => status === 'PENDING';
-    const canReject = (status) => status === 'PENDING' || status === 'CONVENED';
+    const canReject = (status) => status === 'PENDING';
 
     if (loading) return <div className='bg-white p-6 shadow rounded text-center'>{t('internshipOffersList.loading')}</div>;
     if (error) return <div className='bg-white p-6 shadow rounded text-center text-red-600'>
@@ -109,7 +109,7 @@ export default function OfferCandidaturesList() {
         <p className='text-gray-600 mb-4'>{t('employerCandidatures.emptyDescription')}</p>
         <div className='flex gap-4 justify-center'>
             <Link to='/dashboard/employeur' className='text-indigo-600 hover:text-indigo-800 text-sm'>{t('employerCandidatures.backToOffers')}</Link>
-            <Link to='/dashboard/employeur/candidatures' className='text-sm text-gray-600 hover:text-gray-800'>{t('employerCandidatures.navLink')}</Link>
+
         </div>
     </div>;
 
@@ -123,7 +123,7 @@ export default function OfferCandidaturesList() {
                     </div>
                     <div className='flex gap-4'>
                         <Link to='/dashboard/employeur' className='text-sm text-indigo-600 hover:text-indigo-800'>{t('employerCandidatures.backToOffers')}</Link>
-                        <Link to='/dashboard/employeur/candidatures' className='text-sm text-gray-600 hover:text-gray-800'>{t('employerCandidatures.navLink')}</Link>
+
                     </div>
                 </div>
                 <div className='overflow-x-auto'>

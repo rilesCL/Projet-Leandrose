@@ -24,6 +24,7 @@ public class InternshipOfferDto {
     private String companyName;
     private String pdfPath;
     private String errorMessage;
+    private String rejectionComment;
 
     public InternshipOfferDto(Long id, String description, LocalDate startDate, int durationInWeeks,
                               String address, Float remuneration, String status, Long employeurId,
@@ -38,6 +39,7 @@ public class InternshipOfferDto {
         this.employeurId = employeurId;
         this.companyName = companyName;
         this.pdfPath = pdfPath;
+        this.rejectionComment = null;
     }
 
     public InternshipOfferDto(String errorMessage){
