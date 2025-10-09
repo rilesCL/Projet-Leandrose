@@ -50,6 +50,15 @@ public class LeandrOseApplication {
                 "STU001",
                 Program.COMPUTER_SCIENCE.getTranslationKey());
         System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
+          StudentDto studentDto2 =
+                  studentService.createStudent(
+                          "John",
+                          "Doe",
+                          "john.doe@student.com",
+                          "Password123",
+                          "STU002",
+                          Program.COMPUTER_SCIENCE.getTranslationKey());
+          System.out.println("Student créé: " + studentService.getStudentById(studentDto.getId()));
 
         GestionnaireDto gestionnaireDto =
             gestionnaireService.createGestionnaire(
