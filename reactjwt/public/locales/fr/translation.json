@@ -105,7 +105,7 @@
       "unknown": "Une erreur est survenue."
     }
   },
-  "login": {
+"login": {
     "title": "Connexion",
     "subtitle": "Connectez-vous à votre compte pour accéder à votre espace personnel.",
     "email": "Email",
@@ -152,7 +152,8 @@
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
     "welcome": "Bienvenue",
-    "programList": "Liste des programmes"
+    "addProgram": "Ajouter un programme",
+    "offer": "offre"
   },
   "dashboardStudent": {
     "logout": "Se déconnecter",
@@ -175,56 +176,6 @@
     "noProgramsDescription": "Il n'y a actuellement aucun programme enregistré dans le système.",
     "department": "Département",
     "totalPrograms": "Total des programmes"
-  },
-  "program": {
-    "computer_science": "Informatique",
-    "software_engineering": "Génie logiciel",
-    "information_technology": "Technologie de l'information",
-    "data_science": "Science des données",
-    "cyber_security": "Cybersécurité",
-    "artificial_intelligence": "Intelligence artificielle",
-    "electrical_engineering": "Génie électrique",
-    "mechanical_engineering": "Génie mécanique",
-    "civil_engineering": "Génie civil",
-    "chemical_engineering": "Génie chimique",
-    "biomedical_engineering": "Génie biomédical",
-    "business_administration": "Administration des affaires",
-    "accounting": "Comptabilité",
-    "finance": "Finance",
-    "economics": "Économie",
-    "marketing": "Marketing",
-    "management": "Gestion",
-    "psychology": "Psychologie",
-    "sociology": "Sociologie",
-    "political_science": "Science politique",
-    "international_relations": "Relations internationales",
-    "law": "Droit",
-    "education": "Éducation",
-    "literature": "Littérature",
-    "history": "Histoire",
-    "philosophy": "Philosophie",
-    "linguistics": "Linguistique",
-    "biology": "Biologie",
-    "chemistry": "Chimie",
-    "physics": "Physique",
-    "mathematics": "Mathématiques",
-    "statistics": "Statistiques",
-    "environmental_science": "Sciences de l'environnement",
-    "medicine": "Médecine",
-    "nursing": "Sciences infirmières",
-    "pharmacy": "Pharmacie",
-    "dentistry": "Dentisterie",
-    "architecture": "Architecture",
-    "fine_arts": "Beaux-arts",
-    "music": "Musique",
-    "theater": "Théâtre",
-    "film_studies": "Cinéma",
-    "communication": "Communication",
-    "journalism": "Journalisme",
-    "design": "Design",
-    "anthropology": "Anthropologie",
-    "geography": "Géographie",
-    "sports_science": "Sciences du sport"
   },
   "addProgram": {
     "pageTitle": "Gestion des Programmes",
@@ -521,6 +472,7 @@
     "duration": "Durée",
     "remuneration": "Rémunération",
     "week": "semaine",
+    "hour": "heures",
     "noRemuneration": "Aucune rémunération",
     "employerContact": "Contact de l'employeur",
     "downloadPdf": "Télécharger le document PDF",
@@ -598,6 +550,20 @@
       "message": "Message (facultatif)",
       "cancel": "Annuler",
       "submit": "Envoyer la convocation"
+    }
+  },
+  "offerPagesDetails": {
+    "title": "Offre de Stage",
+    "details": "Détails",
+    "info": "Infos offre de stage",
+    "back": "Précédent",
+    "email": "Courriel",
+    "duration": "Duration",
+    "start_date": "Début de date",
+    "address": "Adresse",
+    "status": {
+      "REJECTED": "rejeté",
+      "PUBLISHED": "approuvé"
     }
   }
 }

@@ -8,6 +8,7 @@ import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.dto.CvDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -24,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/gestionnaire")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class GestionnaireController {
 
@@ -40,7 +41,7 @@ public class GestionnaireController {
     @PostMapping("/cv/{cvId}/reject")
     public ResponseEntity<CvDto> rejectCv(
             @PathVariable Long cvId,
-            @RequestBody String comment
+            @RequestBody(required = false) String comment
     ) {
         return ResponseEntity.ok(gestionnaireService.rejectCv(cvId, comment));
     }
@@ -50,14 +51,22 @@ public class GestionnaireController {
     return ResponseEntity.ok(gestionnaireService.getPendingOffers());
   }
 
+    @GetMapping("/offers/approved")
+    public ResponseEntity<List<InternshipOfferDto>> getApprovedOffers(){
+        return ResponseEntity.ok(gestionnaireService.getApprovedOffers());
+    }
+    @GetMapping("/offers/reject")
+    public ResponseEntity<List<InternshipOfferDto>> getRejectedOffers(){
+        return ResponseEntity.ok(gestionnaireService.getRejectedoffers());
+    }
     @GetMapping("/cvs/pending")
     public ResponseEntity<List<CvDto>> getPendingCvs() {
         return ResponseEntity.ok(gestionnaireService.getPendingCvs());
     }
 
     @GetMapping("/offers/{id}")
-    public ResponseEntity<InternshipOffer> getOfferDetails(@PathVariable Long id) {
-        return ResponseEntity.ok(internshipOfferService.getOffer(id));
+    public ResponseEntity<InternshipOfferDto> getOfferDetails(@PathVariable Long id){
+        return ResponseEntity.ok(internshipOfferService.getOfferDetails(id));
     }
 
     @GetMapping("/cv/{cvId}/download")

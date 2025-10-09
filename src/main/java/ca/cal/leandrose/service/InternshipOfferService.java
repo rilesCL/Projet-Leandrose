@@ -2,11 +2,10 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.itextpdf.text.pdf.PdfReader;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+
+import static ca.cal.leandrose.service.mapper.InternshipOfferMapper.toDto;
 
 @Service
 @RequiredArgsConstructor
@@ -74,12 +75,18 @@ public class InternshipOfferService {
 
         InternshipOffer saved = internshipOfferRepository.save(offer);
 
-        return InternshipOfferMapper.toDto(saved);
+        return toDto(saved);
     }
 
     public InternshipOffer getOffer(Long id) {
         return internshipOfferRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+    }
+
+    public InternshipOfferDto getOfferDetails(Long id){
+        InternshipOffer offer = internshipOfferRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Offer not found with id" + id));
+        return toDto(offer);
     }
 
     public byte[] getOfferPdf(Long id) throws IOException {

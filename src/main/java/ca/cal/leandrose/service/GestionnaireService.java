@@ -9,6 +9,8 @@ import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.GestionnaireDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -88,6 +90,21 @@ public class GestionnaireService {
 
     public List<InternshipOffer> getPendingOffers() {
         return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PENDING_VALIDATION);
+    }
+    public List<InternshipOfferDto> getRejectedoffers(){
+        return internshipOfferRepository
+                .findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
+
+    }
+    public List<InternshipOfferDto> getApprovedOffers(){
+        return internshipOfferRepository
+                .findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
     }
 
     @Transactional

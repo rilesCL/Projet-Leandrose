@@ -98,12 +98,12 @@
       "passwordLength": "Password must be at least 8 characters",
       "confirmPassword": "Please confirm your password",
       "passwordMismatch": "Passwords do not match",
-      "emailUsed": "Email is already in use",
+        "emailUsed": "Email is already in use",
       "serverError": "Unable to connect to the server",
       "unknown": "An error occurred."
     }
   },
-  "login": {
+"login": {
     "title": "Log in",
     "subtitle": "Log in to your account to access your personal space.",
     "email": "Email",
@@ -151,7 +151,8 @@
   "dashboardGestionnaire": {
     "logout": "Logout",
     "welcome": "Welcome",
-    "programList": "Program's list"
+    "addProgram": "Add Program",
+    "offer": "offer"
   },
   "dashboardStudent": {
     "logout": "Logout",
@@ -174,56 +175,6 @@
     "noProgramsDescription": "There are currently no programs registered in the system.",
     "department": "Department",
     "totalPrograms": "Total programs"
-  },
-  "program": {
-    "computer_science": "Computer Science",
-    "software_engineering": "Software Engineering",
-    "information_technology": "Information Technology",
-    "data_science": "Data Science",
-    "cyber_security": "Cyber Security",
-    "artificial_intelligence": "Artificial Intelligence",
-    "electrical_engineering": "Electrical Engineering",
-    "mechanical_engineering": "Mechanical Engineering",
-    "civil_engineering": "Civil Engineering",
-    "chemical_engineering": "Chemical Engineering",
-    "biomedical_engineering": "Biomedical Engineering",
-    "business_administration": "Business Administration",
-    "accounting": "Accounting",
-    "finance": "Finance",
-    "economics": "Economics",
-    "marketing": "Marketing",
-    "management": "Management",
-    "psychology": "Psychology",
-    "sociology": "Sociology",
-    "political_science": "Political Science",
-    "international_relations": "International Relations",
-    "law": "Law",
-    "education": "Education",
-    "literature": "Literature",
-    "history": "History",
-    "philosophy": "Philosophy",
-    "linguistics": "Linguistics",
-    "biology": "Biology",
-    "chemistry": "Chemistry",
-    "physics": "Physics",
-    "mathematics": "Mathematics",
-    "statistics": "Statistics",
-    "environmental_science": "Environmental Science",
-    "medicine": "Medicine",
-    "nursing": "Nursing",
-    "pharmacy": "Pharmacy",
-    "dentistry": "Dentistry",
-    "architecture": "Architecture",
-    "fine_arts": "Fine Arts",
-    "music": "Music",
-    "theater": "Theater",
-    "film_studies": "Film Studies",
-    "communication": "Communication",
-    "journalism": "Journalism",
-    "design": "Design",
-    "anthropology": "Anthropology",
-    "geography": "Geography",
-    "sports_science": "Sports Science"
   },
   "addProgram": {
     "pageTitle": "Program Management",
@@ -519,6 +470,7 @@
     "duration": "Duration",
     "remuneration": "Remuneration",
     "week": "week",
+    "hour": "hours",
     "noRemuneration": "No remuneration",
     "employerContact": "Employer contact",
     "downloadPdf": "Download PDF document",
@@ -547,7 +499,7 @@
     "actions": "Actions",
     "viewDetails": "View details"
   },
-    "employerCandidatures": {
+  "employerCandidatures": {
     "navLink": "My applications",
     "titleAll": "All applications",
     "titleOffer": "Offer applications",
@@ -596,6 +548,20 @@
       "message": "Message (optional)",
       "cancel": "Cancel",
       "submit": "Send convocation"
+    }
+  },
+  "offerPagesDetails": {
+    "title": "Internship Offers",
+    "details": "Details",
+    "back": "Back",
+    "info": "Internship offer's info",
+    "email": "Email",
+    "duration": "Duration",
+    "start_date": "Start Date",
+    "address": "Address",
+    "status": {
+      "REJECTED": "rejected",
+      "PUBLISHED": "appproved"
     }
   }
 }
