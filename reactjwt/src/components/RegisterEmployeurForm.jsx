@@ -230,8 +230,8 @@ function SelectField({ id, label, value, onChange, error, options, loading, plac
             <select id={id} value={value} onChange={onChange} className={selectClass} aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} disabled={loading}>
                 <option value="">{loading ? t("registerEmployeur.loadingPrograms") : placeholder}</option>
                 {options.map((program) => (
-                    <option key={program} value={program}>
-                        {t(program)}
+                    <option key={program.code} value={program.code}>
+                        {t(program.translationKey)}
                     </option>
                 ))}
             </select>
