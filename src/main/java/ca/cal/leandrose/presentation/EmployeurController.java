@@ -115,9 +115,9 @@ public class EmployeurController {
         }
 
         try {
-            InternshipOffer offer = internshipOfferService.getOffer(offerId);
+            InternshipOfferDto offer = internshipOfferService.getOffer(offerId);
 
-            if (!offer.getEmployeur().getId().equals(me.getId())) {
+            if (!offer.getEmployeurDto().getId().equals(me.getId())) {
                 return ResponseEntity.status(403).build();
             }
 
@@ -153,9 +153,9 @@ public class EmployeurController {
         }
 
         try {
-            InternshipOffer offer = internshipOfferService.getOffer(offerId);
+            InternshipOfferDto offer = internshipOfferService.getOffer(offerId);
 
-            if (!offer.getEmployeur().getId().equals(me.getId())) {
+            if (!offer.getEmployeurDto().getId().equals(me.getId())) {
                 return ResponseEntity.status(403).build();
             }
 
@@ -216,8 +216,8 @@ public class EmployeurController {
             return ResponseEntity.status(403).build();
         }
 
-        InternshipOffer offer = internshipOfferService.getOffer(offerId);
-        if (!offer.getEmployeur().getId().equals(me.getId())) {
+        InternshipOfferDto offer = internshipOfferService.getOffer(offerId);
+        if (!offer.getEmployeurDto().getId().equals(me.getId())) {
             return ResponseEntity.status(403).build();
         }
 

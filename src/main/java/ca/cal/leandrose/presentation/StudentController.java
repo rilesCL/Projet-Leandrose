@@ -1,15 +1,11 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.*;
-import ca.cal.leandrose.service.dto.CandidatureDto;
-import ca.cal.leandrose.service.dto.ConvocationDto;
-import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.UserDTO;
+import ca.cal.leandrose.service.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -141,10 +137,10 @@ public class StudentController {
     }
 
     @GetMapping("/offers/{id}")
-    public ResponseEntity<InternshipOffer> getOfferDetails(@PathVariable Long id) {
-        InternshipOffer offer = internshipOfferService.getOffer(id);
+    public ResponseEntity<InternshipOfferDto> getOfferDetails(@PathVariable Long id) {
+        InternshipOfferDto offer = internshipOfferService.getOffer(id);
 
-        if (offer.getStatus() != InternshipOffer.Status.PUBLISHED) {
+        if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED.name())) {
             return ResponseEntity.status(403).build();
         }
 
@@ -189,9 +185,9 @@ public class StudentController {
     @GetMapping("/offers/{id}/pdf")
     public ResponseEntity<byte[]> downloadOfferPdf(@PathVariable Long id) {
         try {
-            InternshipOffer offer = internshipOfferService.getOffer(id);
+            InternshipOfferDto offer = internshipOfferService.getOffer(id);
 
-            if (offer.getStatus() != InternshipOffer.Status.PUBLISHED) {
+            if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED.name())) {
                 return ResponseEntity.status(403).build();
             }
 

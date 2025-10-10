@@ -77,13 +77,19 @@ public class InternshipOfferService {
         return InternshipOfferMapper.toDto(saved);
     }
 
-    public InternshipOffer getOffer(Long id) {
-        return internshipOfferRepository.findById(id)
+    public InternshipOfferDto getOffer(Long id){
+        InternshipOffer offer = internshipOfferRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+        return InternshipOfferDto.toDto(offer);
     }
 
+//    public InternshipOffer getOffer(Long id) {
+//        return internshipOfferRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+//    }
+
     public byte[] getOfferPdf(Long id) throws IOException {
-        InternshipOffer offer = getOffer(id);
+        InternshipOfferDto offer = getOffer(id);
         Path path = Paths.get(offer.getPdfPath());
         return Files.readAllBytes(path);
     }

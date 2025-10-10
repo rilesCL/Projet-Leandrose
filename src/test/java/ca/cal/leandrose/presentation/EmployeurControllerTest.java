@@ -58,12 +58,12 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
                 .id(100L)
                 .description("Stage Java")
                 .pdfPath("dummy.pdf")
                 .employeur(Employeur.builder().id(1L).build())
-                .build();
+                .build());
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(internshipOfferService.getOffer(100L)).thenReturn(offer);
@@ -94,10 +94,10 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
                 .id(100L)
                 .employeur(Employeur.builder().id(1L).build())
-                .build();
+                .build());
 
         ca.cal.leandrose.service.dto.ConvocationDto convocationDto = ca.cal.leandrose.service.dto.ConvocationDto.builder()
                 .id(10L)

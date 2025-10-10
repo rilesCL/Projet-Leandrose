@@ -7,6 +7,8 @@ import ca.cal.leandrose.service.dto.CvDto;
 import com.itextpdf.text.pdf.PdfReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,5 +115,16 @@ public class CvService {
         CvDto cvDto = CvDto.create(cv);
         cvDto.setRejectionComment(cv.getRejectionComment());
         return cvDto;
+    }
+
+    public Resource downloadCv(Long id) throws IOException{
+        Cv cv = cvRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cv introuvable"));
+        Path filepath = Paths.get(cv.getPdfPath());
+        Resource resource = new UrlResource(filepath.toUri());
+
+        if(!resource.exists())
+            throw new RuntimeException("Fichier non trouvé " + cv.getPdfPath());
+        return resource;
     }
 }

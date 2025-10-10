@@ -7,6 +7,7 @@ import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.CvDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -112,7 +113,7 @@ public class GestionnaireServiceTest {
     when(internshipOfferRepository.save(any(InternshipOffer.class)))
         .thenAnswer(inv -> inv.getArgument(0));
 
-    InternshipOffer result = gestionnaireService.approveOffer(1L);
+    InternshipOfferDto result = gestionnaireService.approveOffer(1L);
 
     assertThat(result.getStatus()).isEqualTo(InternshipOffer.Status.PUBLISHED);
     assertThat(result.getValidationDate()).isEqualTo(LocalDate.now());

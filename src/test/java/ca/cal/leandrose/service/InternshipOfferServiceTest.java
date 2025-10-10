@@ -147,7 +147,7 @@ class InternshipOfferServiceTest {
 
         when(internshipOfferRepository.findById(5L)).thenReturn(Optional.of(offer));
 
-        InternshipOffer result = internshipOfferService.getOffer(5L);
+        InternshipOfferDto result = internshipOfferService.getOffer(5L);
 
         assertThat(result.getDescription()).isEqualTo("Stage Data Science");
     }

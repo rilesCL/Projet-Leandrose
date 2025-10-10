@@ -11,6 +11,7 @@ import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.CvDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.dto.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,10 +98,10 @@ class StudentControllerTest {
 
     @Test
     void getOfferDetails_publishedOffer_returnsOk() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
                 .id(20L)
                 .status(InternshipOffer.Status.PUBLISHED)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(20L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/20"))
@@ -110,10 +111,10 @@ class StudentControllerTest {
 
     @Test
     void getOfferDetails_notPublished_returnsForbidden() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
                 .id(21L)
                 .status(InternshipOffer.Status.REJECTED)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(21L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/21"))
@@ -230,10 +231,10 @@ class StudentControllerTest {
 
     @Test
     void downloadOfferPdf_published_returnsPdf() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
                 .id(100L)
                 .status(InternshipOffer.Status.PUBLISHED)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(100L)).thenReturn(offer);
         when(internshipOfferService.getOfferPdf(100L)).thenReturn("PDF_CONTENT".getBytes());
 
@@ -244,10 +245,10 @@ class StudentControllerTest {
 
     @Test
     void downloadOfferPdf_notPublished_returnsForbidden() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
                 .id(101L)
                 .status(InternshipOffer.Status.PENDING_VALIDATION)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(101L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/101/pdf"))

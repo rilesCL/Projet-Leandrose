@@ -1,17 +1,15 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.presentation.request.RejectOfferRequest;
-import ca.cal.leandrose.model.Cv;
-import ca.cal.leandrose.repository.CvRepository;
+import ca.cal.leandrose.service.CvService;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.dto.CvDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.dto.ProgramDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +28,7 @@ public class GestionnaireController {
 
     private final InternshipOfferService internshipOfferService;
     private final GestionnaireService gestionnaireService;
-    private final CvRepository cvRepository;
+    private final CvService cvService;
 
     @PostMapping("/cv/{cvId}/approve")
     public ResponseEntity<CvDto> approveCv(@PathVariable Long cvId) {
@@ -45,10 +43,10 @@ public class GestionnaireController {
         return ResponseEntity.ok(gestionnaireService.rejectCv(cvId, comment));
     }
 
-  @GetMapping("/offers/pending")
-  public ResponseEntity<List<InternshipOffer>> getPendingOffers() {
-    return ResponseEntity.ok(gestionnaireService.getPendingOffers());
-  }
+    @GetMapping("/offers/pending")
+    public ResponseEntity<List<InternshipOfferDto>> getPendingOffers() {
+        return ResponseEntity.ok(gestionnaireService.getPendingOffers());
+    }
 
     @GetMapping("/cvs/pending")
     public ResponseEntity<List<CvDto>> getPendingCvs() {
@@ -56,25 +54,19 @@ public class GestionnaireController {
     }
 
     @GetMapping("/offers/{id}")
-    public ResponseEntity<InternshipOffer> getOfferDetails(@PathVariable Long id) {
+    public ResponseEntity<InternshipOfferDto> getOfferDetails(@PathVariable Long id) {
         return ResponseEntity.ok(internshipOfferService.getOffer(id));
     }
 
     @GetMapping("/cv/{cvId}/download")
     public ResponseEntity<Resource> downloadCv(@PathVariable Long cvId) throws IOException {
-        Cv cv = cvRepository.findById(cvId)
-                .orElseThrow(() -> new RuntimeException("CV introuvable"));
 
-        Path filePath = Paths.get(cv.getPdfPath());
-        Resource resource = new UrlResource(filePath.toUri());
-
-        if (!resource.exists()) {
-            throw new RuntimeException("Fichier non trouvé: " + cv.getPdfPath());
-        }
+        Resource resource = cvService.downloadCv(cvId);
+        Path filepath = Paths.get(resource.getFile().getAbsolutePath());
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filepath.getFileName() + "\"")
                 .body(resource);
     }
 
@@ -92,19 +84,19 @@ public class GestionnaireController {
     }
 
     @PostMapping("/offers/{id}/approve")
-    public ResponseEntity<InternshipOffer> approveOffer(@PathVariable Long id) {
+    public ResponseEntity<InternshipOfferDto> approveOffer(@PathVariable Long id) {
         return ResponseEntity.ok(gestionnaireService.approveOffer(id));
     }
 
     @PostMapping("/offers/{id}/reject")
-    public ResponseEntity<InternshipOffer> rejectOffer(
+    public ResponseEntity<InternshipOfferDto> rejectOffer(
             @PathVariable Long id,
             @Valid @RequestBody RejectOfferRequest request) {
         return ResponseEntity.ok(gestionnaireService.rejectOffer(id, request.getComment()));
     }
 
     @GetMapping("/programs")
-    public ResponseEntity<List<Program>> getPrograms() {
+    public ResponseEntity<List<ProgramDto>> getPrograms() {
         return ResponseEntity.ok(gestionnaireService.getAllPrograms());
     }
 
