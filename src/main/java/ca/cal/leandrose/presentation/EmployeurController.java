@@ -1,21 +1,14 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.Candidature;
-import ca.cal.leandrose.model.Cv;
-import ca.cal.leandrose.model.Employeur;
+//import ca.cal.leandrose.model.Candidature;
+//import ca.cal.leandrose.model.Cv;
+//import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
-import ca.cal.leandrose.service.CandidatureService;
-import ca.cal.leandrose.service.ConvocationService;
-import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.UserAppService;
-import ca.cal.leandrose.service.dto.CandidatureEmployeurDto;
-import ca.cal.leandrose.service.dto.CandidatureDto;
-import ca.cal.leandrose.service.dto.ConvocationDto;
-import ca.cal.leandrose.service.dto.UserDTO;
-import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.*;
+import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +28,8 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 
+//todo: Cliqyé sur l'offre de stage m'amène une erreur 401, et le nombre de candidatures n'est pas mis en jour.
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/employeur")
@@ -43,6 +38,7 @@ public class EmployeurController {
     private final UserAppService userService;
     private final InternshipOfferService internshipOfferService;
     private final EmployeurRepository employeurRepository;
+    private final EmployeurService employeurService;
     private final CandidatureService candidatureService;
     private final ConvocationService convocationService;
     private final CandidatureRepository candidatureRepository;
@@ -85,8 +81,10 @@ public class EmployeurController {
             return ResponseEntity.badRequest().body(new InternshipOfferDto("La description ne doit pas dépasser 50 caractères"));
         }
 
-        Employeur employeur = employeurRepository.findById(me.getId())
-                .orElseThrow(UserNotFoundException::new);
+        EmployeurDto employeurDto = employeurService.getEmployeurById(me.getId());
+
+//        Employeur employeur = employeurRepository.findById(me.getId())
+//                .orElseThrow(UserNotFoundException::new);
 
         InternshipOfferDto offerDto = internshipOfferService.createOfferDto(
                 offerRequest.getDescription(),
@@ -94,7 +92,7 @@ public class EmployeurController {
                 offerRequest.getDurationInWeeks(),
                 offerRequest.getAddress(),
                 offerRequest.getRemuneration(),
-                employeur,
+                employeurDto,
                 pdfFile
         );
 
@@ -255,22 +253,32 @@ public class EmployeurController {
         }
 
         try {
-            Candidature candidature = candidatureRepository.findById(candidatureId)
-                    .orElseThrow(() -> new RuntimeException("Candidature non trouvée"));
+            CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
 
-            if (!candidature.getInternshipOffer().getEmployeur().getId().equals(me.getId())) {
+            if (!candidatureDto.getId().equals(me.getId())) {
                 return ResponseEntity.status(403).build();
             }
 
-            Cv cv = candidature.getCv();
+//            Candidature candidature = candidatureRepository.findById(candidatureId)
+//                    .orElseThrow(() -> new RuntimeException("Candidature non trouvée"));
+//
+//            if (!candidature.getInternshipOffer().getEmployeur().getId().equals(me.getId())) {
+//                return ResponseEntity.status(403).build();
+//            }
+
+            CvDto cv = candidatureDto.getCv();
             Path filePath = Paths.get(cv.getPdfPath());
+//            CvD cv = candidature.getCv();
+//            Path filePath = Paths.get(cv.getPdfPath());
+
+//
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_PDF)
                         .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"CV_" + candidature.getStudent().getLastName() + ".pdf\"")
+                                "attachment; filename=\"CV_" + candidatureDto.getStudentName() + ".pdf\"")
                         .body(resource);
             } else {
                 return ResponseEntity.notFound().build();

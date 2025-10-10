@@ -5,10 +5,7 @@ import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
-import ca.cal.leandrose.service.CandidatureService;
-import ca.cal.leandrose.service.CvService;
-import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.UserAppService;
+import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
@@ -52,6 +49,12 @@ class StudentControllerTest {
 
     @MockitoBean
     private InternshipOfferService internshipOfferService;
+
+    @MockitoBean
+    private StudentService studentService;
+
+    @MockitoBean
+    private ConvocationService convocationService;
 
     @Test
     void getCv_missingAuthorization_returnsUnauthorized() throws Exception {

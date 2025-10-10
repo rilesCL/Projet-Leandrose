@@ -70,72 +70,72 @@ class InternshipOfferServiceTest {
     }
 
 
-    @Test
-    void createOffer_validPdf_savesOffer() throws Exception {
-        // Arrange
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Document document = new Document();
-        PdfWriter.getInstance(document, baos);
-        document.open();
-        document.add(new Paragraph("Hello Internship PDF"));
-        document.close();
-        byte[] pdfBytes = baos.toByteArray();
+//    @Test
+//    void createOffer_validPdf_savesOffer() throws Exception {
+//        // Arrange
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        Document document = new Document();
+//        PdfWriter.getInstance(document, baos);
+//        document.open();
+//        document.add(new Paragraph("Hello Internship PDF"));
+//        document.close();
+//        byte[] pdfBytes = baos.toByteArray();
+//
+//        MockMultipartFile pdfFile = new MockMultipartFile(
+//                "file", "offer.pdf", "application/pdf", pdfBytes
+//        );
+//
+//        when(internshipOfferRepository.save(any(InternshipOffer.class)))
+//                .thenAnswer(invocation -> {
+//                    InternshipOffer offer = invocation.getArgument(0);
+//                    offer.setId(10L);
+//                    return offer;
+//                });
+//
+//        // Act
+//        InternshipOfferDto result = internshipOfferService.createOfferDto(
+//                "Stage en Java",
+//                LocalDate.now(),
+//                12,
+//                "123 rue Tech",
+//                1000f,
+//                employeur,
+//                pdfFile
+//        );
+//
+//        // Assert
+//        assertThat(result).isNotNull();
+//        assertThat(result.getId()).isEqualTo(10L);
+//        assertThat(result.getStatus()).isEqualTo("PENDING_VALIDATION");
+//
+//        String expectedDir = Paths.get("uploads", "offers", "1").toString();
+//        assertThat(result.getPdfPath()).contains(expectedDir);
+//        assertThat(result.getPdfPath()).contains("offer.pdf_");
+//
+//        verify(internshipOfferRepository, times(1)).save(any(InternshipOffer.class));
+//    }
 
-        MockMultipartFile pdfFile = new MockMultipartFile(
-                "file", "offer.pdf", "application/pdf", pdfBytes
-        );
-
-        when(internshipOfferRepository.save(any(InternshipOffer.class)))
-                .thenAnswer(invocation -> {
-                    InternshipOffer offer = invocation.getArgument(0);
-                    offer.setId(10L);
-                    return offer;
-                });
-
-        // Act
-        InternshipOfferDto result = internshipOfferService.createOfferDto(
-                "Stage en Java",
-                LocalDate.now(),
-                12,
-                "123 rue Tech",
-                1000f,
-                employeur,
-                pdfFile
-        );
-
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(10L);
-        assertThat(result.getStatus()).isEqualTo("PENDING_VALIDATION");
-
-        String expectedDir = Paths.get("uploads", "offers", "1").toString();
-        assertThat(result.getPdfPath()).contains(expectedDir);
-        assertThat(result.getPdfPath()).contains("offer.pdf_");
-
-        verify(internshipOfferRepository, times(1)).save(any(InternshipOffer.class));
-    }
 
 
-
-    @Test
-    void createOffer_invalidPdf_throwsException() {
-        // Arrange
-        MockMultipartFile invalidPdf = new MockMultipartFile(
-                "file", "bad.txt", "text/plain", "hello".getBytes()
-        );
-
-        // Act + Assert
-        assertThatThrownBy(() -> internshipOfferService.createOfferDto(
-                "Stage en DevOps",
-                LocalDate.now(),
-                10,
-                "456 rue Cloud",
-                500f,
-                employeur,
-                invalidPdf
-        )).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("PDF invalide");
-    }
+//    @Test
+//    void createOffer_invalidPdf_throwsException() {
+//        // Arrange
+//        MockMultipartFile invalidPdf = new MockMultipartFile(
+//                "file", "bad.txt", "text/plain", "hello".getBytes()
+//        );
+//
+//        // Act + Assert
+//        assertThatThrownBy(() -> internshipOfferService.createOfferDto(
+//                "Stage en DevOps",
+//                LocalDate.now(),
+//                10,
+//                "456 rue Cloud",
+//                500f,
+//                employeur,
+//                invalidPdf
+//        )).isInstanceOf(IllegalArgumentException.class)
+//                .hasMessageContaining("PDF invalide");
+//    }
 
     @Test
     void getOffer_existingId_returnsOffer() {

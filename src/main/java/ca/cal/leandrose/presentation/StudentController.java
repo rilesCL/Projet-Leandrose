@@ -27,7 +27,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudentController {
     private final CvService cvService;
-    private final StudentRepository studentRepository;
     private final UserAppService userService;
     private final CandidatureService candidatureService;
     private final StudentService studentService;
@@ -45,7 +44,6 @@ public class StudentController {
         }
 
         StudentDto student = studentService.getStudentById(me.getId());
-//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
         CvDto cvDto = cvService.uploadCv(student.getId(), pdfFile);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +72,6 @@ public class StudentController {
         }
         StudentDto student = studentService.getStudentById(me.getId());
 
-//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
         CvDto cvDto;
         try {
             cvDto = cvService.getCvByStudentId(student.getId());
@@ -106,7 +103,6 @@ public class StudentController {
             return ResponseEntity.status(403).build();
         }
         StudentDto student = studentService.getStudentById(me.getId());
-//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
 
         try {
             CvDto cvDto = cvService.getCvByStudentId(student.getId());
@@ -135,7 +131,6 @@ public class StudentController {
 
         StudentDto student = studentService.getStudentById(me.getId());
 
-//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
         List<InternshipOfferDto> offers = internshipOfferService.getPublishedOffersForStudents(student.getProgram());
 
         return ResponseEntity.ok()

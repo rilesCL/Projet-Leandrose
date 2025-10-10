@@ -3,7 +3,9 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.Program;
+import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
+import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.itextpdf.text.pdf.PdfReader;
@@ -24,6 +26,7 @@ import java.util.List;
 public class InternshipOfferService {
 
     private final InternshipOfferRepository internshipOfferRepository;
+    private final EmployeurRepository employeurRepository;
 
     private static final String BASE_UPLOAD_DIR = "uploads/offers/";
 
@@ -34,7 +37,7 @@ public class InternshipOfferService {
             int durationInWeeks,
             String address,
             Float remuneration,
-            Employeur employeur,
+            EmployeurDto employeur,
             MultipartFile pdfFile
     ) throws IOException {
 
@@ -61,13 +64,16 @@ public class InternshipOfferService {
         Path filePath = employerDir.resolve(fileName);
         Files.copy(pdfFile.getInputStream(), filePath);
 
+        Employeur employeurEntity = employeurRepository.findById(employeur.getId())
+                .orElseThrow(() -> new RuntimeException("Employer not found with id : " + employeur.getId()));
+
         InternshipOffer offer = InternshipOffer.builder()
                 .description(description)
                 .startDate(startDate)
                 .durationInWeeks(durationInWeeks)
                 .address(address)
                 .remuneration(remuneration != null ? remuneration : 0f)
-                .employeur(employeur)
+                .employeur(employeurEntity)
                 .pdfPath(filePath.toString())
                 .status(InternshipOffer.Status.PENDING_VALIDATION)
                 .build();
