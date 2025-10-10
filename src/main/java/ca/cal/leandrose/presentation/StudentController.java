@@ -1,7 +1,7 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Student;
+//import ca.cal.leandrose.model.InternshipOffer;
+//import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.*;
@@ -30,6 +30,7 @@ public class StudentController {
     private final StudentRepository studentRepository;
     private final UserAppService userService;
     private final CandidatureService candidatureService;
+    private final StudentService studentService;
     private final InternshipOfferService internshipOfferService;
     private final ConvocationService convocationService;
 
@@ -42,7 +43,9 @@ public class StudentController {
         if (!me.getRole().name().equals("STUDENT")) {
             return ResponseEntity.status(403).build();
         }
-        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
+
+        StudentDto student = studentService.getStudentById(me.getId());
+//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
         CvDto cvDto = cvService.uploadCv(student.getId(), pdfFile);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -69,7 +72,9 @@ public class StudentController {
         if (!"STUDENT".equals(me.getRole().name())) {
             return ResponseEntity.status(403).build();
         }
-        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
+        StudentDto student = studentService.getStudentById(me.getId());
+
+//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
         CvDto cvDto;
         try {
             cvDto = cvService.getCvByStudentId(student.getId());
@@ -100,8 +105,8 @@ public class StudentController {
         if (me == null || !"STUDENT".equals(me.getRole().name())) {
             return ResponseEntity.status(403).build();
         }
-
-        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
+        StudentDto student = studentService.getStudentById(me.getId());
+//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
 
         try {
             CvDto cvDto = cvService.getCvByStudentId(student.getId());
@@ -122,14 +127,16 @@ public class StudentController {
     }
 
     @GetMapping("/offers")
-    public ResponseEntity<List<InternshipOffer>> getPublishedOffers(HttpServletRequest request) {
+    public ResponseEntity<List<InternshipOfferDto>> getPublishedOffers(HttpServletRequest request) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
         if (!me.getRole().name().equals("STUDENT")) {
             return ResponseEntity.status(403).build();
         }
 
-        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
-        List<InternshipOffer> offers = internshipOfferService.getPublishedOffersForStudents(student.getProgram());
+        StudentDto student = studentService.getStudentById(me.getId());
+
+//        Student student = studentRepository.findById(me.getId()).orElseThrow(UserNotFoundException::new);
+        List<InternshipOfferDto> offers = internshipOfferService.getPublishedOffersForStudents(student.getProgram());
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -140,9 +147,13 @@ public class StudentController {
     public ResponseEntity<InternshipOfferDto> getOfferDetails(@PathVariable Long id) {
         InternshipOfferDto offer = internshipOfferService.getOffer(id);
 
-        if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED.name())) {
+        if (!"PUBLISHED".equals(offer.getStatus())){
             return ResponseEntity.status(403).build();
         }
+
+//        if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED)) {
+//            return ResponseEntity.status(403).build();
+//        }
 
         return ResponseEntity.ok(offer);
     }
@@ -187,9 +198,12 @@ public class StudentController {
         try {
             InternshipOfferDto offer = internshipOfferService.getOffer(id);
 
-            if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED.name())) {
+            if (!"PUBLISHED".equals(offer.getStatus())){
                 return ResponseEntity.status(403).build();
             }
+//            if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED.name())) {
+//                return ResponseEntity.status(403).build();
+//            }
 
             byte[] pdfData = internshipOfferService.getOfferPdf(id);
             return ResponseEntity.ok()

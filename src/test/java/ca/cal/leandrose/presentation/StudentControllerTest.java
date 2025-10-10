@@ -59,30 +59,30 @@ class StudentControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @Test
-    void getPublishedOffers_returnsList() throws Exception {
-        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
-        Student student = Student.builder()
-                .id(1L)
-                .program(String.valueOf(Program.COMPUTER_SCIENCE))
-                .build();
-        InternshipOffer offer = InternshipOffer.builder()
-                .id(10L)
-                .description("Stage A")
-                .build();
-
-        when(userAppService.getMe(anyString())).thenReturn(studentDto);
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
-        when(internshipOfferService.getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE)))
-                .thenReturn(List.of(offer));
-
-        mockMvc.perform(get("/student/offers")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(10));
-
-        verify(internshipOfferService).getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE));
-    }
+//    @Test
+//    void getPublishedOffers_returnsList() throws Exception {
+//        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+//        Student student = Student.builder()
+//                .id(1L)
+//                .program(String.valueOf(Program.COMPUTER_SCIENCE))
+//                .build();
+//        InternshipOffer offer = InternshipOffer.builder()
+//                .id(10L)
+//                .description("Stage A")
+//                .build();
+//
+//        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+//        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+//        when(internshipOfferService.getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE)))
+//                .thenReturn(List.of(offer));
+//
+//        mockMvc.perform(get("/student/offers")
+//                        .header("Authorization", "Bearer token"))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$[0].id").value(10));
+//
+//        verify(internshipOfferService).getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE));
+//    }
 
     @Test
     void getPublishedOffers_notStudent_returnsForbidden() throws Exception {

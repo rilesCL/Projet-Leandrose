@@ -99,7 +99,10 @@ public class InternshipOfferService {
     }
 
 
-    public List<InternshipOffer> getPublishedOffersForStudents(String program) {
-        return internshipOfferRepository.findPublishedByProgram(program);
+    public List<InternshipOfferDto> getPublishedOffersForStudents(String program) {
+        return internshipOfferRepository.findPublishedByProgram(program)
+                .stream()
+                .map(InternshipOfferDto::toDto)
+                .toList();
     }
 }
