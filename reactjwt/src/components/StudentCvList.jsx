@@ -116,7 +116,7 @@ export default function StudentCvList() {
         status === "PENDING" || status === "PENDING_VALIDATION" ? (
             <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                 <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
-                {t("studentCvList.status.pending")}
+                {t("studentCvList.status.pendingapproval")}
             </span>
         ) : status === "APPROVED" || status === "APPROUVED" ? (
             <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">

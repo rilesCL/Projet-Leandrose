@@ -260,10 +260,11 @@
       "actions": "Actions"
     },
     "status": {
-      "pending": "En attente",
+
       "published": "Publiée",
       "rejected": "Rejetée",
-      "unknown": "Inconnu"
+      "unknown": "Inconnu",
+      "pendingapproval": "En attente d'approbation"
     },
     "notDefined": "Non définie",
     "notSpecified": "Lieu non spécifié",
@@ -330,10 +331,11 @@
       "actions": "Actions"
     },
     "status": {
-      "pending": "En attente",
+      "pendingapproval":"En attente d'approbation",
       "approved": "Approuvé",
       "rejected": "Rejeté",
       "unknown": "Inconnu"
+
     },
     "actions": {
       "preview": "Aperçu",
@@ -406,7 +408,7 @@
       "downloadPdf": "Télécharger PDF"
     },
     "status": {
-      "pending": "En attente",
+      "pendingapproval": "En attente d'approbation",
       "approved": "Publiée",
       "rejected": "Rejetée",
       "unknown": "Inconnu"

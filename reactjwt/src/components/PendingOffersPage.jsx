@@ -34,7 +34,7 @@ export default function PendingOffersPage() {
             return (
                 <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center">
           <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
-                    {t("pendingOffers.status.pending")}
+                    {t("pendingOffers.status.pendingapproval")}
         </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
