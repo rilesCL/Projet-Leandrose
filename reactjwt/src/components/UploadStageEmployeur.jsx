@@ -11,7 +11,7 @@ const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * BYTES_IN_MB;
 const MIN_DURATION_WEEKS = 1;
 const MAX_DURATION_WEEKS = 52;
 const MIN_REMUNERATION = 0;
-const MAX_DESCRIPTION_LENGTH = 50;
+const MAX_DESCRIPTION_LENGTH = 100;
 const DATE_REGEX = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/;
 
 export default function UploadStageEmployeur({ employeurId }) {
@@ -169,10 +169,10 @@ export default function UploadStageEmployeur({ employeurId }) {
                                 id="description"
                                 value={description}
                                 onChange={e => setDescription(e.target.value)}
-                                rows={6}
+                                rows={3}
                                 maxLength={MAX_DESCRIPTION_LENGTH}
                                 placeholder={t("uploadStageEmployeur.descriptionPlaceholder")}
-                                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.description ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
+                                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none ${errors.description ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"}`}
                             />
                             {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
                         </div>
