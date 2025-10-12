@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import PdfViewer from "./PdfViewer.jsx";
+
 export default function StudentCvList() {
     const { t } = useTranslation();
     const [cv, setCv] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showCommentModal, setShowCommentModal] = useState(false);
+    const [showPdfModal, setShowPdfModal] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -48,12 +52,41 @@ export default function StudentCvList() {
         }
 
         fetchCv();
-
-        return () => {
-            controller.abort();
-        };
+        return () => controller.abort();
     }, [t]);
 
+    // ----- Utility functions -----
+    const getFileName = (path) => {
+        if (!path) return "CV.pdf";
+        const fileName = path.split("/").pop() || path.split("\\").pop();
+        if (fileName.includes("_") && fileName.includes("-")) {
+            return "Mon_CV.pdf";
+        }
+        return fileName;
+    };
+
+    // ----- PDF preview handler -----
+    const handlePreview = async () => {
+        try {
+            const token = sessionStorage.getItem("accessToken");
+            const response = await fetch("http://localhost:8080/student/cv/download", {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                setPdfUrl(url);
+                setShowPdfModal(true);
+            } else {
+                alert(t("studentCvList.previewError"));
+            }
+        } catch (err) {
+            alert(t("studentCvList.previewError"));
+        }
+    };
+
+    // ----- Render -----
     if (loading) {
         return (
             <div className="bg-white shadow rounded-lg p-8 text-center">
@@ -135,66 +168,6 @@ export default function StudentCvList() {
             </span>
         );
 
-    const getFileName = (path) => {
-        if (!path) return "CV.pdf";
-        const fileName = path.split("/").pop() || path.split("\\").pop();
-        if (fileName.includes("_") && fileName.includes("-")) {
-            return "Mon_CV.pdf";
-        }
-        return fileName;
-    };
-
-    const handleDownload = async () => {
-        try {
-            const token = sessionStorage.getItem("accessToken");
-            const response = await fetch("http://localhost:8080/student/cv/download", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = getFileName(cv.pdfPath);
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            } else {
-                alert(t("studentCvList.downloadError"));
-            }
-        } catch (err) {
-            alert(t("studentCvList.downloadError"));
-        }
-    };
-
-    const handlePreview = async () => {
-        try {
-            const token = sessionStorage.getItem("accessToken");
-            const response = await fetch("http://localhost:8080/student/cv/download", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                window.open(url, "_blank");
-                setTimeout(() => window.URL.revokeObjectURL(url), 10000);
-            } else {
-                alert(t("studentCvList.previewError"));
-            }
-        } catch (err) {
-            alert(t("studentCvList.previewError"));
-        }
-    };
-
-    console.log(cv.rejectionComment)
-
     return (
         <>
             <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -255,14 +228,6 @@ export default function StudentCvList() {
                                     <span className="mr-1">👁</span>
                                     {t("studentCvList.actions.preview")}
                                 </button>
-
-                                <button
-                                    onClick={handleDownload}
-                                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200"
-                                >
-                                    <span className="mr-1">⬇</span>
-                                    {t("studentCvList.actions.download")}
-                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -280,6 +245,7 @@ export default function StudentCvList() {
                 </div>
             </div>
 
+            {/* 🔹 Rejection Comment Modal */}
             {showCommentModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -300,7 +266,9 @@ export default function StudentCvList() {
                                 <div className="flex items-start">
                                     <span className="text-red-500 text-xl mr-3">⚠️</span>
                                     <div>
-                                        <p className="text-sm text-gray-700">{cv.rejectionComment || "Aucun commentaire fourni."}</p>
+                                        <p className="text-sm text-gray-700">
+                                            {cv.rejectionComment || "Aucun commentaire fourni."}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -316,6 +284,17 @@ export default function StudentCvList() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* 🔹 PDF Viewer Modal */}
+            {showPdfModal && (
+                <PdfViewer
+                    file={pdfUrl}
+                    onClose={() => {
+                        setShowPdfModal(false);
+                        if (pdfUrl) window.URL.revokeObjectURL(pdfUrl);
+                    }}
+                />
             )}
         </>
     );
