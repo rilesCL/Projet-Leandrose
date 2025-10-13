@@ -82,7 +82,7 @@ export default function InternshipOffersList() {
             return (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                     <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
-                    {t("internshipOffersList.status.pending")}
+                    {t("internshipOffersList.status.pendingapproval")}
                 </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
