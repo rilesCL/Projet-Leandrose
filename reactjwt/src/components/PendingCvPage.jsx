@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { approveCv, rejectCv, getPendingCvs, previewCv } from "../api/apiGestionnaire.jsx";
-import PdfViewer from "../components/PdfViewer.jsx"; // ✅ import your viewer
+import PdfViewer from "../components/PdfViewer.jsx";
 
 export default function PendingCvPage() {
     const { t } = useTranslation();
@@ -10,7 +10,7 @@ export default function PendingCvPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
-    const [selectedPdfUrl, setSelectedPdfUrl] = useState(null); // ✅ new state for viewer
+    const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
 
     useEffect(() => {
         async function fetchCvs() {
@@ -74,7 +74,6 @@ export default function PendingCvPage() {
         }
     };
 
-    // ✅ Updated: View CV in PdfViewer instead of downloading
     const handleView = async (cvId) => {
         try {
             const blob = await previewCv(cvId);
@@ -124,7 +123,6 @@ export default function PendingCvPage() {
                                 {cv.studentName || t("pendingCvList.unknownStudent")}
                             </td>
                             <td className="px-6 py-4 min-w-[120px]">
-                                {/* ✅ Replaced "Download" with "View" */}
                                 <button
                                     onClick={() => handleView(cv.id)}
                                     className="text-blue-600 hover:underline"
@@ -167,7 +165,6 @@ export default function PendingCvPage() {
                 </table>
             </div>
 
-            {/* ✅ PDF Viewer Overlay */}
             {selectedPdfUrl && (
                 <PdfViewer
                     file={selectedPdfUrl}

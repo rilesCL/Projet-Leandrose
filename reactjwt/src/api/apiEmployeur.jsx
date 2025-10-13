@@ -83,7 +83,6 @@ export async function rejectCandidature(candidatureId, token = null) {
     return res.json();
 }
 
-// Preview the PDF of an offer
 export async function previewOfferPdf(offerId, token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/download`, {
         headers: authHeaders(token)

@@ -35,7 +35,6 @@ export default function OffersPage() {
                     {t("offerPagesDetails.title")}
                 </h2>
 
-                {/* Filter buttons */}
                 <div className="flex gap-4 mb-6 justify-center">
                     <button
                         onClick={() => setFilter("approved")}

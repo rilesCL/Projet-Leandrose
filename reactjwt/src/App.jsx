@@ -24,36 +24,35 @@ function App() {
         createRoutesFromElements(
             <Route path="/" element={<RouteLayout />}>
                 <Route index element={<Navigate to="/login" replace />} />
+
+                {/* Registration Routes */}
                 <Route path="register" element={<RegisterLanding />} />
                 <Route path="register/etudiant" element={<RegisterEtudiant />} />
                 <Route path="register/employeur" element={<RegisterEmployeur />} />
                 <Route path="login" element={<Login />} />
 
+                {/* Employeur Routes */}
                 <Route path="dashboard/employeur" element={<DashBoardEmployeur />} />
                 <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur />} />
                 <Route path="dashboard/employeur/offers/:offerId/candidatures" element={<OfferCandidaturesList />} />
 
+                {/* Student Routes */}
                 <Route path="dashboard/student" element={<DashBoardStudent />} />
                 <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />
+                <Route path="dashboard/student/offers" element={<StudentInternshipOffersList />} />
                 <Route path="dashboard/student/offers/:offerId" element={<OfferDetailPage />} />
                 <Route path="dashboard/student/applications" element={<ApplicationsPage />} />
 
-                <Route path="dashboard" element={<h1>DashBoard</h1>} />
+                {/* Gestionnaire Routes */}
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
-                    {/*Mis en commentaire ces deux liens. Cela brise mon lien de dashboard/gestionnaire/offers */}
-                    {/*<Route path="offers" element={<StudentInternshipOffersList />} />*/}
-                    {/*<Route path="offers/:offerId" element={<OfferDetailPage />} />*/}
+                    <Route path="offers" element={<OffersPage />} />
+                    <Route path="offers/:id" element={<OfferDetailsPage />} />
                     <Route path="applications" element={<ApplicationsPage />} />
                 </Route>
-                <Route path="dashboard/student/offers" element={<StudentInternshipOffersList />} />
-                <Route path="dashboard/student/offers/:offerid" element={<OfferDetailPage />} />
-                <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
-                <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage/>}/>
 
-
-
-
+                {/* Fallback Dashboard Route */}
+                <Route path="dashboard" element={<h1>DashBoard</h1>} />
             </Route>
         )
     );

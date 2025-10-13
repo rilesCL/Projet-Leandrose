@@ -24,7 +24,6 @@ export default function StudentApplicationsList() {
                     setCandidatures(Array.isArray(data) ? data : []);
                 }
 
-                // Charger les convocations
                 try {
                     const convocationsData = await getMyConvocations();
                     if (!cancelled) {
@@ -173,7 +172,6 @@ export default function StudentApplicationsList() {
                 </div>
             </div>
 
-            {/* Modal de convocation */}
             {showConvocationModal && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50' onClick={closeConvocationModal}>
                     <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative' onClick={(e) => e.stopPropagation()}>

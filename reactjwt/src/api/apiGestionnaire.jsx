@@ -10,7 +10,6 @@ function getAuthHeaders() {
     };
 }
 
-// ✅ Return Blob for preview (no auto-download)
 export async function previewCv(cvId) {
     try {
         const response = await fetch(`${API_BASE}/cv/${cvId}/download`, {
@@ -23,7 +22,7 @@ export async function previewCv(cvId) {
             throw new Error(text || `Erreur téléchargement CV ${cvId}`);
         }
 
-        return await response.blob(); // 👈 returns the Blob
+        return await response.blob();
     } catch (err) {
         console.error("Erreur récupération PDF", err);
         throw err;
@@ -121,7 +120,6 @@ export async function rejectOffer(offerId, comment) {
     return response.json();
 }
 
-// ✅ Return Blob for preview (no auto-download)
 export async function previewOfferPdf(offerId) {
     try {
         const response = await fetch(`${API_BASE}/offers/${offerId}/pdf`, {
@@ -134,7 +132,7 @@ export async function previewOfferPdf(offerId) {
             throw new Error(text || `Erreur téléchargement offre ${offerId}`);
         }
 
-        return await response.blob(); // 👈 returns the Blob
+        return await response.blob();
     } catch (err) {
         console.error("Erreur récupération PDF offre", err);
         throw err;

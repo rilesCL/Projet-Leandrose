@@ -55,7 +55,6 @@ export default function StudentCvList() {
         return () => controller.abort();
     }, [t]);
 
-    // ----- Utility functions -----
     const getFileName = (path) => {
         if (!path) return "CV.pdf";
         const fileName = path.split("/").pop() || path.split("\\").pop();
@@ -65,7 +64,6 @@ export default function StudentCvList() {
         return fileName;
     };
 
-    // ----- PDF preview handler -----
     const handlePreview = async () => {
         try {
             const token = sessionStorage.getItem("accessToken");
@@ -86,7 +84,6 @@ export default function StudentCvList() {
         }
     };
 
-    // ----- Render -----
     if (loading) {
         return (
             <div className="bg-white shadow rounded-lg p-8 text-center">
@@ -245,7 +242,6 @@ export default function StudentCvList() {
                 </div>
             </div>
 
-            {/* 🔹 Rejection Comment Modal */}
             {showCommentModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
@@ -286,7 +282,6 @@ export default function StudentCvList() {
                 </div>
             )}
 
-            {/* 🔹 PDF Viewer Modal */}
             {showPdfModal && (
                 <PdfViewer
                     file={pdfUrl}

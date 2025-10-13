@@ -184,7 +184,15 @@ export default function UploadStageEmployeur({ employeurId }) {
                                 </label>
                                 <DatePicker
                                     id="startDate"
-                                    selected={startDate ? new Date(startDate.split('-').reverse().join('-')) : null}
+                                    selected={startDate ? (() => {
+                                        try {
+                                            const [day, month, year] = startDate.split('-');
+                                            const dateObj = new Date(Number(year), Number(month) - 1, Number(day));
+                                            return isNaN(dateObj.getTime()) ? null : dateObj;
+                                        } catch {
+                                            return null;
+                                        }
+                                    })() : null}
                                     onChange={(date) => {
                                         if (date) {
                                             const day = String(date.getDate()).padStart(2, '0');

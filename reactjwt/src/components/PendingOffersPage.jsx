@@ -15,7 +15,7 @@ export default function PendingOffersPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
-    const [selectedPdfUrl, setSelectedPdfUrl] = useState(null); // ✅ new state for viewer
+    const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
 
     useEffect(() => {
         async function fetchOffers() {
@@ -112,7 +112,6 @@ export default function PendingOffersPage() {
         }
     };
 
-    // ✅ Replace download with in-app preview
     const handleViewPdf = async (offerId) => {
         try {
             const blob = await previewOfferPdf(offerId);
@@ -202,7 +201,7 @@ export default function PendingOffersPage() {
                                     {t("pendingOffers.actions.reject")}
                                 </button>
                                 <button
-                                    onClick={() => handleViewPdf(offer.id)} // ✅ open PDF viewer
+                                    onClick={() => handleViewPdf(offer.id)}
                                     className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 w-full md:w-auto"
                                 >
                                     👁 {t("previewPdf.preview")}
@@ -214,7 +213,6 @@ export default function PendingOffersPage() {
                 </table>
             </div>
 
-            {/* ✅ PDF Viewer Overlay */}
             {selectedPdfUrl && (
                 <PdfViewer
                     file={selectedPdfUrl}

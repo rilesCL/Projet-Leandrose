@@ -161,7 +161,6 @@ export default function OfferDetailPage() {
                     <p className="text-gray-600">{offer.employeurEmail}</p>
                 </div>
 
-                {/* 👇 keep same styling, only changed handler */}
                 <div className="px-6 py-4 border-t border-gray-200">
                     <button
                         onClick={handlePreviewPdf}
@@ -242,7 +241,6 @@ export default function OfferDetailPage() {
                 )}
             </div>
 
-            {/* ✅ PDF Viewer Modal */}
             {previewPdfFile && (
                 <PdfViewer file={previewPdfFile} onClose={() => setPreviewPdfFile(null)} />
             )}
