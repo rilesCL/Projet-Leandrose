@@ -1,5 +1,13 @@
 {
   "appName": "LeandrOSE",
+  "previewPdf": {
+    "preview": "Preview",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "loading": "Loading the document...",
+    "error": "Unable to preview de document"
+  },
   "program": {
     "computer_science": "Computer Science",
     "software_engineering": "Software Engineering",
@@ -604,6 +612,7 @@
   },
   "offerPagesDetails": {
     "title": "Internship Offers",
+    "weeks": "week(s)",
     "details": "Details",
     "back": "Back",
     "info": "Internship offer's info",

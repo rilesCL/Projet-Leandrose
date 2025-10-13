@@ -1,5 +1,13 @@
 {
   "appName": "LeandrOSE",
+  "previewPdf": {
+    "preview": "Aperçu",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "loading": "Chargement du document...",
+    "error": "Impossible d'afficher le document"
+  },
   "program": {
     "computer_science": "Informatique",
     "software_engineering": "Génie logiciel",
@@ -610,6 +618,7 @@
     "title": "Offre de Stage",
     "details": "Détails",
     "info": "Infos offre de stage",
+    "weeks": "semaine(s)",
     "back": "Précédent",
     "email": "Courriel",
     "duration": "Duration",

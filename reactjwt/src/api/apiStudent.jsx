@@ -190,19 +190,34 @@ export async function getMyConvocations(token = null) {
 }
 
 
-    export async function getMyCandidatures(token = null) {
-        try {
-            const response = await fetch(`${API_BASE}/student/applications`, {
-                method: 'GET',
-                headers: getAuthHeaders(token)
-            });
+export async function getMyCandidatures(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/applications`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
 
-            await handleApiResponse(response);
-            return await response.json();
-        } catch (error) {
-            throw new Error(error.message || 'Erreur lors de la récupération des candidatures');
-        }
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération des candidatures');
+    }
+}
 
+export async function previewOfferPdfStudent(offerId, token = null) {
+    try {
+        const accessToken = token || sessionStorage.getItem("accessToken");
+        const headers = {};
+        if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
 
+        const response = await fetch(`${API_BASE}/student/offers/${offerId}/pdf`, {
+            method: "GET",
+            headers,
+        });
 
+        await handleApiResponse(response);
+        return await response.blob();
+    } catch (error) {
+        throw new Error(error.message || "Erreur lors du chargement du PDF");
+    }
 }

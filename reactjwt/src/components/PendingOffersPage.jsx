@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getPendingOffers, approveOffer, rejectOffer, downloadOfferPdf } from "../api/apiGestionnaire.jsx";
+import {
+    getPendingOffers,
+    approveOffer,
+    rejectOffer,
+    previewOfferPdf
+} from "../api/apiGestionnaire.jsx";
+import PdfViewer from "../components/PdfViewer.jsx";
 
 export default function PendingOffersPage() {
     const { t } = useTranslation();
@@ -9,6 +15,7 @@ export default function PendingOffersPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
+    const [selectedPdfUrl, setSelectedPdfUrl] = useState(null); // ✅ new state for viewer
 
     useEffect(() => {
         async function fetchOffers() {
@@ -33,49 +40,31 @@ export default function PendingOffersPage() {
         if (statusUpper === "PENDING" || statusUpper === "PENDING_VALIDATION") {
             return (
                 <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center">
-          <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.pendingapproval")}
-        </span>
+                </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
             return (
                 <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200 inline-flex items-center">
-          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.approved")}
-        </span>
+                </span>
             );
         } else if (statusUpper === "REJECTED") {
             return (
                 <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200 inline-flex items-center">
-          <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                    <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.rejected")}
-        </span>
+                </span>
             );
         } else {
             return (
                 <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200 inline-flex items-center">
-          <span className="w-2 h-2 bg-gray-500 rounded-full mr-2"></span>
+                    <span className="w-2 h-2 bg-gray-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.unknown")}
-        </span>
+                </span>
             );
-        }
-    };
-
-    const formatDate = (dateString) => {
-        if (!dateString) return t("pendingOffers.noDate");
-        try {
-            return new Date(dateString).toLocaleDateString();
-        } catch {
-            return dateString;
-        }
-    };
-
-    const handleDownload = async (offerId) => {
-        try {
-            await downloadOfferPdf(offerId);
-        } catch (err) {
-            console.error(err);
-            alert(t("pendingOffers.errors.download"));
         }
     };
 
@@ -120,6 +109,18 @@ export default function PendingOffersPage() {
                 delete updated[offerId];
                 return updated;
             });
+        }
+    };
+
+    // ✅ Replace download with in-app preview
+    const handleViewPdf = async (offerId) => {
+        try {
+            const blob = await previewOfferPdf(offerId);
+            const url = URL.createObjectURL(blob);
+            setSelectedPdfUrl(url);
+        } catch (err) {
+            console.error(err);
+            alert(t("pendingOffers.errors.download"));
         }
     };
 
@@ -173,14 +174,14 @@ export default function PendingOffersPage() {
                             </td>
                             <td className="px-6 py-4">{getStatusLabel(offer.status)}</td>
                             <td className="px-6 py-4">
-                                <textarea
-                                    value={comments[offer.id] || ""}
-                                    onChange={(e) => handleCommentChange(offer.id, e.target.value)}
-                                    className={`w-full h-20 border rounded p-2 resize-none ${
-                                        validationErrors[offer.id] ? "border-red-500" : ""
-                                    }`}
-                                    placeholder={t("pendingOffers.commentPlaceholder")}
-                                />
+                                    <textarea
+                                        value={comments[offer.id] || ""}
+                                        onChange={(e) => handleCommentChange(offer.id, e.target.value)}
+                                        className={`w-full h-20 border rounded p-2 resize-none ${
+                                            validationErrors[offer.id] ? "border-red-500" : ""
+                                        }`}
+                                        placeholder={t("pendingOffers.commentPlaceholder")}
+                                    />
                                 {validationErrors[offer.id] && (
                                     <p className="mt-1 text-xs text-red-600">
                                         {t(`pendingOffers.errors.${validationErrors[offer.id]}`)}
@@ -201,10 +202,10 @@ export default function PendingOffersPage() {
                                     {t("pendingOffers.actions.reject")}
                                 </button>
                                 <button
-                                    onClick={() => handleDownload(offer.id)}
+                                    onClick={() => handleViewPdf(offer.id)} // ✅ open PDF viewer
                                     className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 w-full md:w-auto"
                                 >
-                                    ⬇ {t("pendingOffers.actions.downloadPdf")}
+                                    👁 {t("previewPdf.preview")}
                                 </button>
                             </td>
                         </tr>
@@ -212,6 +213,17 @@ export default function PendingOffersPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* ✅ PDF Viewer Overlay */}
+            {selectedPdfUrl && (
+                <PdfViewer
+                    file={selectedPdfUrl}
+                    onClose={() => {
+                        URL.revokeObjectURL(selectedPdfUrl);
+                        setSelectedPdfUrl(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

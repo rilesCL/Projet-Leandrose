@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { approveCv, rejectCv, getPendingCvs, downloadCv } from "../api/apiGestionnaire.jsx";
+import { approveCv, rejectCv, getPendingCvs, previewCv } from "../api/apiGestionnaire.jsx";
+import PdfViewer from "../components/PdfViewer.jsx"; // ✅ import your viewer
 
 export default function PendingCvPage() {
     const { t } = useTranslation();
@@ -9,6 +10,7 @@ export default function PendingCvPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
+    const [selectedPdfUrl, setSelectedPdfUrl] = useState(null); // ✅ new state for viewer
 
     useEffect(() => {
         async function fetchCvs() {
@@ -72,9 +74,12 @@ export default function PendingCvPage() {
         }
     };
 
-    const handleDownload = async (cvId) => {
+    // ✅ Updated: View CV in PdfViewer instead of downloading
+    const handleView = async (cvId) => {
         try {
-            await downloadCv(cvId);
+            const blob = await previewCv(cvId);
+            const url = URL.createObjectURL(blob);
+            setSelectedPdfUrl(url);
         } catch (err) {
             console.error(err);
             alert(t("pendingCvList.errors.download"));
@@ -119,22 +124,23 @@ export default function PendingCvPage() {
                                 {cv.studentName || t("pendingCvList.unknownStudent")}
                             </td>
                             <td className="px-6 py-4 min-w-[120px]">
+                                {/* ✅ Replaced "Download" with "View" */}
                                 <button
-                                    onClick={() => handleDownload(cv.id)}
+                                    onClick={() => handleView(cv.id)}
                                     className="text-blue-600 hover:underline"
                                 >
-                                    {t("pendingCvList.actions.download")}
+                                    {t("pendingCvList.actions.view")}
                                 </button>
                             </td>
                             <td className="px-6 py-4">
-                                <textarea
-                                    value={comments[cv.id] || ""}
-                                    onChange={(e) => handleCommentChange(cv.id, e.target.value)}
-                                    className={`w-full h-20 border rounded p-2 resize-none ${
-                                        validationErrors[cv.id] ? "border-red-500" : ""
-                                    }`}
-                                    placeholder={t("pendingCvList.commentPlaceholder")}
-                                />
+                                    <textarea
+                                        value={comments[cv.id] || ""}
+                                        onChange={(e) => handleCommentChange(cv.id, e.target.value)}
+                                        className={`w-full h-20 border rounded p-2 resize-none ${
+                                            validationErrors[cv.id] ? "border-red-500" : ""
+                                        }`}
+                                        placeholder={t("pendingCvList.commentPlaceholder")}
+                                    />
                                 {validationErrors[cv.id] && (
                                     <p className="mt-1 text-xs text-red-600">
                                         {t(`pendingCvList.errors.${validationErrors[cv.id]}`)}
@@ -160,6 +166,17 @@ export default function PendingCvPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* ✅ PDF Viewer Overlay */}
+            {selectedPdfUrl && (
+                <PdfViewer
+                    file={selectedPdfUrl}
+                    onClose={() => {
+                        URL.revokeObjectURL(selectedPdfUrl);
+                        setSelectedPdfUrl(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

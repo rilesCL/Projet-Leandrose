@@ -49,11 +49,11 @@ export default function PdfViewer({ file, onClose }) {
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden">
                 <div className="flex justify-between items-center px-4 py-1 border-b border-gray-200 flex-shrink-0">
-                    <h3 className="text-base font-medium text-gray-900">{t("pdfViewer.preview")}</h3>
+                    <h3 className="text-base font-medium text-gray-900">{t("previewPdf.preview")}</h3>
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-gray-600 text-xl leading-none"
-                        aria-label={t("pdfViewer.close")}
+                        aria-label={t("previewPdf.close")}
                     >
                         ×
                     </button>
@@ -65,8 +65,8 @@ export default function PdfViewer({ file, onClose }) {
                     <Document
                         file={file}
                         onLoadSuccess={onDocumentLoadSuccess}
-                        loading={<p className="text-gray-600">{t("pdfViewer.loading")}</p>}
-                        error={<p className="text-red-600">{t("pdfViewer.error")}</p>}
+                        loading={<p className="text-gray-600">{t("previewPdf.loading")}</p>}
+                        error={<p className="text-red-600">{t("previewPdf.error")}</p>}
                     >
                         <Page
                             pageNumber={pageNumber}
@@ -78,8 +78,6 @@ export default function PdfViewer({ file, onClose }) {
                         />
                     </Document>
                 </div>
-
-                {/* Pagination */}
                 <div
                     className="flex items-center justify-between px-4 py-2 border-t border-gray-200 bg-white flex-shrink-0">
                     <button
@@ -91,7 +89,7 @@ export default function PdfViewer({ file, onClose }) {
                                 : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
                         }`}
                     >
-                        ← {t("pdfViewer.previous")}
+                        ← {t("previewPdf.previous")}
                     </button>
 
                     <p className="text-sm text-gray-700">
@@ -107,7 +105,7 @@ export default function PdfViewer({ file, onClose }) {
                                 : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
                         }`}
                     >
-                        t{("pdfViewer.next")} →
+                        {t("previewPdf.next")} →
                     </button>
                 </div>
             </div>
