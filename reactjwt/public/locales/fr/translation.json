@@ -544,7 +544,8 @@
     "applyButton": "Postuler à cette offre",
     "applyButtonSuccess": "Candidature envoyée",
     "applyButtonAlready": "Déjà postulée",
-    "applyButtonLoading": "Envoi en cours..."
+    "applyButtonLoading": "Envoi en cours...",
+    "loading": "Chargement des détails..."
   },
   "StudentInternshipOffersList": {
     "loading": "Chargement des offres...",
@@ -587,6 +588,7 @@
       "offer": "Offre",
       "date": "Date",
       "status": "Statut",
+      "candidAtures": "Candidatures",
       "actions": "Actions"
     },
     "actions": {

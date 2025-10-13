@@ -540,7 +540,8 @@
     "applyButton": "Apply for this offer",
     "applyButtonSuccess": "Application sent",
     "applyButtonAlready": "Already applied",
-    "applyButtonLoading": "Sending..."
+    "applyButtonLoading": "Sending...",
+    "loading": "Loading details..."
   },
   "StudentInternshipOffersList": {
     "loading": "Loading offers...",
@@ -583,6 +584,7 @@
       "offer": "Offer",
       "date": "Date",
       "status": "Status",
+      "candidatures": "Candidatures",
       "actions": "Actions"
     },
     "actions": {
