@@ -383,7 +383,8 @@
     "actions": {
       "download": "Download CV",
       "approve": "Approve",
-      "reject": "Reject"
+      "reject": "Reject",
+      "view": "View CV"
     },
     "errors": {
       "serverError": "Error loading CVs",

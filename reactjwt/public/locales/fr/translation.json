@@ -386,7 +386,8 @@
     "actions": {
       "download": "Télécharger CV",
       "approve": "Approuver",
-      "reject": "Rejeter"
+      "reject": "Rejeter",
+      "view" : "Voir l'aperçu"
     },
     "errors": {
       "serverError": "Erreur lors du chargement des CVs",
