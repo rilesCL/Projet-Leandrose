@@ -19,12 +19,18 @@ export default function OfferCandidaturesList() {
     const [showConvocationModal, setShowConvocationModal] = useState(false);
     const [selectedCandidature, setSelectedCandidature] = useState(null);
     const [convocationForm, setConvocationForm] = useState({ convocationDate: '', location: '', message: '' });
-    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+    const [toast, setToast] = useState({ show: false, message: '', type: 'success', persistent: false });
     const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
 
-    const showToast = (message, type = 'success') => {
-        setToast({ show: true, message, type });
-        setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+    const showToast = (message, type = 'success', persistent = false) => {
+        setToast({ show: true, message, type, persistent });
+        if (!persistent) {
+            setTimeout(() => setToast({ show: false, message: '', type: 'success', persistent: false }), 3000);
+        }
+    };
+
+    const closeToast = () => {
+        setToast({ show: false, message: '', type: 'success', persistent: false });
     };
 
     const load = useCallback(async () => {
@@ -69,7 +75,7 @@ export default function OfferCandidaturesList() {
         if (!selectedCandidature) return;
         try {
             await createConvocation(selectedCandidature.id, convocationForm);
-            showToast(t('employerCandidatures.convocationSuccess'), 'success');
+            showToast(t('employerCandidatures.convocationSuccess'), 'success', true);
             closeConvocationModal();
             setCandidatures(prev =>
                 prev.map(c => c.id === selectedCandidature.id ? { ...c, status: 'CONVENED' } : c)
@@ -82,7 +88,7 @@ export default function OfferCandidaturesList() {
     const handleReject = async (candidature) => {
         try {
             await rejectCandidature(candidature.id);
-            showToast(t('employerCandidatures.rejectSuccess'), 'success');
+            showToast(t('employerCandidatures.rejectSuccess'), 'error', true);
             load();
         } catch (error) {
             showToast(error?.response?.data || t('employerCandidatures.rejectError'), 'error');
@@ -92,7 +98,7 @@ export default function OfferCandidaturesList() {
     const handleAccept = async (candidature) => {
         try {
             await acceptCandidature(candidature.id);
-            showToast(t('employerCandidatures.acceptSuccess'), 'success');
+            showToast(t('employerCandidatures.acceptSuccess'), 'success', true);
             load();
         } catch (error) {
             showToast(error?.response?.data || t('employerCandidatures.acceptError'), 'error');
@@ -227,9 +233,20 @@ export default function OfferCandidaturesList() {
                     {toast.type === 'success' ? (
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/></svg>
                     ) : (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth={2}/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01"/></svg>
                     )}
                     <span className="font-medium">{toast.message}</span>
+                    {toast.persistent && (
+                        <button
+                            onClick={closeToast}
+                            className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                            aria-label="Close"
+                        >
+                            <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    )}
                 </div>
             )}
         </>

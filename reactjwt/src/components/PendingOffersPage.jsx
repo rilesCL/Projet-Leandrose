@@ -14,8 +14,6 @@ export default function PendingOffersPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
-
-
     const [rejectModal, setRejectModal] = useState({ open: false, id: null, comment: "", error: null });
 
     useEffect(() => {
@@ -78,17 +76,14 @@ export default function PendingOffersPage() {
         }
     };
 
-    // Ouvrir la modale de rejet
     const openRejectModal = (offerId) => {
         setRejectModal({ open: true, id: offerId, comment: "", error: null });
     };
 
-    // Fermer la modale
     const closeRejectModal = () => {
         setRejectModal({ open: false, id: null, comment: "", error: null });
     };
 
-    // Confirmer le rejet via la modale
     const confirmReject = async () => {
         const { id, comment } = rejectModal;
         const trimmed = (comment || "").trim();
@@ -140,7 +135,6 @@ export default function PendingOffersPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("pendingOffers.table.status")}
                         </th>
-                        {/* Colonne Comment supprimée */}
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("pendingOffers.table.actions")}
                         </th>
@@ -198,7 +192,6 @@ export default function PendingOffersPage() {
                     }}
                 />
             )}
-
 
             {rejectModal.open && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
