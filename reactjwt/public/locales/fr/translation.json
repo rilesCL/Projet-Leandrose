@@ -630,5 +630,8 @@
       "REJECTED": "rejeté",
       "PUBLISHED": "approuvé"
     }
+  },
+  "common": {
+    "cancel": "Annuler"
   }
 }

@@ -6,11 +6,12 @@ import PdfViewer from "../components/PdfViewer.jsx";
 export default function PendingCvPage() {
     const { t } = useTranslation();
     const [pendingCvs, setPendingCvs] = useState([]);
-    const [comments, setComments] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [validationErrors, setValidationErrors] = useState({});
     const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
+
+    // Nouvel état pour la modale de rejet
+    const [rejectModal, setRejectModal] = useState({ open: false, id: null, comment: "", error: null });
 
     useEffect(() => {
         async function fetchCvs() {
@@ -34,43 +35,35 @@ export default function PendingCvPage() {
         try {
             await approveCv(cvId);
             setPendingCvs((prev) => prev.filter((cv) => cv.id !== cvId));
-            setValidationErrors((prev) => {
-                const updated = { ...prev };
-                delete updated[cvId];
-                return updated;
-            });
         } catch (err) {
             console.error(err);
         }
     };
 
-    const handleReject = async (cvId) => {
-        const comment = comments[cvId] || "";
-        if (!comment.trim()) {
-            setValidationErrors((prev) => ({ ...prev, [cvId]: "commentRequired" }));
+    // Ouvrir la modale de rejet
+    const openRejectModal = (cvId) => {
+        setRejectModal({ open: true, id: cvId, comment: "", error: null });
+    };
+
+    // Fermer la modale
+    const closeRejectModal = () => {
+        setRejectModal({ open: false, id: null, comment: "", error: null });
+    };
+
+    // Confirmer le rejet avec commentaire depuis la modale
+    const confirmReject = async () => {
+        const { id, comment } = rejectModal;
+        const trimmed = (comment || "").trim();
+        if (!trimmed) {
+            setRejectModal((prev) => ({ ...prev, error: "commentRequired" }));
             return;
         }
         try {
-            await rejectCv(cvId, comment);
-            setPendingCvs((prev) => prev.filter((cv) => cv.id !== cvId));
-            setValidationErrors((prev) => {
-                const updated = { ...prev };
-                delete updated[cvId];
-                return updated;
-            });
+            await rejectCv(id, trimmed);
+            setPendingCvs((prev) => prev.filter((cv) => cv.id !== id));
+            closeRejectModal();
         } catch (err) {
             console.error(err);
-        }
-    };
-
-    const handleCommentChange = (cvId, value) => {
-        setComments((prev) => ({ ...prev, [cvId]: value }));
-        if (validationErrors[cvId]) {
-            setValidationErrors((prev) => {
-                const updated = { ...prev };
-                delete updated[cvId];
-                return updated;
-            });
         }
     };
 
@@ -109,9 +102,6 @@ export default function PendingCvPage() {
                             {t("pendingCvList.table.cv")}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("pendingCvList.table.comment")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("pendingCvList.table.actions")}
                         </th>
                     </tr>
@@ -130,21 +120,6 @@ export default function PendingCvPage() {
                                     {t("pendingCvList.actions.view")}
                                 </button>
                             </td>
-                            <td className="px-6 py-4">
-                                    <textarea
-                                        value={comments[cv.id] || ""}
-                                        onChange={(e) => handleCommentChange(cv.id, e.target.value)}
-                                        className={`w-full h-20 border rounded p-2 resize-none ${
-                                            validationErrors[cv.id] ? "border-red-500" : ""
-                                        }`}
-                                        placeholder={t("pendingCvList.commentPlaceholder")}
-                                    />
-                                {validationErrors[cv.id] && (
-                                    <p className="mt-1 text-xs text-red-600">
-                                        {t(`pendingCvList.errors.${validationErrors[cv.id]}`)}
-                                    </p>
-                                )}
-                            </td>
                             <td className="px-6 py-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                                 <button
                                     onClick={() => handleApprove(cv.id)}
@@ -153,7 +128,7 @@ export default function PendingCvPage() {
                                     {t("pendingCvList.actions.approve")}
                                 </button>
                                 <button
-                                    onClick={() => handleReject(cv.id)}
+                                    onClick={() => openRejectModal(cv.id)}
                                     className="bg-red-500 text-white px-3 py-1 rounded w-full md:w-auto hover:bg-red-600"
                                 >
                                     {t("pendingCvList.actions.reject")}
@@ -173,6 +148,44 @@ export default function PendingCvPage() {
                         setSelectedPdfUrl(null);
                     }}
                 />
+            )}
+
+
+            {rejectModal.open && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+                        <div className="px-6 py-4 border-b">
+                            <h4 className="text-base font-semibold text-gray-900">
+                                {t("pendingCvList.actions.reject")}
+                            </h4>
+                        </div>
+                        <div className="px-6 py-4 space-y-3">
+                            <p className="text-sm text-gray-700">{t("pendingCvList.commentPlaceholder")}</p>
+                            <textarea
+                                value={rejectModal.comment}
+                                onChange={(e) => setRejectModal((prev) => ({ ...prev, comment: e.target.value }))}
+                                className={`w-full h-28 border rounded p-2 resize-none ${rejectModal.error ? "border-red-500" : ""}`}
+                            />
+                            {rejectModal.error && (
+                                <p className="text-xs text-red-600">{t(`pendingCvList.errors.${rejectModal.error}`, { defaultValue: "Commentaire requis" })}</p>
+                            )}
+                        </div>
+                        <div className="px-6 py-4 border-t flex justify-end space-x-2">
+                            <button
+                                onClick={closeRejectModal}
+                                className="px-3 py-1 rounded border text-gray-700 hover:bg-gray-50"
+                            >
+                                {t("common.cancel")}
+                            </button>
+                            <button
+                                onClick={confirmReject}
+                                className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                            >
+                                {t("pendingCvList.actions.reject")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

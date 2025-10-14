@@ -11,11 +11,12 @@ import PdfViewer from "../components/PdfViewer.jsx";
 export default function PendingOffersPage() {
     const { t } = useTranslation();
     const [pendingOffers, setPendingOffers] = useState([]);
-    const [comments, setComments] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [validationErrors, setValidationErrors] = useState({});
     const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
+
+
+    const [rejectModal, setRejectModal] = useState({ open: false, id: null, comment: "", error: null });
 
     useEffect(() => {
         async function fetchOffers() {
@@ -72,43 +73,35 @@ export default function PendingOffersPage() {
         try {
             await approveOffer(offerId);
             setPendingOffers((prev) => prev.filter((o) => o.id !== offerId));
-            setValidationErrors((prev) => {
-                const updated = { ...prev };
-                delete updated[offerId];
-                return updated;
-            });
         } catch (err) {
             console.error(err);
         }
     };
 
-    const handleReject = async (offerId) => {
-        const comment = comments[offerId] || "";
-        if (!comment.trim()) {
-            setValidationErrors((prev) => ({ ...prev, [offerId]: "commentRequired" }));
+    // Ouvrir la modale de rejet
+    const openRejectModal = (offerId) => {
+        setRejectModal({ open: true, id: offerId, comment: "", error: null });
+    };
+
+    // Fermer la modale
+    const closeRejectModal = () => {
+        setRejectModal({ open: false, id: null, comment: "", error: null });
+    };
+
+    // Confirmer le rejet via la modale
+    const confirmReject = async () => {
+        const { id, comment } = rejectModal;
+        const trimmed = (comment || "").trim();
+        if (!trimmed) {
+            setRejectModal((prev) => ({ ...prev, error: "commentRequired" }));
             return;
         }
         try {
-            await rejectOffer(offerId, comment);
-            setPendingOffers((prev) => prev.filter((o) => o.id !== offerId));
-            setValidationErrors((prev) => {
-                const updated = { ...prev };
-                delete updated[offerId];
-                return updated;
-            });
+            await rejectOffer(id, trimmed);
+            setPendingOffers((prev) => prev.filter((o) => o.id !== id));
+            closeRejectModal();
         } catch (err) {
             console.error(err);
-        }
-    };
-
-    const handleCommentChange = (offerId, value) => {
-        setComments((prev) => ({ ...prev, [offerId]: value }));
-        if (validationErrors[offerId]) {
-            setValidationErrors((prev) => {
-                const updated = { ...prev };
-                delete updated[offerId];
-                return updated;
-            });
         }
     };
 
@@ -147,9 +140,7 @@ export default function PendingOffersPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("pendingOffers.table.status")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("pendingOffers.table.comment")}
-                        </th>
+                        {/* Colonne Comment supprimée */}
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("pendingOffers.table.actions")}
                         </th>
@@ -172,21 +163,6 @@ export default function PendingOffersPage() {
                                 {offer.companyName || t("pendingOffers.unknownCompany")}
                             </td>
                             <td className="px-6 py-4">{getStatusLabel(offer.status)}</td>
-                            <td className="px-6 py-4">
-                                    <textarea
-                                        value={comments[offer.id] || ""}
-                                        onChange={(e) => handleCommentChange(offer.id, e.target.value)}
-                                        className={`w-full h-20 border rounded p-2 resize-none ${
-                                            validationErrors[offer.id] ? "border-red-500" : ""
-                                        }`}
-                                        placeholder={t("pendingOffers.commentPlaceholder")}
-                                    />
-                                {validationErrors[offer.id] && (
-                                    <p className="mt-1 text-xs text-red-600">
-                                        {t(`pendingOffers.errors.${validationErrors[offer.id]}`)}
-                                    </p>
-                                )}
-                            </td>
                             <td className="px-6 py-4 flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                                 <button
                                     onClick={() => handleApprove(offer.id)}
@@ -195,7 +171,7 @@ export default function PendingOffersPage() {
                                     {t("pendingOffers.actions.approve")}
                                 </button>
                                 <button
-                                    onClick={() => handleReject(offer.id)}
+                                    onClick={() => openRejectModal(offer.id)}
                                     className="bg-red-500 text-white px-3 py-1 rounded w-full md:w-auto hover:bg-red-600"
                                 >
                                     {t("pendingOffers.actions.reject")}
@@ -221,6 +197,44 @@ export default function PendingOffersPage() {
                         setSelectedPdfUrl(null);
                     }}
                 />
+            )}
+
+
+            {rejectModal.open && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+                        <div className="px-6 py-4 border-b">
+                            <h4 className="text-base font-semibold text-gray-900">
+                                {t("pendingOffers.actions.reject")}
+                            </h4>
+                        </div>
+                        <div className="px-6 py-4 space-y-3">
+                            <p className="text-sm text-gray-700">{t("pendingOffers.commentPlaceholder")}</p>
+                            <textarea
+                                value={rejectModal.comment}
+                                onChange={(e) => setRejectModal((prev) => ({ ...prev, comment: e.target.value }))}
+                                className={`w-full h-28 border rounded p-2 resize-none ${rejectModal.error ? "border-red-500" : ""}`}
+                            />
+                            {rejectModal.error && (
+                                <p className="text-xs text-red-600">{t(`pendingOffers.errors.${rejectModal.error}`, { defaultValue: "Commentaire requis" })}</p>
+                            )}
+                        </div>
+                        <div className="px-6 py-4 border-t flex justify-end space-x-2">
+                            <button
+                                onClick={closeRejectModal}
+                                className="px-3 py-1 rounded border text-gray-700 hover:bg-gray-50"
+                            >
+                                {t("common.cancel")}
+                            </button>
+                            <button
+                                onClick={confirmReject}
+                                className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                            >
+                                {t("pendingOffers.actions.reject")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
