@@ -28,8 +28,7 @@ public class InternshipOfferDto {
     private EmployeurDto employeurDto;
 
     public InternshipOfferDto(Long id, String description, LocalDate startDate, int durationInWeeks,
-                              String address, Float remuneration, String status, Long employeurId,
-                              String companyName, String pdfPath) {
+                              String address, Float remuneration, String status, EmployeurDto employeurDto, String pdfPath) {
         this.id = id;
         this.description = description;
         this.startDate = startDate;
@@ -37,8 +36,7 @@ public class InternshipOfferDto {
         this.address = address;
         this.remuneration = remuneration;
         this.status = status;
-        this.employeurId = employeurId;
-        this.companyName = companyName;
+        this.employeurDto = employeurDto;
         this.pdfPath = pdfPath;
     }
 
@@ -49,18 +47,17 @@ public class InternshipOfferDto {
     public static InternshipOfferDto toDto(InternshipOffer offer){
         Employeur employeur = offer.getEmployeur();
 
-        return new InternshipOfferDto(
-                offer.getId(),
-                offer.getDescription(),
-                offer.getStartDate(),
-                offer.getDurationInWeeks(),
-                offer.getAddress(),
-                offer.getRemuneration(),
-                offer.getStatus() != null ? offer.getStatus().name() : null,
-                employeur != null ? employeur.getId() : null,
-                employeur != null ? employeur.getCompanyName() : null,
-                offer.getPdfPath()
-        );
+        return InternshipOfferDto.builder()
+                .id(offer.getId())
+                .description(offer.getDescription())
+                .startDate(offer.getStartDate())
+                .durationInWeeks(offer.getDurationInWeeks())
+                .address(offer.getAddress())
+                .remuneration(offer.getRemuneration())
+                .status(offer.getStatus() != null ? offer.getStatus().name() : null)
+                .validationDate(offer.getValidationDate())
+                .pdfPath(offer.getPdfPath())
+                .employeurDto(employeur != null ? EmployeurDto.create(employeur): null)
+                .build();
     }
-
 }
