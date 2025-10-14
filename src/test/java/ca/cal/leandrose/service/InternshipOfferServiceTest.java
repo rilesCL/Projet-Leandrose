@@ -2,6 +2,8 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.auth.Credentials;
+import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import org.junit.jupiter.api.*;
@@ -23,6 +25,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -195,5 +199,36 @@ class InternshipOfferServiceTest {
 
         assertThat(result).hasSize(2);
         assertThat(result).extracting("description").containsExactly("Stage A", "Stage B");
+    }
+
+    @Test
+    void getOneOfferDetails(){
+        Long offerId = 1L;
+        InternshipOffer offer = new InternshipOffer();
+        offer.setId(offerId);
+        offer.setDescription("Test Internship offer");
+        offer.setStatus(InternshipOffer.Status.PUBLISHED);
+        offer.setAddress("123 Main St.");
+        offer.setDurationInWeeks(12);
+
+        Employeur employeur = new Employeur();
+        employeur.setId(100L);
+        employeur.setFirstName("Alice");
+        employeur.setLastName("Doe");
+
+        Credentials creds = new Credentials("alice@example", "securepass", Role.EMPLOYEUR);
+        employeur.setCredentials(creds);
+        offer.setEmployeur(employeur);
+
+        when(internshipOfferRepository.findById(offerId)).thenReturn(Optional.of(offer));
+
+        InternshipOfferDto result = internshipOfferService.getOfferDetails(offerId);
+
+        assertNotNull(result);
+        assertEquals(offerId, result.getId());
+        assertEquals("Test Internship offer", result.getDescription());
+        assertEquals("PUBLISHED", result.getStatus());
+        assertEquals("123 Main St.", result.getAddress());
+        assertEquals(12, result.getDurationInWeeks());
     }
 }

@@ -287,33 +287,28 @@ public class EmployeurController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    @PutMapping("/candidatures/{candidatureId}/reject")
-    public ResponseEntity<String> rejectCandidature(
+    @PostMapping("/candidatures/{id}/accept")
+    public ResponseEntity<CandidatureDto> acceptCandidature(
             HttpServletRequest request,
-            @PathVariable Long candidatureId
+            @PathVariable("id") Long candidatureId
     ) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
+        if (!me.getRole().name().equals("EMPLOYEUR")) return ResponseEntity.status(403).build();
 
-        if (!me.getRole().name().equals("EMPLOYEUR")) {
-            return ResponseEntity.status(403).build();
-        }
-
-        try {
-            CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
-
-            if (!candidatureDto.getEmployeurId().equals(me.getId())) {
-                return ResponseEntity.status(403).build();
-            }
-
-            candidatureService.rejectCandidature(candidatureId);
-
-            return ResponseEntity.ok().body("Candidature rejetée avec succès");
-
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erreur lors du rejet de la candidature");
-        }
+        CandidatureDto updated = candidatureService.accept(candidatureId);
+        return ResponseEntity.ok(updated);
     }
+
+    @PostMapping("/candidatures/{id}/reject")
+    public ResponseEntity<CandidatureDto> rejectCandidature(
+            HttpServletRequest request,
+            @PathVariable("id") Long candidatureId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+        if (!me.getRole().name().equals("EMPLOYEUR")) return ResponseEntity.status(403).build();
+
+        CandidatureDto updated = candidatureService.reject(candidatureId);
+        return ResponseEntity.ok(updated);
+    }
+
 }

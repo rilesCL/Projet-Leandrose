@@ -12,6 +12,8 @@ import UploadCvStudent from "./components/UploadCvStudent.jsx";
 import DashBoardGestionnaire from "./components/DashBoardGestionnaire.jsx";
 import PendingCvPage from "./components/PendingCvPage.jsx";
 import RegisterLanding from "./components/RegisterLanding.jsx";
+import OffersPage from "./components/OffersPage.jsx";
+import OfferDetailsPage from "./components/OfferDetailsPage.jsx";
 import OfferDetailPage from "./components/OfferDetailPage.jsx";
 import StudentInternshipOffersList from "./components/StudentInternshipOffersList.jsx";
 import ApplicationsPage from "./components/ApplicationsPage.jsx";
@@ -39,10 +41,17 @@ function App() {
                 <Route path="dashboard" element={<h1>DashBoard</h1>} />
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
-                    <Route path="offers" element={<StudentInternshipOffersList />} />
-                    <Route path="offers/:offerId" element={<OfferDetailPage />} />
+                    {/*Mis en commentaire ces deux liens. Cela brise mon lien de dashboard/gestionnaire/offers */}
+                    {/*<Route path="offers" element={<StudentInternshipOffersList />} />*/}
+                    {/*<Route path="offers/:offerId" element={<OfferDetailPage />} />*/}
                     <Route path="applications" element={<ApplicationsPage />} />
                 </Route>
+                <Route path="dashboard/student/offers" element={<StudentInternshipOffersList />} />
+                <Route path="dashboard/student/offers/:offerid" element={<OfferDetailPage />} />
+                <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
+                <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage/>}/>
+
+
 
 
             </Route>

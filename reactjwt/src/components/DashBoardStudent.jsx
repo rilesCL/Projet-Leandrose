@@ -83,7 +83,6 @@ export default function DashBoardStudent() {
                     </h1>
                     <p className="text-gray-600 mb-6">{t("dashboardStudent.description")}</p>
 
-                    {/* Tab buttons with translation */}
                     <div className="flex flex-wrap gap-3 mb-8">
                         <Btn target="offers">{t("dashboardStudent.tabs.offers")}</Btn>
                         <Btn target="cv">{t("dashboardStudent.tabs.cv")}</Btn>

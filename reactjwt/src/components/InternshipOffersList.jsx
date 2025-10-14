@@ -11,8 +11,10 @@ export default function InternshipOffersList() {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [candidatureData, setCandidatureData] = useState({}); // { offerId: { count, preview: [] } }
+    const [candidatureData, setCandidatureData] = useState({});
     const [loadingCounts, setLoadingCounts] = useState(false);
+    const [showCommentModal, setShowCommentModal] = useState(false);
+    const [currentComment, setCurrentComment] = useState("");
 
     useEffect(() => {
         async function fetchOffers() {
@@ -238,8 +240,13 @@ export default function InternshipOffersList() {
                         const cData = candidatureData[offer.id];
                         const count = cData ? cData.count : (loadingCounts ? '…' : 0);
                         const preview = cData && cData.preview && cData.preview.length ? cData.preview.join(', ') : '';
+                        const statusUpper = (offer.status || '').toUpperCase();
+                        const isClickable = statusUpper === 'APPROVED' || statusUpper === 'PUBLISHED';
                         return (
-                            <tr key={offer.id} className="hover:bg-gray-50 cursor-pointer" onClick={(e) => { if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`); }}>
+                            <tr key={offer.id}
+                                className={`hover:bg-gray-50 ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                                {...(isClickable ? {onClick: (e) => { if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`); }} : {})}
+                            >
                                 <td className="px-6 py-4">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0">
@@ -272,6 +279,15 @@ export default function InternshipOffersList() {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2" onClick={(e)=> e.stopPropagation()}>
+                                    {statusUpper === "REJECTED" && (
+                                        <button
+                                            onClick={() => { setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment')); setShowCommentModal(true); }}
+                                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
+                                            title={t('internshipOffersList.viewRejectionComment')}
+                                        >
+                                            <span className="mr-1">💬</span>
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => handleDownloadOffer(offer.id, offer.description)}
                                         className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -296,6 +312,23 @@ export default function InternshipOffersList() {
                     <span className="ml-1">➕</span>
                 </a>
             </div>
+
+            {showCommentModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+                        <h2 className="text-lg font-semibold mb-4 text-red-700">{t('internshipOffersList.rejectionCommentTitle', 'Commentaire de rejet')}</h2>
+                        <p className="text-gray-800 whitespace-pre-line">{currentComment}</p>
+                        <div className="mt-6 text-right">
+                            <button
+                                onClick={() => setShowCommentModal(false)}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                {t('internshipOffersList.close', 'Fermer')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

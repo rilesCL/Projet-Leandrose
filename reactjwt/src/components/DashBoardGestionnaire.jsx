@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PendingCvPage from "./PendingCvPage";
 import PendingOffersPage from "./PendingOffersPage.jsx";
@@ -51,6 +51,13 @@ export default function DashBoardGestionnaire() {
 
                         <nav className="flex items-center space-x-4">
                             <LanguageSelector />
+
+                            <Link
+                                to="/dashboard/gestionnaire/offers"
+                                className="flex items-center text-gray-600 hover:text-indigo-600 transition"
+                            >
+                                {t("dashboardGestionnaire.offer")}
+                            </Link>
 
                             <button
                                 onClick={handleLogout}
