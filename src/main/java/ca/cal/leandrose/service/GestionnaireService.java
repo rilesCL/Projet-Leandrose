@@ -99,6 +99,22 @@ public class GestionnaireService {
                 .toList();
     }
 
+    public List<InternshipOfferDto> getRejectedoffers(){
+        return internshipOfferRepository
+                .findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
+
+    }
+    public List<InternshipOfferDto> getApprovedOffers(){
+        return internshipOfferRepository
+                .findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
+    }
+
     @Transactional
     public GestionnaireDto createGestionnaire(
             String firstName, String lastName, String email, String rawPassword, String phoneNumber) {

@@ -26,6 +26,7 @@ public class InternshipOfferDto {
     private String errorMessage;
     private LocalDate validationDate;
     private EmployeurDto employeurDto;
+    String rejectionComment;
 
     public InternshipOfferDto(Long id, String description, LocalDate startDate, int durationInWeeks,
                               String address, Float remuneration, String status, EmployeurDto employeurDto, String pdfPath) {
@@ -38,6 +39,7 @@ public class InternshipOfferDto {
         this.status = status;
         this.employeurDto = employeurDto;
         this.pdfPath = pdfPath;
+        this.rejectionComment = null;
     }
 
     public InternshipOfferDto(String errorMessage){

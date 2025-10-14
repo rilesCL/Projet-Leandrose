@@ -47,7 +47,14 @@ public class GestionnaireController {
     public ResponseEntity<List<InternshipOfferDto>> getPendingOffers() {
         return ResponseEntity.ok(gestionnaireService.getPendingOffers());
     }
-
+    @GetMapping("/offers/approved")
+    public ResponseEntity<List<InternshipOfferDto>> getApprovedOffers(){
+        return ResponseEntity.ok(gestionnaireService.getApprovedOffers());
+    }
+    @GetMapping("/offers/reject")
+    public ResponseEntity<List<InternshipOfferDto>> getRejectedOffers(){
+        return ResponseEntity.ok(gestionnaireService.getRejectedoffers());
+    }
     @GetMapping("/cvs/pending")
     public ResponseEntity<List<CvDto>> getPendingCvs() {
         return ResponseEntity.ok(gestionnaireService.getPendingCvs());
