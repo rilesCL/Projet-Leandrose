@@ -142,7 +142,7 @@ export default function StudentApplicationsList() {
     const canAcceptOrReject = (status) => {
         return status && status.toUpperCase() === 'ACCEPTEDBYEMPLOYEUR';
     };
-    
+
     const getFilteredCandidatures = () => {
         if (activeTab === 'ALL') return candidatures;
         return candidatures.filter(c => c.status?.toUpperCase() === activeTab);

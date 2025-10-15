@@ -474,4 +474,342 @@ class CandidatureServiceTest {
         assertEquals(testOffer.getId(), dto.getOfferId());
         assertEquals("Stage développement web", dto.getOfferDescription());
     }
+
+// ===== TESTS POUR ACCEPTATION PAR L'EMPLOYEUR =====
+
+    @Test
+    void acceptByEmployeur_ShouldChangeStatusToAcceptedByEmployeur_WhenPending() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act
+        CandidatureDto result = candidatureService.acceptByEmployeur(candidature.getId());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(Candidature.Status.ACCEPTEDBYEMPLOYEUR, result.getStatus());
+        assertEquals(candidature.getId(), result.getId());
+    }
+
+    @Test
+    void acceptByEmployeur_ShouldThrowException_WhenAlreadyRejected() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.rejectByEmployeur(candidature.getId());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.acceptByEmployeur(candidature.getId())
+        );
+
+        assertEquals("Impossible d'accepter une candidature déjà rejetée", exception.getMessage());
+    }
+
+    @Test
+    void acceptByEmployeur_ShouldThrowException_WhenAlreadyAccepted() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+        candidatureService.acceptByStudent(candidature.getId(), testStudent.getId());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.acceptByEmployeur(candidature.getId())
+        );
+
+        assertEquals("Cette candidature est déjà entièrement acceptée", exception.getMessage());
+    }
+
+    @Test
+    void acceptByEmployeur_ShouldThrowException_WhenAlreadyAcceptedByEmployeur() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.acceptByEmployeur(candidature.getId())
+        );
+
+        assertEquals("Vous avez déjà accepté cette candidature, en attente de la réponse de l'étudiant",
+                exception.getMessage());
+    }
+
+    @Test
+    void acceptByEmployeur_ShouldThrowException_WhenCandidatureNotFound() {
+        // Act & Assert
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> candidatureService.acceptByEmployeur(999L)
+        );
+
+        assertEquals("Candidature introuvable", exception.getMessage());
+    }
+
+// ===== TESTS POUR REJET PAR L'EMPLOYEUR =====
+
+    @Test
+    void rejectByEmployeur_ShouldChangeStatusToRejected_WhenPending() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act
+        CandidatureDto result = candidatureService.rejectByEmployeur(candidature.getId());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(Candidature.Status.REJECTED, result.getStatus());
+        assertEquals(candidature.getId(), result.getId());
+    }
+
+    @Test
+    void rejectByEmployeur_ShouldChangeStatusToRejected_WhenAcceptedByEmployeur() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+
+        // Act
+        CandidatureDto result = candidatureService.rejectByEmployeur(candidature.getId());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(Candidature.Status.REJECTED, result.getStatus());
+    }
+
+    @Test
+    void rejectByEmployeur_ShouldThrowException_WhenAlreadyAcceptedByBothParties() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+        candidatureService.acceptByStudent(candidature.getId(), testStudent.getId());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.rejectByEmployeur(candidature.getId())
+        );
+
+        assertEquals("Impossible de rejeter une candidature déjà acceptée par les deux parties",
+                exception.getMessage());
+    }
+
+    @Test
+    void rejectByEmployeur_ShouldThrowException_WhenAlreadyRejected() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.rejectByEmployeur(candidature.getId());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.rejectByEmployeur(candidature.getId())
+        );
+
+        assertEquals("Cette candidature est déjà rejetée", exception.getMessage());
+    }
+
+// ===== TESTS POUR ACCEPTATION PAR L'ÉTUDIANT =====
+
+    @Test
+    void acceptByStudent_ShouldChangeStatusToAccepted_WhenAcceptedByEmployeur() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+
+        // Act
+        CandidatureDto result = candidatureService.acceptByStudent(
+                candidature.getId(), testStudent.getId());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(Candidature.Status.ACCEPTED, result.getStatus());
+        assertEquals(candidature.getId(), result.getId());
+    }
+
+    @Test
+    void acceptByStudent_ShouldThrowException_WhenNotAcceptedByEmployeur() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.acceptByStudent(candidature.getId(), testStudent.getId())
+        );
+
+        assertEquals("L'employeur doit d'abord accepter cette candidature", exception.getMessage());
+    }
+
+    @Test
+    void acceptByStudent_ShouldThrowException_WhenNotOwnCandidature() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+
+        // Créer un autre étudiant
+        Student otherStudent = studentRepository.save(Student.builder()
+                .firstName("Bob")
+                .lastName("Jones")
+                .email("bob@test.com")
+                .password("password")
+                .studentNumber("999999")
+                .program("Computer Science")
+                .build());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.acceptByStudent(candidature.getId(), otherStudent.getId())
+        );
+
+        assertEquals("Cette candidature ne vous appartient pas", exception.getMessage());
+    }
+
+    @Test
+    void acceptByStudent_ShouldThrowException_WhenCandidatureNotFound() {
+        // Act & Assert
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> candidatureService.acceptByStudent(999L, testStudent.getId())
+        );
+
+        assertEquals("Candidature introuvable", exception.getMessage());
+    }
+
+// ===== TESTS POUR REJET PAR L'ÉTUDIANT =====
+
+    @Test
+    void rejectByStudent_ShouldChangeStatusToRejected_WhenAcceptedByEmployeur() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+
+        // Act
+        CandidatureDto result = candidatureService.rejectByStudent(
+                candidature.getId(), testStudent.getId());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(Candidature.Status.REJECTED, result.getStatus());
+        assertEquals(candidature.getId(), result.getId());
+    }
+
+    @Test
+    void rejectByStudent_ShouldThrowException_WhenNotAcceptedByEmployeur() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.rejectByStudent(candidature.getId(), testStudent.getId())
+        );
+
+        assertEquals("Vous ne pouvez refuser que les candidatures acceptées par l'employeur",
+                exception.getMessage());
+    }
+
+    @Test
+    void rejectByStudent_ShouldThrowException_WhenNotOwnCandidature() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+        candidatureService.acceptByEmployeur(candidature.getId());
+
+        // Créer un autre étudiant
+        Student otherStudent = studentRepository.save(Student.builder()
+                .firstName("Charlie")
+                .lastName("Wilson")
+                .email("charlie@test.com")
+                .password("password")
+                .studentNumber("888888")
+                .program("Computer Science")
+                .build());
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> candidatureService.rejectByStudent(candidature.getId(), otherStudent.getId())
+        );
+
+        assertEquals("Cette candidature ne vous appartient pas", exception.getMessage());
+    }
+
+    @Test
+    void rejectByStudent_ShouldThrowException_WhenCandidatureNotFound() {
+        // Act & Assert
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> candidatureService.rejectByStudent(999L, testStudent.getId())
+        );
+
+        assertEquals("Candidature introuvable", exception.getMessage());
+    }
+
+// ===== TESTS DE FLUX COMPLET =====
+
+    @Test
+    void completeFlow_EmployeurAcceptsAndStudentAccepts_ShouldResultInAccepted() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act
+        CandidatureDto afterEmployeur = candidatureService.acceptByEmployeur(candidature.getId());
+        CandidatureDto afterStudent = candidatureService.acceptByStudent(
+                candidature.getId(), testStudent.getId());
+
+        // Assert
+        assertEquals(Candidature.Status.PENDING, candidature.getStatus());
+        assertEquals(Candidature.Status.ACCEPTEDBYEMPLOYEUR, afterEmployeur.getStatus());
+        assertEquals(Candidature.Status.ACCEPTED, afterStudent.getStatus());
+    }
+
+    @Test
+    void completeFlow_EmployeurAcceptsAndStudentRejects_ShouldResultInRejected() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act
+        CandidatureDto afterEmployeur = candidatureService.acceptByEmployeur(candidature.getId());
+        CandidatureDto afterStudent = candidatureService.rejectByStudent(
+                candidature.getId(), testStudent.getId());
+
+        // Assert
+        assertEquals(Candidature.Status.PENDING, candidature.getStatus());
+        assertEquals(Candidature.Status.ACCEPTEDBYEMPLOYEUR, afterEmployeur.getStatus());
+        assertEquals(Candidature.Status.REJECTED, afterStudent.getStatus());
+    }
+
+    @Test
+    void completeFlow_EmployeurRejects_ShouldResultInRejected() {
+        // Arrange
+        CandidatureDto candidature = candidatureService.postuler(
+                testStudent.getId(), testOffer.getId(), testCv.getId());
+
+        // Act
+        CandidatureDto result = candidatureService.rejectByEmployeur(candidature.getId());
+
+        // Assert
+        assertEquals(Candidature.Status.PENDING, candidature.getStatus());
+        assertEquals(Candidature.Status.REJECTED, result.getStatus());
+    }
+
 }
