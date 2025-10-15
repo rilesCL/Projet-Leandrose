@@ -425,6 +425,17 @@
       "download": "Error downloading the offer"
     }
   },"studentApplicationsList": {
+  "filterBy": "Filter by status:",
+  "tabs": {
+    "all": "All",
+    "awaiting": "Awaiting Response",
+    "pending": "Pending",
+    "convened": "Interview Invited",
+    "accepted": "Accepted",
+    "rejected": "Rejected"
+  },
+  "noFilteredResults": "No applications in this category",
+  "noFilteredResultsDesc": "Try selecting another filter to see your applications.",
   "loading": "Loading your applications...",
   "loadError": "Unable to load your applications",
   "error": "Unable to load your applications",

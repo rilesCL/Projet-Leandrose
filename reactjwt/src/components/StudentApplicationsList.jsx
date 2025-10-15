@@ -15,6 +15,7 @@ export default function StudentApplicationsList() {
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [selectedCandidatureForReject, setSelectedCandidatureForReject] = useState(null);
     const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+    const [activeTab, setActiveTab] = useState('ALL');
 
     const showToast = (message, type = 'success') => {
         setToast({ show: true, message, type });
@@ -141,6 +142,36 @@ export default function StudentApplicationsList() {
     const canAcceptOrReject = (status) => {
         return status && status.toUpperCase() === 'ACCEPTEDBYEMPLOYEUR';
     };
+    
+    const getFilteredCandidatures = () => {
+        if (activeTab === 'ALL') return candidatures;
+        return candidatures.filter(c => c.status?.toUpperCase() === activeTab);
+    };
+
+    const filteredCandidatures = getFilteredCandidatures();
+
+    // Compter les candidatures par statut
+    const getCounts = () => {
+        return {
+            ALL: candidatures.length,
+            PENDING: candidatures.filter(c => c.status?.toUpperCase() === 'PENDING').length,
+            ACCEPTEDBYEMPLOYEUR: candidatures.filter(c => c.status?.toUpperCase() === 'ACCEPTEDBYEMPLOYEUR').length,
+            CONVENED: candidatures.filter(c => c.status?.toUpperCase() === 'CONVENED').length,
+            ACCEPTED: candidatures.filter(c => c.status?.toUpperCase() === 'ACCEPTED').length,
+            REJECTED: candidatures.filter(c => c.status?.toUpperCase() === 'REJECTED').length,
+        };
+    };
+
+    const counts = getCounts();
+
+    const tabs = [
+        { key: 'ALL', label: t("studentApplicationsList.tabs.all"), count: counts.ALL, color: 'text-gray-700' },
+        { key: 'ACCEPTEDBYEMPLOYEUR', label: t("studentApplicationsList.tabs.awaiting"), count: counts.ACCEPTEDBYEMPLOYEUR, color: 'text-purple-700' },
+        { key: 'PENDING', label: t("studentApplicationsList.tabs.pending"), count: counts.PENDING, color: 'text-yellow-700' },
+        { key: 'CONVENED', label: t("studentApplicationsList.tabs.convened"), count: counts.CONVENED, color: 'text-blue-700' },
+        { key: 'ACCEPTED', label: t("studentApplicationsList.tabs.accepted"), count: counts.ACCEPTED, color: 'text-green-700' },
+        { key: 'REJECTED', label: t("studentApplicationsList.tabs.rejected"), count: counts.REJECTED, color: 'text-red-700' },
+    ];
 
     if (loading) {
         return (
@@ -179,69 +210,109 @@ export default function StudentApplicationsList() {
     return (
         <>
             <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900">{t("studentApplicationsList.title")}</h3>
-                        <p className="text-sm text-gray-600">
-                            {t("studentApplicationsList.count", { count: candidatures.length })}
-                        </p>
+                <div className="px-6 py-4 border-b border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-900">{t("studentApplicationsList.title")}</h3>
+                    <p className="text-sm text-gray-600">
+                        {t("studentApplicationsList.count", { count: candidatures.length })}
+                    </p>
+                </div>
+
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="status-filter" className="text-sm font-medium text-gray-700">
+                            {t("studentApplicationsList.filterBy")}
+                        </label>
+                        <div className="relative inline-block w-64">
+                            <select
+                                id="status-filter"
+                                value={activeTab}
+                                onChange={(e) => setActiveTab(e.target.value)}
+                                className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg bg-white shadow-sm appearance-none cursor-pointer"
+                            >
+                                {tabs.map(tab => (
+                                    <option key={tab.key} value={tab.key}>
+                                        {tab.label} ({tab.count})
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.offer")}</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.company")}</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.date")}</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.status")}</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.actions")}</th>
-                        </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                        {candidatures.map(c => (
-                            <tr key={c.id} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900">{c.offerDescription}</td>
-                                <td className="px-6 py-4 text-sm text-gray-900">{c.companyName}</td>
-                                <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{formatDate(c.applicationDate)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status, c)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                    <button
-                                        onClick={() => navigate(`/dashboard/student/offers/${c.offerId}`)}
-                                        className="text-indigo-600 hover:text-indigo-900"
-                                    >
-                                        {t("studentApplicationsList.viewOffer")}
-                                    </button>
 
-                                    {canAcceptOrReject(c.status) && (
-                                        <>
-                                            <button
-                                                onClick={() => handleAcceptCandidature(c.id)}
-                                                className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
-                                            >
-                                                {t("studentApplicationsList.actions.accept")}
-                                            </button>
-                                            <button
-                                                onClick={() => openRejectModal(c)}
-                                                className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
-                                            >
-                                                {t("studentApplicationsList.actions.reject")}
-                                            </button>
-                                        </>
-                                    )}
-                                </td>
+                {filteredCandidatures.length === 0 ? (
+                    <div className="px-6 py-12 text-center">
+                        <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                            <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-sm font-medium text-gray-900 mb-1">
+                            {t("studentApplicationsList.noFilteredResults")}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                            {t("studentApplicationsList.noFilteredResultsDesc")}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.offer")}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.company")}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.date")}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.status")}</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.actions")}</th>
                             </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                            {filteredCandidatures.map(c => (
+                                <tr key={c.id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{c.offerDescription}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-900">{c.companyName}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{formatDate(c.applicationDate)}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status, c)}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        <button
+                                            onClick={() => navigate(`/dashboard/student/offers/${c.offerId}`)}
+                                            className="text-indigo-600 hover:text-indigo-900"
+                                        >
+                                            {t("studentApplicationsList.viewOffer")}
+                                        </button>
+
+                                        {canAcceptOrReject(c.status) && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleAcceptCandidature(c.id)}
+                                                    className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
+                                                >
+                                                    {t("studentApplicationsList.actions.accept")}
+                                                </button>
+                                                <button
+                                                    onClick={() => openRejectModal(c)}
+                                                    className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                                                >
+                                                    {t("studentApplicationsList.actions.reject")}
+                                                </button>
+                                            </>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
-            {/* Modal de confirmation de rejet */}
             {showRejectModal && selectedCandidatureForReject && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={closeRejectModal}>
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full relative" onClick={(e) => e.stopPropagation()}>
-                        {/* En-tête avec icône d'avertissement */}
                         <div className="bg-red-50 rounded-t-lg px-6 py-4 border-b border-red-100">
                             <div className="flex items-center gap-3">
                                 <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
@@ -257,13 +328,11 @@ export default function StudentApplicationsList() {
                             </div>
                         </div>
 
-                        {/* Contenu */}
                         <div className="px-6 py-4">
                             <p className="text-gray-700 mb-4">
                                 {t("studentApplicationsList.rejectModal.message")}
                             </p>
 
-                            {/* Détails de la candidature */}
                             <div className="bg-gray-50 rounded-lg p-4 mb-4">
                                 <div className="space-y-2">
                                     <div className="flex items-start">
@@ -299,7 +368,6 @@ export default function StudentApplicationsList() {
                             </div>
                         </div>
 
-                        {/* Boutons d'action */}
                         <div className="px-6 py-4 bg-gray-50 rounded-b-lg flex gap-3 justify-end">
                             <button
                                 onClick={closeRejectModal}
@@ -318,7 +386,6 @@ export default function StudentApplicationsList() {
                 </div>
             )}
 
-            {/* Modal de convocation */}
             {showConvocationModal && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50' onClick={closeConvocationModal}>
                     <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative' onClick={(e) => e.stopPropagation()}>
@@ -407,7 +474,6 @@ export default function StudentApplicationsList() {
                 </div>
             )}
 
-            {/* Toast de notification */}
             {toast.show && (
                 <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${
                     toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'

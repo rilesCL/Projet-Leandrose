@@ -429,6 +429,17 @@
     }
   },
   "studentApplicationsList": {
+    "filterBy": "Filtrer par statut :",
+    "tabs": {
+      "all": "Toutes",
+      "awaiting": "En attente de réponse",
+      "pending": "En attente",
+      "convened": "Convoqué",
+      "accepted": "Acceptées",
+      "rejected": "Rejetées"
+    },
+    "noFilteredResults": "Aucune candidature dans cette catégorie",
+    "noFilteredResultsDesc": "Essayez de sélectionner un autre filtre pour voir vos candidatures.",
     "loading": "Chargement de vos candidatures...",
     "loadError": "Impossible de charger vos candidatures",
     "error": "Impossible de charger vos candidatures",
