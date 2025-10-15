@@ -7,6 +7,7 @@ import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .description("Stage Java")
                 .pdfPath("dummy.pdf")
@@ -101,7 +102,7 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .employeur(Employeur.builder().id(1L).build())
                 .build());

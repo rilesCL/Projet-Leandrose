@@ -1,11 +1,16 @@
 package ca.cal.leandrose.service.mapper;
 
+import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 
 public class InternshipOfferMapper {
     public static InternshipOfferDto toDto(InternshipOffer offer) {
         if (offer == null) return null;
+
+        Employeur employeur = offer.getEmployeur();
+
         return InternshipOfferDto.builder()
             .id(offer.getId())
             .description(offer.getDescription())
@@ -19,6 +24,7 @@ public class InternshipOfferMapper {
             .companyName(offer.getCompanyName())
             .pdfPath(offer.getPdfPath())
             .rejectionComment(offer.getRejectionComment())
+            .employeurDto(employeur != null ? EmployeurDto.create(employeur): null)
             .build();
     }
 }

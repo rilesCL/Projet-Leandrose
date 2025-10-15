@@ -89,7 +89,7 @@ public class InternshipOfferService {
     public InternshipOfferDto getOffer(Long id){
         InternshipOffer offer = internshipOfferRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
-        return InternshipOfferDto.toDto(offer);
+        return InternshipOfferMapper.toDto(offer);
     }
 
     public InternshipOfferDto getOfferDetails(Long id){
@@ -112,7 +112,7 @@ public class InternshipOfferService {
     public List<InternshipOfferDto> getPublishedOffersForStudents(String program) {
         return internshipOfferRepository.findPublishedByProgram(program)
                 .stream()
-                .map(InternshipOfferDto::toDto)
+                .map(InternshipOfferMapper::toDto)
                 .toList();
     }
 }

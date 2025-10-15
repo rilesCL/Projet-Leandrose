@@ -1,7 +1,4 @@
 package ca.cal.leandrose.service.dto;
-
-import ca.cal.leandrose.model.Employeur;
-import ca.cal.leandrose.model.InternshipOffer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,22 +41,5 @@ public class InternshipOfferDto {
 
     public InternshipOfferDto(String errorMessage){
         this.errorMessage = errorMessage;
-    }
-
-    public static InternshipOfferDto toDto(InternshipOffer offer){
-        Employeur employeur = offer.getEmployeur();
-
-        return InternshipOfferDto.builder()
-                .id(offer.getId())
-                .description(offer.getDescription())
-                .startDate(offer.getStartDate())
-                .durationInWeeks(offer.getDurationInWeeks())
-                .address(offer.getAddress())
-                .remuneration(offer.getRemuneration())
-                .status(offer.getStatus() != null ? offer.getStatus().name() : null)
-                .validationDate(offer.getValidationDate())
-                .pdfPath(offer.getPdfPath())
-                .employeurDto(employeur != null ? EmployeurDto.create(employeur): null)
-                .build();
     }
 }

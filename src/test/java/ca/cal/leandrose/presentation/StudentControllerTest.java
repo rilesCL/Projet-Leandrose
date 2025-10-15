@@ -7,6 +7,7 @@ import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -110,7 +111,7 @@ class StudentControllerTest {
 
     @Test
     void getOfferDetails_publishedOffer_returnsOk() throws Exception {
-        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(20L)
                 .status(InternshipOffer.Status.PUBLISHED)
                 .build());
@@ -123,7 +124,7 @@ class StudentControllerTest {
 
     @Test
     void getOfferDetails_notPublished_returnsForbidden() throws Exception {
-        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(21L)
                 .status(InternshipOffer.Status.REJECTED)
                 .build());
@@ -248,7 +249,7 @@ class StudentControllerTest {
 
     @Test
     void downloadOfferPdf_published_returnsPdf() throws Exception {
-        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .status(InternshipOffer.Status.PUBLISHED)
                 .build());
@@ -262,7 +263,7 @@ class StudentControllerTest {
 
     @Test
     void downloadOfferPdf_notPublished_returnsForbidden() throws Exception {
-        InternshipOfferDto offer = InternshipOfferDto.toDto(InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(101L)
                 .status(InternshipOffer.Status.PENDING_VALIDATION)
                 .build());
