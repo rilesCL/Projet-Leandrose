@@ -446,6 +446,10 @@
       "status": "Statut",
       "actions": "Actions"
     },
+    "actions": {
+      "accept": "Accepter",
+      "reject": "Refuser"
+    },
     "status": {
       "pending": "En attente",
       "PENDING": "En attente",
@@ -456,6 +460,13 @@
       "ACCEPTEDBYEMPLOYEUR": "En attente de votre réponse",
       "REJECTED": "Rejetée",
       "unknown": "Inconnu"
+    },
+    "rejectModal": {
+      "title": "Refuser cette candidature",
+      "message": "Vous êtes sur le point de refuser cette offre de stage. Cette décision est définitive.",
+      "warning": "Cette action est irréversible. Vous ne pourrez plus accepter cette offre par la suite.",
+      "cancel": "Annuler",
+      "confirm": "Oui, refuser"
     },
     "viewOffer": "Voir l'offre",
     "noApplicationsTitle": "Aucune candidature",

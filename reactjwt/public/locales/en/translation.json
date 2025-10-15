@@ -453,6 +453,17 @@
     "REJECTED": "Rejected",
     "unknown": "Unknown"
   },
+  "actions": {
+    "accept": "Accept",
+    "reject": "Decline"
+  },
+  "rejectModal": {
+    "title": "Decline this Application",
+    "message": "You are about to decline this internship offer. This decision is final.",
+    "warning": "This action is irreversible. You will not be able to accept this offer afterwards.",
+    "cancel": "Cancel",
+    "confirm": "Yes, Decline"
+  },
   "viewOffer": "View offer",
   "noApplicationsTitle": "No applications",
   "noApplicationsText": "You have not applied to any offer yet.",
