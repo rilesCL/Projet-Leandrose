@@ -215,7 +215,16 @@ export default function OfferCandidaturesList() {
                             </div>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('employerCandidatures.convocationModal.message')}</label>
-                                <textarea value={convocationForm.message} onChange={e => setConvocationForm({...convocationForm, message: e.target.value})} rows="4" className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+                                <textarea
+                                    value={convocationForm.message}
+                                    onChange={e => setConvocationForm({...convocationForm, message: e.target.value})}
+                                    maxLength={100}
+                                    rows="4"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                />
+                                <p className="text-xs text-gray-500 mt-1 text-right">
+                                    {convocationForm.message.length}/100
+                                </p>
                             </div>
                             <div className="flex gap-3 justify-end">
                                 <button type="button" onClick={closeConvocationModal} className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">{t('employerCandidatures.convocationModal.cancel')}</button>

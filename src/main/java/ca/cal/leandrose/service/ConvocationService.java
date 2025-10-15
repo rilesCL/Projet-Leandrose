@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -55,11 +54,6 @@ public class ConvocationService {
                 .stream()
                 .map(ConvocationDto::create)
                 .toList();
-    }
-
-    public Optional<ConvocationDto> getConvocationByCandidatureId(Long candidatureId) {
-        return convocationRepository.findByCandidatureId(candidatureId)
-                .map(ConvocationDto::create);
     }
 
     public List<ConvocationDto> getConvocationsByStudentId(Long studentId) {

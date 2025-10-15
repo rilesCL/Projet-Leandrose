@@ -25,6 +25,7 @@ public class ConvocationDto {
                 .candidatureId(convocation.getCandidature() != null ? convocation.getCandidature().getId() : null)
                 .convocationDate(convocation.getConvocationDate())
                 .location(convocation.getLocation())
+                .message(convocation.getPersonnalMessage())
                 .build();
     }
 

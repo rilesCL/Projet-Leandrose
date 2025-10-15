@@ -225,8 +225,16 @@ export default function StudentApplicationsList() {
                                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' />
                                             </svg>
                                             <div className='flex-1'>
-                                                <p className='text-xs text-gray-500 uppercase font-medium'>{t('studentApplicationsList.convocationModal.message')}</p>
-                                                <p className='text-sm text-gray-700 mt-1'>{selectedConvocation.message}</p>
+                                                <p className='text-xs text-gray-500 uppercase font-medium mb-2'>{t('studentApplicationsList.convocationModal.message')}</p>
+                                                {selectedConvocation.message ? (
+                                                    <div className='bg-gray-50 border border-gray-200 rounded-lg p-3'>
+                                                        <p className='text-sm text-gray-800 leading-relaxed whitespace-pre-wrap'>{selectedConvocation.message}</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className='bg-gray-50 border border-gray-200 rounded-lg p-3'>
+                                                        <p className='text-sm text-gray-500 italic'>{t('studentApplicationsList.convocationModal.noMessage', 'Aucun message additionnel')}</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )}
