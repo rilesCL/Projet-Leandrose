@@ -102,7 +102,6 @@ export async function getPublishedOffers(token = null) {
     }
 }
 
-
 export async function getOfferDetails(offerId, token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/offers/${offerId}`, {
@@ -117,51 +116,49 @@ export async function getOfferDetails(offerId, token = null) {
     }
 }
 
+export async function downloadOfferPdf(offerId, token = null) {
+    try {
+        const accessToken = token || sessionStorage.getItem('accessToken');
+        const headers = {};
 
-    export async function downloadOfferPdf(offerId, token = null) {
-        try {
-            const accessToken = token || sessionStorage.getItem('accessToken');
-            const headers = {};
-
-            if (accessToken) {
-                headers['Authorization'] = `Bearer ${accessToken}`;
-            }
-
-            const response = await fetch(`${API_BASE}/student/offers/${offerId}/pdf`, {
-                method: 'GET',
-                headers
-            });
-
-            await handleApiResponse(response);
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `offre_${offerId}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        } catch (error) {
-            throw new Error(error.message || 'Erreur lors du téléchargement du PDF');
+        if (accessToken) {
+            headers['Authorization'] = `Bearer ${accessToken}`;
         }
+
+        const response = await fetch(`${API_BASE}/student/offers/${offerId}/pdf`, {
+            method: 'GET',
+            headers
+        });
+
+        await handleApiResponse(response);
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `offre_${offerId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors du téléchargement du PDF');
     }
+}
 
+export async function applyToOffer(offerId, cvId, token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/offers/${offerId}/apply?cvId=${cvId}`, {
+            method: 'POST',
+            headers: getAuthHeaders(token)
+        });
 
-    export async function applyToOffer(offerId, cvId, token = null) {
-        try {
-            const response = await fetch(`${API_BASE}/student/offers/${offerId}/apply?cvId=${cvId}`, {
-                method: 'POST',
-                headers: getAuthHeaders(token)
-            });
-
-            await handleApiResponse(response);
-            return await response.json();
-        } catch (error) {
-            throw new Error(error.message || 'Erreur lors de la candidature');
-        }
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la candidature');
     }
+}
 
 export async function getMyConvocations(token = null) {
     const accessToken = token || sessionStorage.getItem('accessToken');
@@ -188,7 +185,6 @@ export async function getMyConvocations(token = null) {
         throw new Error(error.message || 'Erreur lors de la récupération des convocations');
     }
 }
-
 
 export async function getMyCandidatures(token = null) {
     try {
@@ -219,5 +215,41 @@ export async function previewOfferPdfStudent(offerId, token = null) {
         return await response.blob();
     } catch (error) {
         throw new Error(error.message || "Erreur lors du chargement du PDF");
+    }
+}
+
+/**
+ * L'étudiant accepte une candidature qui a été acceptée par l'employeur
+ * Transition: ACCEPTEDBYEMPLOYEUR -> ACCEPTED
+ */
+export async function acceptCandidatureByStudent(candidatureId, token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/applications/${candidatureId}/accept`, {
+            method: 'POST',
+            headers: getAuthHeaders(token)
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || "Erreur lors de l'acceptation de la candidature");
+    }
+}
+
+/**
+ * L'étudiant refuse une candidature qui a été acceptée par l'employeur
+ * Transition: ACCEPTEDBYEMPLOYEUR -> REJECTED
+ */
+export async function rejectCandidatureByStudent(candidatureId, token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/applications/${candidatureId}/reject`, {
+            method: 'POST',
+            headers: getAuthHeaders(token)
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || "Erreur lors du refus de la candidature");
     }
 }

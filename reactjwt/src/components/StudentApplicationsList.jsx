@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getMyCandidatures, getMyConvocations } from '../api/apiStudent';
+import { getMyCandidatures, getMyConvocations, acceptCandidatureByStudent, rejectCandidatureByStudent } from '../api/apiStudent';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -12,35 +12,64 @@ export default function StudentApplicationsList() {
     const [error, setError] = useState(null);
     const [showConvocationModal, setShowConvocationModal] = useState(false);
     const [selectedConvocation, setSelectedConvocation] = useState(null);
+    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+    const showToast = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 4000);
+    };
+
+    const loadData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await getMyCandidatures();
+            setCandidatures(Array.isArray(data) ? data : []);
+
+            try {
+                const convocationsData = await getMyConvocations();
+                setConvocations(Array.isArray(convocationsData) ? convocationsData : []);
+            } catch (convError) {
+                console.error('Error loading convocations:', convError);
+            }
+        } catch (e) {
+            setError(t("studentApplicationsList.loadError"));
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         let cancelled = false;
         async function fetchData() {
-            setLoading(true);
-            setError(null);
-            try {
-                const data = await getMyCandidatures();
-                if (!cancelled) {
-                    setCandidatures(Array.isArray(data) ? data : []);
-                }
-
-                try {
-                    const convocationsData = await getMyConvocations();
-                    if (!cancelled) {
-                        setConvocations(Array.isArray(convocationsData) ? convocationsData : []);
-                    }
-                } catch (convError) {
-                    console.error('Error loading convocations:', convError);
-                }
-            } catch (e) {
-                if (!cancelled) setError(t("studentApplicationsList.loadError"));
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
+            await loadData();
         }
-        fetchData();
+        if (!cancelled) fetchData();
         return () => { cancelled = true; };
     }, [t]);
+
+    const handleAcceptCandidature = async (candidatureId) => {
+        try {
+            await acceptCandidatureByStudent(candidatureId);
+            showToast(t("studentApplicationsList.acceptSuccess"), 'success');
+            await loadData();
+        } catch (error) {
+            showToast(error.message || t("studentApplicationsList.acceptError"), 'error');
+        }
+    };
+
+    const handleRejectCandidature = async (candidatureId) => {
+        if (!window.confirm(t("studentApplicationsList.rejectConfirm"))) {
+            return;
+        }
+        try {
+            await rejectCandidatureByStudent(candidatureId);
+            showToast(t("studentApplicationsList.rejectSuccess"), 'success');
+            await loadData();
+        } catch (error) {
+            showToast(error.message || t("studentApplicationsList.rejectError"), 'error');
+        }
+    };
 
     const formatDate = (dateString) => {
         if (!dateString) return t("studentApplicationsList.noDate");
@@ -75,7 +104,7 @@ export default function StudentApplicationsList() {
         const base = 'px-3 py-1 text-xs font-medium rounded-full border';
         switch (s) {
             case 'PENDING':
-                return <span className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("studentApplicationsList.status.pending")}</span>;
+                return <span className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("studentApplicationsList.status.PENDING")}</span>;
             case 'CONVENED':
                 return (
                     <button
@@ -85,13 +114,19 @@ export default function StudentApplicationsList() {
                         {t("studentApplicationsList.status.CONVENED")}
                     </button>
                 );
+            case 'ACCEPTEDBYEMPLOYEUR':
+                return <span className={`${base} bg-purple-100 text-purple-800 border-purple-200`}>{t("studentApplicationsList.status.ACCEPTEDBYEMPLOYEUR")}</span>;
             case 'ACCEPTED':
-                return <span className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("studentApplicationsList.status.accepted")}</span>;
+                return <span className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("studentApplicationsList.status.ACCEPTED")}</span>;
             case 'REJECTED':
-                return <span className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("studentApplicationsList.status.rejected")}</span>;
+                return <span className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("studentApplicationsList.status.REJECTED")}</span>;
             default:
                 return <span className={`${base} bg-gray-100 text-gray-800 border-gray-200`}>{s}</span>;
         }
+    };
+
+    const canAcceptOrReject = (status) => {
+        return status && status.toUpperCase() === 'ACCEPTEDBYEMPLOYEUR';
     };
 
     if (loading) {
@@ -111,7 +146,7 @@ export default function StudentApplicationsList() {
         return (
             <div className="bg-white shadow rounded-lg p-6 text-center">
                 <p className="text-red-600 mb-4">{error}</p>
-                <button onClick={() => window.location.reload()} className="px-4 py-2 bg-red-600 text-white rounded">
+                <button onClick={() => loadData()} className="px-4 py-2 bg-red-600 text-white rounded">
                     {t("studentApplicationsList.retry")}
                 </button>
             </div>
@@ -157,13 +192,30 @@ export default function StudentApplicationsList() {
                                 <td className="px-6 py-4 text-sm text-gray-900">{c.companyName}</td>
                                 <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{formatDate(c.applicationDate)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status, c)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                                     <button
                                         onClick={() => navigate(`/dashboard/student/offers/${c.offerId}`)}
                                         className="text-indigo-600 hover:text-indigo-900"
                                     >
                                         {t("studentApplicationsList.viewOffer")}
                                     </button>
+
+                                    {canAcceptOrReject(c.status) && (
+                                        <>
+                                            <button
+                                                onClick={() => handleAcceptCandidature(c.id)}
+                                                className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
+                                            >
+                                                {t("studentApplicationsList.actions.accept")}
+                                            </button>
+                                            <button
+                                                onClick={() => handleRejectCandidature(c.id)}
+                                                className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                                            >
+                                                {t("studentApplicationsList.actions.reject")}
+                                            </button>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))}
@@ -257,6 +309,24 @@ export default function StudentApplicationsList() {
                             </button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {toast.show && (
+                <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${
+                    toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                }`}>
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" strokeWidth={2}/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
                 </div>
             )}
         </>

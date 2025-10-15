@@ -448,6 +448,7 @@
     "CONVENED": "Interview Scheduled",
     "accepted": "Accepted",
     "ACCEPTED": "Accepted",
+    "ACCEPTEDBYEMPLOYEUR": "Awaiting Your Response",
     "rejected": "Rejected",
     "REJECTED": "Rejected",
     "unknown": "Unknown"

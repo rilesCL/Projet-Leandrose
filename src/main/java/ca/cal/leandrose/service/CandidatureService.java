@@ -82,7 +82,7 @@ public class CandidatureService {
                 .map(CandidatureEmployeurDto::fromEntity)
                 .toList();
     }
-
+    /**
     @Transactional
     public void rejectCandidature(Long candidatureId) {
         Candidature candidature = candidatureRepository.findById(candidatureId)
@@ -99,7 +99,8 @@ public class CandidatureService {
         candidature.setStatus(Candidature.Status.REJECTED);
         candidatureRepository.save(candidature);
     }
-
+    **/
+    /**
     @Transactional
     public CandidatureDto accept(Long candidatureId) {
         Candidature cand = candidatureRepository
@@ -110,7 +111,87 @@ public class CandidatureService {
         Candidature saved = candidatureRepository.save(cand);
         return CandidatureDto.fromEntity(saved);
     }
+/**/
 
+    @Transactional
+    public CandidatureDto acceptByEmployeur(Long candidatureId) {
+        Candidature cand = candidatureRepository
+                .findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature introuvable"));
+
+        if (cand.getStatus() == Candidature.Status.REJECTED) {
+            throw new IllegalStateException("Impossible d'accepter une candidature déjà rejetée");
+        }
+
+        if (cand.getStatus() == Candidature.Status.ACCEPTED) {
+            throw new IllegalStateException("Cette candidature est déjà entièrement acceptée");
+        }
+
+        if (cand.getStatus() == Candidature.Status.ACCEPTEDBYEMPLOYEUR) {
+            throw new IllegalStateException("Vous avez déjà accepté cette candidature, en attente de la réponse de l'étudiant");
+        }
+
+        cand.setStatus(Candidature.Status.ACCEPTEDBYEMPLOYEUR);
+        Candidature saved = candidatureRepository.save(cand);
+        return CandidatureDto.fromEntity(saved);
+    }
+
+    @Transactional
+    public CandidatureDto acceptByStudent(Long candidatureId, Long studentId) {
+        Candidature cand = candidatureRepository
+                .findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature introuvable"));
+
+        if (!cand.getStudent().getId().equals(studentId)) {
+            throw new IllegalStateException("Cette candidature ne vous appartient pas");
+        }
+
+        if (cand.getStatus() != Candidature.Status.ACCEPTEDBYEMPLOYEUR) {
+            throw new IllegalStateException("L'employeur doit d'abord accepter cette candidature");
+        }
+
+        cand.setStatus(Candidature.Status.ACCEPTED);
+        Candidature saved = candidatureRepository.save(cand);
+        return CandidatureDto.fromEntity(saved);
+    }
+    @Transactional
+    public CandidatureDto rejectByStudent(Long candidatureId, Long studentId) {
+        Candidature cand = candidatureRepository
+                .findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature introuvable"));
+
+        if (!cand.getStudent().getId().equals(studentId)) {
+            throw new IllegalStateException("Cette candidature ne vous appartient pas");
+        }
+
+        if (cand.getStatus() != Candidature.Status.ACCEPTEDBYEMPLOYEUR) {
+            throw new IllegalStateException("Vous ne pouvez refuser que les candidatures acceptées par l'employeur");
+        }
+
+        cand.setStatus(Candidature.Status.REJECTED);
+        Candidature saved = candidatureRepository.save(cand);
+        return CandidatureDto.fromEntity(saved);
+    }
+
+    @Transactional
+    public CandidatureDto rejectByEmployeur(Long candidatureId) {
+        Candidature cand = candidatureRepository
+                .findById(candidatureId)
+                .orElseThrow(() -> new RuntimeException("Candidature introuvable"));
+
+        if (cand.getStatus() == Candidature.Status.ACCEPTED) {
+            throw new IllegalStateException("Impossible de rejeter une candidature déjà acceptée par les deux parties");
+        }
+
+        if (cand.getStatus() == Candidature.Status.REJECTED) {
+            throw new IllegalStateException("Cette candidature est déjà rejetée");
+        }
+
+        cand.setStatus(Candidature.Status.REJECTED);
+        Candidature saved = candidatureRepository.save(cand);
+        return CandidatureDto.fromEntity(saved);
+    }
+    /**
     @Transactional
     public CandidatureDto reject(Long candidatureId) {
         Candidature cand = candidatureRepository
@@ -121,4 +202,5 @@ public class CandidatureService {
         Candidature saved = candidatureRepository.save(cand);
         return CandidatureDto.fromEntity(saved);
     }
+    /**/
 }

@@ -453,6 +453,7 @@
       "accepted": "Acceptée",
       "ACCEPTED": "Acceptée",
       "rejected": "Refusée",
+      "ACCEPTEDBYEMPLOYEUR": "En attente de votre réponse",
       "REJECTED": "Rejetée",
       "unknown": "Inconnu"
     },
@@ -604,6 +605,7 @@
       "TO_REVIEW": "À revoir",
       "RETAINED": "Retenu",
       "ACCEPTED": "Accepté",
+      "ACCEPTEDBYEMPLOYEUR": "Acceptée - En attente de l'étudiant",
       "REJECTED": "Rejeté",
       "EN_ATTENTE": "En attente",
       "CONVENED": "Convoqué"

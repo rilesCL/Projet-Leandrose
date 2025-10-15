@@ -169,7 +169,6 @@ public class EmployeurController {
         }
     }
 
-
     @PostMapping("/candidatures/{candidatureId}/convocations")
     public ResponseEntity<String> createConvocation(
             HttpServletRequest request,
@@ -279,28 +278,57 @@ public class EmployeurController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PostMapping("/candidatures/{id}/accept")
-    public ResponseEntity<CandidatureDto> acceptCandidature(
+    public ResponseEntity<?> acceptCandidature(
             HttpServletRequest request,
             @PathVariable("id") Long candidatureId
     ) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
-        if (!me.getRole().name().equals("EMPLOYEUR")) return ResponseEntity.status(403).build();
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
 
-        CandidatureDto updated = candidatureService.accept(candidatureId);
-        return ResponseEntity.ok(updated);
+        try {
+            CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
+
+            if (!candidatureDto.getEmployeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            CandidatureDto updated = candidatureService.acceptByEmployeur(candidatureId);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body("Candidature non trouvée");
+        }
     }
+
 
     @PostMapping("/candidatures/{id}/reject")
-    public ResponseEntity<CandidatureDto> rejectCandidature(
+    public ResponseEntity<?> rejectCandidature(
             HttpServletRequest request,
             @PathVariable("id") Long candidatureId
     ) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
-        if (!me.getRole().name().equals("EMPLOYEUR")) return ResponseEntity.status(403).build();
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
 
-        CandidatureDto updated = candidatureService.reject(candidatureId);
-        return ResponseEntity.ok(updated);
+        try {
+            CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
+
+            if (!candidatureDto.getEmployeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            CandidatureDto updated = candidatureService.rejectByEmployeur(candidatureId);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body("Candidature non trouvée");
+        }
     }
-
 }

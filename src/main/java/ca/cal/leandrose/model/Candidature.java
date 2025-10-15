@@ -49,6 +49,7 @@ public class Candidature {
     public enum Status {
         PENDING,
         ACCEPTED,
+        ACCEPTEDBYEMPLOYEUR,
         CONVENED,
         REJECTED
     }

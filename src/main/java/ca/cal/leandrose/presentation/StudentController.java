@@ -1,7 +1,6 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
@@ -217,5 +216,45 @@ public class StudentController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(convocations);
+    }
+
+    @PostMapping("/applications/{candidatureId}/accept")
+    public ResponseEntity<?> acceptCandidature(
+            HttpServletRequest request,
+            @PathVariable Long candidatureId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            CandidatureDto updated = candidatureService.acceptByStudent(candidatureId, me.getId());
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body("Candidature non trouvée");
+        }
+    }
+
+    @PostMapping("/applications/{candidatureId}/reject")
+    public ResponseEntity<?> rejectCandidature(
+            HttpServletRequest request,
+            @PathVariable Long candidatureId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            CandidatureDto updated = candidatureService.rejectByStudent(candidatureId, me.getId());
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body("Candidature non trouvée");
+        }
     }
 }
