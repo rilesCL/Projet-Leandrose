@@ -46,10 +46,10 @@ function App() {
                 {/* Gestionnaire Routes */}
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
-                    <Route path="offers/:id" element={<OfferDetailsPage />} />
                     <Route path="applications" element={<ApplicationsPage />} />
                 </Route>
                 <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
+                <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
 
 
                 {/* Fallback Dashboard Route */}
