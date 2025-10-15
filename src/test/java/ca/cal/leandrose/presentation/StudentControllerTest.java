@@ -6,11 +6,10 @@ import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
-import ca.cal.leandrose.service.dto.CandidatureDto;
-import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import ca.cal.leandrose.service.dto.UserDTO;
+import ca.cal.leandrose.service.dto.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -19,12 +18,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = StudentController.class)
@@ -55,6 +56,19 @@ class StudentControllerTest {
 
     @MockitoBean
     private ConvocationService convocationService;
+    private StudentDto studentDto;
+
+    @BeforeEach
+    void setup(){
+        studentDto = StudentDto.builder()  // ✅ use StudentDto
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john@example.com")
+                .role(ca.cal.leandrose.model.auth.Role.STUDENT)
+                .program("COMPUTER_SCIENCE")
+                .build();
+    }
 
     @Test
     void getCv_missingAuthorization_returnsUnauthorized() throws Exception {
@@ -62,30 +76,25 @@ class StudentControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-//    @Test
-//    void getPublishedOffers_returnsList() throws Exception {
-//        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
-//        Student student = Student.builder()
-//                .id(1L)
-//                .program(String.valueOf(Program.COMPUTER_SCIENCE))
-//                .build();
-//        InternshipOffer offer = InternshipOffer.builder()
-//                .id(10L)
-//                .description("Stage A")
-//                .build();
-//
-//        when(userAppService.getMe(anyString())).thenReturn(studentDto);
-//        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
-//        when(internshipOfferService.getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE)))
-//                .thenReturn(List.of(offer));
-//
-//        mockMvc.perform(get("/student/offers")
-//                        .header("Authorization", "Bearer token"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].id").value(10));
-//
-//        verify(internshipOfferService).getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE));
-//    }
+    @Test
+    void getPublishedOffers_returnsList() throws Exception {
+        InternshipOfferDto offer = InternshipOfferDto.builder()
+                .id(10L)
+                .description("Stage A")
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(studentService.getStudentById(1L)).thenReturn(studentDto);
+        when(internshipOfferService.getPublishedOffersForStudents(anyString()))
+                .thenReturn(List.of(offer));
+
+        mockMvc.perform(get("/student/offers")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(10));
+
+        verify(internshipOfferService).getPublishedOffersForStudents(anyString());
+    }
 
     @Test
     void getPublishedOffers_notStudent_returnsForbidden() throws Exception {
@@ -126,16 +135,20 @@ class StudentControllerTest {
 
     @Test
     void uploadCv_asStudent_returnsCvDto() throws Exception {
-        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
-        Student student = Student.builder().id(1L).build();
-        CvDto cvDto = CvDto.builder().id(1L).pdfPath("path/to/cv.pdf").build();
+        CvDto cvDto = CvDto.builder()
+                .id(1L)
+                .pdfPath("path/to/cv.pdf")
+                .build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(studentService.getStudentById(1L)).thenReturn(studentDto);
         when(cvService.uploadCv(eq(1L), any())).thenReturn(cvDto);
 
-        MockMultipartFile file = new MockMultipartFile("pdfFile", "cv.pdf", "application/pdf", "PDF_CONTENT".getBytes());
+        MockMultipartFile file = new MockMultipartFile(
+                "pdfFile", "cv.pdf", "application/pdf", "PDF_CONTENT".getBytes()
+        );
 
+        // Act + Assert
         mockMvc.perform(multipart("/student/cv")
                         .file(file)
                         .header("Authorization", "Bearer token"))
@@ -158,12 +171,13 @@ class StudentControllerTest {
 
     @Test
     void getCv_asStudent_returnsCvDto() throws Exception {
-        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+//        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
         Student student = Student.builder().id(1L).build();
         CvDto cvDto = CvDto.builder().id(1L).pdfPath("path/to/cv.pdf").build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(studentService.getStudentById(1L)).thenReturn(studentDto);
+//        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(cvService.getCvByStudentId(1L)).thenReturn(cvDto);
 
         mockMvc.perform(get("/student/cv")

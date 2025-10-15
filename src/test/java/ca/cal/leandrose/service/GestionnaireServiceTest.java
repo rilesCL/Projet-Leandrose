@@ -115,7 +115,7 @@ public class GestionnaireServiceTest {
 
     InternshipOfferDto result = gestionnaireService.approveOffer(1L);
 
-    assertThat(result.getStatus()).isEqualTo(InternshipOffer.Status.PUBLISHED);
+    assertThat(result.getStatus()).isEqualTo(InternshipOffer.Status.PUBLISHED.name());
     assertThat(result.getValidationDate()).isEqualTo(LocalDate.now());
     verify(internshipOfferRepository).findById(1L);
     verify(internshipOfferRepository).save(offerPending);

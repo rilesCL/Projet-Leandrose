@@ -4,7 +4,9 @@ import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.auth.Credentials;
 import ca.cal.leandrose.model.auth.Role;
+import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
+import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
@@ -35,10 +37,14 @@ class InternshipOfferServiceTest {
     @Mock
     private InternshipOfferRepository internshipOfferRepository;
 
+    @Mock
+    private EmployeurRepository employeurRepository;
+
     @InjectMocks
     private InternshipOfferService internshipOfferService;
 
     private Employeur employeur;
+    private EmployeurDto employeurDto;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +58,7 @@ class InternshipOfferServiceTest {
                 .companyName("TechCorp")
                 .field("IT")
                 .build();
-
+        employeurDto = EmployeurDto.create(employeur);
         Path baseDir = Paths.get("uploads/offers/1");
         try {
             if (Files.exists(baseDir)) {
@@ -74,72 +80,76 @@ class InternshipOfferServiceTest {
     }
 
 
-//    @Test
-//    void createOffer_validPdf_savesOffer() throws Exception {
-//        // Arrange
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        Document document = new Document();
-//        PdfWriter.getInstance(document, baos);
-//        document.open();
-//        document.add(new Paragraph("Hello Internship PDF"));
-//        document.close();
-//        byte[] pdfBytes = baos.toByteArray();
-//
-//        MockMultipartFile pdfFile = new MockMultipartFile(
-//                "file", "offer.pdf", "application/pdf", pdfBytes
-//        );
-//
-//        when(internshipOfferRepository.save(any(InternshipOffer.class)))
-//                .thenAnswer(invocation -> {
-//                    InternshipOffer offer = invocation.getArgument(0);
-//                    offer.setId(10L);
-//                    return offer;
-//                });
-//
-//        // Act
-//        InternshipOfferDto result = internshipOfferService.createOfferDto(
-//                "Stage en Java",
-//                LocalDate.now(),
-//                12,
-//                "123 rue Tech",
-//                1000f,
-//                employeur,
-//                pdfFile
-//        );
-//
-//        // Assert
-//        assertThat(result).isNotNull();
-//        assertThat(result.getId()).isEqualTo(10L);
-//        assertThat(result.getStatus()).isEqualTo("PENDING_VALIDATION");
-//
-//        String expectedDir = Paths.get("uploads", "offers", "1").toString();
-//        assertThat(result.getPdfPath()).contains(expectedDir);
-//        assertThat(result.getPdfPath()).contains("offer.pdf_");
-//
-//        verify(internshipOfferRepository, times(1)).save(any(InternshipOffer.class));
-//    }
+    @Test
+    void createOffer_validPdf_savesOffer() throws Exception {
+        // Arrange
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Document document = new Document();
+        PdfWriter.getInstance(document, baos);
+        document.open();
+        document.add(new Paragraph("Hello Internship PDF"));
+        document.close();
+        byte[] pdfBytes = baos.toByteArray();
+
+        MockMultipartFile pdfFile = new MockMultipartFile(
+                "file", "offer.pdf", "application/pdf", pdfBytes
+        );
+
+        when(employeurRepository.findById(employeurDto.getId()))
+                .thenReturn(Optional.of(employeur));
+
+        when(internshipOfferRepository.save(any(InternshipOffer.class)))
+                .thenAnswer(invocation -> {
+                    InternshipOffer offer = invocation.getArgument(0);
+                    offer.setId(10L);
+                    return offer;
+                });
+
+        // Act
+        InternshipOfferDto result = internshipOfferService.createOfferDto(
+                "Stage en Java",
+                LocalDate.now(),
+                12,
+                "123 rue Tech",
+                1000f,
+                employeurDto,
+                pdfFile
+        );
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(10L);
+        assertThat(result.getStatus()).isEqualTo("PENDING_VALIDATION");
+
+        String expectedDir = Paths.get("uploads", "offers", "1").toString();
+        assertThat(result.getPdfPath()).contains(expectedDir);
+        assertThat(result.getPdfPath()).contains("offer.pdf_");
+
+        verify(internshipOfferRepository, times(1)).save(any(InternshipOffer.class));
+    }
 
 
+    @Test
+    void createOffer_invalidPdf_throwsException() {
+        // Arrange
+        MockMultipartFile invalidPdf = new MockMultipartFile(
+                "file", "bad.txt", "text/plain", "hello".getBytes()
+        );
+        when(employeurRepository.findById(employeurDto.getId()))
+                .thenReturn(Optional.of(employeur));
 
-//    @Test
-//    void createOffer_invalidPdf_throwsException() {
-//        // Arrange
-//        MockMultipartFile invalidPdf = new MockMultipartFile(
-//                "file", "bad.txt", "text/plain", "hello".getBytes()
-//        );
-//
-//        // Act + Assert
-//        assertThatThrownBy(() -> internshipOfferService.createOfferDto(
-//                "Stage en DevOps",
-//                LocalDate.now(),
-//                10,
-//                "456 rue Cloud",
-//                500f,
-//                employeur,
-//                invalidPdf
-//        )).isInstanceOf(IllegalArgumentException.class)
-//                .hasMessageContaining("PDF invalide");
-//    }
+        // Act + Assert
+        assertThatThrownBy(() -> internshipOfferService.createOfferDto(
+                "Stage en DevOps",
+                LocalDate.now(),
+                10,
+                "456 rue Cloud",
+                500f,
+                employeurDto,
+                invalidPdf
+        )).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("PDF invalide");
+    }
 
     @Test
     void getOffer_existingId_returnsOffer() {

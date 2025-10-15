@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = EmployeurController.class)
 @ActiveProfiles("test")
-@Import(value = TestSecurityConfiguration.class)
+@Import(TestSecurityConfiguration.class)
 class EmployeurControllerTest {
 
     @Autowired
@@ -53,6 +53,9 @@ class EmployeurControllerTest {
 
     @MockitoBean
     CandidatureRepository candidatureRepository;
+
+    @MockitoBean
+    private EmployeurService employeurService;
 
 
     @Test

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(GestionnaireController.class)
@@ -193,20 +195,21 @@ class GestionnaireControllerTest {
 
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), fileName);
         Files.write(tempPath, "test pdf content".getBytes());
+        UrlResource mockResource = new UrlResource(tempPath.toUri());
 
         Cv cv = Cv.builder()
                 .id(cvId)
                 .pdfPath(tempPath.toString())
                 .build();
 
-        when(cvRepository.findById(cvId)).thenReturn(Optional.of(cv));
+        when(cvService.downloadCv(cvId)).thenReturn(mockResource);
 
         mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF))
                 .andExpect(header().string("Content-Disposition", "attachment; filename=\"" + fileName + "\""));
 
-        verify(cvRepository, times(1)).findById(cvId);
+        verify(cvService, times(1)).downloadCv(cvId);
 
         Files.deleteIfExists(tempPath);
     }
@@ -214,20 +217,13 @@ class GestionnaireControllerTest {
     @Test
     void downloadCv_ShouldThrowException_WhenCvNotFound() throws Exception {
         Long cvId = 999L;
-        when(cvRepository.findById(cvId)).thenReturn(Optional.empty());
+        when(cvService.downloadCv(cvId)).thenThrow(new RuntimeException("Cv introuvable"));
+        mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Cv introuvable")));
 
-        try {
-            mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId));
-        } catch (Exception e) {
-
-            Throwable cause = e.getCause();
-            while (cause != null && !(cause instanceof RuntimeException && cause.getMessage().contains("CV introuvable"))) {
-                cause = cause.getCause();
-            }
-            assert cause != null : "Expected RuntimeException with 'CV introuvable' message";
-        }
-
-        verify(cvRepository, times(1)).findById(cvId);
+        verify(cvService, times(1)).downloadCv(cvId);
     }
 
     @Test
@@ -261,14 +257,15 @@ class GestionnaireControllerTest {
         Long cvId = 123L;
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), "temp-cv.pdf");
         Files.write(tempPath, "test content".getBytes());
+        UrlResource mockResource = new UrlResource(tempPath.toUri());
 
         sampleCv.setPdfPath(tempPath.toString());
-        when(cvRepository.findById(cvId)).thenReturn(Optional.of(sampleCv));
+        when(cvService.downloadCv(cvId)).thenReturn(mockResource);
 
         mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
                 .andExpect(status().isOk());
 
-        verify(cvRepository, times(1)).findById(cvId);
+        verify(cvService, times(1)).downloadCv(cvId);
 
         Files.deleteIfExists(tempPath);
     }
@@ -305,9 +302,10 @@ class GestionnaireControllerTest {
     void shouldMapGetRequestToDownloadEndpoint() throws Exception {
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), "test.pdf");
         Files.write(tempPath, "content".getBytes());
+        UrlResource mockResource = new UrlResource(tempPath.toUri());
 
         sampleCv.setPdfPath(tempPath.toString());
-        when(cvRepository.findById(anyLong())).thenReturn(Optional.of(sampleCv));
+        when(cvService.downloadCv(anyLong())).thenReturn(mockResource);
 
         mockMvc.perform(get("/gestionnaire/cv/1/download"))
                 .andExpect(status().isOk());
@@ -337,7 +335,7 @@ class GestionnaireControllerTest {
 
     @Test
     void getOfferDetails_returnOffers() throws Exception{
-        when(internshipOfferService.getOfferDetails(1L)).thenReturn(internshipOfferDto);
+        when(internshipOfferService.getOffer(1L)).thenReturn(internshipOfferDto);
         mockMvc.perform(get("/gestionnaire/offers/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))

@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 
-//todo: Cliqyé sur l'offre de stage m'amène une erreur 401, et le nombre de candidatures n'est pas mis en jour.
 
 @RequiredArgsConstructor
 @RestController

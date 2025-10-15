@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,15 +67,22 @@ public class GestionnaireController {
     }
 
     @GetMapping("/cv/{cvId}/download")
-    public ResponseEntity<Resource> downloadCv(@PathVariable Long cvId) throws IOException {
+    public ResponseEntity<?> downloadCv(@PathVariable Long cvId){
+        try{
 
-        Resource resource = cvService.downloadCv(cvId);
-        Path filepath = Paths.get(resource.getFile().getAbsolutePath());
+            Resource resource = cvService.downloadCv(cvId);
+            Path filepath = Paths.get(resource.getFile().getAbsolutePath());
 
-        return ResponseEntity.ok()
+            return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filepath.getFileName() + "\"")
                 .body(resource);
+        }
+        catch(RuntimeException | IOException e){
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
     }
 
     @GetMapping("/offers/{id}/pdf")

@@ -14,6 +14,7 @@ public class InternshipOfferMapper {
             .address(offer.getAddress())
             .remuneration(offer.getRemuneration())
             .status(offer.getStatus() != null ? offer.getStatus().name() : "PENDING_VALIDATION")
+            .validationDate(offer.getValidationDate())
             .employeurId(offer.getEmployeurId())
             .companyName(offer.getCompanyName())
             .pdfPath(offer.getPdfPath())
