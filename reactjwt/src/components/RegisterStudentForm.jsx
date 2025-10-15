@@ -309,7 +309,7 @@ function SelectField({ id, label, value, onChange, error, options, loading, plac
             >
                 <option value="">{loading ? t("registerEtudiant.loadingPrograms") : placeholder}</option>
                 {options.map((program) => (
-                    <option key={program.code} value={program.code}>
+                    <option key={program.code} value={program.translationKey}>
                         {t(program.translationKey)}
                     </option>
                 ))}
