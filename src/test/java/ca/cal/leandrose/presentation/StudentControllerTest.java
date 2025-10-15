@@ -1,14 +1,12 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
-import ca.cal.leandrose.service.CandidatureService;
-import ca.cal.leandrose.service.CvService;
-import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.UserAppService;
+import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.UserDTO;
@@ -51,6 +49,9 @@ class StudentControllerTest {
 
     @MockitoBean
     private InternshipOfferService internshipOfferService;
+
+    @MockitoBean
+    private ConvocationService convocationService;
 
     @Test
     void getCv_missingAuthorization_returnsUnauthorized() throws Exception {
@@ -253,4 +254,158 @@ class StudentControllerTest {
         mockMvc.perform(get("/student/offers/101/pdf"))
                 .andExpect(status().isForbidden());
     }
+
+
+// ===== TESTS POUR ACCEPTATION DE CANDIDATURE PAR L'ÉTUDIANT =====
+
+    @Test
+    void acceptCandidature_asStudent_returnsAcceptedCandidature() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+        CandidatureDto candidature = CandidatureDto.builder()
+                .id(100L)
+                .status(Candidature.Status.ACCEPTED)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.acceptByStudent(100L, 1L)).thenReturn(candidature);
+
+        mockMvc.perform(post("/student/applications/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(100))
+                .andExpect(jsonPath("$.status").value("ACCEPTED"));
+
+        verify(candidatureService).acceptByStudent(100L, 1L);
+    }
+
+    @Test
+    void acceptCandidature_notStudent_returnsForbidden() throws Exception {
+        UserDTO dto = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+        when(userAppService.getMe(anyString())).thenReturn(dto);
+
+        mockMvc.perform(post("/student/applications/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).acceptByStudent(anyLong(), anyLong());
+    }
+
+    @Test
+    void acceptCandidature_notAcceptedByEmployeur_returnsBadRequest() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.acceptByStudent(100L, 1L))
+                .thenThrow(new IllegalStateException("L'employeur doit d'abord accepter cette candidature"));
+
+        mockMvc.perform(post("/student/applications/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("L'employeur doit d'abord accepter cette candidature"));
+    }
+
+    @Test
+    void acceptCandidature_candidatureNotFound_returnsNotFound() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.acceptByStudent(999L, 1L))
+                .thenThrow(new RuntimeException("Candidature introuvable"));
+
+        mockMvc.perform(post("/student/applications/999/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Candidature non trouvée"));
+    }
+
+    @Test
+    void acceptCandidature_notOwnCandidature_returnsBadRequest() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.acceptByStudent(100L, 1L))
+                .thenThrow(new IllegalStateException("Cette candidature ne vous appartient pas"));
+
+        mockMvc.perform(post("/student/applications/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Cette candidature ne vous appartient pas"));
+    }
+
+// ===== TESTS POUR REJET DE CANDIDATURE PAR L'ÉTUDIANT =====
+
+    @Test
+    void rejectCandidature_asStudent_returnsRejectedCandidature() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+        CandidatureDto candidature = CandidatureDto.builder()
+                .id(100L)
+                .status(Candidature.Status.REJECTED)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.rejectByStudent(100L, 1L)).thenReturn(candidature);
+
+        mockMvc.perform(post("/student/applications/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(100))
+                .andExpect(jsonPath("$.status").value("REJECTED"));
+
+        verify(candidatureService).rejectByStudent(100L, 1L);
+    }
+
+    @Test
+    void rejectCandidature_notStudent_returnsForbidden() throws Exception {
+        UserDTO dto = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+        when(userAppService.getMe(anyString())).thenReturn(dto);
+
+        mockMvc.perform(post("/student/applications/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).rejectByStudent(anyLong(), anyLong());
+    }
+
+    @Test
+    void rejectCandidature_notAcceptedByEmployeur_returnsBadRequest() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.rejectByStudent(100L, 1L))
+                .thenThrow(new IllegalStateException("Vous ne pouvez refuser que les candidatures acceptées par l'employeur"));
+
+        mockMvc.perform(post("/student/applications/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Vous ne pouvez refuser que les candidatures acceptées par l'employeur"));
+    }
+
+    @Test
+    void rejectCandidature_candidatureNotFound_returnsNotFound() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.rejectByStudent(999L, 1L))
+                .thenThrow(new RuntimeException("Candidature introuvable"));
+
+        mockMvc.perform(post("/student/applications/999/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Candidature non trouvée"));
+    }
+
+    @Test
+    void rejectCandidature_notOwnCandidature_returnsBadRequest() throws Exception {
+        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+        when(candidatureService.rejectByStudent(100L, 1L))
+                .thenThrow(new IllegalStateException("Cette candidature ne vous appartient pas"));
+
+        mockMvc.perform(post("/student/applications/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Cette candidature ne vous appartient pas"));
+    }
+
 }
