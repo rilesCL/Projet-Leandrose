@@ -222,4 +222,389 @@ class EmployeurControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Already convened"));
     }
+
+
+// ===== TESTS POUR ACCEPTATION PAR L'EMPLOYEUR =====
+
+    @Test
+    void acceptCandidature_asEmployeur_returnsAcceptedByEmployeur() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(1L)
+                .status(Candidature.Status.ACCEPTEDBYEMPLOYEUR)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+        when(candidatureService.acceptByEmployeur(100L)).thenReturn(candidatureDto);
+
+        mockMvc.perform(post("/employeur/candidatures/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(100))
+                .andExpect(jsonPath("$.status").value("ACCEPTEDBYEMPLOYEUR"));
+
+        verify(candidatureService).acceptByEmployeur(100L);
+    }
+
+    @Test
+    void acceptCandidature_notEmployeur_returnsForbidden() throws Exception {
+        UserDTO studentDto = EmployeurDto.builder()
+                .id(2L)
+                .role(Role.STUDENT)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(post("/employeur/candidatures/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).acceptByEmployeur(anyLong());
+    }
+
+    @Test
+    void acceptCandidature_notOwnCandidature_returnsForbidden() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(2L) // Différent employeur
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+
+        mockMvc.perform(post("/employeur/candidatures/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).acceptByEmployeur(anyLong());
+    }
+
+    @Test
+    void acceptCandidature_alreadyRejected_returnsBadRequest() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(1L)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+        when(candidatureService.acceptByEmployeur(100L))
+                .thenThrow(new IllegalStateException("Impossible d'accepter une candidature déjà rejetée"));
+
+        mockMvc.perform(post("/employeur/candidatures/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Impossible d'accepter une candidature déjà rejetée"));
+    }
+
+    @Test
+    void acceptCandidature_alreadyAccepted_returnsBadRequest() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(1L)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+        when(candidatureService.acceptByEmployeur(100L))
+                .thenThrow(new IllegalStateException("Cette candidature est déjà entièrement acceptée"));
+
+        mockMvc.perform(post("/employeur/candidatures/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Cette candidature est déjà entièrement acceptée"));
+    }
+
+    @Test
+    void acceptCandidature_alreadyAcceptedByEmployeur_returnsBadRequest() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(1L)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+        when(candidatureService.acceptByEmployeur(100L))
+                .thenThrow(new IllegalStateException("Vous avez déjà accepté cette candidature, en attente de la réponse de l'étudiant"));
+
+        mockMvc.perform(post("/employeur/candidatures/100/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Vous avez déjà accepté cette candidature, en attente de la réponse de l'étudiant"));
+    }
+
+    @Test
+    void acceptCandidature_candidatureNotFound_returnsNotFound() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(999L))
+                .thenThrow(new RuntimeException("Candidature introuvable"));
+
+        mockMvc.perform(post("/employeur/candidatures/999/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Candidature non trouvée"));
+    }
+
+// ===== TESTS POUR REJET PAR L'EMPLOYEUR =====
+
+    @Test
+    void rejectCandidature_asEmployeur_returnsRejected() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(1L)
+                .status(Candidature.Status.REJECTED)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+        when(candidatureService.rejectByEmployeur(100L)).thenReturn(candidatureDto);
+
+        mockMvc.perform(post("/employeur/candidatures/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(100))
+                .andExpect(jsonPath("$.status").value("REJECTED"));
+
+        verify(candidatureService).rejectByEmployeur(100L);
+    }
+
+    @Test
+    void rejectCandidature_notEmployeur_returnsForbidden() throws Exception {
+        UserDTO studentDto = EmployeurDto.builder()
+                .id(2L)
+                .role(Role.STUDENT)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(post("/employeur/candidatures/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).rejectByEmployeur(anyLong());
+    }
+
+    @Test
+    void rejectCandidature_notOwnCandidature_returnsForbidden() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(2L) // Différent employeur
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+
+        mockMvc.perform(post("/employeur/candidatures/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).rejectByEmployeur(anyLong());
+    }
+
+    @Test
+    void rejectCandidature_alreadyAcceptedByBothParties_returnsBadRequest() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(1L)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+        when(candidatureService.rejectByEmployeur(100L))
+                .thenThrow(new IllegalStateException("Impossible de rejeter une candidature déjà acceptée par les deux parties"));
+
+        mockMvc.perform(post("/employeur/candidatures/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Impossible de rejeter une candidature déjà acceptée par les deux parties"));
+    }
+
+    @Test
+    void rejectCandidature_alreadyRejected_returnsBadRequest() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureDto candidatureDto = CandidatureDto.builder()
+                .id(100L)
+                .employeurId(1L)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+        when(candidatureService.rejectByEmployeur(100L))
+                .thenThrow(new IllegalStateException("Cette candidature est déjà rejetée"));
+
+        mockMvc.perform(post("/employeur/candidatures/100/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Cette candidature est déjà rejetée"));
+    }
+
+    @Test
+    void rejectCandidature_candidatureNotFound_returnsNotFound() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(999L))
+                .thenThrow(new RuntimeException("Candidature introuvable"));
+
+        mockMvc.perform(post("/employeur/candidatures/999/reject")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Candidature non trouvée"));
+    }
+
+// ===== TESTS POUR RÉCUPÉRATION DES CANDIDATURES =====
+
+    @Test
+    void getCandidaturesForOffer_asEmployeur_returnsList() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(100L)
+                .employeur(Employeur.builder().id(1L).build())
+                .build();
+
+        CandidatureEmployeurDto candidature = CandidatureEmployeurDto.builder()
+                .id(50L)
+                .studentFirstName("Alice")
+                .studentLastName("Martin")
+                .status(Candidature.Status.PENDING)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+        when(candidatureService.getCandidaturesByOffer(100L)).thenReturn(List.of(candidature));
+
+        mockMvc.perform(get("/employeur/offers/100/candidatures")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(50))
+                .andExpect(jsonPath("$[0].studentFirstName").value("Alice"))
+                .andExpect(jsonPath("$[0].studentLastName").value("Martin"));
+
+        verify(candidatureService).getCandidaturesByOffer(100L);
+    }
+
+    @Test
+    void getCandidaturesForOffer_notOwnOffer_returnsForbidden() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        InternshipOffer offer = InternshipOffer.builder()
+                .id(100L)
+                .employeur(Employeur.builder().id(2L).build()) // Différent employeur
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+
+        mockMvc.perform(get("/employeur/offers/100/candidatures")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).getCandidaturesByOffer(anyLong());
+    }
+
+    @Test
+    void getAllMyCandidatures_asEmployeur_returnsList() throws Exception {
+        UserDTO employeurDto = EmployeurDto.builder()
+                .id(1L)
+                .role(Role.EMPLOYEUR)
+                .build();
+
+        CandidatureEmployeurDto candidature1 = CandidatureEmployeurDto.builder()
+                .id(50L)
+                .studentFirstName("Alice")
+                .build();
+
+        CandidatureEmployeurDto candidature2 = CandidatureEmployeurDto.builder()
+                .id(51L)
+                .studentFirstName("Bob")
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidaturesByEmployeur(1L))
+                .thenReturn(List.of(candidature1, candidature2));
+
+        mockMvc.perform(get("/employeur/candidatures")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(50))
+                .andExpect(jsonPath("$[1].id").value(51));
+
+        verify(candidatureService).getCandidaturesByEmployeur(1L);
+    }
+
+    @Test
+    void getAllMyCandidatures_notEmployeur_returnsForbidden() throws Exception {
+        UserDTO studentDto = EmployeurDto.builder()
+                .id(2L)
+                .role(Role.STUDENT)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/employeur/candidatures")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(candidatureService, never()).getCandidaturesByEmployeur(anyLong());
+    }
 }
