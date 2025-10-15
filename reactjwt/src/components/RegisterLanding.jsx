@@ -21,7 +21,6 @@ export default function RegisterLanding() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Student Card */}
                     <div className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-indigo-500">
                         <div className="text-center mb-6">
                             <div className="mx-auto w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
@@ -58,7 +57,6 @@ export default function RegisterLanding() {
                         </button>
                     </div>
 
-                    {/* Employer Card */}
                     <div className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-indigo-500">
                         <div className="text-center mb-6">
                             <div className="mx-auto w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4">

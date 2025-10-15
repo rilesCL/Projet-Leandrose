@@ -52,7 +52,6 @@ export default function InternshipOffersList() {
         fetchOffers();
     }, [t]);
 
-    // Récupère les candidatures par offre pour compter & prévisualiser
     useEffect(() => {
         if (!offers || offers.length === 0) return;
         let cancelled = false;
@@ -83,7 +82,7 @@ export default function InternshipOffersList() {
             return (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                     <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
-                    {t("internshipOffersList.status.pending")}
+                    {t("internshipOffersList.status.pendingapproval")}
                 </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
@@ -149,6 +148,10 @@ export default function InternshipOffersList() {
         }
     };
 
+    const handleCreateOffer = () => {
+        navigate('/dashboard/employeur/createOffer');
+    };
+
     if (loading) {
         return (
             <div className="bg-white shadow rounded-lg p-8 text-center">
@@ -191,13 +194,13 @@ export default function InternshipOffersList() {
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">{t("internshipOffersList.noOffersTitle")}</h3>
                 <p className="text-gray-600 mb-4">{t("internshipOffersList.noOffersDescription")}</p>
-                <a
-                    href="/dashboard/employeur/createOffer"
+                <button
+                    onClick={handleCreateOffer}
                     className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
                     <span className="mr-2">➕</span>
                     {t("internshipOffersList.createOffer")}
-                </a>
+                </button>
             </div>
         );
     }
@@ -304,13 +307,13 @@ export default function InternshipOffersList() {
             </div>
 
             <div className="px-6 py-3 bg-gray-50 text-right">
-                <a
-                    href="/dashboard/employeur/createOffer"
+                <button
+                    onClick={handleCreateOffer}
                     className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
                 >
                     {t("internshipOffersList.createNewOffer")}
                     <span className="ml-1">➕</span>
-                </a>
+                </button>
             </div>
 
             {showCommentModal && (

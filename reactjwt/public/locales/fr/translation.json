@@ -1,5 +1,13 @@
 {
   "appName": "LeandrOSE",
+  "previewPdf": {
+    "preview": "Aperçu",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "loading": "Chargement du document...",
+    "error": "Impossible d'afficher le document"
+  },
   "program": {
     "computer_science": "Informatique",
     "software_engineering": "Génie logiciel",
@@ -260,10 +268,11 @@
       "actions": "Actions"
     },
     "status": {
-      "pending": "En attente",
+
       "published": "Publiée",
       "rejected": "Rejetée",
-      "unknown": "Inconnu"
+      "unknown": "Inconnu",
+      "pendingapproval": "En attente d'approbation"
     },
     "notDefined": "Non définie",
     "notSpecified": "Lieu non spécifié",
@@ -330,10 +339,11 @@
       "actions": "Actions"
     },
     "status": {
-      "pending": "En attente",
+      "pendingapproval":"En attente d'approbation",
       "approved": "Approuvé",
       "rejected": "Rejeté",
       "unknown": "Inconnu"
+
     },
     "actions": {
       "preview": "Aperçu",
@@ -376,7 +386,8 @@
     "actions": {
       "download": "Télécharger CV",
       "approve": "Approuver",
-      "reject": "Rejeter"
+      "reject": "Rejeter",
+      "view" : "Voir l'aperçu"
     },
     "errors": {
       "serverError": "Erreur lors du chargement des CVs",
@@ -406,7 +417,7 @@
       "downloadPdf": "Télécharger PDF"
     },
     "status": {
-      "pending": "En attente",
+      "pendingapproval": "En attente d'approbation",
       "approved": "Publiée",
       "rejected": "Rejetée",
       "unknown": "Inconnu"
@@ -534,7 +545,8 @@
     "applyButton": "Postuler à cette offre",
     "applyButtonSuccess": "Candidature envoyée",
     "applyButtonAlready": "Déjà postulée",
-    "applyButtonLoading": "Envoi en cours..."
+    "applyButtonLoading": "Envoi en cours...",
+    "loading": "Chargement des détails..."
   },
   "StudentInternshipOffersList": {
     "loading": "Chargement des offres...",
@@ -577,6 +589,7 @@
       "offer": "Offre",
       "date": "Date",
       "status": "Statut",
+      "candidatures": "Candidatures",
       "actions": "Actions"
     },
     "actions": {
@@ -608,6 +621,7 @@
     "title": "Offre de Stage",
     "details": "Détails",
     "info": "Infos offre de stage",
+    "weeks": "semaine(s)",
     "back": "Précédent",
     "email": "Courriel",
     "duration": "Duration",
@@ -617,5 +631,8 @@
       "REJECTED": "rejeté",
       "PUBLISHED": "approuvé"
     }
+  },
+  "common": {
+    "cancel": "Annuler"
   }
 }
