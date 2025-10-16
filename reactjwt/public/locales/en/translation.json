@@ -425,6 +425,8 @@
       "download": "Error downloading the offer"
     }
   },"studentApplicationsList": {
+  "acceptSuccess": "You have accepted the offer",
+  "rejectSuccess": "You have rejected the offer",
   "filterBy": "Filter by status:",
   "tabs": {
     "all": "All",

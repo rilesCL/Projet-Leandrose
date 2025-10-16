@@ -429,10 +429,12 @@
     }
   },
   "studentApplicationsList": {
+    "acceptSuccess": "Vous avez accepté l'offre",
+    "rejectSuccess": "Vous avez rejeté l'offre",
     "filterBy": "Filtrer par statut :",
     "tabs": {
       "all": "Toutes",
-      "awaiting": "En attente de réponse",
+      "awaiting": "En attente de votre réponse",
       "pending": "En attente",
       "convened": "Convoqué",
       "accepted": "Acceptées",
