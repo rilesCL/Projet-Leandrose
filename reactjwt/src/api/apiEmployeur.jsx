@@ -39,12 +39,6 @@ export async function uploadStageEmployeur(offer, pdfFile, token = null) {
     const res = await handleFetch(url, { method: "POST", headers, body: formData });
     return res.json();
 }
-
-export async function getEmployerCandidatures(token = null) {
-    const res = await handleFetch(`${API_BASE}/employeur/candidatures`, { headers: authHeaders(token) });
-    return res.json();
-}
-
 export async function getOfferCandidatures(offerId, token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/candidatures`, { headers: authHeaders(token) });
     return res.json();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
-import { getOfferCandidatures } from '../api/apiEmployeur';
+import {getOfferCandidatures, previewOfferPdf} from '../api/apiEmployeur';
 import PdfViewer from './PdfViewer.jsx';
 
 const API_BASE = 'http://localhost:8080';
@@ -125,21 +125,10 @@ export default function InternshipOffersList() {
     const handlePreviewOffer = async (offerId) => {
         try {
             const token = sessionStorage.getItem("accessToken");
-            const response = await fetch(`${API_BASE}/employeur/offers/${offerId}/download`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                setPdfUrl(url);
-                setShowPdfModal(true);
-            } else {
-                alert(t("internshipOffersList.previewError"));
-            }
+            const blob = await previewOfferPdf(offerId, token);
+            const url = window.URL.createObjectURL(blob);
+            setPdfUrl(url);
+            setShowPdfModal(true);
         } catch (error) {
             console.error('Preview error:', error);
             alert(t("internshipOffersList.previewError"));
