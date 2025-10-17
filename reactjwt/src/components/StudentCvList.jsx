@@ -132,7 +132,7 @@ export default function StudentCvList() {
                 <p className="text-gray-600 mb-4">{t("studentCvList.noCvDescription")}</p>
                 <a
                     href="/dashboard/student/uploadCv"
-                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 hover:text-white transition-colors"
                 >
                     <span className="mr-2">➕</span>
                     {t("studentCvList.uploadCv")}
