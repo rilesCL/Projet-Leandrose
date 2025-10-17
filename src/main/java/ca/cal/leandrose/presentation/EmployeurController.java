@@ -30,11 +30,9 @@ public class EmployeurController {
 
     private final UserAppService userService;
     private final InternshipOfferService internshipOfferService;
-    private final EmployeurRepository employeurRepository;
     private final EmployeurService employeurService;
     private final CandidatureService candidatureService;
     private final ConvocationService convocationService;
-    private final CandidatureRepository candidatureRepository;
 
     @GetMapping("/offers")
     public ResponseEntity<List<InternshipOfferDto>> getMyOffers(HttpServletRequest request) {
@@ -76,8 +74,6 @@ public class EmployeurController {
 
         EmployeurDto employeurDto = employeurService.getEmployeurById(me.getId());
 
-//        Employeur employeur = employeurRepository.findById(me.getId())
-//                .orElseThrow(UserNotFoundException::new);
 
         InternshipOfferDto offerDto = internshipOfferService.createOfferDto(
                 offerRequest.getDescription(),
@@ -252,19 +248,10 @@ public class EmployeurController {
                 return ResponseEntity.status(403).build();
             }
 
-//            Candidature candidature = candidatureRepository.findById(candidatureId)
-//                    .orElseThrow(() -> new RuntimeException("Candidature non trouvée"));
-//
-//            if (!candidature.getInternshipOffer().getEmployeur().getId().equals(me.getId())) {
-//                return ResponseEntity.status(403).build();
-//            }
 
             CvDto cv = candidatureDto.getCv();
             Path filePath = Paths.get(cv.getPdfPath());
-//            CvD cv = candidature.getCv();
-//            Path filePath = Paths.get(cv.getPdfPath());
 
-//
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {

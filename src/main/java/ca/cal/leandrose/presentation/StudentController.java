@@ -143,9 +143,6 @@ public class StudentController {
             return ResponseEntity.status(403).build();
         }
 
-//        if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED)) {
-//            return ResponseEntity.status(403).build();
-//        }
 
         return ResponseEntity.ok(offer);
     }
@@ -193,9 +190,6 @@ public class StudentController {
             if (!"PUBLISHED".equals(offer.getStatus())){
                 return ResponseEntity.status(403).build();
             }
-//            if (offer.getStatus().equals(InternshipOffer.Status.PUBLISHED.name())) {
-//                return ResponseEntity.status(403).build();
-//            }
 
             byte[] pdfData = internshipOfferService.getOfferPdf(id);
             return ResponseEntity.ok()

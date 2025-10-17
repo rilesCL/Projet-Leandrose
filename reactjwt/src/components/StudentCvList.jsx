@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PdfViewer from "./PdfViewer.jsx";
+import {previewStudentCv} from "../api/apiStudent.jsx";
 
 export default function StudentCvList() {
     const { t } = useTranslation();
@@ -67,18 +68,10 @@ export default function StudentCvList() {
     const handlePreview = async () => {
         try {
             const token = sessionStorage.getItem("accessToken");
-            const response = await fetch("http://localhost:8080/student/cv/download", {
-                method: "GET",
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                setPdfUrl(url);
-                setShowPdfModal(true);
-            } else {
-                alert(t("studentCvList.previewError"));
-            }
+            const blob = await previewStudentCv(token);
+            const url = window.URL.createObjectURL(blob);
+            setPdfUrl(url);
+            setShowPdfModal(true);
         } catch (err) {
             alert(t("studentCvList.previewError"));
         }
@@ -132,7 +125,7 @@ export default function StudentCvList() {
                 <p className="text-gray-600 mb-4">{t("studentCvList.noCvDescription")}</p>
                 <a
                     href="/dashboard/student/uploadCv"
-                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 hover:text-white transition-colors"
                 >
                     <span className="mr-2">➕</span>
                     {t("studentCvList.uploadCv")}

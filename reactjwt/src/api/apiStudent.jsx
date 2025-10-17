@@ -67,27 +67,6 @@ export async function getStudentCv(token = null) {
     }
 }
 
-export async function downloadStudentCv(token = null) {
-    try {
-        const accessToken = token || sessionStorage.getItem('accessToken');
-        const headers = {};
-
-        if (accessToken) {
-            headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-
-        const response = await fetch(`${API_BASE}/student/cv/download`, {
-            method: 'GET',
-            headers
-        });
-
-        await handleApiResponse(response);
-        return response;
-    } catch (error) {
-        throw new Error(error.message || 'Erreur lors du téléchargement du CV');
-    }
-}
-
 export async function getPublishedOffers(token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/offers`, {
@@ -116,38 +95,6 @@ export async function getOfferDetails(offerId, token = null) {
         throw new Error(error.message || 'Erreur lors de la récupération des détails');
     }
 }
-
-
-    export async function downloadOfferPdf(offerId, token = null) {
-        try {
-            const accessToken = token || sessionStorage.getItem('accessToken');
-            const headers = {};
-
-            if (accessToken) {
-                headers['Authorization'] = `Bearer ${accessToken}`;
-            }
-
-            const response = await fetch(`${API_BASE}/student/offers/${offerId}/pdf`, {
-                method: 'GET',
-                headers
-            });
-
-            await handleApiResponse(response);
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `offre_${offerId}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        } catch (error) {
-            throw new Error(error.message || 'Erreur lors du téléchargement du PDF');
-        }
-    }
-
 
     export async function applyToOffer(offerId, cvId, token = null) {
         try {
@@ -219,5 +166,23 @@ export async function previewOfferPdfStudent(offerId, token = null) {
         return await response.blob();
     } catch (error) {
         throw new Error(error.message || "Erreur lors du chargement du PDF");
+    }
+}
+
+export async function previewStudentCv(token = null) {
+    try {
+        const accessToken = token || sessionStorage.getItem("accessToken");
+        const headers = {};
+        if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+        const response = await fetch(`${API_BASE}/student/cv/download`, {
+            method: "GET",
+            headers,
+        });
+
+        await handleApiResponse(response);
+        return await response.blob();
+    } catch (error) {
+        throw new Error(error.message || "Erreur lors du chargement du CV");
     }
 }
