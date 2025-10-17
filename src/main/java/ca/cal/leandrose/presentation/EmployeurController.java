@@ -1,10 +1,8 @@
 package ca.cal.leandrose.presentation;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
-import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
-import ca.cal.leandrose.repository.EmployeurRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
