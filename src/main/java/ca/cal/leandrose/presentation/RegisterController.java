@@ -1,6 +1,5 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.presentation.request.RegisterEmployeur;
 import ca.cal.leandrose.presentation.request.RegisterStudent;
 import ca.cal.leandrose.service.EmployeurService;

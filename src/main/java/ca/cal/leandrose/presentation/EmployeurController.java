@@ -1,12 +1,6 @@
 package ca.cal.leandrose.presentation;
-
-//import ca.cal.leandrose.model.Candidature;
-//import ca.cal.leandrose.model.Cv;
-//import ca.cal.leandrose.model.Employeur;
-import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.repository.CandidatureRepository;
-import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
