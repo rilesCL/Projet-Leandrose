@@ -306,9 +306,25 @@ export default function InternshipOffersList() {
 
                 {showCommentModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-                            <h2 className="text-lg font-semibold mb-4 text-red-700">{t('internshipOffersList.rejectionCommentTitle', 'Commentaire de rejet')}</h2>
-                            <p className="text-gray-800 whitespace-pre-line">{currentComment}</p>
+                        <div className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full max-h-[80vh] mx-4 overflow-hidden">
+                            <h2 className="text-lg font-semibold mb-4 text-red-700">
+                                {t('internshipOffersList.rejectionCommentTitle', 'Commentaire de rejet')}
+                            </h2>
+
+                            <div className="text-gray-800 overflow-auto max-h-[60vh]">
+                <pre
+                    className="whitespace-pre-wrap break-words text-sm"
+                    style={{
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        margin: 0
+                    }}
+                >
+                    {currentComment}
+                </pre>
+                            </div>
+
                             <div className="mt-6 text-right">
                                 <button
                                     onClick={() => setShowCommentModal(false)}
