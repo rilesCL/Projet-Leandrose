@@ -78,7 +78,7 @@ class EmployeurControllerTest {
 
         mockMvc.perform(get("/employeur/offers/100/download")
                         .header("Authorization", "Bearer token"))
-                .andExpect(status().isNotFound()); // file not present in test, endpoint exists
+                .andExpect(status().isNotFound());
     }
 
     @Test

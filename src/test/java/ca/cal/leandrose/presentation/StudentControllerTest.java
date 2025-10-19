@@ -61,7 +61,7 @@ class StudentControllerTest {
 
     @BeforeEach
     void setup(){
-        studentDto = StudentDto.builder()  // ✅ use StudentDto
+        studentDto = StudentDto.builder()
                 .id(1L)
                 .firstName("John")
                 .lastName("Doe")
@@ -172,13 +172,13 @@ class StudentControllerTest {
 
     @Test
     void getCv_asStudent_returnsCvDto() throws Exception {
-//        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
         Student student = Student.builder().id(1L).build();
         CvDto cvDto = CvDto.builder().id(1L).pdfPath("path/to/cv.pdf").build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
         when(studentService.getStudentById(1L)).thenReturn(studentDto);
-//        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+
         when(cvService.getCvByStudentId(1L)).thenReturn(cvDto);
 
         mockMvc.perform(get("/student/cv")

@@ -206,7 +206,7 @@ export default function PendingOffersPage() {
                             <textarea
                                 value={rejectModal.comment}
                                 onChange={(e) => setRejectModal((prev) => ({ ...prev, comment: e.target.value }))}
-                                maxLength={100}
+                                maxLength={250}
                                 className={`w-full h-28 border rounded p-2 resize-none ${rejectModal.error ? "border-red-500" : ""}`}
                             />
                             <div className="flex justify-between items-center">
