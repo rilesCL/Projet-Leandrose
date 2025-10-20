@@ -2,8 +2,11 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
+import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.itextpdf.text.pdf.PdfReader;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import static ca.cal.leandrose.service.mapper.InternshipOfferMapper.toDto;
 public class InternshipOfferService {
 
     private final InternshipOfferRepository internshipOfferRepository;
+    private final EmployeurRepository employeurRepository;
 
     private static final String BASE_UPLOAD_DIR = "uploads/offers/";
 
@@ -35,7 +39,7 @@ public class InternshipOfferService {
             int durationInWeeks,
             String address,
             Float remuneration,
-            Employeur employeur,
+            EmployeurDto employeur,
             MultipartFile pdfFile
     ) throws IOException {
 
@@ -62,13 +66,16 @@ public class InternshipOfferService {
         Path filePath = employerDir.resolve(fileName);
         Files.copy(pdfFile.getInputStream(), filePath);
 
+        Employeur employeurEntity = employeurRepository.findById(employeur.getId())
+                .orElseThrow(() -> new RuntimeException("Employer not found with id : " + employeur.getId()));
+
         InternshipOffer offer = InternshipOffer.builder()
                 .description(description)
                 .startDate(startDate)
                 .durationInWeeks(durationInWeeks)
                 .address(address)
                 .remuneration(remuneration != null ? remuneration : 0f)
-                .employeur(employeur)
+                .employeur(employeurEntity)
                 .pdfPath(filePath.toString())
                 .status(InternshipOffer.Status.PENDING_VALIDATION)
                 .build();
@@ -78,9 +85,10 @@ public class InternshipOfferService {
         return toDto(saved);
     }
 
-    public InternshipOffer getOffer(Long id) {
-        return internshipOfferRepository.findById(id)
+    public InternshipOfferDto getOffer(Long id){
+        InternshipOffer offer = internshipOfferRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+        return InternshipOfferMapper.toDto(offer);
     }
 
     public InternshipOfferDto getOfferDetails(Long id){
@@ -90,7 +98,7 @@ public class InternshipOfferService {
     }
 
     public byte[] getOfferPdf(Long id) throws IOException {
-        InternshipOffer offer = getOffer(id);
+        InternshipOfferDto offer = getOffer(id);
         Path path = Paths.get(offer.getPdfPath());
         return Files.readAllBytes(path);
     }
@@ -100,7 +108,10 @@ public class InternshipOfferService {
     }
 
 
-    public List<InternshipOffer> getPublishedOffersForStudents(String program) {
-        return internshipOfferRepository.findPublishedByProgram(program);
+    public List<InternshipOfferDto> getPublishedOffersForStudents(String program) {
+        return internshipOfferRepository.findPublishedByProgram(program)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
     }
 }

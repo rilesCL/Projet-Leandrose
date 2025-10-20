@@ -1,12 +1,10 @@
 package ca.cal.leandrose.service;
 
 
-import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
-import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.StudentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

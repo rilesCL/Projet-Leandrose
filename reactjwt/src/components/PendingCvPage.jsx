@@ -10,7 +10,6 @@ export default function PendingCvPage() {
     const [error, setError] = useState(null);
     const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
 
-    // Nouvel état pour la modale de rejet
     const [rejectModal, setRejectModal] = useState({ open: false, id: null, comment: "", error: null });
 
     useEffect(() => {
@@ -164,11 +163,15 @@ export default function PendingCvPage() {
                             <textarea
                                 value={rejectModal.comment}
                                 onChange={(e) => setRejectModal((prev) => ({ ...prev, comment: e.target.value }))}
+                                maxLength={250}
                                 className={`w-full h-28 border rounded p-2 resize-none ${rejectModal.error ? "border-red-500" : ""}`}
                             />
                             {rejectModal.error && (
                                 <p className="text-xs text-red-600">{t(`pendingCvList.errors.${rejectModal.error}`, { defaultValue: "Commentaire requis" })}</p>
                             )}
+                            <p className="text-xs text-gray-500 ml-auto">
+                                {rejectModal.comment.length}/100
+                            </p>
                         </div>
                         <div className="px-6 py-4 border-t flex justify-end space-x-2">
                             <button

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
-import { getOfferCandidatures } from '../api/apiEmployeur';
+import {getOfferCandidatures, previewOfferPdf} from '../api/apiEmployeur';
+import PdfViewer from './PdfViewer.jsx';
 
 const API_BASE = 'http://localhost:8080';
 
@@ -15,6 +16,8 @@ export default function InternshipOffersList() {
     const [loadingCounts, setLoadingCounts] = useState(false);
     const [showCommentModal, setShowCommentModal] = useState(false);
     const [currentComment, setCurrentComment] = useState("");
+    const [showPdfModal, setShowPdfModal] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
 
     useEffect(() => {
         async function fetchOffers() {
@@ -119,32 +122,16 @@ export default function InternshipOffersList() {
         }
     };
 
-    const handleDownloadOffer = async (offerId, description) => {
+    const handlePreviewOffer = async (offerId) => {
         try {
             const token = sessionStorage.getItem("accessToken");
-            const response = await fetch(`${API_BASE}/employeur/offers/${offerId}/download`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Offre_${description.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            } else {
-                alert(t("internshipOffersList.downloadError"));
-            }
+            const blob = await previewOfferPdf(offerId, token);
+            const url = window.URL.createObjectURL(blob);
+            setPdfUrl(url);
+            setShowPdfModal(true);
         } catch (error) {
-            console.error('Download error:', error);
-            alert(t("internshipOffersList.downloadError"));
+            console.error('Preview error:', error);
+            alert(t("internshipOffersList.previewError"));
         }
     };
 
@@ -206,132 +193,160 @@ export default function InternshipOffersList() {
     }
 
     return (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">{t("internshipOffersList.title")}</h3>
-                <p className="text-sm text-gray-600">
-                    {t("internshipOffersList.subtitle")} ({offers.length} {offers.length > 1 ? t("internshipOffersList.offers") : t("internshipOffersList.offer")})
-                </p>
-            </div>
+        <>
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-900">{t("internshipOffersList.title")}</h3>
+                    <p className="text-sm text-gray-600">
+                        {t("internshipOffersList.subtitle")} ({offers.length} {offers.length > 1 ? t("internshipOffersList.offers") : t("internshipOffersList.offer")})
+                    </p>
+                </div>
 
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                    <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("internshipOffersList.table.description")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("internshipOffersList.table.startDate")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("internshipOffersList.table.duration")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("internshipOffersList.table.status")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("employerCandidatures.table.candidatures", 'Candidatures')}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            {t("internshipOffersList.table.actions")}
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                    {offers.map((offer) => {
-                        const cData = candidatureData[offer.id];
-                        const count = cData ? cData.count : (loadingCounts ? '…' : 0);
-                        const preview = cData && cData.preview && cData.preview.length ? cData.preview.join(', ') : '';
-                        const statusUpper = (offer.status || '').toUpperCase();
-                        const isClickable = statusUpper === 'APPROVED' || statusUpper === 'PUBLISHED';
-                        return (
-                            <tr key={offer.id}
-                                className={`hover:bg-gray-50 ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
-                                {...(isClickable ? {onClick: (e) => { if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`); }} : {})}
-                            >
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center">
-                                        <div className="flex-shrink-0">
-                                            <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
-                                                <span className="text-white text-sm font-bold">📋</span>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {t("internshipOffersList.table.description")}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {t("internshipOffersList.table.startDate")}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {t("internshipOffersList.table.duration")}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {t("internshipOffersList.table.status")}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {t("employerCandidatures.table.candidatures", 'Candidatures')}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {t("internshipOffersList.table.actions")}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                        {offers.map((offer) => {
+                            const cData = candidatureData[offer.id];
+                            const count = cData ? cData.count : (loadingCounts ? '…' : 0);
+                            const preview = cData && cData.preview && cData.preview.length ? cData.preview.join(', ') : '';
+                            const statusUpper = (offer.status || '').toUpperCase();
+                            const isClickable = statusUpper === 'APPROVED' || statusUpper === 'PUBLISHED';
+                            return (
+                                <tr key={offer.id}
+                                    className={`hover:bg-gray-50 ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                                    {...(isClickable ? {onClick: (e) => { if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`); }} : {})}
+                                >
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center">
+                                            <div className="flex-shrink-0">
+                                                <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
+                                                    <span className="text-white text-sm font-bold">📋</span>
+                                                </div>
+                                            </div>
+                                            <div className="ml-3">
+                                                <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                                                    {offer.description || t("internshipOffersList.notDefined")}
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                    {offer.address || t("internshipOffersList.notSpecified")}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="ml-3">
-                                            <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
-                                                {offer.description || t("internshipOffersList.notDefined")}
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                {offer.address || t("internshipOffersList.notSpecified")}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {formatDate(offer.startDate)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    {getStatusLabel(offer.status)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span title={preview} className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
-                                        {loadingCounts && !cData ? t('internshipOffersList.loading') : count}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2" onClick={(e)=> e.stopPropagation()}>
-                                    {statusUpper === "REJECTED" && (
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {formatDate(offer.startDate)}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        {getStatusLabel(offer.status)}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span title={preview} className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
+                                            {loadingCounts && !cData ? t('internshipOffersList.loading') : count}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2" onClick={(e)=> e.stopPropagation()}>
+                                        {statusUpper === "REJECTED" && (
+                                            <button
+                                                onClick={() => { setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment')); setShowCommentModal(true); }}
+                                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
+                                                title={t('internshipOffersList.viewRejectionComment')}
+                                            >
+                                                <span className="mr-1">💬</span>
+                                            </button>
+                                        )}
                                         <button
-                                            onClick={() => { setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment')); setShowCommentModal(true); }}
-                                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
-                                            title={t('internshipOffersList.viewRejectionComment')}
+                                            onClick={() => handlePreviewOffer(offer.id)}
+                                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                                            title={t('internshipOffersList.preview')}
                                         >
-                                            <span className="mr-1">💬</span>
+                                            <span className="mr-1">👁 {t("previewPdf.preview")}</span>
                                         </button>
-                                    )}
-                                    <button
-                                        onClick={() => handleDownloadOffer(offer.id, offer.description)}
-                                        className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                    >
-                                        <span className="mr-1">⬇</span>
-                                        PDF
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                    </tbody>
-                </table>
-            </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                        </tbody>
+                    </table>
+                </div>
 
-            <div className="px-6 py-3 bg-gray-50 text-right">
-                <button
-                    onClick={handleCreateOffer}
-                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                <div className="px-6 py-3 bg-gray-50 text-right">
+                    <button
+                        onClick={handleCreateOffer}
+                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                    >
+                        {t("internshipOffersList.createNewOffer")}
+                        <span className="ml-1">➕</span>
+                    </button>
+                </div>
+
+                {showCommentModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                        <div className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full max-h-[80vh] mx-4 overflow-hidden">
+                            <h2 className="text-lg font-semibold mb-4 text-red-700">
+                                {t('internshipOffersList.rejectionCommentTitle', 'Commentaire de rejet')}
+                            </h2>
+
+                            <div className="text-gray-800 overflow-auto max-h-[60vh]">
+                <pre
+                    className="whitespace-pre-wrap break-words text-sm"
+                    style={{
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        overflowWrap: 'break-word',
+                        margin: 0
+                    }}
                 >
-                    {t("internshipOffersList.createNewOffer")}
-                    <span className="ml-1">➕</span>
-                </button>
-            </div>
+                    {currentComment}
+                </pre>
+                            </div>
 
-            {showCommentModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-                        <h2 className="text-lg font-semibold mb-4 text-red-700">{t('internshipOffersList.rejectionCommentTitle', 'Commentaire de rejet')}</h2>
-                        <p className="text-gray-800 whitespace-pre-line">{currentComment}</p>
-                        <div className="mt-6 text-right">
-                            <button
-                                onClick={() => setShowCommentModal(false)}
-                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                            >
-                                {t('internshipOffersList.close', 'Fermer')}
-                            </button>
+                            <div className="mt-6 text-right">
+                                <button
+                                    onClick={() => setShowCommentModal(false)}
+                                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                                >
+                                    {t('internshipOffersList.close', 'Fermer')}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
+            </div>
+
+            {showPdfModal && (
+                <PdfViewer
+                    file={pdfUrl}
+                    onClose={() => {
+                        setShowPdfModal(false);
+                        if (pdfUrl) window.URL.revokeObjectURL(pdfUrl);
+                    }}
+                />
             )}
-        </div>
+        </>
     );
 }

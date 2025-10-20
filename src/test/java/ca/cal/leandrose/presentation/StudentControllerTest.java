@@ -2,10 +2,13 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
+import ca.cal.leandrose.service.*;
+import ca.cal.leandrose.service.dto.*;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
+import org.junit.jupiter.api.BeforeEach;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.CvDto;
@@ -20,7 +23,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -51,7 +53,23 @@ class StudentControllerTest {
     private InternshipOfferService internshipOfferService;
 
     @MockitoBean
+    private StudentService studentService;
+
+    @MockitoBean
     private ConvocationService convocationService;
+    private StudentDto studentDto;
+
+    @BeforeEach
+    void setup(){
+        studentDto = StudentDto.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john@example.com")
+                .role(ca.cal.leandrose.model.auth.Role.STUDENT)
+                .program("COMPUTER_SCIENCE")
+                .build();
+    }
 
     @Test
     void getCv_missingAuthorization_returnsUnauthorized() throws Exception {
@@ -61,19 +79,14 @@ class StudentControllerTest {
 
     @Test
     void getPublishedOffers_returnsList() throws Exception {
-        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
-        Student student = Student.builder()
-                .id(1L)
-                .program(String.valueOf(Program.COMPUTER_SCIENCE))
-                .build();
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferDto.builder()
                 .id(10L)
                 .description("Stage A")
                 .build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
-        when(internshipOfferService.getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE)))
+        when(studentService.getStudentById(1L)).thenReturn(studentDto);
+        when(internshipOfferService.getPublishedOffersForStudents(anyString()))
                 .thenReturn(List.of(offer));
 
         mockMvc.perform(get("/student/offers")
@@ -81,7 +94,7 @@ class StudentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(10));
 
-        verify(internshipOfferService).getPublishedOffersForStudents(String.valueOf(Program.COMPUTER_SCIENCE));
+        verify(internshipOfferService).getPublishedOffersForStudents(anyString());
     }
 
     @Test
@@ -98,10 +111,10 @@ class StudentControllerTest {
 
     @Test
     void getOfferDetails_publishedOffer_returnsOk() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(20L)
                 .status(InternshipOffer.Status.PUBLISHED)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(20L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/20"))
@@ -111,10 +124,10 @@ class StudentControllerTest {
 
     @Test
     void getOfferDetails_notPublished_returnsForbidden() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(21L)
                 .status(InternshipOffer.Status.REJECTED)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(21L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/21"))
@@ -123,16 +136,20 @@ class StudentControllerTest {
 
     @Test
     void uploadCv_asStudent_returnsCvDto() throws Exception {
-        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
-        Student student = Student.builder().id(1L).build();
-        CvDto cvDto = CvDto.builder().id(1L).pdfPath("path/to/cv.pdf").build();
+        CvDto cvDto = CvDto.builder()
+                .id(1L)
+                .pdfPath("path/to/cv.pdf")
+                .build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(studentService.getStudentById(1L)).thenReturn(studentDto);
         when(cvService.uploadCv(eq(1L), any())).thenReturn(cvDto);
 
-        MockMultipartFile file = new MockMultipartFile("pdfFile", "cv.pdf", "application/pdf", "PDF_CONTENT".getBytes());
+        MockMultipartFile file = new MockMultipartFile(
+                "pdfFile", "cv.pdf", "application/pdf", "PDF_CONTENT".getBytes()
+        );
 
+        // Act + Assert
         mockMvc.perform(multipart("/student/cv")
                         .file(file)
                         .header("Authorization", "Bearer token"))
@@ -155,12 +172,13 @@ class StudentControllerTest {
 
     @Test
     void getCv_asStudent_returnsCvDto() throws Exception {
-        UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
         Student student = Student.builder().id(1L).build();
         CvDto cvDto = CvDto.builder().id(1L).pdfPath("path/to/cv.pdf").build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(studentService.getStudentById(1L)).thenReturn(studentDto);
+
         when(cvService.getCvByStudentId(1L)).thenReturn(cvDto);
 
         mockMvc.perform(get("/student/cv")
@@ -231,10 +249,10 @@ class StudentControllerTest {
 
     @Test
     void downloadOfferPdf_published_returnsPdf() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .status(InternshipOffer.Status.PUBLISHED)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(100L)).thenReturn(offer);
         when(internshipOfferService.getOfferPdf(100L)).thenReturn("PDF_CONTENT".getBytes());
 
@@ -245,10 +263,10 @@ class StudentControllerTest {
 
     @Test
     void downloadOfferPdf_notPublished_returnsForbidden() throws Exception {
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(101L)
                 .status(InternshipOffer.Status.PENDING_VALIDATION)
-                .build();
+                .build());
         when(internshipOfferService.getOffer(101L)).thenReturn(offer);
 
         mockMvc.perform(get("/student/offers/101/pdf"))

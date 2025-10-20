@@ -299,14 +299,13 @@ class CandidatureServiceTest {
         assertTrue(candidatures.isEmpty());
     }
 
-    // ===== TESTS POUR LES FONCTIONNALITÉS EMPLOYEUR =====
 
     @Test
     void getCandidaturesByOffer_ShouldReturnCandidaturesForSpecificOffer() {
         // Arrange
         candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
 
-        // Créer un 2e étudiant et une 2e candidature pour la même offre
+
         Student student2 = studentRepository.save(Student.builder()
                 .firstName("Bob")
                 .lastName("Smith")
@@ -354,7 +353,6 @@ class CandidatureServiceTest {
         // Arrange
         candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
 
-        // Créer une 2e offre du même employeur
         InternshipOffer offer2 = offerRepository.save(InternshipOffer.builder()
                 .description("Stage Data Science")
                 .startDate(LocalDate.of(2025, 9, 1))
@@ -365,7 +363,6 @@ class CandidatureServiceTest {
                 .status(InternshipOffer.Status.PUBLISHED)
                 .build());
 
-        // Créer un 2e étudiant
         Student student2 = studentRepository.save(Student.builder()
                 .firstName("Charlie")
                 .lastName("Brown")
@@ -400,7 +397,6 @@ class CandidatureServiceTest {
         // Arrange
         candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
 
-        // Créer un autre employeur et une autre offre
         Employeur employeur2 = employeurRepository.save(Employeur.builder()
                 .firstName("Jane")
                 .lastName("Manager")

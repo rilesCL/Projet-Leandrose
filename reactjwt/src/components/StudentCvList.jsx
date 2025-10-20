@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PdfViewer from "./PdfViewer.jsx";
+import {previewStudentCv} from "../api/apiStudent.jsx";
 
 export default function StudentCvList() {
     const { t } = useTranslation();
@@ -67,18 +68,10 @@ export default function StudentCvList() {
     const handlePreview = async () => {
         try {
             const token = sessionStorage.getItem("accessToken");
-            const response = await fetch("http://localhost:8080/student/cv/download", {
-                method: "GET",
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                setPdfUrl(url);
-                setShowPdfModal(true);
-            } else {
-                alert(t("studentCvList.previewError"));
-            }
+            const blob = await previewStudentCv(token);
+            const url = window.URL.createObjectURL(blob);
+            setPdfUrl(url);
+            setShowPdfModal(true);
         } catch (err) {
             alert(t("studentCvList.previewError"));
         }
@@ -132,7 +125,7 @@ export default function StudentCvList() {
                 <p className="text-gray-600 mb-4">{t("studentCvList.noCvDescription")}</p>
                 <a
                     href="/dashboard/student/uploadCv"
-                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 hover:text-white transition-colors"
                 >
                     <span className="mr-2">➕</span>
                     {t("studentCvList.uploadCv")}
@@ -212,7 +205,6 @@ export default function StudentCvList() {
                                     <button
                                         onClick={() => setShowCommentModal(true)}
                                         className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
-                                        title="Voir le commentaire de rejet"
                                     >
                                         <span className="mr-1">💬</span>
                                     </button>
@@ -241,10 +233,9 @@ export default function StudentCvList() {
                     </a>
                 </div>
             </div>
-
             {showCommentModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-200">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-lg font-medium text-gray-900">Commentaire de rejet</h3>
@@ -261,10 +252,13 @@ export default function StudentCvList() {
                             <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
                                 <div className="flex items-start">
                                     <span className="text-red-500 text-xl mr-3">⚠️</span>
-                                    <div>
-                                        <p className="text-sm text-gray-700">
-                                            {cv.rejectionComment || "Aucun commentaire fourni."}
-                                        </p>
+                                    <div className="text-gray-800 overflow-auto max-h-[50vh]">
+              <pre
+                  className="text-sm whitespace-pre-wrap break-words m-0"
+                  style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+              >
+                {cv.rejectionComment || "Aucun commentaire fourni."}
+              </pre>
                                     </div>
                                 </div>
                             </div>
@@ -281,6 +275,7 @@ export default function StudentCvList() {
                     </div>
                 </div>
             )}
+
 
             {showPdfModal && (
                 <PdfViewer

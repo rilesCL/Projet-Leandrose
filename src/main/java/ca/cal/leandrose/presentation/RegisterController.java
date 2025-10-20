@@ -1,12 +1,12 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.presentation.request.RegisterEmployeur;
 import ca.cal.leandrose.presentation.request.RegisterStudent;
 import ca.cal.leandrose.service.EmployeurService;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.StudentService;
 import ca.cal.leandrose.service.dto.EmployeurDto;
+import ca.cal.leandrose.service.dto.ProgramDto;
 import ca.cal.leandrose.service.dto.StudentDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,7 +31,7 @@ public class RegisterController {
         this.gestionnaireService = gestionnaireService;
     }
     @GetMapping("/programs")
-    public ResponseEntity<List<Program>> getPrograms() {
+    public ResponseEntity<List<ProgramDto>> getPrograms() {
         return ResponseEntity.ok(gestionnaireService.getAllPrograms());
     }
 

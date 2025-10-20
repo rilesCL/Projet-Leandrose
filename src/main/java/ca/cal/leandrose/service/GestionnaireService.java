@@ -10,6 +10,7 @@ import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.GestionnaireDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.dto.ProgramDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -54,7 +56,7 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public InternshipOffer approveOffer(Long offerId) {
+    public InternshipOfferDto approveOffer(Long offerId) {
         InternshipOffer offer = internshipOfferRepository.findById(offerId)
                 .orElseThrow(() -> new RuntimeException("Offre non trouvée"));
 
@@ -65,11 +67,12 @@ public class GestionnaireService {
         offer.setStatus(InternshipOffer.Status.PUBLISHED);
         offer.setValidationDate(LocalDate.now());
 
-        return internshipOfferRepository.save(offer);
+        internshipOfferRepository.save(offer);
+        return InternshipOfferMapper.toDto(offer);
     }
 
     @Transactional
-    public InternshipOffer rejectOffer(Long offerId, String rejectionComment) {
+    public InternshipOfferDto rejectOffer(Long offerId, String rejectionComment) {
         if (rejectionComment == null || rejectionComment.trim().isEmpty()) {
             throw new IllegalArgumentException("Un commentaire est obligatoire pour rejeter une offre");
         }
@@ -85,12 +88,17 @@ public class GestionnaireService {
         offer.setRejectionComment(rejectionComment);
         offer.setValidationDate(LocalDate.now());
 
-        return internshipOfferRepository.save(offer);
+        internshipOfferRepository.save(offer);
+        return InternshipOfferMapper.toDto(offer);
     }
 
-    public List<InternshipOffer> getPendingOffers() {
-        return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PENDING_VALIDATION);
+    public List<InternshipOfferDto> getPendingOffers(){
+        return internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PENDING_VALIDATION)
+                .stream()
+                .map(InternshipOfferMapper::toDto)
+                .toList();
     }
+
     public List<InternshipOfferDto> getRejectedoffers(){
         return internshipOfferRepository
                 .findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED)
@@ -122,7 +130,9 @@ public class GestionnaireService {
         Gestionnaire savedGestionnaire = gestionnaireRepository.save(gestionnaire);
         return GestionnaireDto.create(savedGestionnaire);
     }
-    public List<Program> getAllPrograms(){
-        return List.of(Program.values());
+    public List<ProgramDto> getAllPrograms(){
+        return Arrays.stream(Program.values())
+                .map(ProgramDto::fromEnum)
+                .toList();
     }
 }

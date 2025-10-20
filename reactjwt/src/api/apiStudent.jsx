@@ -67,27 +67,6 @@ export async function getStudentCv(token = null) {
     }
 }
 
-export async function downloadStudentCv(token = null) {
-    try {
-        const accessToken = token || sessionStorage.getItem('accessToken');
-        const headers = {};
-
-        if (accessToken) {
-            headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-
-        const response = await fetch(`${API_BASE}/student/cv/download`, {
-            method: 'GET',
-            headers
-        });
-
-        await handleApiResponse(response);
-        return response;
-    } catch (error) {
-        throw new Error(error.message || 'Erreur lors du téléchargement du CV');
-    }
-}
-
 export async function getPublishedOffers(token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/offers`, {
@@ -152,6 +131,12 @@ export async function applyToOffer(offerId, cvId, token = null) {
             method: 'POST',
             headers: getAuthHeaders(token)
         });
+    export async function applyToOffer(offerId, cvId, token = null) {
+        try {
+            const response = await fetch(`${API_BASE}/student/offers/${offerId}/apply?cvId=${cvId}`, {
+                method: 'POST',
+                headers: getAuthHeaders(token)
+            });
 
         await handleApiResponse(response);
         return await response.json();
@@ -185,6 +170,7 @@ export async function getMyConvocations(token = null) {
         throw new Error(error.message || 'Erreur lors de la récupération des convocations');
     }
 }
+
 
 export async function getMyCandidatures(token = null) {
     try {
@@ -251,5 +237,22 @@ export async function rejectCandidatureByStudent(candidatureId, token = null) {
         return await response.json();
     } catch (error) {
         throw new Error(error.message || "Erreur lors du refus de la candidature");
+    }
+}
+export async function previewStudentCv(token = null) {
+    try {
+        const accessToken = token || sessionStorage.getItem("accessToken");
+        const headers = {};
+        if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+        const response = await fetch(`${API_BASE}/student/cv/download`, {
+            method: "GET",
+            headers,
+        });
+
+        await handleApiResponse(response);
+        return await response.blob();
+    } catch (error) {
+        throw new Error(error.message || "Erreur lors du chargement du CV");
     }
 }

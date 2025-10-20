@@ -7,6 +7,7 @@ import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
+import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = EmployeurController.class)
 @ActiveProfiles("test")
-@Import(value = TestSecurityConfiguration.class)
+@Import(TestSecurityConfiguration.class)
 class EmployeurControllerTest {
 
     @Autowired
@@ -54,6 +55,9 @@ class EmployeurControllerTest {
     @MockitoBean
     CandidatureRepository candidatureRepository;
 
+    @MockitoBean
+    private EmployeurService employeurService;
+
 
     @Test
     void downloadOffer_asEmployeur_returnsPdf() throws Exception {
@@ -62,19 +66,19 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .description("Stage Java")
                 .pdfPath("dummy.pdf")
                 .employeur(Employeur.builder().id(1L).build())
-                .build();
+                .build());
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(internshipOfferService.getOffer(100L)).thenReturn(offer);
 
         mockMvc.perform(get("/employeur/offers/100/download")
                         .header("Authorization", "Bearer token"))
-                .andExpect(status().isNotFound()); // file not present in test, endpoint exists
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -98,10 +102,10 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .employeur(Employeur.builder().id(1L).build())
-                .build();
+                .build());
 
         ca.cal.leandrose.service.dto.ConvocationDto convocationDto = ca.cal.leandrose.service.dto.ConvocationDto.builder()
                 .id(10L)

@@ -23,6 +23,7 @@ public class CandidatureDto {
     private String companyName;
     private Long employeurId;
     private Long cvId;
+    private CvDto cv;
     private Candidature.Status status;
     private LocalDate applicationDate;
 
@@ -48,6 +49,7 @@ public class CandidatureDto {
                 .offerDescription(getOfferFromCandidature(candidature).getDescription())
                 .companyName(getOfferFromCandidature(candidature).getCompanyName())
                 .cvId(getCvFromCandidature(candidature).getId())
+                .cv(CvDto.create(candidature.getCv()))
                 .status(candidature.getStatus())
                 .applicationDate(candidature.getApplicationDate())
                 .employeurId(candidature.getEmployeurId())  // ✅ Loi de Déméter respectée
