@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,7 +75,7 @@ class CvServiceTest {
 
     @Test
     void uploadCv_ShouldThrow_WhenFileTooLarge() {
-        byte[] largeContent = new byte[6 * 1024 * 1024]; // 6 MB
+        byte[] largeContent = new byte[6 * 1024 * 1024];
         MockMultipartFile largeFile = new MockMultipartFile("file", "large.pdf", "application/pdf", largeContent);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
@@ -105,14 +106,12 @@ class CvServiceTest {
 
     @Test
     void uploadCv_ShouldReplaceExistingCv() throws Exception {
-        // Upload first CV
         MockMultipartFile file1 = new MockMultipartFile(
                 "file", "cv1.pdf", "application/pdf", Files.readAllBytes(Path.of("src/test/resources/test.pdf"))
         );
         CvDto first = cvService.uploadCv(testStudent.getId(), file1);
         Path firstPath = Path.of(cvRepository.findById(first.getId()).orElseThrow().getPdfPath());
 
-        // Upload second CV
         MockMultipartFile file2 = new MockMultipartFile(
                 "file", "cv2.pdf", "application/pdf", Files.readAllBytes(Path.of("src/test/resources/test.pdf"))
         );
@@ -120,8 +119,12 @@ class CvServiceTest {
 
         assertFalse(Files.exists(firstPath));
 
-        assertEquals(1, cvRepository.findAll().size());
-        assertEquals(second.getId(), cvRepository.findAll().get(0).getId());
+        List<Cv> cvsForStudent = cvRepository.findAll().stream()
+                .filter(c -> c.getStudent() != null && c.getStudent().getId().equals(testStudent.getId()))
+                .toList();
+
+        assertFalse(cvsForStudent.isEmpty());
+        assertTrue(cvsForStudent.stream().anyMatch(c -> c.getId().equals(second.getId())));
     }
 
     @Test

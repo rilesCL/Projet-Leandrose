@@ -58,7 +58,7 @@
     "geography": "Geography",
     "sports_science": "Sports Science"
   },
-"registerLanding": {
+  "registerLanding": {
     "subtitle": "Choose the type of account you want to create",
     "student": {
       "title": "Student",
@@ -156,12 +156,12 @@
       "passwordLength": "Password must be at least 8 characters",
       "confirmPassword": "Please confirm your password",
       "passwordMismatch": "Passwords do not match",
-        "emailUsed": "Email is already in use",
+      "emailUsed": "Email is already in use",
       "serverError": "Unable to connect to the server",
       "unknown": "An error occurred."
     }
   },
-"login": {
+  "login": {
     "title": "Log in",
     "subtitle": "Log in to your account to access your personal space.",
     "email": "Email",
@@ -303,7 +303,7 @@
     "backToDashboard": "Back to dashboard",
     "successMessage": "Offer saved successfully. Status:",
     "statusPublished": "Published",
-    "pendingapproval" : "Pending approval",
+    "pendingapproval": "Pending approval",
     "errors": {
       "description": "Description is required.",
       "startDate": "Start date is required.",
@@ -337,7 +337,7 @@
       "actions": "Actions"
     },
     "status": {
-      "pendingapproval" : "Pending approval",
+      "pendingapproval": "Pending approval",
       "approved": "Approved",
       "rejected": "Rejected",
       "unknown": "Unknown"
@@ -424,72 +424,73 @@
       "commentRequired": "You must write a comment before rejecting an offer",
       "download": "Error downloading the offer"
     }
-  },"studentApplicationsList": {
-  "acceptSuccess": "You have accepted the offer",
-  "rejectSuccess": "You have rejected the offer",
-  "filterBy": "Filter by status:",
-  "tabs": {
-    "all": "All",
-    "awaiting": "Awaiting Response",
-    "pending": "Pending",
-    "convened": "Interview Invited",
-    "accepted": "Accepted",
-    "rejected": "Rejected"
   },
-  "noFilteredResults": "No applications in this category",
-  "noFilteredResultsDesc": "Try selecting another filter to see your applications.",
-  "loading": "Loading your applications...",
-  "loadError": "Unable to load your applications",
-  "error": "Unable to load your applications",
-  "retry": "Retry",
-  "emptyTitle": "No applications",
-  "emptyDescription": "You have not applied to any offer yet.",
-  "btnViewOffers": "View offers",
-  "title": "My Applications",
-  "count": "{{count}} application(s)",
-  "noDate": "Not set",
-  "table": {
-    "offer": "Offer",
-    "company": "Company",
-    "date": "Date",
-    "status": "Status",
-    "actions": "Actions"
+  "studentApplicationsList": {
+    "acceptSuccess": "You have accepted the offer",
+    "rejectSuccess": "You have rejected the offer",
+    "filterBy": "Filter by status:",
+    "tabs": {
+      "all": "All",
+      "awaiting": "Awaiting Response",
+      "pending": "Pending",
+      "convened": "Interview Invited",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "noFilteredResults": "No applications in this category",
+    "noFilteredResultsDesc": "Try selecting another filter to see your applications.",
+    "loading": "Loading your applications...",
+    "loadError": "Unable to load your applications",
+    "error": "Unable to load your applications",
+    "retry": "Retry",
+    "emptyTitle": "No applications",
+    "emptyDescription": "You have not applied to any offer yet.",
+    "btnViewOffers": "View offers",
+    "title": "My Applications",
+    "count": "{{count}} application(s)",
+    "noDate": "Not set",
+    "table": {
+      "offer": "Offer",
+      "company": "Company",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "pending": "Pending",
+      "PENDING": "Pending",
+      "CONVENED": "Interview Scheduled",
+      "accepted": "Accepted",
+      "ACCEPTED": "Accepted",
+      "ACCEPTEDBYEMPLOYEUR": "Awaiting Your Response",
+      "rejected": "Rejected",
+      "REJECTED": "Rejected",
+      "unknown": "Unknown"
+    },
+    "actions": {
+      "accept": "Accept",
+      "reject": "Decline"
+    },
+    "rejectModal": {
+      "title": "Decline this Application",
+      "message": "You are about to decline this internship offer. This decision is final.",
+      "warning": "This action is irreversible. You will not be able to accept this offer afterwards.",
+      "cancel": "Cancel",
+      "confirm": "Yes, Decline"
+    },
+    "viewOffer": "View offer",
+    "noApplicationsTitle": "No applications",
+    "noApplicationsText": "You have not applied to any offer yet.",
+    "convocationModal": {
+      "title": "Interview Details",
+      "description": "You have been invited for an interview.",
+      "date": "Date and Time",
+      "location": "Location",
+      "message": "Employer's Message",
+      "noInfo": "No interview information available.",
+      "close": "Close"
+    }
   },
-  "status": {
-    "pending": "Pending",
-    "PENDING": "Pending",
-    "CONVENED": "Interview Scheduled",
-    "accepted": "Accepted",
-    "ACCEPTED": "Accepted",
-    "ACCEPTEDBYEMPLOYEUR": "Awaiting Your Response",
-    "rejected": "Rejected",
-    "REJECTED": "Rejected",
-    "unknown": "Unknown"
-  },
-  "actions": {
-    "accept": "Accept",
-    "reject": "Decline"
-  },
-  "rejectModal": {
-    "title": "Decline this Application",
-    "message": "You are about to decline this internship offer. This decision is final.",
-    "warning": "This action is irreversible. You will not be able to accept this offer afterwards.",
-    "cancel": "Cancel",
-    "confirm": "Yes, Decline"
-  },
-  "viewOffer": "View offer",
-  "noApplicationsTitle": "No applications",
-  "noApplicationsText": "You have not applied to any offer yet.",
-  "convocationModal": {
-    "title": "Interview Details",
-    "description": "You have been invited for an interview.",
-    "date": "Date and Time",
-    "location": "Location",
-    "message": "Employer's Message",
-    "noInfo": "No interview information available.",
-    "close": "Close"
-  }
-},
   "offerDetail": {
     "back": "Back to offers",
     "location": "Location",

@@ -241,7 +241,7 @@ public class EmployeurController {
         try {
             CandidatureDto candidatureDto = candidatureService.getCandidatureById(candidatureId);
 
-            if (!candidatureDto.getId().equals(me.getId())) {
+            if (!candidatureDto.getEmployeurId().equals(me.getId())) {
                 return ResponseEntity.status(403).build();
             }
 

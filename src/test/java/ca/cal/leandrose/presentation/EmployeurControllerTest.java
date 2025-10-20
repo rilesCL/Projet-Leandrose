@@ -511,6 +511,7 @@ class EmployeurControllerTest {
 
 // ===== TESTS POUR RÉCUPÉRATION DES CANDIDATURES =====
 
+    // java
     @Test
     void getCandidaturesForOffer_asEmployeur_returnsList() throws Exception {
         UserDTO employeurDto = EmployeurDto.builder()
@@ -518,10 +519,10 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .employeur(Employeur.builder().id(1L).build())
-                .build();
+                .build());
 
         CandidatureEmployeurDto candidature = CandidatureEmployeurDto.builder()
                 .id(50L)
@@ -551,10 +552,10 @@ class EmployeurControllerTest {
                 .role(Role.EMPLOYEUR)
                 .build();
 
-        InternshipOffer offer = InternshipOffer.builder()
+        InternshipOfferDto offer = InternshipOfferMapper.toDto(InternshipOffer.builder()
                 .id(100L)
                 .employeur(Employeur.builder().id(2L).build()) // Différent employeur
-                .build();
+                .build());
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(internshipOfferService.getOffer(100L)).thenReturn(offer);

@@ -131,12 +131,6 @@ export async function applyToOffer(offerId, cvId, token = null) {
             method: 'POST',
             headers: getAuthHeaders(token)
         });
-    export async function applyToOffer(offerId, cvId, token = null) {
-        try {
-            const response = await fetch(`${API_BASE}/student/offers/${offerId}/apply?cvId=${cvId}`, {
-                method: 'POST',
-                headers: getAuthHeaders(token)
-            });
 
         await handleApiResponse(response);
         return await response.json();
@@ -170,7 +164,6 @@ export async function getMyConvocations(token = null) {
         throw new Error(error.message || 'Erreur lors de la récupération des convocations');
     }
 }
-
 
 export async function getMyCandidatures(token = null) {
     try {
@@ -206,7 +199,7 @@ export async function previewOfferPdfStudent(offerId, token = null) {
 
 /**
  * L'étudiant accepte une candidature qui a été acceptée par l'employeur
- * Transition: ACCEPTEDBYEMPLOYEUR -> ACCEPTED
+ * Transition: ACCEPTEDBYEMPLOYEUR → ACCEPTED
  */
 export async function acceptCandidatureByStudent(candidatureId, token = null) {
     try {
@@ -239,6 +232,7 @@ export async function rejectCandidatureByStudent(candidatureId, token = null) {
         throw new Error(error.message || "Erreur lors du refus de la candidature");
     }
 }
+
 export async function previewStudentCv(token = null) {
     try {
         const accessToken = token || sessionStorage.getItem("accessToken");

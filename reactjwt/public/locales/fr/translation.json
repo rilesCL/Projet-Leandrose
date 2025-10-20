@@ -58,7 +58,7 @@
     "geography": "Géographie",
     "sports_science": "Sciences du sport"
   },
-"registerLanding": {
+  "registerLanding": {
     "subtitle": "Choisissez le type de compte que vous souhaitez créer",
     "student": {
       "title": "Étudiant",
@@ -163,7 +163,7 @@
       "unknown": "Une erreur est survenue."
     }
   },
-"login": {
+  "login": {
     "title": "Connexion",
     "subtitle": "Connectez-vous à votre compte pour accéder à votre espace personnel.",
     "email": "Email",
@@ -268,7 +268,6 @@
       "actions": "Actions"
     },
     "status": {
-
       "published": "Publiée",
       "rejected": "Rejetée",
       "unknown": "Inconnu",
@@ -339,11 +338,10 @@
       "actions": "Actions"
     },
     "status": {
-      "pendingapproval":"En attente d'approbation",
+      "pendingapproval": "En attente d'approbation",
       "approved": "Approuvé",
       "rejected": "Rejeté",
       "unknown": "Inconnu"
-
     },
     "actions": {
       "preview": "Aperçu",
@@ -387,7 +385,7 @@
       "download": "Télécharger CV",
       "approve": "Approuver",
       "reject": "Rejeter",
-      "view" : "Voir l'aperçu"
+      "view": "Voir l'aperçu"
     },
     "errors": {
       "serverError": "Erreur lors du chargement des CVs",

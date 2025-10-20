@@ -105,7 +105,7 @@ export default function OfferCandidaturesList() {
         }
     };
 
-    const renderStatus = (status) => <span className="text-xs font-medium text-gray-700">{t(`employerCandidatures.status.${status}`)}</span>;
+    const renderStatus = (status) => <span className="text-xs font-medium text-gray-700">{t(`studentApplicationsList.status.${status}`)}</span>;
     const canRetain = (status) => status === 'PENDING';
     const canAcceptOrReject = (status) => status === 'CONVENED';
 
