@@ -218,4 +218,34 @@ public class EntenteStageService {
         EntenteStage saved = ententeRepository.save(entente);
         return EntenteStageDto.fromEntity(saved);
     }
+    @Transactional
+    public EntenteStageDto signerParEtudiant(Long ententeId, Long studentId) {
+        EntenteStage entente = ententeRepository.findById(ententeId)
+                .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
+
+        if (entente.getStatut() != EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE) {
+            throw new IllegalStateException("L'entente doit être en attente de signature.");
+        }
+
+        Long etudiantEntenteId = entente.getCandidature().getStudent().getId();
+        if (!etudiantEntenteId.equals(studentId)) {
+            throw new IllegalArgumentException("Cet étudiant n'est pas autorisé à signer cette entente.");
+        }
+
+        if (entente.getDateSignatureEtudiant() != null) {
+            throw new IllegalStateException("L'étudiant a déjà signé cette entente.");
+        }
+
+        entente.setDateSignatureEtudiant(LocalDateTime.now());
+        entente.setDateModification(LocalDateTime.now());
+
+        if (entente.getDateSignatureEmployeur() != null &&
+                entente.getDateSignatureGestionnaire() != null) {
+            entente.setStatut(EntenteStage.StatutEntente.VALIDEE);
+        }
+
+        EntenteStage saved = ententeRepository.save(entente);
+        return EntenteStageDto.fromEntity(saved);
+    }
+
 }
