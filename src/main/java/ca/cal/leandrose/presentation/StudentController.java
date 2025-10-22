@@ -2,6 +2,7 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -28,6 +29,7 @@ public class StudentController {
     private final StudentService studentService;
     private final InternshipOfferService internshipOfferService;
     private final ConvocationService convocationService;
+    private final EntenteStageService ententeStageService;
 
     @PostMapping(value = "/cv")
     public ResponseEntity<CvDto> uploadCv(
@@ -253,4 +255,25 @@ public class StudentController {
             return ResponseEntity.status(404).body("Candidature non trouvée");
         }
     }
+    @PostMapping("/ententes/{ententeId}/signer")
+    public ResponseEntity<EntenteStageDto> signerEntente(
+            HttpServletRequest request,
+            @PathVariable Long ententeId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EntenteStageDto result = ententeStageService.signerParEtudiant(ententeId, me.getId());
+            return ResponseEntity.ok(result);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(404).body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
+        }
+    }
+
 }
