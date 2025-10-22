@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,13 +52,6 @@ public class EntenteStageService {
 
         EntenteStage entente = EntenteStage.builder()
                 .candidature(candidature)
-                .dateDebut(dto.getDateDebut())
-                .dateFin(dto.getDateFin())
-                .duree(dto.getDuree())
-                .horaires(dto.getHoraires())
-                .lieu(dto.getLieu())
-                .modalitesTeletravail(dto.getModalitesTeletravail())
-                .remuneration(dto.getRemuneration())
                 .missionsObjectifs(dto.getMissionsObjectifs())
                 .statut(EntenteStage.StatutEntente.BROUILLON)
                 .dateCreation(LocalDateTime.now())
@@ -97,13 +89,6 @@ public class EntenteStageService {
             throw new IllegalStateException("Impossible de modifier une entente qui n'est pas en brouillon");
         }
 
-        if (dto.getDateDebut() != null) entente.setDateDebut(dto.getDateDebut());
-        if (dto.getDateFin() != null) entente.setDateFin(dto.getDateFin());
-        if (dto.getDuree() != null) entente.setDuree(dto.getDuree());
-        if (dto.getHoraires() != null) entente.setHoraires(dto.getHoraires());
-        if (dto.getLieu() != null) entente.setLieu(dto.getLieu());
-        if (dto.getModalitesTeletravail() != null) entente.setModalitesTeletravail(dto.getModalitesTeletravail());
-        if (dto.getRemuneration() != null) entente.setRemuneration(dto.getRemuneration());
         if (dto.getMissionsObjectifs() != null) entente.setMissionsObjectifs(dto.getMissionsObjectifs());
 
         entente.setDateModification(LocalDateTime.now());
@@ -152,38 +137,24 @@ public class EntenteStageService {
         if (dto.getDateDebut() == null) {
             throw new IllegalArgumentException("La date de début est obligatoire");
         }
-        if (dto.getDateFin() == null) {
-            throw new IllegalArgumentException("La date de fin est obligatoire");
-        }
-        if (dto.getDateDebut().isAfter(dto.getDateFin())) {
-            throw new IllegalArgumentException("La date de début doit être avant la date de fin");
-        }
-        if (dto.getDuree() == null || dto.getDuree().isBlank()) {
+        if (dto.getDuree() < 0) {
             throw new IllegalArgumentException("La durée est obligatoire");
         }
-        if (dto.getHoraires() == null || dto.getHoraires().isBlank()) {
-            throw new IllegalArgumentException("Les horaires sont obligatoires");
-        }
+
         if (dto.getMissionsObjectifs() == null || dto.getMissionsObjectifs().isBlank()) {
             throw new IllegalArgumentException("Les missions et objectifs sont obligatoires");
         }
-        if (dto.getRemuneration() != null && dto.getRemuneration().compareTo(BigDecimal.ZERO) < 0) {
+        if (dto.getRemuneration() != null && dto.getRemuneration() < 0) {
             throw new IllegalArgumentException("La rémunération doit être positive ou zéro");
         }
     }
 
     private void validateChampsObligatoires(EntenteStage entente) {
-        if (entente.getDateDebut() == null) {
+        if (entente.getStartDate() == null) {
             throw new IllegalArgumentException("La date de début est obligatoire");
         }
-        if (entente.getDateFin() == null) {
-            throw new IllegalArgumentException("La date de fin est obligatoire");
-        }
-        if (entente.getDuree() == null || entente.getDuree().isBlank()) {
+        if (entente.getDurationInWeeks() < 1) {
             throw new IllegalArgumentException("La durée est obligatoire");
-        }
-        if (entente.getHoraires() == null || entente.getHoraires().isBlank()) {
-            throw new IllegalArgumentException("Les horaires sont obligatoires");
         }
         if (entente.getMissionsObjectifs() == null || entente.getMissionsObjectifs().isBlank()) {
             throw new IllegalArgumentException("Les missions et objectifs sont obligatoires");

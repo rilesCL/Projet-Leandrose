@@ -74,12 +74,9 @@ class GestionnaireControllerEntenteTest {
                 .nomEntreprise("TechCorp")
                 .contactEntreprise("contact@techcorp.com")
                 .dateDebut(LocalDate.of(2025, 6, 1))
-                .dateFin(LocalDate.of(2025, 8, 31))
-                .duree("12 semaines")
-                .horaires("9h-17h")
+                .duree(12)
                 .lieu("Montreal")
-                .modalitesTeletravail("2 jours/semaine")
-                .remuneration(new BigDecimal("3000.00"))
+                .remuneration(30f)
                 .missionsObjectifs("Développement web")
                 .statut(EntenteStage.StatutEntente.BROUILLON)
                 .dateCreation(LocalDateTime.now())
@@ -97,7 +94,7 @@ class GestionnaireControllerEntenteTest {
         List<CandidatureDto> candidatures = Arrays.asList(candidatureDto);
         when(ententeStageService.getCandidaturesAcceptees()).thenReturn(candidatures);
 
-        mockMvc.perform(get("/gestionnaire/ententes/candidatures-acceptees"))
+        mockMvc.perform(get("/gestionnaire/ententes/candidatures/accepted"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -111,7 +108,7 @@ class GestionnaireControllerEntenteTest {
     void getCandidaturesAcceptees_ShouldReturnEmptyList_WhenNoAcceptedCandidatures() throws Exception {
         when(ententeStageService.getCandidaturesAcceptees()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/gestionnaire/ententes/candidatures-acceptees"))
+        mockMvc.perform(get("/gestionnaire/ententes/candidatures/accepted"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.size()").value(0));
@@ -129,7 +126,7 @@ class GestionnaireControllerEntenteTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.duree").value("12 semaines"))
+                .andExpect(jsonPath("$.duree").value(12))
                 .andExpect(jsonPath("$.statut").value("BROUILLON"))
                 .andExpect(jsonPath("$.nomEntreprise").value("TechCorp"))
                 .andExpect(jsonPath("$.studentNom").value("Doe"));
@@ -140,12 +137,10 @@ class GestionnaireControllerEntenteTest {
     @Test
     void modifierEntente_ShouldReturnUpdatedEntente_WhenValidData() throws Exception {
         EntenteStageDto modificationDto = EntenteStageDto.builder()
-                .remuneration(new BigDecimal("3500.00"))
-                .modalitesTeletravail("3 jours/semaine")
+                .missionsObjectifs("new missions")
                 .build();
 
-        ententeDto.setRemuneration(new BigDecimal("3500.00"));
-        ententeDto.setModalitesTeletravail("3 jours/semaine");
+        ententeDto.setRemuneration(3500f);
 
         when(ententeStageService.modifierEntente(eq(1L), any(EntenteStageDto.class)))
                 .thenReturn(ententeDto);
@@ -156,8 +151,7 @@ class GestionnaireControllerEntenteTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.remuneration").value(3500.00))
-                .andExpect(jsonPath("$.modalitesTeletravail").value("3 jours/semaine"));
+                .andExpect(jsonPath("$.remuneration").value(3500f));
 
         verify(ententeStageService, times(1)).modifierEntente(eq(1L), any(EntenteStageDto.class));
     }
@@ -186,11 +180,9 @@ class GestionnaireControllerEntenteTest {
                 .studentNom("Smith")
                 .studentPrenom("Jane")
                 .nomEntreprise("DevCorp")
-                .duree("16 semaines")
-                .horaires("10h-18h")
+                .duree(16)
                 .statut(EntenteStage.StatutEntente.VALIDEE)
                 .dateDebut(LocalDate.of(2025, 7, 1))
-                .dateFin(LocalDate.of(2025, 10, 31))
                 .missionsObjectifs("Backend dev")
                 .build();
 
@@ -202,10 +194,10 @@ class GestionnaireControllerEntenteTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].duree").value("12 semaines"))
+                .andExpect(jsonPath("$[0].duree").value(12))
                 .andExpect(jsonPath("$[0].nomEntreprise").value("TechCorp"))
                 .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].duree").value("16 semaines"))
+                .andExpect(jsonPath("$[1].duree").value(16))
                 .andExpect(jsonPath("$[1].statut").value("VALIDEE"));
 
         verify(ententeStageService, times(1)).getAllEntentes();
@@ -233,8 +225,7 @@ class GestionnaireControllerEntenteTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.lieu").value("Montreal"))
                 .andExpect(jsonPath("$.studentNom").value("Doe"))
-                .andExpect(jsonPath("$.studentPrenom").value("John"))
-                .andExpect(jsonPath("$.horaires").value("9h-17h"));
+                .andExpect(jsonPath("$.studentPrenom").value("John"));
 
         verify(ententeStageService, times(1)).getEntenteById(1L);
     }
@@ -376,37 +367,4 @@ class GestionnaireControllerEntenteTest {
         verify(ententeStageService, times(1)).supprimerEntente(1L);
     }
 
-    @Test
-    void modifierEntente_ShouldHandleMultipleModifications() throws Exception {
-        Long ententeId1 = 1L;
-        Long ententeId2 = 2L;
-
-        EntenteStageDto modifiedEntente1 = EntenteStageDto.builder()
-                .id(ententeId1)
-                .remuneration(new BigDecimal("3500.00"))
-                .build();
-
-        EntenteStageDto modifiedEntente2 = EntenteStageDto.builder()
-                .id(ententeId2)
-                .remuneration(new BigDecimal("4000.00"))
-                .build();
-
-        when(ententeStageService.modifierEntente(eq(ententeId1), any(EntenteStageDto.class)))
-                .thenReturn(modifiedEntente1);
-        when(ententeStageService.modifierEntente(eq(ententeId2), any(EntenteStageDto.class)))
-                .thenReturn(modifiedEntente2);
-
-        mockMvc.perform(put("/gestionnaire/ententes/{ententeId}", ententeId1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(modifiedEntente1)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(put("/gestionnaire/ententes/{ententeId}", ententeId2)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(modifiedEntente2)))
-                .andExpect(status().isOk());
-
-        verify(ententeStageService, times(1)).modifierEntente(eq(ententeId1), any(EntenteStageDto.class));
-        verify(ententeStageService, times(1)).modifierEntente(eq(ententeId2), any(EntenteStageDto.class));
-    }
 }

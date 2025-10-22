@@ -4,6 +4,7 @@ import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.CvService;
+import ca.cal.leandrose.service.EntenteStageService;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
 import ca.cal.leandrose.service.dto.CvDto;
@@ -56,6 +57,9 @@ class GestionnaireControllerTest {
 
     @MockitoBean
     private CvRepository cvRepository;
+
+    @MockitoBean
+    private EntenteStageService ententeStageService;
 
     private CvDto sampleCvDto;
     private Cv sampleCv;

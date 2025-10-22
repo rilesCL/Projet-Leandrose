@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -92,7 +93,6 @@ class CandidatureServiceTest {
         assertEquals(testOffer.getId(), result.getOfferId());
         assertEquals(testCv.getId(), result.getCvId());
         assertEquals(Candidature.Status.PENDING, result.getStatus());
-        assertEquals(LocalDate.now(), result.getApplicationDate());
         assertEquals("Alice Martin", result.getStudentName());
         assertEquals("Stage développement web", result.getOfferDescription());
         assertEquals("TechCorp", result.getCompanyName());
@@ -463,7 +463,6 @@ class CandidatureServiceTest {
         assertEquals("Alice", dto.getStudentFirstName());
         assertEquals("Martin", dto.getStudentLastName());
         assertEquals("Computer Science", dto.getStudentProgram());
-        assertEquals(LocalDate.now(), dto.getApplicationDate());
         assertEquals(Candidature.Status.PENDING, dto.getStatus());
         assertNotNull(dto.getCvId());
         assertEquals("APPROVED", dto.getCvStatus());

@@ -35,12 +35,9 @@ public class EntenteStageDto {
     private String nomEntreprise;
     private String contactEntreprise;
     private LocalDate dateDebut;
-    private LocalDate dateFin;
-    private String duree;
-    private String horaires;
+    private int duree;
     private String lieu;
-    private String modalitesTeletravail;
-    private BigDecimal remuneration;
+    private Float remuneration;
     private String missionsObjectifs;
     private EntenteStage.StatutEntente statut;
     private LocalDateTime dateCreation;
@@ -74,12 +71,9 @@ public class EntenteStageDto {
                 .internshipOfferDescription(offer.getDescription())
                 .nomEntreprise(offer.getCompanyName())
                 .contactEntreprise(offer.getEmployeurEmail())
-                .dateDebut(entente.getDateDebut())
-                .dateFin(entente.getDateFin())
-                .duree(entente.getDuree())
-                .horaires(entente.getHoraires())
-                .lieu(entente.getLieu())
-                .modalitesTeletravail(entente.getModalitesTeletravail())
+                .dateDebut(entente.getStartDate())
+                .duree(entente.getDurationInWeeks())
+                .lieu(entente.getAddress())
                 .remuneration(entente.getRemuneration())
                 .missionsObjectifs(entente.getMissionsObjectifs())
                 .statut(entente.getStatut())
