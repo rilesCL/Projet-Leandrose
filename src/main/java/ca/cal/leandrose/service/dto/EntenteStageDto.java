@@ -90,4 +90,9 @@ public class EntenteStageDto {
                 .dateSignatureGestionnaire(entente.getDateSignatureGestionnaire())
                 .build();
     }
+    public static EntenteStageDto withErrorMessage(String message) {
+        EntenteStageDto dto = new EntenteStageDto();
+        dto.setError(Map.of("message", message));
+        return dto;
+    }
 }

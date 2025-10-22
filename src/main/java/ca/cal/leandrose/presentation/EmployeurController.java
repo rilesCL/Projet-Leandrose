@@ -333,9 +333,9 @@ public class EmployeurController {
             EntenteStageDto result = ententeStageService.signerParEmployeur(ententeId, me.getId());
             return ResponseEntity.ok(result);
         } catch (jakarta.persistence.EntityNotFoundException e) {
-            return ResponseEntity.status(404).body(new EntenteStageDto("Entente non trouvée"));
+            return ResponseEntity.status(404).body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(new EntenteStageDto(e.getMessage()));
+            return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
         }
     }
 }
