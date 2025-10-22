@@ -39,7 +39,15 @@ public class EntenteStageService {
      */
     @Transactional
     public EntenteStageDto creerEntente(EntenteStageDto dto) {
+        log.info("🔵 Début création entente pour candidature {}", dto.getCandidatureId());
 
+        // 🔍 DEBUG: Afficher le contenu du DTO reçu
+        log.info("📋 DTO reçu - candidatureId: {}", dto.getCandidatureId());
+        log.info("📋 DTO reçu - dateDebut: {}", dto.getDateDebut());
+        log.info("📋 DTO reçu - duree: {}", dto.getDuree());
+        log.info("📋 DTO reçu - lieu: {}", dto.getLieu());
+        log.info("📋 DTO reçu - remuneration: {}", dto.getRemuneration());
+        log.info("📋 DTO reçu - missionsObjectifs: {}", dto.getMissionsObjectifs());
 
         if (dto.getCandidatureId() == null) {
             throw new IllegalArgumentException("La candidature est obligatoire");
@@ -67,25 +75,38 @@ public class EntenteStageService {
                 .build();
 
         entente = ententeRepository.save(entente);
+        log.info("✅ Entente créée avec ID: {}", entente.getId());
 
+        // ÉTAPE 2 : Générer le PDF immédiatement
         try {
+            log.info("📄 Génération du PDF pour entente {}", entente.getId());
             String pdfPath = pdfGeneratorService.genererEntentePDF(entente);
+            log.info("✅ PDF généré avec succès: {}", pdfPath);
 
+            // ÉTAPE 3 : Sauvegarder le chemin et changer le statut
             entente.setCheminDocumentPDF(pdfPath);
             entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
             entente.setDateModification(LocalDateTime.now());
 
             entente = ententeRepository.save(entente);
+            log.info("✅ Chemin PDF sauvegardé en BD: {}", entente.getCheminDocumentPDF());
+            log.info("✅ Statut changé en: {}", entente.getStatut());
 
         } catch (Exception e) {
+            log.error("❌ ERREUR lors de la génération du PDF pour entente {}", entente.getId(), e);
             throw new RuntimeException("Impossible de générer le PDF de l'entente: " + e.getMessage(), e);
         }
 
         return EntenteStageDto.fromEntity(entente);
     }
 
+    /**
+     * Valide une entente et génère le PDF
+     * Cette méthode peut être utilisée pour régénérer un PDF si nécessaire
+     */
     @Transactional
     public EntenteStageDto validerEtGenererEntente(Long ententeId) {
+        log.info("🔵 Validation et génération PDF pour entente {}", ententeId);
 
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
@@ -97,18 +118,21 @@ public class EntenteStageService {
         validateChampsObligatoires(entente);
 
         String pdfPath = pdfGeneratorService.genererEntentePDF(entente);
+        log.info("✅ PDF généré: {}", pdfPath);
 
         entente.setCheminDocumentPDF(pdfPath);
         entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
         entente.setDateModification(LocalDateTime.now());
 
         entente = ententeRepository.save(entente);
+        log.info("✅ Entente validée - Chemin: {}", entente.getCheminDocumentPDF());
 
         return EntenteStageDto.fromEntity(entente);
     }
 
     @Transactional
     public EntenteStageDto modifierEntente(Long ententeId, EntenteStageDto dto) {
+        log.info("🔵 Modification entente {}", ententeId);
 
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
@@ -124,6 +148,7 @@ public class EntenteStageService {
         entente.setDateModification(LocalDateTime.now());
         entente = ententeRepository.save(entente);
 
+        log.info("✅ Entente modifiée: {}", entente.getId());
 
         return EntenteStageDto.fromEntity(entente);
     }
@@ -141,19 +166,23 @@ public class EntenteStageService {
     }
 
     public byte[] telechargerPDF(Long ententeId) {
+        log.info("📥 Téléchargement PDF entente {}", ententeId);
 
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
         if (entente.getCheminDocumentPDF() == null || entente.getCheminDocumentPDF().isBlank()) {
+            log.error("❌ Aucun PDF pour entente {}", ententeId);
             throw new IllegalStateException("Aucun PDF généré pour cette entente. Veuillez d'abord valider l'entente.");
         }
 
+        log.info("✅ Lecture du PDF: {}", entente.getCheminDocumentPDF());
         return pdfGeneratorService.lireFichierPDF(entente.getCheminDocumentPDF());
     }
 
     @Transactional
     public void supprimerEntente(Long ententeId) {
+        log.info("🗑️ Suppression entente {}", ententeId);
 
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
@@ -162,11 +191,13 @@ public class EntenteStageService {
             throw new IllegalStateException("Impossible de supprimer une entente qui n'est pas en brouillon");
         }
 
+        // Supprimer le fichier PDF s'il existe
         if (entente.getCheminDocumentPDF() != null) {
             pdfGeneratorService.supprimerFichierPDF(entente.getCheminDocumentPDF());
         }
 
         ententeRepository.delete(entente);
+        log.info("✅ Entente supprimée: {}", ententeId);
     }
 
     private void validateEntente(EntenteStageDto dto) {
