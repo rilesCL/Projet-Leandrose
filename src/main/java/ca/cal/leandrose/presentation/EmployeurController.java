@@ -31,6 +31,7 @@ public class EmployeurController {
     private final EmployeurService employeurService;
     private final CandidatureService candidatureService;
     private final ConvocationService convocationService;
+    private final EntenteStageService ententeStageService;
 
     @GetMapping("/offers")
     public ResponseEntity<List<InternshipOfferDto>> getMyOffers(HttpServletRequest request) {
@@ -315,6 +316,26 @@ public class EmployeurController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body("Candidature non trouvée");
+        }
+    }
+    @PostMapping("/ententes/{ententeId}/signer")
+    public ResponseEntity<EntenteStageDto> signerEntente(
+            HttpServletRequest request,
+            @PathVariable Long ententeId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EntenteStageDto result = ententeStageService.signerParEmployeur(ententeId, me.getId());
+            return ResponseEntity.ok(result);
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(404).body(new EntenteStageDto("Entente non trouvée"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new EntenteStageDto(e.getMessage()));
         }
     }
 }
