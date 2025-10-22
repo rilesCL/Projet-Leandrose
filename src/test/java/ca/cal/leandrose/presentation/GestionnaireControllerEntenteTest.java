@@ -409,4 +409,5 @@ class GestionnaireControllerEntenteTest {
         verify(ententeStageService, times(1)).modifierEntente(eq(ententeId1), any(EntenteStageDto.class));
         verify(ententeStageService, times(1)).modifierEntente(eq(ententeId2), any(EntenteStageDto.class));
     }
+
 }

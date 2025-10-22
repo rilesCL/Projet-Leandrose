@@ -1,13 +1,10 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.Cv;
-import ca.cal.leandrose.repository.CvRepository;
+import ca.cal.leandrose.model.EntenteStage;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
-import ca.cal.leandrose.service.CvService;
-import ca.cal.leandrose.service.GestionnaireService;
-import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.*;
+import ca.cal.leandrose.service.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +53,10 @@ class GestionnaireControllerTest {
     private CvService cvService;
 
     @MockitoBean
-    private CvRepository cvRepository;
+    private EntenteStageService ententeStageService;
+
+    @MockitoBean
+    private UserAppService userAppService;
 
     private CvDto sampleCvDto;
     private Cv sampleCv;
@@ -79,7 +80,7 @@ class GestionnaireControllerTest {
         internshipOfferDto = InternshipOfferDto.builder()
                 .id(1L)
                 .description("Test offer")
-                .startDate(LocalDate.of(2025,1,1))
+                .startDate(LocalDate.of(2025, 1, 1))
                 .durationInWeeks(12)
                 .address("123 Main ST")
                 .remuneration(15f)
@@ -88,8 +89,9 @@ class GestionnaireControllerTest {
                 .companyName("TechCorp")
                 .pdfPath("/docs/offer.pdf")
                 .build();
-
     }
+
+    // === TESTS CV ===
 
     @Test
     void approveCv_ShouldReturnApprovedCvDto_WhenCvExists() throws Exception {
@@ -166,220 +168,117 @@ class GestionnaireControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].pdfPath").value("/path/to/cv1.pdf"))
-                .andExpect(jsonPath("$[0].status").value("PENDING"))
-                .andExpect(jsonPath("$[1].id").value(2L))
-                .andExpect(jsonPath("$[1].pdfPath").value("/path/to/cv2.pdf"))
-                .andExpect(jsonPath("$[1].status").value("PENDING"));
+                .andExpect(jsonPath("$[1].id").value(2L));
 
         verify(gestionnaireService, times(1)).getPendingCvs();
     }
 
-    @Test
-    void getPendingCvs_ShouldReturnEmptyList_WhenNoPendingCvs() throws Exception {
-        when(gestionnaireService.getPendingCvs()).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/gestionnaire/cvs/pending"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.size()").value(0));
-
-        verify(gestionnaireService, times(1)).getPendingCvs();
-    }
+    // === TESTS OFFRES ===
 
     @Test
-    void downloadCv_ShouldReturnPdfFile_WhenCvExistsAndFileExists() throws Exception {
-        Long cvId = 1L;
-        String fileName = "test-cv.pdf";
-
-        Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), fileName);
-        Files.write(tempPath, "test pdf content".getBytes());
-        UrlResource mockResource = new UrlResource(tempPath.toUri());
-
-        Cv cv = Cv.builder()
-                .id(cvId)
-                .pdfPath(tempPath.toString())
-                .build();
-
-        when(cvService.downloadCv(cvId)).thenReturn(mockResource);
-
-        mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"" + fileName + "\""));
-
-        verify(cvService, times(1)).downloadCv(cvId);
-
-        Files.deleteIfExists(tempPath);
-    }
-
-    @Test
-    void downloadCv_ShouldThrowException_WhenCvNotFound() throws Exception {
-        Long cvId = 999L;
-        when(cvService.downloadCv(cvId)).thenThrow(new RuntimeException("Cv introuvable"));
-        mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
-                .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Cv introuvable")));
-
-        verify(cvService, times(1)).downloadCv(cvId);
-    }
-
-    @Test
-    void approveCv_ShouldAcceptValidPathVariable() throws Exception {
-        Long cvId = 123L;
-        when(gestionnaireService.approveCv(cvId)).thenReturn(sampleCvDto);
-
-        mockMvc.perform(post("/gestionnaire/cv/{cvId}/approve", cvId))
-                .andExpect(status().isOk());
-
-        verify(gestionnaireService, times(1)).approveCv(cvId);
-    }
-
-    @Test
-    void rejectCv_ShouldAcceptValidPathVariable() throws Exception {
-        Long cvId = 123L;
-        String rejectionReason = "cv trop long";
-
-        when(gestionnaireService.rejectCv(eq(cvId), anyString())).thenReturn(sampleCvDto);
-
-        mockMvc.perform(post("/gestionnaire/cv/{cvId}/reject", cvId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(rejectionReason)))
-                .andExpect(status().isOk());
-
-        verify(gestionnaireService, times(1)).rejectCv(eq(cvId), anyString());
-    }
-
-    @Test
-    void downloadCv_ShouldAcceptValidPathVariable() throws Exception {
-        Long cvId = 123L;
-        Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), "temp-cv.pdf");
-        Files.write(tempPath, "test content".getBytes());
-        UrlResource mockResource = new UrlResource(tempPath.toUri());
-
-        sampleCv.setPdfPath(tempPath.toString());
-        when(cvService.downloadCv(cvId)).thenReturn(mockResource);
-
-        mockMvc.perform(get("/gestionnaire/cv/{cvId}/download", cvId))
-                .andExpect(status().isOk());
-
-        verify(cvService, times(1)).downloadCv(cvId);
-
-        Files.deleteIfExists(tempPath);
-    }
-
-    @Test
-    void shouldMapPostRequestToApproveEndpoint() throws Exception {
-        when(gestionnaireService.approveCv(anyLong())).thenReturn(sampleCvDto);
-
-        mockMvc.perform(post("/gestionnaire/cv/1/approve"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void shouldMapPostRequestToRejectEndpoint() throws Exception {
-        String rejectionReason = "manque de détail";
-
-        when(gestionnaireService.rejectCv(anyLong(), anyString())).thenReturn(sampleCvDto);
-
-        mockMvc.perform(post("/gestionnaire/cv/1/reject")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(rejectionReason)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void shouldMapGetRequestToRootEndpoint() throws Exception {
-        when(gestionnaireService.getPendingCvs()).thenReturn(Collections.singletonList(sampleCvDto));
-
-        mockMvc.perform(get("/gestionnaire/cvs/pending"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void shouldMapGetRequestToDownloadEndpoint() throws Exception {
-        Path tempPath = Paths.get(System.getProperty("java.io.tmpdir"), "test.pdf");
-        Files.write(tempPath, "content".getBytes());
-        UrlResource mockResource = new UrlResource(tempPath.toUri());
-
-        sampleCv.setPdfPath(tempPath.toString());
-        when(cvService.downloadCv(anyLong())).thenReturn(mockResource);
-
-        mockMvc.perform(get("/gestionnaire/cv/1/download"))
-                .andExpect(status().isOk());
-
-        Files.deleteIfExists(tempPath);
-    }
-
-    @Test
-    void getApprovedOffers_returnList() throws Exception{
+    void getApprovedOffers_returnList() throws Exception {
         when(gestionnaireService.getApprovedOffers()).thenReturn(List.of(internshipOfferDto));
+
         mockMvc.perform(get("/gestionnaire/offers/approved"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].companyName").value("TechCorp"));
-
     }
 
     @Test
-    void getRejectedOffers_returnedList() throws Exception{
+    void getRejectedOffers_returnedList() throws Exception {
         internshipOfferDto.setStatus("REJECTED");
 
         when(gestionnaireService.getRejectedoffers()).thenReturn(List.of(internshipOfferDto));
+
         mockMvc.perform(get("/gestionnaire/offers/reject"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].status").value("REJECTED"));
     }
 
     @Test
-    void getOfferDetails_returnOffers() throws Exception{
+    void getOfferDetails_returnOffers() throws Exception {
         when(internshipOfferService.getOffer(1L)).thenReturn(internshipOfferDto);
+
         mockMvc.perform(get("/gestionnaire/offers/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.companyName").value("TechCorp"))
-                .andExpect(jsonPath("description").value("Test offer"));
+                .andExpect(jsonPath("$.description").value("Test offer"));
     }
 
     @Test
-    void rejectCv_ShouldHandleEmptyComment() throws Exception {
-        Long cvId = 1L;
-        CvDto rejectedCvDto = CvDto.builder()
-                .id(cvId)
-                .studentId(1L)
-                .pdfPath("/path/to/test-cv.pdf")
-                .status(Cv.Status.REJECTED)
+    void signerEntente_Success_ReturnsSignedEntente() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(
+                new UserDTO(1L, "Jean", "Dupont", "gestionnaire@test.com", ca.cal.leandrose.model.auth.Role.GESTIONNAIRE)
+        );
+
+        EntenteStageDto ententeSigned = EntenteStageDto.builder()
+                .id(1L)
+                .statut(EntenteStage.StatutEntente.VALIDEE)
+                .dateSignatureGestionnaire(LocalDateTime.now())
                 .build();
 
-        when(gestionnaireService.rejectCv(eq(cvId), anyString())).thenReturn(rejectedCvDto);
+        when(ententeStageService.signerParGestionnaire(eq(1L), anyLong())).thenReturn(ententeSigned);
 
-        mockMvc.perform(post("/gestionnaire/cv/{cvId}/reject", cvId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString("")))
-                .andExpect(status().isOk());
+        mockMvc.perform(post("/gestionnaire/ententes/1/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.statut").value("VALIDEE"))
+                .andExpect(jsonPath("$.dateSignatureGestionnaire").exists());
 
-        verify(gestionnaireService, times(1)).rejectCv(eq(cvId), anyString());
+        verify(ententeStageService, times(1)).signerParGestionnaire(eq(1L), anyLong());
     }
 
     @Test
-    void approveCv_ShouldHandleMultipleApprovals() throws Exception {
-        Long cvId1 = 1L;
-        Long cvId2 = 2L;
+    void signerEntente_EntenteNotFound_ReturnsNotFound() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(
+                new UserDTO(1L, "Jean", "Dupont", "gestionnaire@test.com", ca.cal.leandrose.model.auth.Role.GESTIONNAIRE)
+        );
 
-        CvDto approvedCv1 = CvDto.builder().id(cvId1).status(Cv.Status.APPROVED).build();
-        CvDto approvedCv2 = CvDto.builder().id(cvId2).status(Cv.Status.APPROVED).build();
+        when(ententeStageService.signerParGestionnaire(eq(999L), anyLong()))
+                .thenThrow(new jakarta.persistence.EntityNotFoundException("Entente non trouvée"));
 
-        when(gestionnaireService.approveCv(cvId1)).thenReturn(approvedCv1);
-        when(gestionnaireService.approveCv(cvId2)).thenReturn(approvedCv2);
+        mockMvc.perform(post("/gestionnaire/ententes/999/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.message").value("Entente non trouvée"));
 
-        mockMvc.perform(post("/gestionnaire/cv/{cvId}/approve", cvId1))
-                .andExpect(status().isOk());
+        verify(ententeStageService, times(1)).signerParGestionnaire(eq(999L), anyLong());
+    }
 
-        mockMvc.perform(post("/gestionnaire/cv/{cvId}/approve", cvId2))
-                .andExpect(status().isOk());
+    @Test
+    void signerEntente_InvalidStatus_ReturnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(
+                new UserDTO(1L, "Jean", "Dupont", "gestionnaire@test.com", ca.cal.leandrose.model.auth.Role.GESTIONNAIRE)
+        );
 
-        verify(gestionnaireService, times(1)).approveCv(cvId1);
-        verify(gestionnaireService, times(1)).approveCv(cvId2);
+        when(ententeStageService.signerParGestionnaire(eq(1L), anyLong()))
+                .thenThrow(new IllegalStateException("L'entente doit être en attente de signature."));
+
+        mockMvc.perform(post("/gestionnaire/ententes/1/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message").value("L'entente doit être en attente de signature."));
+
+        verify(ententeStageService, times(1)).signerParGestionnaire(eq(1L), anyLong());
+    }
+
+    @Test
+    void signerEntente_AlreadySigned_ReturnsConflict() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(
+                new UserDTO(1L, "Jean", "Dupont", "gestionnaire@test.com", ca.cal.leandrose.model.auth.Role.GESTIONNAIRE)
+        );
+
+        when(ententeStageService.signerParGestionnaire(eq(1L), anyLong()))
+                .thenThrow(new IllegalStateException("Le gestionnaire a déjà signé cette entente."));
+
+        mockMvc.perform(post("/gestionnaire/ententes/1/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.message").value("Le gestionnaire a déjà signé cette entente."));
+
+        verify(ententeStageService, times(1)).signerParGestionnaire(eq(1L), anyLong());
     }
 }

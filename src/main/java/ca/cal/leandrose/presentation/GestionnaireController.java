@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
 @CrossOrigin(origins = {"http://localhost:5173"})
 @RequiredArgsConstructor
 public class GestionnaireController {
+
     private final InternshipOfferService internshipOfferService;
     private final GestionnaireService gestionnaireService;
     private final CvService cvService;
@@ -37,10 +39,7 @@ public class GestionnaireController {
     }
 
     @PostMapping("/cv/{cvId}/reject")
-    public ResponseEntity<CvDto> rejectCv(
-            @PathVariable Long cvId,
-            @RequestBody String comment
-    ) {
+    public ResponseEntity<CvDto> rejectCv(@PathVariable Long cvId, @RequestBody String comment) {
         return ResponseEntity.ok(gestionnaireService.rejectCv(cvId, comment));
     }
 
@@ -50,12 +49,12 @@ public class GestionnaireController {
     }
 
     @GetMapping("/offers/approved")
-    public ResponseEntity<List<InternshipOfferDto>> getApprovedOffers(){
+    public ResponseEntity<List<InternshipOfferDto>> getApprovedOffers() {
         return ResponseEntity.ok(gestionnaireService.getApprovedOffers());
     }
 
     @GetMapping("/offers/reject")
-    public ResponseEntity<List<InternshipOfferDto>> getRejectedOffers(){
+    public ResponseEntity<List<InternshipOfferDto>> getRejectedOffers() {
         return ResponseEntity.ok(gestionnaireService.getRejectedoffers());
     }
 
@@ -70,19 +69,16 @@ public class GestionnaireController {
     }
 
     @GetMapping("/cv/{cvId}/download")
-    public ResponseEntity<?> downloadCv(@PathVariable Long cvId){
-        try{
+    public ResponseEntity<?> downloadCv(@PathVariable Long cvId) {
+        try {
             Resource resource = cvService.downloadCv(cvId);
             Path filepath = Paths.get(resource.getFile().getAbsolutePath());
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filepath.getFileName() + "\"")
                     .body(resource);
-        }
-        catch(RuntimeException | IOException e){
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
+        } catch (RuntimeException | IOException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
@@ -189,9 +185,7 @@ public class GestionnaireController {
             headers.setContentDisposition(org.springframework.http.ContentDisposition.attachment()
                     .filename("entente_stage_" + ententeId + ".pdf")
                     .build());
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(pdfBytes);
+            return ResponseEntity.ok().headers(headers).body(pdfBytes);
         } catch (EntityNotFoundException e) {
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
@@ -223,11 +217,11 @@ public class GestionnaireController {
             ententeStageService.supprimerEntente(ententeId);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
-            // Pour DELETE, on ne peut pas retourner un body avec noContent()
-            // On doit utiliser un statut différent
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    // ✅ Correction complète ici
     @PostMapping("/ententes/{ententeId}/signer")
     public ResponseEntity<EntenteStageDto> signerEntenteParGestionnaire(
             HttpServletRequest request,
@@ -235,17 +229,46 @@ public class GestionnaireController {
     ) {
         UserDTO me = userAppService.getMe(request.getHeader("Authorization"));
 
-        if (!me.getRole().name().equals("GESTIONNAIRE")) {
-            return ResponseEntity.status(403).build();
+        if (me == null || !me.getRole().name().equals("GESTIONNAIRE")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         try {
             EntenteStageDto result = ententeStageService.signerParGestionnaire(ententeId, me.getId());
             return ResponseEntity.ok(result);
         } catch (jakarta.persistence.EntityNotFoundException e) {
-            return ResponseEntity.status(404).body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
+            String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+            HttpStatus status = (msg.contains("déjà signé") || msg.contains("already signed"))
+                    ? HttpStatus.CONFLICT
+                    : HttpStatus.BAD_REQUEST;
+            return ResponseEntity.status(status)
+                    .body(EntenteStageDto.withErrorMessage(e.getMessage()));
         }
+    }
+
+    @ExceptionHandler(jakarta.persistence.EntityNotFoundException.class)
+    public ResponseEntity<Object> handleEntityNotFoundException(jakarta.persistence.EntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap("error", Collections.singletonMap("message", ex.getMessage())));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap("error", Collections.singletonMap("message", ex.getMessage())));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Object> handleIllegalStateException(IllegalStateException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        if (msg.contains("déjà signé") || msg.contains("already signed")) {
+            status = HttpStatus.CONFLICT;
+        }
+        return ResponseEntity.status(status)
+                .body(Collections.singletonMap("error", Collections.singletonMap("message", ex.getMessage())));
     }
 }
