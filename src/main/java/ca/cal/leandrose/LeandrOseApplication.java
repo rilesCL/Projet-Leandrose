@@ -208,7 +208,7 @@ public class LeandrOseApplication {
                         .build();
 
                 EntenteStageDto ententeCreated39 = ententeStageService.creerEntente(ententeDto39);
-                System.out.println("✅ Entente STORY 39 créée : " + ententeCreated39.getId());
+                System.out.println(" Entente STORY 39 créée : " + ententeCreated39.getId());
 
                 // 9️⃣ Validation et signature
                 EntenteStageDto ententeValidee39 = ententeStageService.validerEtGenererEntente(ententeCreated39.getId());
@@ -217,7 +217,7 @@ public class LeandrOseApplication {
                 EntenteStageDto ententeSignee39 = ententeStageService.signerParEmployeur(
                         ententeValidee39.getId(),
                         employeurEntente.getId());
-                System.out.println("✍️ Entente STORY 39 signée par l'employeur : "
+                System.out.println("️ Entente STORY 39 signée par l'employeur : "
                         + ententeSignee39.getDateSignatureEmployeur());
 
                 System.out.println("===== FIN STORY 39 =====\n");
@@ -238,7 +238,7 @@ public class LeandrOseApplication {
                             ententeEtudiant40.getId(),
                             studentEntente.getId());
 
-                    System.out.println("✍️ Entente STORY 40 signée par l’étudiant : "
+                    System.out.println(" Entente STORY 40 signée par l’étudiant : "
                             + ententeSigneeEtudiant40.getDateSignatureEtudiant());
 
                     System.out.println("Statut après signature étudiant : " + ententeSigneeEtudiant40.getStatut());
@@ -248,7 +248,24 @@ public class LeandrOseApplication {
                     System.err.println("Erreur STORY 40 : " + e.getMessage());
                     e.printStackTrace();
                 }
+// === STORY 41 : Signature de l’entente par le gestionnaire ===
+                System.out.println("===== STORY 41 : Signature de l’entente par le gestionnaire =====");
 
+// On réutilise l’entente de la Story 40 (elle est déjà en EN_ATTENTE_SIGNATURE)
+                System.out.println("Statut actuel avant signature gestionnaire : EN_ATTENTE_SIGNATURE");
+
+// Le gestionnaire signe
+                EntenteStageDto ententeSignee41 = ententeStageService.signerParGestionnaire(
+                        ententeSignee39.getId(), // réutilisation de la même entente
+                        gestionnaireDto.getId()
+                );
+
+                System.out.println("✍ Entente STORY 41 signée par le gestionnaire : "
+                        + ententeSignee41.getDateSignatureGestionnaire());
+                System.out.println("Statut final après signature gestionnaire : "
+                        + ententeSignee41.getStatut());
+
+                System.out.println("===== FIN STORY 41 =====\n");
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());
                 e.printStackTrace();
