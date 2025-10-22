@@ -193,7 +193,7 @@ export default function CreateEntenteForm() {
                                     <span className="font-medium text-gray-700">
                                         {t("createEntenteForm.program")} :
                                     </span>
-                                    <p className="text-gray-900">{selectedCandidature.student.program}</p>
+                                    <p className="text-gray-900">{t(selectedCandidature.student.program)}</p>
                                 </div>
                             </div>
                         </div>
