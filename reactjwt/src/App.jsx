@@ -19,6 +19,7 @@ import StudentInternshipOffersList from "./components/StudentInternshipOffersLis
 import ApplicationsPage from "./components/ApplicationsPage.jsx";
 import OfferCandidaturesList from "./components/OfferCandidaturesList.jsx";
 import EntentesStagePage from "./components/EntentesStagePage.jsx";
+import CreateEntenteForm from "./components/CreateEntenteForm.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -52,6 +53,7 @@ function App() {
                 <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
                 <Route path="dashboard/gestionnaire/ententes" element={<EntentesStagePage/>} />
                 <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
+                <Route path="/dashboard/gestionnaire/ententes/create" element={<CreateEntenteForm />} />
 
 
                 {/* Fallback Dashboard Route */}

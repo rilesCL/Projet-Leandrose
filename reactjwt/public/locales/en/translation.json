@@ -210,7 +210,8 @@
     "logout": "Logout",
     "welcome": "Welcome",
     "addProgram": "Add Program",
-    "offer": "offer"
+    "offer": "offer",
+    "ententes": "Agreements"
   },
   "dashboardStudent": {
     "logout": "Logout",
@@ -654,7 +655,61 @@
       "PUBLISHED": "appproved"
     }
   },
+  "ententesStagePage": {
+    "title": "Accepted Applications",
+    "loading": "Loading accepted applications...",
+    "error": "Error",
+    "noApplications": "No accepted applications found.",
+    "student": "Student",
+    "offer": "Offer",
+    "company": "Company",
+    "startDate": "Start date",
+    "duration": "Duration",
+    "weeks": "week(s)",
+    "address": "Address",
+    "remuneration": "Remuneration",
+    "status": "Application status",
+    "ententeCreated": "Agreement created on",
+    "viewCv": "View CV",
+    "createEntente": "Create agreement",
+    "ententeAlreadyCreated": "Agreement already created",
+    "notDefined": "—",
+    "previewError": "Unable to open CV",
+    "back": "Back"
+  },
   "common": {
     "cancel": "Cancel"
+  },
+  "createEntenteForm": {
+    "title": "Create Internship Agreement",
+    "error": "Error",
+    "success": "Agreement created successfully!",
+    "candidatureLabel": "Accepted Application *",
+    "candidaturePlaceholder": "-- Select an application --",
+    "candidatureRequired": "Application is required",
+    "studentInfo": "Student Information",
+    "fullName": "Full name",
+    "email": "Email",
+    "studentNumber": "Student number",
+    "program": "Program",
+    "companyInfo": "Company Information",
+    "companyName": "Company name",
+    "offerDescription": "Offer description",
+    "startDate": "Start date",
+    "duration": "Duration",
+    "weeks": "weeks",
+    "location": "Location",
+    "remuneration": "Remuneration",
+    "notPaid": "Unpaid",
+    "missionsLabel": "Internship missions and objectives *",
+    "missionsPlaceholder": "Describe the missions and objectives...",
+    "missionsRequired": "Missions and objectives are required",
+    "cancelButton": "Cancel",
+    "submitButton": "Create agreement",
+    "submitting": "Creating...",
+    "createError": "Error creating agreement",
+    "loadError": "Unable to load applications",
+    "notDefined": "—",
+    "back": "Back"
   }
 }
