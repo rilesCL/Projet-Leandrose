@@ -1,140 +1,300 @@
+// src/api/apiGestionnaire.js
+// Client API pour les endpoints "gestionnaire"
 const API_BASE = "http://localhost:8080/gestionnaire";
 
-function getAuthHeaders() {
+/**
+ * Prépare les headers d'auth (Bearer token) si présent en sessionStorage.
+ * Retourne un objet pouvant être spread dans fetch(..., { headers: ... }).
+ */
+function getAuthHeaders(contentType = "application/json") {
     const accessToken = sessionStorage.getItem("accessToken");
     const tokenType = (sessionStorage.getItem("tokenType") || "BEARER").toUpperCase();
-    if (!accessToken) return {};
-    return {
-        "Content-Type": "application/json",
-        Authorization: tokenType.startsWith("BEARER") ? `Bearer ${accessToken}` : accessToken,
-    };
+    const headers = {};
+    if (contentType) headers["Content-Type"] = contentType;
+    if (!accessToken) return headers;
+    headers["Authorization"] = tokenType.startsWith("BEARER") ? `Bearer ${accessToken}` : accessToken;
+    return headers;
 }
 
-export async function previewCv(cvId) {
-    try {
-        const response = await fetch(`${API_BASE}/cv/${cvId}/download`, {
-            method: "GET",
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            const text = await response.text();
-            throw new Error(text || `Erreur téléchargement CV ${cvId}`);
+/**
+ * Lit la réponse HTTP et parse le JSON. En cas d'erreur (status !ok) lève une Error
+ * contenant le message si disponible (body JSON.message ou texte brut).
+ */
+async function handleJsonResponse(response) {
+    const contentType = response.headers.get("content-type") || "";
+    const text = await response.text();
+    if (!response.ok) {
+        // essayer d'extraire message JSON
+        try {
+            if (contentType.includes("application/json") && text) {
+                const json = JSON.parse(text);
+                throw new Error(json?.message || JSON.stringify(json));
+            }
+        } catch (e) {
+            // fallback
         }
-
-        return await response.blob();
-    } catch (err) {
-        console.error("Erreur récupération PDF", err);
-        throw err;
+        throw new Error(text || `HTTP error ${response.status}`);
     }
+    if (contentType.includes("application/json")) {
+        return text ? JSON.parse(text) : null;
+    }
+    return text;
 }
 
+/**
+ * Lit la réponse et retourne un Blob (utile pour les PDFs).
+ * En cas d'erreur lève une Error.
+ */
+async function handleBlobResponse(response) {
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `HTTP error ${response.status}`);
+    }
+    return await response.blob();
+}
+
+/* ------------------------
+   Endpoints: Candidatures
+   ------------------------ */
+
+/**
+ * Récupère les candidatures acceptées qui n'ont pas encore d'entente.
+ * Endpoint backend attendu (exemple) : GET /gestionnaire/ententes/candidatures-acceptees
+ */
+export async function getCandidaturesAcceptees() {
+    const url = `${API_BASE}/ententes/candidatures/accepted`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
+}
+
+/* ------------------------
+   Endpoints: CV (Gestionnaire)
+   ------------------------ */
+
+/**
+ * Télécharge (preview) le CV (blob).
+ * GET /gestionnaire/cv/{cvId}/download
+ */
+export async function previewCv(cvId) {
+    const url = `${API_BASE}/cv/${cvId}/download`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleBlobResponse(res);
+}
+
+/**
+ * Récupère les CVs en attente
+ * GET /gestionnaire/cvs/pending
+ */
 export async function getPendingCvs() {
-    try {
-        const response = await fetch(`${API_BASE}/cvs/pending`, {
-            method: "GET",
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) throw new Error(`HTTP erreur! Status ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error("Erreur fetching Cvs: ", error);
-        throw error;
-    }
+    const url = `${API_BASE}/cvs/pending`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
 }
 
+/**
+ * Approuve un CV
+ * POST /gestionnaire/cv/{cvId}/approve
+ */
 export async function approveCv(cvId) {
-    const response = await fetch(`${API_BASE}/cv/${cvId}/approve`, {
-        method: "POST",
-        headers: getAuthHeaders(),
-    });
-    return response.json();
+    const url = `${API_BASE}/cv/${cvId}/approve`;
+    const res = await fetch(url, { method: "POST", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
 }
 
+/**
+ * Rejette un CV avec commentaire
+ * POST /gestionnaire/cv/{cvId}/reject
+ * body: string (comment) ou { comment: "..." } selon backend
+ */
 export async function rejectCv(cvId, comment) {
-    const response = await fetch(`${API_BASE}/cv/${cvId}/reject`, {
+    const url = `${API_BASE}/cv/${cvId}/reject`;
+    // si backend attend une chaîne brute, envoyer JSON.stringify(comment) ; si attend objet, envoyer { comment }
+    const res = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(comment),
     });
-    return response.json();
+    return await handleJsonResponse(res);
 }
 
-async function fetchwithAuthOffers(url) {
-    try {
-        const response = await fetch(url, {
-            method: "GET",
-            headers: getAuthHeaders(),
-        });
+/* ------------------------
+   Endpoints: Offres (Gestionnaire)
+   ------------------------ */
 
-        if (!response.ok) throw new Error(`HTTP erreur! Status ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error("Erreur fetching offers: ", error);
-        throw error;
-    }
+/**
+ * Helper interne
+ */
+async function fetchWithAuthJson(url) {
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
 }
 
+/**
+ * GET /gestionnaire/offers/approved
+ */
 export async function getApprovedOffers() {
-    return fetchwithAuthOffers(`${API_BASE}/offers/approved`);
+    return await fetchWithAuthJson(`${API_BASE}/offers/approved`);
 }
 
+/**
+ * GET /gestionnaire/offers/reject
+ */
 export async function getRejectedOffers() {
-    return fetchwithAuthOffers(`${API_BASE}/offers/reject`);
+    return await fetchWithAuthJson(`${API_BASE}/offers/reject`);
 }
 
+/**
+ * GET /gestionnaire/offers/{id}
+ */
 export async function getOfferDetails(id) {
-    return fetchwithAuthOffers(`${API_BASE}/offers/${id}`);
+    return await fetchWithAuthJson(`${API_BASE}/offers/${id}`);
 }
 
+/**
+ * GET /gestionnaire/offers/pending
+ */
 export async function getPendingOffers() {
-    try {
-        const response = await fetch(`${API_BASE}/offers/pending`, {
-            method: "GET",
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) throw new Error(`HTTP erreur! Status ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error("Erreur fetching offers: ", error);
-        throw error;
-    }
+    return await fetchWithAuthJson(`${API_BASE}/offers/pending`);
 }
 
+/**
+ * POST /gestionnaire/offers/{offerId}/approve
+ */
 export async function approveOffer(offerId) {
-    const response = await fetch(`${API_BASE}/offers/${offerId}/approve`, {
-        method: "POST",
-        headers: getAuthHeaders(),
-    });
-    return response.json();
+    const url = `${API_BASE}/offers/${offerId}/approve`;
+    const res = await fetch(url, { method: "POST", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
 }
 
+/**
+ * POST /gestionnaire/offers/{offerId}/reject
+ * body: { comment: "..." }
+ */
 export async function rejectOffer(offerId, comment) {
-    const response = await fetch(`${API_BASE}/offers/${offerId}/reject`, {
+    const url = `${API_BASE}/offers/${offerId}/reject`;
+    const res = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ comment }),
     });
-    return response.json();
+    return await handleJsonResponse(res);
 }
 
+/**
+ * GET /gestionnaire/offers/{offerId}/pdf  -> retourne un blob pdf
+ */
 export async function previewOfferPdf(offerId) {
-    try {
-        const response = await fetch(`${API_BASE}/offers/${offerId}/pdf`, {
-            method: "GET",
-            headers: getAuthHeaders(),
-        });
-
-        if (!response.ok) {
-            const text = await response.text();
-            throw new Error(text || `Erreur téléchargement offre ${offerId}`);
-        }
-
-        return await response.blob();
-    } catch (err) {
-        console.error("Erreur récupération PDF offre", err);
-        throw err;
-    }
+    const url = `${API_BASE}/offers/${offerId}/pdf`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleBlobResponse(res);
 }
+
+/* ------------------------
+   Endpoints: Ententes
+   ------------------------ */
+
+/**
+ * POST /gestionnaire/ententes
+ * body: EntenteStageDto (JSON)
+ * Retourne l'entente créée.
+ */
+export async function creerEntente(ententeDto) {
+    const url = `${API_BASE}/ententes`;
+    const res = await fetch(url, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(ententeDto),
+    });
+    return await handleJsonResponse(res);
+}
+
+/**
+ * PUT /gestionnaire/ententes/{id}
+ * body: EntenteStageDto (JSON) pour modifications partielles
+ */
+export async function modifierEntente(ententeId, ententeDto) {
+    const url = `${API_BASE}/ententes/${ententeId}`;
+    const res = await fetch(url, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(ententeDto),
+    });
+    return await handleJsonResponse(res);
+}
+
+/**
+ * POST /gestionnaire/ententes/{id}/valider
+ * Valide l'entente et génère le PDF côté serveur.
+ */
+export async function validerEntente(ententeId) {
+    const url = `${API_BASE}/ententes/${ententeId}/valider`;
+    const res = await fetch(url, { method: "POST", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
+}
+
+/**
+ * GET /gestionnaire/ententes/{id}/telecharger
+ * Télécharge le PDF de l'entente (blob)
+ */
+export async function previewEntentePdf(ententeId) {
+    const url = `${API_BASE}/ententes/${ententeId}/telecharger`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleBlobResponse(res);
+}
+
+/**
+ * GET /gestionnaire/ententes
+ * Retourne toutes les ententes (liste)
+ */
+export async function getAllEntentes() {
+    const url = `${API_BASE}/ententes`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
+}
+
+/**
+ * GET /gestionnaire/ententes/{id}
+ */
+export async function getEntenteById(ententeId) {
+    const url = `${API_BASE}/ententes/${ententeId}`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
+}
+
+/**
+ * DELETE /gestionnaire/ententes/{id}
+ */
+export async function supprimerEntente(ententeId) {
+    const url = `${API_BASE}/ententes/${ententeId}`;
+    const res = await fetch(url, { method: "DELETE", headers: getAuthHeaders() });
+    // Certains DELETE renvoient noContent -> handleJsonResponse gèrera.
+    return await handleJsonResponse(res);
+}
+
+/* ------------------------
+   Utilitaires côté client
+   ------------------------ */
+
+/**
+ * Télécharge un Blob côté client en utilisant un nom de fichier.
+ * (ex: downloadBlobToFile(blob, 'entente_1.pdf'))
+ */
+export function downloadBlobToFile(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename || "download";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
+}
+
+/* ------------------------
+   Remarques finales :
+   - Adaptez les chemins d'API si votre backend expose des URLs différentes.
+   - Toutes les fonctions lèvent une Error si la réponse HTTP n'est pas ok.
+   - Importez uniquement les fonctions nécessaires par :
+       import { getCandidaturesAcceptees, previewCv } from '../api/apiGestionnaire';
+   - Redémarrez le dev server si vous venez d'ajouter/modifier ce fichier.
+*/

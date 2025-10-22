@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PendingCvPage from "./PendingCvPage";
 import PendingOffersPage from "./PendingOffersPage.jsx";
@@ -8,6 +8,7 @@ import LanguageSelector from "./LanguageSelector.jsx";
 
 export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t, i18n } = useTranslation();
     const [userName, setUserName] = useState("");
 
@@ -42,23 +43,16 @@ export default function DashBoardGestionnaire() {
         fetchUserInfo();
     }, [navigate]);
 
+    const isActive = (path) => location.pathname.startsWith(path);
+
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-white shadow">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <span className="text-xl font-bold text-indigo-600">{t("appName")}</span>
-
                         <nav className="flex items-center space-x-4">
                             <LanguageSelector />
-
-                            <Link
-                                to="/dashboard/gestionnaire/offers"
-                                className="flex items-center text-gray-600 hover:text-indigo-600 transition"
-                            >
-                                {t("dashboardGestionnaire.offer")}
-                            </Link>
-
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"
@@ -73,9 +67,40 @@ export default function DashBoardGestionnaire() {
 
             <main className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
+                    {/* Barre d'onglets placée juste au-dessus du Welcome */}
+                    <div className="mb-4">
+                        <nav className="flex space-x-4 border-b">
+                            <Link
+                                to="/dashboard/gestionnaire/offers"
+                                className={
+                                    "px-3 py-2 -mb-px text-sm font-medium " +
+                                    (isActive("/dashboard/gestionnaire/offers")
+                                        ? "text-indigo-600 border-b-2 border-indigo-600"
+                                        : "text-gray-600 hover:text-indigo-600")
+                                }
+                            >
+                                {t("dashboardGestionnaire.offer")}
+                            </Link>
+
+                            <Link
+                                to="/dashboard/gestionnaire/ententes"
+                                className={
+                                    "px-3 py-2 -mb-px text-sm font-medium " +
+                                    (isActive("/dashboard/gestionnaire/ententes")
+                                        ? "text-indigo-600 border-b-2 border-indigo-600"
+                                        : "text-gray-600 hover:text-indigo-600")
+                                }
+                            >
+                                {t("dashboardGestionnaire.ententes")}
+                            </Link>
+                        </nav>
+                    </div>
+
                     <h1 className="text-2xl font-semibold text-gray-900 mb-4">
                         {t("dashboardGestionnaire.welcome")} {userName}!
                     </h1>
+
+                    {/* Contenu par défaut : CV en attente + Offres */}
                     <PendingCvPage />
                     <div className="my-8 border-t border-gray-300"></div>
                     <PendingOffersPage />

@@ -18,6 +18,7 @@ import OfferDetailPage from "./components/OfferDetailPage.jsx";
 import StudentInternshipOffersList from "./components/StudentInternshipOffersList.jsx";
 import ApplicationsPage from "./components/ApplicationsPage.jsx";
 import OfferCandidaturesList from "./components/OfferCandidaturesList.jsx";
+import EntentesStagePage from "./components/EntentesStagePage.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -49,6 +50,7 @@ function App() {
                     <Route path="applications" element={<ApplicationsPage />} />
                 </Route>
                 <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
+                <Route path="dashboard/gestionnaire/ententes" element={<EntentesStagePage/>} />
                 <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
 
 

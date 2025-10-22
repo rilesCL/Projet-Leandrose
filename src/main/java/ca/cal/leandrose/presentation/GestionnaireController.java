@@ -121,7 +121,7 @@ public class GestionnaireController {
         return ResponseEntity.ok(gestionnaireService.getAllPrograms());
     }
 
-    @GetMapping("/ententes/candidatures-acceptees")
+    @GetMapping("/ententes/candidatures/accepted")
     public ResponseEntity<List<CandidatureDto>> getCandidaturesAcceptees() {
         return ResponseEntity.ok(ententeStageService.getCandidaturesAcceptees());
     }
