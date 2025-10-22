@@ -35,6 +35,10 @@ public class EntenteStageDto {
 
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
+
+    // ✅ AJOUT: Le chemin du PDF
+    private String cheminDocumentPDF;
+
     private LocalDateTime dateSignatureEtudiant;
     private LocalDateTime dateSignatureEmployeur;
     private LocalDateTime dateSignatureGestionnaire;
@@ -81,6 +85,7 @@ public class EntenteStageDto {
                 .lieu(offer.getAddress())
                 .dateCreation(entente.getDateCreation())
                 .dateModification(entente.getDateModification())
+                .cheminDocumentPDF(entente.getCheminDocumentPDF())
                 .dateSignatureEtudiant(entente.getDateSignatureEtudiant())
                 .dateSignatureEmployeur(entente.getDateSignatureEmployeur())
                 .dateSignatureGestionnaire(entente.getDateSignatureGestionnaire())

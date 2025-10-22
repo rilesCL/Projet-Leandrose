@@ -6,6 +6,7 @@ import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.EntenteStageDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EntenteStageService {
 
     private final EntenteStageRepository ententeRepository;
@@ -31,8 +33,14 @@ public class EntenteStageService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Crée une entente ET génère immédiatement le PDF
+     * Le PDF doit être disponible pour que l'étudiant et l'employeur puissent le consulter avant signature
+     */
     @Transactional
     public EntenteStageDto creerEntente(EntenteStageDto dto) {
+
+
         if (dto.getCandidatureId() == null) {
             throw new IllegalArgumentException("La candidature est obligatoire");
         }
@@ -50,6 +58,7 @@ public class EntenteStageService {
 
         validateEntente(dto);
 
+        // ÉTAPE 1 : Créer l'entente en BROUILLON
         EntenteStage entente = EntenteStage.builder()
                 .candidature(candidature)
                 .missionsObjectifs(dto.getMissionsObjectifs())
@@ -59,13 +68,31 @@ public class EntenteStageService {
 
         entente = ententeRepository.save(entente);
 
+        try {
+            String pdfPath = pdfGeneratorService.genererEntentePDF(entente);
+
+            entente.setCheminDocumentPDF(pdfPath);
+            entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
+            entente.setDateModification(LocalDateTime.now());
+
+            entente = ententeRepository.save(entente);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Impossible de générer le PDF de l'entente: " + e.getMessage(), e);
+        }
+
         return EntenteStageDto.fromEntity(entente);
     }
 
     @Transactional
     public EntenteStageDto validerEtGenererEntente(Long ententeId) {
+
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
+
+        if (entente.getStatut() != EntenteStage.StatutEntente.BROUILLON) {
+            throw new IllegalStateException("Seules les ententes en brouillon peuvent être validées");
+        }
 
         validateChampsObligatoires(entente);
 
@@ -82,6 +109,7 @@ public class EntenteStageService {
 
     @Transactional
     public EntenteStageDto modifierEntente(Long ententeId, EntenteStageDto dto) {
+
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
@@ -89,11 +117,13 @@ public class EntenteStageService {
             throw new IllegalStateException("Impossible de modifier une entente qui n'est pas en brouillon");
         }
 
-        if (dto.getMissionsObjectifs() != null) entente.setMissionsObjectifs(dto.getMissionsObjectifs());
+        if (dto.getMissionsObjectifs() != null && !dto.getMissionsObjectifs().isBlank()) {
+            entente.setMissionsObjectifs(dto.getMissionsObjectifs());
+        }
 
         entente.setDateModification(LocalDateTime.now());
-
         entente = ententeRepository.save(entente);
+
 
         return EntenteStageDto.fromEntity(entente);
     }
@@ -111,11 +141,12 @@ public class EntenteStageService {
     }
 
     public byte[] telechargerPDF(Long ententeId) {
+
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
-        if (entente.getCheminDocumentPDF() == null) {
-            throw new IllegalStateException("Aucun PDF généré pour cette entente");
+        if (entente.getCheminDocumentPDF() == null || entente.getCheminDocumentPDF().isBlank()) {
+            throw new IllegalStateException("Aucun PDF généré pour cette entente. Veuillez d'abord valider l'entente.");
         }
 
         return pdfGeneratorService.lireFichierPDF(entente.getCheminDocumentPDF());
@@ -123,11 +154,16 @@ public class EntenteStageService {
 
     @Transactional
     public void supprimerEntente(Long ententeId) {
+
         EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
         if (entente.getStatut() != EntenteStage.StatutEntente.BROUILLON) {
             throw new IllegalStateException("Impossible de supprimer une entente qui n'est pas en brouillon");
+        }
+
+        if (entente.getCheminDocumentPDF() != null) {
+            pdfGeneratorService.supprimerFichierPDF(entente.getCheminDocumentPDF());
         }
 
         ententeRepository.delete(entente);
@@ -137,15 +173,14 @@ public class EntenteStageService {
         if (dto.getDateDebut() == null) {
             throw new IllegalArgumentException("La date de début est obligatoire");
         }
-        if (dto.getDuree() < 0) {
-            throw new IllegalArgumentException("La durée est obligatoire");
+        if (dto.getDuree() < 1) {
+            throw new IllegalArgumentException("La durée doit être d'au moins 1 semaine");
         }
-
         if (dto.getMissionsObjectifs() == null || dto.getMissionsObjectifs().isBlank()) {
             throw new IllegalArgumentException("Les missions et objectifs sont obligatoires");
         }
         if (dto.getRemuneration() != null && dto.getRemuneration() < 0) {
-            throw new IllegalArgumentException("La rémunération doit être positive ou zéro");
+            throw new IllegalArgumentException("La rémunération ne peut pas être négative");
         }
     }
 
@@ -154,10 +189,13 @@ public class EntenteStageService {
             throw new IllegalArgumentException("La date de début est obligatoire");
         }
         if (entente.getDurationInWeeks() < 1) {
-            throw new IllegalArgumentException("La durée est obligatoire");
+            throw new IllegalArgumentException("La durée doit être d'au moins 1 semaine");
         }
         if (entente.getMissionsObjectifs() == null || entente.getMissionsObjectifs().isBlank()) {
             throw new IllegalArgumentException("Les missions et objectifs sont obligatoires");
+        }
+        if (entente.getAddress() == null || entente.getAddress().isBlank()) {
+            throw new IllegalArgumentException("L'adresse du stage est obligatoire");
         }
     }
 }
