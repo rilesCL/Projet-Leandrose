@@ -1,4 +1,5 @@
 package ca.cal.leandrose;
+
 import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
@@ -37,6 +38,7 @@ public class LeandrOseApplication {
 
         return args -> {
             try {
+                // === Code existant (Stories 34–38) ===
                 employeurService.createEmployeur(
                         "Leandro",
                         "Schoonewolff",
@@ -71,8 +73,6 @@ public class LeandrOseApplication {
                                 "Jean", "Dupont", "gestionnaire@test.com", "Password123!", "514-123-4567");
                 System.out.println("Gestionnaire créé: " + gestionnaireDto);
 
-                // === Nouveau code pour la convocation ===
-
                 EmployeurDto employeurConvocation = employeurService.createEmployeur(
                         "Marie",
                         "Tremblay",
@@ -93,10 +93,7 @@ public class LeandrOseApplication {
 
                 MultipartFile cvFile = loadPdfFromResources("test.pdf", "CV_Sophie_Martin.pdf");
                 CvDto cvDto = cvService.uploadCv(studentConvocation.getId(), cvFile);
-                System.out.println("CV créé pour l'étudiant: " + cvDto);
-
                 CvDto cvApproved = gestionnaireService.approveCv(cvDto.getId());
-                System.out.println("CV approuvé: " + cvApproved);
 
                 MultipartFile offerFile = loadPdfFromResources("test.pdf", "Offre_Stage_TechInnovation.pdf");
                 InternshipOfferDto offerDto = internshipOfferService.createOfferDto(
@@ -107,31 +104,20 @@ public class LeandrOseApplication {
                         25.00f,
                         employeurConvocation,
                         offerFile);
-                System.out.println("Offre de stage créée: " + offerDto);
-
                 InternshipOfferDto offerApproved = gestionnaireService.approveOffer(offerDto.getId());
-                System.out.println("Offre de stage approuvée: " + offerApproved);
 
                 CandidatureDto candidatureDto = candidatureService.postuler(
                         studentConvocation.getId(),
                         offerApproved.getId(),
                         cvApproved.getId());
-                System.out.println("Candidature créée: " + candidatureDto);
 
                 LocalDateTime convocationDate = LocalDateTime.now().plusDays(7).withHour(14).withMinute(0);
-                String location = "TechInnovation Inc., Salle de conférence A, 123 Rue Principale, Montréal";
-                String message = "Bonjour Sophie,\n\n" +
-                        "Nous sommes ravis de vous inviter à un entretien pour le poste de Développeur Full-Stack Junior.\n" +
-                        "Veuillez apporter une pièce d'identité et une copie de votre CV.\n\n" +
-                        "Au plaisir de vous rencontrer!\n\n" +
-                        "Cordialement,\nL'équipe RH de TechInnovation";
-
+                String location = "TechInnovation Inc., Salle A, 123 Rue Principale, Montréal";
                 convocationService.addConvocation(
                         candidatureDto.getId(),
                         convocationDate,
                         location,
-                        message);
-                System.out.println("Convocation créée avec succès pour la candidature ID: " + candidatureDto.getId());
+                        "Convocation STORY 38");
 
                 StudentDto studentConvocation2 = studentService.createStudent(
                         "Alexandre",
@@ -140,60 +126,101 @@ public class LeandrOseApplication {
                         "Password123",
                         "STU004",
                         Program.SOFTWARE_ENGINEERING.getTranslationKey());
-                System.out.println("Étudiant pour convocation et acceptation créé: " + studentConvocation2);
-
                 MultipartFile cvFile2 = loadPdfFromResources("test.pdf", "CV_Alexandre_Dubois.pdf");
                 CvDto cvDto2 = cvService.uploadCv(studentConvocation2.getId(), cvFile2);
-                System.out.println("CV créé pour Alexandre: " + cvDto2);
-
                 CvDto cvApproved2 = gestionnaireService.approveCv(cvDto2.getId());
-                System.out.println("CV approuvé pour Alexandre: " + cvApproved2);
-
                 CandidatureDto candidatureDto2 = candidatureService.postuler(
                         studentConvocation2.getId(),
                         offerApproved.getId(),
                         cvApproved2.getId());
-                System.out.println("Candidature créée pour Alexandre: " + candidatureDto2);
+                candidatureService.acceptByEmployeur(candidatureDto2.getId());
 
-                LocalDateTime convocationDate2 = LocalDateTime.now().plusDays(8).withHour(10).withMinute(30);
-                String location2 = "TechInnovation Inc., Salle B, 123 Rue Principale, Montréal";
-                String message2 = "Bonjour Alexandre,\n\n" +
-                        "Nous vous invitons à un entretien pour le poste de Développeur Full-Stack Junior.\n" +
-                        "Apportez une pièce d'identité et votre CV.\n\n" +
-                        "Cordialement,\nL'équipe RH";
+                // === STORY 39 : Création complète d'une entente de stage ===
+                System.out.println("\n===== STORY 39 : Création complète d'une entente de stage =====");
 
-                convocationService.addConvocation(
-                        candidatureDto2.getId(),
-                        convocationDate2,
-                        location2,
-                        message2);
-                System.out.println("Convocation créée pour Alexandre, candidature ID: " + candidatureDto2.getId());
+                // 1️⃣ Création d'un employeur
+                EmployeurDto employeurEntente = employeurService.createEmployeur(
+                        "Patrick",
+                        "Lavoie",
+                        "patrick.lavoie@innovsolutions.com",
+                        "Password123",
+                        "InnovSolutions",
+                        Program.SOFTWARE_ENGINEERING.getTranslationKey());
+                System.out.println("Employeur STORY 39 créé : " + employeurEntente.getCompanyName());
 
-                CandidatureDto candidatureAccepted = candidatureService.acceptByEmployeur(candidatureDto2.getId());
-                System.out.println("Candidature acceptée par l'employeur pour Alexandre: " + candidatureAccepted);
+                // 2️⃣ Création d'un étudiant
+                StudentDto studentEntente = studentService.createStudent(
+                        "Camille",
+                        "Roy",
+                        "camille.roy@student.com",
+                        "Password123",
+                        "STU005",
+                        Program.SOFTWARE_ENGINEERING.getTranslationKey());
+                System.out.println("Étudiant STORY 39 créé : " + studentEntente.getFirstName());
 
-                // === STORY 39 : Création et signature d'une entente de stage ===
-                EntenteStageDto ententeDto = EntenteStageDto.builder()
-                        .candidatureId(candidatureAccepted.getId())
-                        .dateDebut(LocalDate.now().plusDays(10))
+                // 3️⃣ Upload et approbation du CV
+                MultipartFile cvFile3 = loadPdfFromResources("test.pdf", "CV_Camille_Roy.pdf");
+                CvDto cvDto3 = cvService.uploadCv(studentEntente.getId(), cvFile3);
+                CvDto cvApproved3 = gestionnaireService.approveCv(cvDto3.getId());
+                System.out.println("CV approuvé pour " + studentEntente.getFirstName());
+
+                // 4️⃣ Création et approbation de l'offre
+                MultipartFile offerFile3 = loadPdfFromResources("test.pdf", "Offre_Stage_InnovSolutions.pdf");
+                InternshipOfferDto offerDto3 = internshipOfferService.createOfferDto(
+                        "Stage QA Automatisation",
+                        LocalDate.now().plusWeeks(3),
+                        10,
+                        "850 Rue Saint-Denis, Montréal",
+                        23.50f,
+                        employeurEntente,
+                        offerFile3);
+                InternshipOfferDto offerApproved3 = gestionnaireService.approveOffer(offerDto3.getId());
+                System.out.println("Offre STORY 39 approuvée : ");
+
+                // 5️⃣ L'étudiant postule à l'offre
+                CandidatureDto candidatureEntente = candidatureService.postuler(
+                        studentEntente.getId(),
+                        offerApproved3.getId(),
+                        cvApproved3.getId());
+                System.out.println("Candidature STORY 39 créée : " + candidatureEntente.getId());
+
+                // 6️⃣ L’employeur accepte la candidature
+                CandidatureDto candidatureAccepted39 = candidatureService.acceptByEmployeur(candidatureEntente.getId());
+                System.out.println("Candidature STORY 39 acceptée par l'employeur : " + candidatureAccepted39.getStatus());
+
+                // 7️⃣ L’étudiant confirme l’acceptation (statut devient ACCEPTED)
+                CandidatureDto candidatureConfirmed39 = candidatureService.acceptByStudent(
+                        candidatureAccepted39.getId(),
+                        studentEntente.getId());
+                System.out.println("Candidature STORY 39 confirmée par l’étudiant : " + candidatureConfirmed39.getStatus());
+
+                // 8️⃣ Création de l’entente
+                EntenteStageDto ententeDto39 = EntenteStageDto.builder()
+                        .candidatureId(candidatureConfirmed39.getId())
+                        .dateDebut(LocalDate.now().plusWeeks(4))
                         .dateFin(LocalDate.now().plusMonths(3))
-                        .duree("12 semaines")
-                        .horaires("35h/semaine")
-                        .lieu("123 Rue Principale, Montréal, QC")
-                        .modalitesTeletravail("Hybride : 2 jours en présentiel")
-                        .remuneration(new java.math.BigDecimal("25.00"))
-                        .missionsObjectifs("Développement d'une application web full-stack avec Spring Boot et React.")
+                        .duree("10 semaines")
+                        .horaires("37.5h/semaine")
+                        .lieu("850 Rue Saint-Denis, Montréal")
+                        .modalitesTeletravail("Présentiel complet")
+                        .remuneration(new java.math.BigDecimal("23.50"))
+                        .missionsObjectifs("Tests automatisés, scripts CI/CD et outils de QA avec Selenium et Jenkins.")
                         .build();
 
-                EntenteStageDto nouvelleEntente = ententeStageService.creerEntente(ententeDto);
-                System.out.println("✅ Entente créée : " + nouvelleEntente.getId());
+                EntenteStageDto ententeCreated39 = ententeStageService.creerEntente(ententeDto39);
+                System.out.println("✅ Entente STORY 39 créée : " + ententeCreated39.getId());
 
-                EntenteStageDto ententeValidee = ententeStageService.validerEtGenererEntente(nouvelleEntente.getId());
+                // 9️⃣ Validation et signature
+                EntenteStageDto ententeValidee39 = ententeStageService.validerEtGenererEntente(ententeCreated39.getId());
+                System.out.println("📄 Entente STORY 39 validée par le gestionnaire.");
 
+                EntenteStageDto ententeSignee39 = ententeStageService.signerParEmployeur(
+                        ententeValidee39.getId(),
+                        employeurEntente.getId());
+                System.out.println("✍️ Entente STORY 39 signée par l'employeur : "
+                        + ententeSignee39.getDateSignatureEmployeur());
 
-                EntenteStageDto ententeSigneeEmployeur =
-                        ententeStageService.signerParEmployeur(ententeValidee.getId(), employeurConvocation.getId());
-                System.out.println("✍️ Entente signée par l'employeur : " + ententeSigneeEmployeur.getDateSignatureEmployeur());
+                System.out.println("===== FIN STORY 39 =====\n");
 
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());
@@ -202,12 +229,9 @@ public class LeandrOseApplication {
         };
     }
 
-    /**
-     * Charge un fichier PDF depuis les resources
-     */
+    /** Charge un fichier PDF depuis les resources */
     private MultipartFile loadPdfFromResources(String resourcePath, String filename) throws IOException {
         ClassPathResource resource = new ClassPathResource(resourcePath);
-
         try (InputStream inputStream = resource.getInputStream()) {
             byte[] pdfContent = inputStream.readAllBytes();
             return new CustomMultipartFile(pdfContent, filename);
@@ -215,47 +239,15 @@ public class LeandrOseApplication {
     }
 
     private record CustomMultipartFile(byte[] content, String filename) implements MultipartFile {
-
-        @Override
-        public String getName() {
-            return "file";
-        }
-
-        @Override
-        public String getOriginalFilename() {
-            return filename;
-        }
-
-        @Override
-        public String getContentType() {
-            return "application/pdf";
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return content == null || content.length == 0;
-        }
-
-        @Override
-        public long getSize() {
-            return content.length;
-        }
-
-        @Override
-        public byte[] getBytes() throws IOException {
-            return content;
-        }
-
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return new ByteArrayInputStream(content);
-        }
-
-        @Override
-        public void transferTo(File dest) throws IOException, IllegalStateException {
-            try (FileOutputStream fos = new FileOutputStream(dest)) {
-                fos.write(content);
-            }
+        @Override public String getName() { return "file"; }
+        @Override public String getOriginalFilename() { return filename; }
+        @Override public String getContentType() { return "application/pdf"; }
+        @Override public boolean isEmpty() { return content == null || content.length == 0; }
+        @Override public long getSize() { return content.length; }
+        @Override public byte[] getBytes() { return content; }
+        @Override public InputStream getInputStream() { return new ByteArrayInputStream(content); }
+        @Override public void transferTo(File dest) throws IOException {
+            try (FileOutputStream fos = new FileOutputStream(dest)) { fos.write(content); }
         }
     }
 }
