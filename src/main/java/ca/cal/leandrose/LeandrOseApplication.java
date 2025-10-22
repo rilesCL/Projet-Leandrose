@@ -222,6 +222,33 @@ public class LeandrOseApplication {
 
                 System.out.println("===== FIN STORY 39 =====\n");
 
+
+                // === STORY 40 : Signature de l’entente par l’étudiant ===
+                System.out.println("\n===== STORY 40 : Signature de l’entente par l’étudiant =====");
+
+                try {
+                    // 1️⃣ On réutilise l’entente STORY 39
+                    EntenteStageDto ententeEtudiant40 = ententeValidee39;
+
+                    // 2️⃣ Vérifions qu’elle est bien en attente de signature
+                    System.out.println("Statut actuel avant signature étudiant : " + ententeEtudiant40.getStatut());
+
+                    // 3️⃣ L’étudiant signe à son tour
+                    EntenteStageDto ententeSigneeEtudiant40 = ententeStageService.signerParEtudiant(
+                            ententeEtudiant40.getId(),
+                            studentEntente.getId());
+
+                    System.out.println("✍️ Entente STORY 40 signée par l’étudiant : "
+                            + ententeSigneeEtudiant40.getDateSignatureEtudiant());
+
+                    System.out.println("Statut après signature étudiant : " + ententeSigneeEtudiant40.getStatut());
+                    System.out.println("===== FIN STORY 40 =====\n");
+
+                } catch (Exception e) {
+                    System.err.println("Erreur STORY 40 : " + e.getMessage());
+                    e.printStackTrace();
+                }
+
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());
                 e.printStackTrace();
@@ -250,4 +277,5 @@ public class LeandrOseApplication {
             try (FileOutputStream fos = new FileOutputStream(dest)) { fos.write(content); }
         }
     }
+
 }
