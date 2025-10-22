@@ -115,9 +115,6 @@ export default function EntentesStagePage() {
                                     <div className="text-sm text-gray-500">
                                         {t("ententesStagePage.remuneration")} : {offer.remuneration ? `${offer.remuneration} $/h` : t("ententesStagePage.notDefined")}
                                     </div>
-                                    <div className="text-sm text-gray-500">
-                                        {t("ententesStagePage.status")} : {c.status}
-                                    </div>
                                     {entente && (
                                         <div className="text-sm text-green-700 font-medium">
                                             {t("ententesStagePage.ententeCreated")} : {new Date(entente.creationDate).toLocaleDateString()}

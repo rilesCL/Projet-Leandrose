@@ -33,7 +33,10 @@ export default function OfferDetailPage() {
 
                 const candidatures = await getMyCandidatures();
                 if (Array.isArray(candidatures))
-                    setAlreadyApplied(candidatures.some((c) => String(c.offerId) === String(offerId)));
+                    setAlreadyApplied(
+                        candidatures.some((c) => String(c.internshipOffer?.id) === String(offerId))
+                    );
+
             } catch (err) {
                 console.error(err);
                 setError(t("OfferDetailPage.error"));
