@@ -683,7 +683,7 @@
   "createEntenteForm": {
     "title": "Create Internship Agreement",
     "error": "Error",
-    "success": "Agreement created successfully! Redirecting...",
+    "success": "Agreement created successfully!",
     "candidatureLabel": "Accepted Application *",
     "candidaturePlaceholder": "-- Select an application --",
     "candidatureRequired": "Application is required",

@@ -120,7 +120,6 @@ export default function CreateEntenteForm() {
                 setError(result.error.message || t("createEntenteForm.createError"));
             } else {
                 setSuccess(true);
-                setTimeout(() => navigate("/dashboard/gestionnaire/ententes"), 1500);
             }
         } catch (err) {
             console.error("❌ Erreur création entente:", err);

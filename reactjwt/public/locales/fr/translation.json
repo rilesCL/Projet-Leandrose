@@ -685,7 +685,7 @@
   "createEntenteForm": {
     "title": "Créer une entente de stage",
     "error": "Erreur",
-    "success": "Entente créée avec succès ! Redirection...",
+    "success": "Entente créée avec succès !",
     "candidatureLabel": "Candidature acceptée *",
     "candidaturePlaceholder": "-- Sélectionner une candidature --",
     "candidatureRequired": "La candidature est obligatoire",
