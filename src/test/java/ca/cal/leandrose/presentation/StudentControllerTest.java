@@ -2,17 +2,12 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import org.junit.jupiter.api.BeforeEach;
-import ca.cal.leandrose.service.*;
-import ca.cal.leandrose.service.dto.CandidatureDto;
-import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -57,10 +52,11 @@ class StudentControllerTest {
 
     @MockitoBean
     private ConvocationService convocationService;
+
     private StudentDto studentDto;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         studentDto = StudentDto.builder()
                 .id(1L)
                 .firstName("John")
@@ -149,7 +145,6 @@ class StudentControllerTest {
                 "pdfFile", "cv.pdf", "application/pdf", "PDF_CONTENT".getBytes()
         );
 
-        // Act + Assert
         mockMvc.perform(multipart("/student/cv")
                         .file(file)
                         .header("Authorization", "Bearer token"))
@@ -172,13 +167,10 @@ class StudentControllerTest {
 
     @Test
     void getCv_asStudent_returnsCvDto() throws Exception {
-
-        Student student = Student.builder().id(1L).build();
         CvDto cvDto = CvDto.builder().id(1L).pdfPath("path/to/cv.pdf").build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
         when(studentService.getStudentById(1L)).thenReturn(studentDto);
-
         when(cvService.getCvByStudentId(1L)).thenReturn(cvDto);
 
         mockMvc.perform(get("/student/cv")
@@ -200,7 +192,18 @@ class StudentControllerTest {
     @Test
     void applyToOffer_asStudent_returnsCandidature() throws Exception {
         UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
-        CandidatureDto candidature = CandidatureDto.builder().id(100L).build();
+
+        StudentDto sDto = StudentDto.builder().id(1L).firstName("John").lastName("Doe").email("john@example.com").build();
+        InternshipOfferDto offerDto = InternshipOfferDto.builder().id(200L).description("Stage en Java").companyName("TechCorp").build();
+        CvDto cvDto = CvDto.builder().id(300L).pdfPath("/cv/path.pdf").build();
+
+        CandidatureDto candidature = CandidatureDto.builder()
+                .id(100L)
+                .student(sDto)
+                .internshipOffer(offerDto)
+                .cv(cvDto)
+                .status(Candidature.Status.PENDING)
+                .build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
         when(candidatureService.postuler(1L, 200L, 300L)).thenReturn(candidature);
@@ -226,7 +229,18 @@ class StudentControllerTest {
     @Test
     void getMyCandidatures_asStudent_returnsList() throws Exception {
         UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
-        CandidatureDto c = CandidatureDto.builder().id(500L).build();
+
+        StudentDto sDto = StudentDto.builder().id(1L).firstName("John").lastName("Doe").email("john@example.com").build();
+        InternshipOfferDto offerDto = InternshipOfferDto.builder().id(200L).description("Stage A").companyName("TechCorp").build();
+        CvDto cvDto = CvDto.builder().id(300L).pdfPath("/cv/path.pdf").build();
+
+        CandidatureDto c = CandidatureDto.builder()
+                .id(500L)
+                .student(sDto)
+                .internshipOffer(offerDto)
+                .cv(cvDto)
+                .status(Candidature.Status.PENDING)
+                .build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
         when(candidatureService.getCandidaturesByStudent(1L)).thenReturn(List.of(c));
@@ -273,15 +287,17 @@ class StudentControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-
-// ===== TESTS POUR ACCEPTATION DE CANDIDATURE PAR L'ÉTUDIANT =====
+    // ===== TESTS POUR ACCEPTATION DE CANDIDATURE PAR L'ÉTUDIANT =====
 
     @Test
     void acceptCandidature_asStudent_returnsAcceptedCandidature() throws Exception {
         UserDTO studentDto = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
         CandidatureDto candidature = CandidatureDto.builder()
                 .id(100L)
                 .status(Candidature.Status.ACCEPTED)
+                .student(StudentDto.builder().id(1L).firstName("John").lastName("Doe").build())
+                .internshipOffer(InternshipOfferDto.builder().id(200L).companyName("TechCorp").build())
                 .build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
@@ -350,7 +366,7 @@ class StudentControllerTest {
                 .andExpect(content().string("Cette candidature ne vous appartient pas"));
     }
 
-// ===== TESTS POUR REJET DE CANDIDATURE PAR L'ÉTUDIANT =====
+    // ===== TESTS POUR REJET DE CANDIDATURE PAR L'ÉTUDIANT =====
 
     @Test
     void rejectCandidature_asStudent_returnsRejectedCandidature() throws Exception {
@@ -358,6 +374,8 @@ class StudentControllerTest {
         CandidatureDto candidature = CandidatureDto.builder()
                 .id(100L)
                 .status(Candidature.Status.REJECTED)
+                .student(StudentDto.builder().id(1L).firstName("John").lastName("Doe").build())
+                .internshipOffer(InternshipOfferDto.builder().id(200L).companyName("TechCorp").build())
                 .build();
 
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
