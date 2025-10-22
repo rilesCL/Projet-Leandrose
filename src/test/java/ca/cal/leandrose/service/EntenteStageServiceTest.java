@@ -435,4 +435,67 @@ class EntenteStageServiceTest {
         EntenteStageDto result = ententeStageService.signerParEmployeur(1L, employeur.getId());
         assertEquals(EntenteStage.StatutEntente.VALIDEE, result.getStatut());
     }
+    @Test
+    void signerParEtudiant_Success() {
+        entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
+        when(ententeRepository.findById(1L)).thenReturn(Optional.of(entente));
+        when(ententeRepository.save(any())).thenReturn(entente);
+
+        EntenteStageDto result = ententeStageService.signerParEtudiant(1L, student.getId());
+
+        assertNotNull(result);
+        assertNotNull(result.getDateSignatureEtudiant());
+        verify(ententeRepository).save(any(EntenteStage.class));
+    }
+
+    @Test
+    void signerParEtudiant_EntenteNotFound() {
+        when(ententeRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                ententeStageService.signerParEtudiant(1L, student.getId())
+        );
+    }
+
+    @Test
+    void signerParEtudiant_StatusInvalid_Throws() {
+        entente.setStatut(EntenteStage.StatutEntente.BROUILLON);
+        when(ententeRepository.findById(1L)).thenReturn(Optional.of(entente));
+
+        assertThrows(IllegalStateException.class, () ->
+                ententeStageService.signerParEtudiant(1L, student.getId())
+        );
+    }
+
+    @Test
+    void signerParEtudiant_WrongStudent_Throws() {
+        entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
+        when(ententeRepository.findById(1L)).thenReturn(Optional.of(entente));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                ententeStageService.signerParEtudiant(1L, 99L)
+        );
+    }
+
+    @Test
+    void signerParEtudiant_AlreadySigned_Throws() {
+        entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
+        entente.setDateSignatureEtudiant(LocalDateTime.now());
+        when(ententeRepository.findById(1L)).thenReturn(Optional.of(entente));
+
+        assertThrows(IllegalStateException.class, () ->
+                ententeStageService.signerParEtudiant(1L, student.getId())
+        );
+    }
+
+    @Test
+    void signerParEtudiant_AllSigned_SetsValidee() {
+        entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
+        entente.setDateSignatureEmployeur(LocalDateTime.now());
+        entente.setDateSignatureGestionnaire(LocalDateTime.now());
+        when(ententeRepository.findById(1L)).thenReturn(Optional.of(entente));
+        when(ententeRepository.save(any())).thenReturn(entente);
+
+        EntenteStageDto result = ententeStageService.signerParEtudiant(1L, student.getId());
+        assertEquals(EntenteStage.StatutEntente.VALIDEE, result.getStatut());
+    }
 }

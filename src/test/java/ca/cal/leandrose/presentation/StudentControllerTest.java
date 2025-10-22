@@ -1,6 +1,7 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.Candidature;
+import ca.cal.leandrose.model.EntenteStage;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.StudentRepository;
@@ -425,5 +426,82 @@ class StudentControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Cette candidature ne vous appartient pas"));
     }
+    @MockitoBean
+    private EntenteStageService ententeStageService;
 
+    @Test
+    void signerEntente_asStudent_returnsOk() throws Exception {
+        UserDTO student = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+        EntenteStageDto ententeDto = EntenteStageDto.builder()
+                .id(10L)
+                .candidatureId(20L)
+                .statut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE)
+                .dateSignatureEtudiant(java.time.LocalDateTime.now())
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(student);
+        when(ententeStageService.signerParEtudiant(10L, 1L)).thenReturn(ententeDto);
+
+        mockMvc.perform(post("/student/ententes/10/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.statut").value("EN_ATTENTE_SIGNATURE"));
+
+        verify(ententeStageService).signerParEtudiant(10L, 1L);
+    }
+
+    @Test
+    void signerEntente_notStudent_returnsForbidden() throws Exception {
+        UserDTO employeur = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+        when(userAppService.getMe(anyString())).thenReturn(employeur);
+
+        mockMvc.perform(post("/student/ententes/10/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+
+        verify(ententeStageService, never()).signerParEtudiant(anyLong(), anyLong());
+    }
+
+    @Test
+    void signerEntente_ententeNotFound_returnsNotFound() throws Exception {
+        UserDTO student = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(student);
+        when(ententeStageService.signerParEtudiant(10L, 1L))
+                .thenThrow(new jakarta.persistence.EntityNotFoundException("Entente non trouvée"));
+
+        mockMvc.perform(post("/student/ententes/10/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.message").value("Entente non trouvée"));
+    }
+
+    @Test
+    void signerEntente_illegalArgument_returnsBadRequest() throws Exception {
+        UserDTO student = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(student);
+        when(ententeStageService.signerParEtudiant(10L, 1L))
+                .thenThrow(new IllegalArgumentException("Cet étudiant n'est pas autorisé à signer cette entente."));
+
+        mockMvc.perform(post("/student/ententes/10/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message").value("Cet étudiant n'est pas autorisé à signer cette entente."));
+    }
+
+    @Test
+    void signerEntente_illegalState_returnsBadRequest() throws Exception {
+        UserDTO student = new UserDTO(1L, null, null, null, ca.cal.leandrose.model.auth.Role.STUDENT);
+
+        when(userAppService.getMe(anyString())).thenReturn(student);
+        when(ententeStageService.signerParEtudiant(10L, 1L))
+                .thenThrow(new IllegalStateException("L'entente doit être en attente de signature."));
+
+        mockMvc.perform(post("/student/ententes/10/signer")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message").value("L'entente doit être en attente de signature."));
+    }
 }
