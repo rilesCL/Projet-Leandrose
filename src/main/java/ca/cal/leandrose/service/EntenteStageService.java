@@ -189,4 +189,33 @@ public class EntenteStageService {
             throw new IllegalArgumentException("Les missions et objectifs sont obligatoires");
         }
     }
+    @Transactional
+    public EntenteStageDto signerParEmployeur(Long ententeId, Long employeurId) {
+        EntenteStage entente = ententeRepository.findById(ententeId)
+                .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
+
+        if (entente.getStatut() != EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE) {
+            throw new IllegalStateException("L'entente doit être en attente de signature.");
+        }
+
+        Long employeurEntenteId = entente.getCandidature().getInternshipOffer().getEmployeurId();
+        if (!employeurEntenteId.equals(employeurId)) {
+            throw new IllegalArgumentException("Cet employeur n'est pas autorisé à signer cette entente.");
+        }
+
+        if (entente.getDateSignatureEmployeur() != null) {
+            throw new IllegalStateException("L'employeur a déjà signé cette entente.");
+        }
+
+        entente.setDateSignatureEmployeur(LocalDateTime.now());
+        entente.setDateModification(LocalDateTime.now());
+
+        if (entente.getDateSignatureEtudiant() != null &&
+                entente.getDateSignatureGestionnaire() != null) {
+            entente.setStatut(EntenteStage.StatutEntente.VALIDEE);
+        }
+
+        EntenteStage saved = ententeRepository.save(entente);
+        return EntenteStageDto.fromEntity(saved);
+    }
 }
