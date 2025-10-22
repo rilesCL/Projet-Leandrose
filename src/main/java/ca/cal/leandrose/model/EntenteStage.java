@@ -25,24 +25,6 @@ public class EntenteStage {
     @JoinColumn(nullable = false)
     private Candidature candidature;
 
-    @Column(nullable = false)
-    private LocalDate dateDebut;
-
-    @Column(nullable = false)
-    private LocalDate dateFin;
-
-    @Column(nullable = false)
-    private String duree;
-
-    @Column(nullable = false)
-    private String horaires;
-
-    private String lieu;
-
-    private String modalitesTeletravail;
-
-    private BigDecimal remuneration;
-
     @Column(columnDefinition = "TEXT", nullable = false)
     private String missionsObjectifs;
 
@@ -66,4 +48,27 @@ public class EntenteStage {
         EN_ATTENTE_SIGNATURE,
         VALIDEE
     }
+    public InternshipOffer getOffer(){
+        return candidature.getInternshipOffer();
+    }
+    public Employeur getEmployeur(){
+        return getOffer().getEmployeur();
+    }
+    public Student getStudent(){
+        return candidature.getStudent();
+    }
+    public float getRemuneration(){
+        Float remuneration = getOffer().getRemuneration();
+        return remuneration != null ? remuneration : 0f;
+    }
+    public String getAddress(){
+        return getOffer().getAddress();
+    }
+    public int getDurationInWeeks(){
+        return getOffer().getDurationInWeeks();
+    }
+    public LocalDate getStartDate(){
+        return getOffer().getStartDate();
+    }
+
 }

@@ -13,10 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,10 +41,9 @@ class EntenteStageServiceTest {
     private Candidature candidature;
     private EntenteStage entente;
     private EntenteStageDto ententeDto;
-    private Student student;
     private Employeur employeur;
-    private InternshipOffer offer;
-    private Cv cv;
+    private Student student;
+
     @BeforeEach
     void setUp() {
         // Setup Student
@@ -71,7 +69,8 @@ class EntenteStageServiceTest {
                 .build();
 
         // Setup CV - ✅ Corrigé
-        cv = Cv.builder()
+        // ✅ Changé de fileName à pdfPath
+        Cv cv = Cv.builder()
                 .id(1L)
                 .student(student)
                 .pdfPath("/path/to/cv.pdf")  // ✅ Changé de fileName à pdfPath
@@ -79,7 +78,7 @@ class EntenteStageServiceTest {
                 .build();
 
         // Setup InternshipOffer
-        offer = InternshipOffer.builder()
+        InternshipOffer offer = InternshipOffer.builder()
                 .id(1L)
                 .description("Stage développement")
                 .startDate(LocalDate.now())
@@ -103,13 +102,6 @@ class EntenteStageServiceTest {
         entente = EntenteStage.builder()
                 .id(1L)
                 .candidature(candidature)
-                .dateDebut(LocalDate.of(2025, 6, 1))
-                .dateFin(LocalDate.of(2025, 8, 31))
-                .duree("12 semaines")
-                .horaires("9h-17h")
-                .lieu("Montreal")
-                .modalitesTeletravail("2 jours/semaine")
-                .remuneration(new BigDecimal("3000.00"))
                 .missionsObjectifs("Développement web")
                 .statut(EntenteStage.StatutEntente.BROUILLON)
                 .dateCreation(LocalDateTime.now())
@@ -119,12 +111,9 @@ class EntenteStageServiceTest {
         ententeDto = EntenteStageDto.builder()
                 .candidatureId(1L)
                 .dateDebut(LocalDate.of(2025, 6, 1))
-                .dateFin(LocalDate.of(2025, 8, 31))
-                .duree("12 semaines")
-                .horaires("9h-17h")
+                .duree(12)
                 .lieu("Montreal")
-                .modalitesTeletravail("2 jours/semaine")
-                .remuneration(new BigDecimal("3000.00"))
+                .remuneration(30f)
                 .missionsObjectifs("Développement web")
                 .build();
     }
@@ -132,7 +121,7 @@ class EntenteStageServiceTest {
     @Test
     void testGetCandidaturesAcceptees() {
         when(candidatureRepository.findByStatus(Candidature.Status.ACCEPTED))
-                .thenReturn(Arrays.asList(candidature));
+                .thenReturn(Collections.singletonList(candidature));
         when(ententeRepository.existsByCandidatureId(1L)).thenReturn(false);
 
         List<CandidatureDto> result = ententeStageService.getCandidaturesAcceptees();
@@ -145,7 +134,7 @@ class EntenteStageServiceTest {
     @Test
     void testGetCandidaturesAcceptees_FilterExistingEntentes() {
         when(candidatureRepository.findByStatus(Candidature.Status.ACCEPTED))
-                .thenReturn(Arrays.asList(candidature));
+                .thenReturn(Collections.singletonList(candidature));
         when(ententeRepository.existsByCandidatureId(1L)).thenReturn(true);
 
         List<CandidatureDto> result = ententeStageService.getCandidaturesAcceptees();
@@ -171,18 +160,14 @@ class EntenteStageServiceTest {
     void testCreerEntente_CandidatureIdNull() {
         ententeDto.setCandidatureId(null);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            ententeStageService.creerEntente(ententeDto);
-        });
+        assertThrows(IllegalArgumentException.class, () -> ententeStageService.creerEntente(ententeDto));
     }
 
     @Test
     void testCreerEntente_CandidatureNotFound() {
         when(candidatureRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            ententeStageService.creerEntente(ententeDto);
-        });
+        assertThrows(EntityNotFoundException.class, () -> ententeStageService.creerEntente(ententeDto));
     }
 
     @Test
@@ -200,43 +185,7 @@ class EntenteStageServiceTest {
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
         when(ententeRepository.existsByCandidatureId(1L)).thenReturn(true);
 
-        assertThrows(IllegalStateException.class, () -> {
-            ententeStageService.creerEntente(ententeDto);
-        });
-    }
-
-    @Test
-    void testCreerEntente_DateDebutAfterDateFin() {
-        ententeDto.setDateDebut(LocalDate.of(2025, 9, 1));
-        ententeDto.setDateFin(LocalDate.of(2025, 6, 1));
-        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
-        when(ententeRepository.existsByCandidatureId(1L)).thenReturn(false);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            ententeStageService.creerEntente(ententeDto);
-        });
-    }
-
-    @Test
-    void testCreerEntente_DureeNull() {
-        ententeDto.setDuree(null);
-        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
-        when(ententeRepository.existsByCandidatureId(1L)).thenReturn(false);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            ententeStageService.creerEntente(ententeDto);
-        });
-    }
-
-    @Test
-    void testCreerEntente_HorairesBlank() {
-        ententeDto.setHoraires("");
-        when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
-        when(ententeRepository.existsByCandidatureId(1L)).thenReturn(false);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            ententeStageService.creerEntente(ententeDto);
-        });
+        assertThrows(IllegalStateException.class, () -> ententeStageService.creerEntente(ententeDto));
     }
 
     @Test
@@ -252,13 +201,11 @@ class EntenteStageServiceTest {
 
     @Test
     void testCreerEntente_RemunerationNegative() {
-        ententeDto.setRemuneration(new BigDecimal("-100.00"));
+        ententeDto.setRemuneration(-100f);
         when(candidatureRepository.findById(1L)).thenReturn(Optional.of(candidature));
         when(ententeRepository.existsByCandidatureId(1L)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            ententeStageService.creerEntente(ententeDto);
-        });
+        assertThrows(IllegalArgumentException.class, () -> ententeStageService.creerEntente(ententeDto));
     }
 
     @Test
@@ -289,7 +236,7 @@ class EntenteStageServiceTest {
         when(ententeRepository.save(any(EntenteStage.class))).thenReturn(entente);
 
         EntenteStageDto modificationDto = EntenteStageDto.builder()
-                .remuneration(new BigDecimal("3500.00"))
+                .remuneration(350f)
                 .build();
 
         EntenteStageDto result = ententeStageService.modifierEntente(1L, modificationDto);
@@ -304,7 +251,7 @@ class EntenteStageServiceTest {
         when(ententeRepository.findById(1L)).thenReturn(Optional.of(entente));
 
         EntenteStageDto modificationDto = EntenteStageDto.builder()
-                .remuneration(new BigDecimal("3500.00"))
+                .remuneration(350f)
                 .build();
 
         assertThrows(IllegalStateException.class, () -> {
@@ -314,7 +261,7 @@ class EntenteStageServiceTest {
 
     @Test
     void testGetAllEntentes() {
-        when(ententeRepository.findAll()).thenReturn(Arrays.asList(entente));
+        when(ententeRepository.findAll()).thenReturn(Collections.singletonList(entente));
 
         List<EntenteStageDto> result = ententeStageService.getAllEntentes();
 
