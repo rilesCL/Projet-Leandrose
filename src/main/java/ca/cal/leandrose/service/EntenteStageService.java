@@ -1,39 +1,43 @@
 package ca.cal.leandrose.service;
 
-
-import ca.cal.leandrose.repository.CandidatureRepository;
+import ca.cal.leandrose.model.*;
+import ca.cal.leandrose.repository.*;
+import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.EntenteStageDto;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EntenteStageService {
 
-    private final EntanteStageRepository entanteRepository;
+    private final EntenteStageRepository ententeRepository;
     private final CandidatureRepository candidatureRepository;
     private final PDFGeneratorService pdfGeneratorService;
-    private final NotificationService notificationService;
 
-    /**
-     * Récupérer les candidatures acceptées (ACCEPTED)
-     * Ce sont les seules éligibles pour créer une entente
-     */
-    public List<CandidatureDTO> getCandidaturesAcceptees() {
+    public List<CandidatureDto> getCandidaturesAcceptees() {
         List<Candidature> candidatures = candidatureRepository
                 .findByStatus(Candidature.Status.ACCEPTED);
 
         return candidatures.stream()
-                .filter(c -> !entanteRepository.existsByCandidatureId(c.getId())) // Exclure celles qui ont déjà une entente
-                .map(this::mapCandidatureToDTO)
+                .filter(c -> !ententeRepository.existsByCandidatureId(c.getId()))
+                .map(CandidatureDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Créer une nouvelle entente (brouillon)
-     */
     @Transactional
-    public EntanteStageDTO creerEntante(EntanteStageCreateDTO dto) {
-        // Validation : la candidature doit être ACCEPTED
+    public EntenteStageDto creerEntente(EntenteStageDto dto) {
+        if (dto.getCandidatureId() == null) {
+            throw new IllegalArgumentException("La candidature est obligatoire");
+        }
+
         Candidature candidature = candidatureRepository.findById(dto.getCandidatureId())
                 .orElseThrow(() -> new EntityNotFoundException("Candidature non trouvée"));
 
@@ -41,17 +45,14 @@ public class EntenteStageService {
             throw new IllegalStateException("La candidature doit avoir le statut ACCEPTED");
         }
 
-        // Vérifier qu'une entente n'existe pas déjà
-        if (entanteRepository.existsByCandidatureId(candidature.getId())) {
+        if (ententeRepository.existsByCandidatureId(candidature.getId())) {
             throw new IllegalStateException("Une entente existe déjà pour cette candidature");
         }
 
-        // Créer l'entente
-        EntanteStage entante = EntanteStage.builder()
+        validateEntente(dto);
+
+        EntenteStage entente = EntenteStage.builder()
                 .candidature(candidature)
-                .nomEntreprise(dto.getNomEntreprise())
-                .contactEntreprise(dto.getContactEntreprise())
-                .titreStage(dto.getTitreStage())
                 .dateDebut(dto.getDateDebut())
                 .dateFin(dto.getDateFin())
                 .duree(dto.getDuree())
@@ -60,187 +61,132 @@ public class EntenteStageService {
                 .modalitesTeletravail(dto.getModalitesTeletravail())
                 .remuneration(dto.getRemuneration())
                 .missionsObjectifs(dto.getMissionsObjectifs())
-                .statut(EntanteStage.StatutEntante.BROUILLON)
+                .statut(EntenteStage.StatutEntente.BROUILLON)
                 .dateCreation(LocalDateTime.now())
                 .build();
 
-        entante = entanteRepository.save(entante);
+        entente = ententeRepository.save(entente);
 
-        return mapEntityToDTO(entante);
+        return EntenteStageDto.fromEntity(entente);
     }
 
-    /**
-     * Valider et générer le PDF de l'entente
-     */
     @Transactional
-    public EntanteStageDTO validerEtGenererEntante(Long entanteId) {
-        EntanteStage entante = entanteRepository.findById(entanteId)
+    public EntenteStageDto validerEtGenererEntente(Long ententeId) {
+        EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
-        // Validation des champs obligatoires
-        validateChampsObligatoires(entante);
+        validateChampsObligatoires(entente);
 
-        // Générer le PDF
-        String pdfPath = pdfGeneratorService.genererEntantePDF(entante);
+        String pdfPath = pdfGeneratorService.genererEntentePDF(entente);
 
-        entante.setCheminDocumentPDF(pdfPath);
-        entante.setStatut(EntanteStage.StatutEntante.EN_ATTENTE_SIGNATURE);
-        entante.setDateModification(LocalDateTime.now());
+        entente.setCheminDocumentPDF(pdfPath);
+        entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
+        entente.setDateModification(LocalDateTime.now());
 
-        entante = entanteRepository.save(entante);
+        entente = ententeRepository.save(entente);
 
-        // Notifier les parties
-        notificationService.notifierEntanteCreee(entante);
-
-        return mapEntityToDTO(entante);
+        return EntenteStageDto.fromEntity(entente);
     }
 
-    /**
-     * Modifier une entente (uniquement si statut = BROUILLON)
-     */
     @Transactional
-    public EntanteStageDTO modifierEntante(Long entanteId, EntanteStageUpdateDTO dto) {
-        EntanteStage entante = entanteRepository.findById(entanteId)
+    public EntenteStageDto modifierEntente(Long ententeId, EntenteStageDto dto) {
+        EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
-        if (entante.getStatut() != EntanteStage.StatutEntante.BROUILLON) {
+        if (entente.getStatut() != EntenteStage.StatutEntente.BROUILLON) {
             throw new IllegalStateException("Impossible de modifier une entente qui n'est pas en brouillon");
         }
 
-        // Mettre à jour les champs
-        if (dto.getNomEntreprise() != null) entante.setNomEntreprise(dto.getNomEntreprise());
-        if (dto.getContactEntreprise() != null) entante.setContactEntreprise(dto.getContactEntreprise());
-        if (dto.getTitreStage() != null) entante.setTitreStage(dto.getTitreStage());
-        if (dto.getDateDebut() != null) entante.setDateDebut(dto.getDateDebut());
-        if (dto.getDateFin() != null) entante.setDateFin(dto.getDateFin());
-        if (dto.getDuree() != null) entante.setDuree(dto.getDuree());
-        if (dto.getHoraires() != null) entante.setHoraires(dto.getHoraires());
-        if (dto.getLieu() != null) entante.setLieu(dto.getLieu());
-        if (dto.getModalitesTeletravail() != null) entante.setModalitesTeletravail(dto.getModalitesTeletravail());
-        if (dto.getRemuneration() != null) entante.setRemuneration(dto.getRemuneration());
-        if (dto.getMissionsObjectifs() != null) entante.setMissionsObjectifs(dto.getMissionsObjectifs());
+        if (dto.getDateDebut() != null) entente.setDateDebut(dto.getDateDebut());
+        if (dto.getDateFin() != null) entente.setDateFin(dto.getDateFin());
+        if (dto.getDuree() != null) entente.setDuree(dto.getDuree());
+        if (dto.getHoraires() != null) entente.setHoraires(dto.getHoraires());
+        if (dto.getLieu() != null) entente.setLieu(dto.getLieu());
+        if (dto.getModalitesTeletravail() != null) entente.setModalitesTeletravail(dto.getModalitesTeletravail());
+        if (dto.getRemuneration() != null) entente.setRemuneration(dto.getRemuneration());
+        if (dto.getMissionsObjectifs() != null) entente.setMissionsObjectifs(dto.getMissionsObjectifs());
 
-        entante.setDateModification(LocalDateTime.now());
+        entente.setDateModification(LocalDateTime.now());
 
-        entante = entanteRepository.save(entante);
+        entente = ententeRepository.save(entente);
 
-        return mapEntityToDTO(entante);
+        return EntenteStageDto.fromEntity(entente);
     }
 
-    /**
-     * Récupérer toutes les ententes
-     */
-    public List<EntanteStageDTO> getAllEntantes() {
-        return entanteRepository.findAll().stream()
-                .map(this::mapEntityToDTO)
+    public List<EntenteStageDto> getAllEntentes() {
+        return ententeRepository.findAll().stream()
+                .map(EntenteStageDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Récupérer une entente par ID
-     */
-    public EntanteStageDTO getEntanteById(Long id) {
-        EntanteStage entante = entanteRepository.findById(id)
+    public EntenteStageDto getEntenteById(Long id) {
+        EntenteStage entente = ententeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
-        return mapEntityToDTO(entante);
+        return EntenteStageDto.fromEntity(entente);
     }
 
-    /**
-     * Télécharger le PDF d'une entente
-     */
-    public byte[] telechargerPDF(Long entanteId) {
-        EntanteStage entante = entanteRepository.findById(entanteId)
+    public byte[] telechargerPDF(Long ententeId) {
+        EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
-        if (entante.getCheminDocumentPDF() == null) {
+        if (entente.getCheminDocumentPDF() == null) {
             throw new IllegalStateException("Aucun PDF généré pour cette entente");
         }
 
-        return pdfGeneratorService.lireFichierPDF(entante.getCheminDocumentPDF());
+        return pdfGeneratorService.lireFichierPDF(entente.getCheminDocumentPDF());
     }
 
-    /**
-     * Supprimer une entente (seulement si BROUILLON)
-     */
     @Transactional
-    public void supprimerEntante(Long entanteId) {
-        EntanteStage entante = entanteRepository.findById(entanteId)
+    public void supprimerEntente(Long ententeId) {
+        EntenteStage entente = ententeRepository.findById(ententeId)
                 .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
 
-        if (entante.getStatut() != EntanteStage.StatutEntante.BROUILLON) {
+        if (entente.getStatut() != EntenteStage.StatutEntente.BROUILLON) {
             throw new IllegalStateException("Impossible de supprimer une entente qui n'est pas en brouillon");
         }
 
-        entanteRepository.delete(entante);
+        ententeRepository.delete(entente);
     }
 
-    // ========== MÉTHODES PRIVÉES ==========
-
-    private void validateChampsObligatoires(EntanteStage entante) {
-        if (entante.getNomEntreprise() == null || entante.getNomEntreprise().isBlank()) {
-            throw new IllegalArgumentException("Le nom de l'entreprise est obligatoire");
-        }
-        if (entante.getContactEntreprise() == null || entante.getContactEntreprise().isBlank()) {
-            throw new IllegalArgumentException("Le contact de l'entreprise est obligatoire");
-        }
-        if (entante.getTitreStage() == null || entante.getTitreStage().isBlank()) {
-            throw new IllegalArgumentException("Le titre du stage est obligatoire");
-        }
-        if (entante.getDateDebut() == null) {
+    private void validateEntente(EntenteStageDto dto) {
+        if (dto.getDateDebut() == null) {
             throw new IllegalArgumentException("La date de début est obligatoire");
         }
-        if (entante.getDateFin() == null) {
+        if (dto.getDateFin() == null) {
             throw new IllegalArgumentException("La date de fin est obligatoire");
         }
-        if (entante.getDuree() == null || entante.getDuree().isBlank()) {
+        if (dto.getDateDebut().isAfter(dto.getDateFin())) {
+            throw new IllegalArgumentException("La date de début doit être avant la date de fin");
+        }
+        if (dto.getDuree() == null || dto.getDuree().isBlank()) {
             throw new IllegalArgumentException("La durée est obligatoire");
         }
-        if (entante.getHoraires() == null || entante.getHoraires().isBlank()) {
+        if (dto.getHoraires() == null || dto.getHoraires().isBlank()) {
             throw new IllegalArgumentException("Les horaires sont obligatoires");
         }
-        if (entante.getMissionsObjectifs() == null || entante.getMissionsObjectifs().isBlank()) {
+        if (dto.getMissionsObjectifs() == null || dto.getMissionsObjectifs().isBlank()) {
             throw new IllegalArgumentException("Les missions et objectifs sont obligatoires");
+        }
+        if (dto.getRemuneration() != null && dto.getRemuneration().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("La rémunération doit être positive ou zéro");
         }
     }
 
-    private EntanteStageDTO mapEntityToDTO(EntanteStage entante) {
-        return EntanteStageDTO.builder()
-                .id(entante.getId())
-                .candidatureId(entante.getCandidature().getId())
-                .studentId(entante.getStudent().getId())
-                .studentNom(entante.getStudent().getLastName())
-                .studentPrenom(entante.getStudent().getFirstName())
-                .internshipOfferId(entante.getInternshipOffer().getId())
-                .nomEntreprise(entante.getNomEntreprise())
-                .contactEntreprise(entante.getContactEntreprise())
-                .titreStage(entante.getTitreStage())
-                .dateDebut(entante.getDateDebut())
-                .dateFin(entante.getDateFin())
-                .duree(entante.getDuree())
-                .horaires(entante.getHoraires())
-                .lieu(entante.getLieu())
-                .modalitesTeletravail(entante.getModalitesTeletravail())
-                .remuneration(entante.getRemuneration())
-                .missionsObjectifs(entante.getMissionsObjectifs())
-                .statut(entante.getStatut())
-                .dateCreation(entante.getDateCreation())
-                .dateModification(entante.getDateModification())
-                .dateSignatureEtudiant(entante.getDateSignatureEtudiant())
-                .dateSignatureEmployeur(entante.getDateSignatureEmployeur())
-                .dateSignatureGestionnaire(entante.getDateSignatureGestionnaire())
-                .build();
-    }
-
-    private CandidatureDTO mapCandidatureToDTO(Candidature candidature) {
-        return CandidatureDTO.builder()
-                .id(candidature.getId())
-                .studentId(candidature.getStudent().getId())
-                .studentNom(candidature.getStudent().getLastName())
-                .studentPrenom(candidature.getStudent().getFirstName())
-                .internshipOfferId(candidature.getInternshipOffer().getId())
-                .internshipOfferTitre(candidature.getInternshipOffer().getTitle())
-                .status(candidature.getStatus())
-                .applicationDate(candidature.getApplicationDate())
-                .build();
+    private void validateChampsObligatoires(EntenteStage entente) {
+        if (entente.getDateDebut() == null) {
+            throw new IllegalArgumentException("La date de début est obligatoire");
+        }
+        if (entente.getDateFin() == null) {
+            throw new IllegalArgumentException("La date de fin est obligatoire");
+        }
+        if (entente.getDuree() == null || entente.getDuree().isBlank()) {
+            throw new IllegalArgumentException("La durée est obligatoire");
+        }
+        if (entente.getHoraires() == null || entente.getHoraires().isBlank()) {
+            throw new IllegalArgumentException("Les horaires sont obligatoires");
+        }
+        if (entente.getMissionsObjectifs() == null || entente.getMissionsObjectifs().isBlank()) {
+            throw new IllegalArgumentException("Les missions et objectifs sont obligatoires");
+        }
     }
 }

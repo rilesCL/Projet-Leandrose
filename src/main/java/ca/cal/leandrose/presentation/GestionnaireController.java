@@ -2,11 +2,10 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.presentation.request.RejectOfferRequest;
 import ca.cal.leandrose.service.CvService;
+import ca.cal.leandrose.service.EntenteStageService;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import ca.cal.leandrose.service.dto.ProgramDto;
+import ca.cal.leandrose.service.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -30,6 +29,7 @@ public class GestionnaireController {
     private final InternshipOfferService internshipOfferService;
     private final GestionnaireService gestionnaireService;
     private final CvService cvService;
+    private final EntenteStageService ententeStageService;
 
     @PostMapping("/cv/{cvId}/approve")
     public ResponseEntity<CvDto> approveCv(@PathVariable Long cvId) {
@@ -48,14 +48,17 @@ public class GestionnaireController {
     public ResponseEntity<List<InternshipOfferDto>> getPendingOffers() {
         return ResponseEntity.ok(gestionnaireService.getPendingOffers());
     }
+
     @GetMapping("/offers/approved")
     public ResponseEntity<List<InternshipOfferDto>> getApprovedOffers(){
         return ResponseEntity.ok(gestionnaireService.getApprovedOffers());
     }
+
     @GetMapping("/offers/reject")
     public ResponseEntity<List<InternshipOfferDto>> getRejectedOffers(){
         return ResponseEntity.ok(gestionnaireService.getRejectedoffers());
     }
+
     @GetMapping("/cvs/pending")
     public ResponseEntity<List<CvDto>> getPendingCvs() {
         return ResponseEntity.ok(gestionnaireService.getPendingCvs());
@@ -69,14 +72,13 @@ public class GestionnaireController {
     @GetMapping("/cv/{cvId}/download")
     public ResponseEntity<?> downloadCv(@PathVariable Long cvId){
         try{
-
             Resource resource = cvService.downloadCv(cvId);
             Path filepath = Paths.get(resource.getFile().getAbsolutePath());
 
             return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_PDF)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filepath.getFileName() + "\"")
-                .body(resource);
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filepath.getFileName() + "\"")
+                    .body(resource);
         }
         catch(RuntimeException | IOException e){
             return ResponseEntity
@@ -115,4 +117,57 @@ public class GestionnaireController {
         return ResponseEntity.ok(gestionnaireService.getAllPrograms());
     }
 
+    @GetMapping("/ententes/candidatures-acceptees")
+    public ResponseEntity<List<CandidatureDto>> getCandidaturesAcceptees() {
+        return ResponseEntity.ok(ententeStageService.getCandidaturesAcceptees());
+    }
+
+    @PostMapping("/ententes")
+    public ResponseEntity<EntenteStageDto> creerEntente(@RequestBody EntenteStageDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ententeStageService.creerEntente(dto));
+    }
+
+    @PutMapping("/ententes/{ententeId}")
+    public ResponseEntity<EntenteStageDto> modifierEntente(
+            @PathVariable Long ententeId,
+            @RequestBody EntenteStageDto dto) {
+        return ResponseEntity.ok(ententeStageService.modifierEntente(ententeId, dto));
+    }
+
+    @PostMapping("/ententes/{ententeId}/valider")
+    public ResponseEntity<EntenteStageDto> validerEntente(@PathVariable Long ententeId) {
+        return ResponseEntity.ok(ententeStageService.validerEtGenererEntente(ententeId));
+    }
+
+    @GetMapping("/ententes/{ententeId}/telecharger")
+    public ResponseEntity<byte[]> telechargerPDFEntente(@PathVariable Long ententeId) {
+        byte[] pdfBytes = ententeStageService.telechargerPDF(ententeId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(org.springframework.http.ContentDisposition.attachment()
+                .filename("entente_stage_" + ententeId + ".pdf")
+                .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+
+    @GetMapping("/ententes")
+    public ResponseEntity<List<EntenteStageDto>> getAllEntentes() {
+        return ResponseEntity.ok(ententeStageService.getAllEntentes());
+    }
+
+    @GetMapping("/ententes/{ententeId}")
+    public ResponseEntity<EntenteStageDto> getEntente(@PathVariable Long ententeId) {
+        return ResponseEntity.ok(ententeStageService.getEntenteById(ententeId));
+    }
+
+    @DeleteMapping("/ententes/{ententeId}")
+    public ResponseEntity<Void> supprimerEntente(@PathVariable Long ententeId) {
+        ententeStageService.supprimerEntente(ententeId);
+        return ResponseEntity.noContent().build();
+    }
 }

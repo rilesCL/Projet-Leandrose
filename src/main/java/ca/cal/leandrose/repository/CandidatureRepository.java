@@ -12,9 +12,7 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
 
     Optional<Candidature> findByStudentIdAndInternshipOfferId(Long studentId, Long offerId);
 
-
     List<Candidature> findByStudentIdOrderByApplicationDateDesc(Long studentId);
-
 
     List<Candidature> findByInternshipOfferIdOrderByApplicationDateDesc(Long offerId);
 
@@ -22,10 +20,8 @@ public interface CandidatureRepository extends JpaRepository<Candidature, Long> 
     select c from Candidature c
     where c.internshipOffer.employeur.id = :employeurId
     order by c.applicationDate desc
-""")
+    """)
     List<Candidature> findByEmployeurIdOrderByApplicationDateDesc(@Param("employeurId") Long employeurId);
 
-
-
+    List<Candidature> findByStatus(Candidature.Status status);
 }
-

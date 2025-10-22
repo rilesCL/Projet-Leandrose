@@ -1,11 +1,13 @@
 package ca.cal.leandrose.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,19 +26,10 @@ public class EntenteStage {
     private Candidature candidature;
 
     @Column(nullable = false)
-    private String nomEntreprise;
+    private LocalDate dateDebut;
 
     @Column(nullable = false)
-    private String contactEntreprise;
-
-    @Column(nullable = false)
-    private String titreStage;
-
-    @Column(nullable = false)
-    private LocalDateTime dateDebut;
-
-    @Column(nullable = false)
-    private LocalDateTime dateFin;
+    private LocalDate dateFin;
 
     @Column(nullable = false)
     private String duree;
@@ -48,7 +41,7 @@ public class EntenteStage {
 
     private String modalitesTeletravail;
 
-    private Float remuneration;
+    private BigDecimal remuneration;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String missionsObjectifs;
@@ -68,24 +61,9 @@ public class EntenteStage {
     private LocalDateTime dateSignatureEmployeur;
     private LocalDateTime dateSignatureGestionnaire;
 
-    public Student getStudent() {
-        return candidature.getStudent();
-    }
-
-    public InternshipOffer getInternshipOffer() {
-        return candidature.getInternshipOffer();
-    }
-
-    public Long getEmployeurId() {
-        return candidature.getEmployeurId();
-    }
-
     public enum StatutEntente {
-        BROUILLON,              // En cours de création
-        EN_ATTENTE_SIGNATURE,   // PDF généré, en attente de signatures
-        SIGNE_ETUDIANT,         // Étudiant a signé
-        SIGNE_EMPLOYEUR,        // Employeur a signé
-        SIGNE_GESTIONNAIRE,     // Gestionnaire a signé
-        VALIDEE                 // Toutes les signatures complètes
+        BROUILLON,
+        EN_ATTENTE_SIGNATURE,
+        VALIDEE
     }
 }
