@@ -32,7 +32,8 @@ public class LeandrOseApplication {
             CvService cvService,
             InternshipOfferService internshipOfferService,
             CandidatureService candidatureService,
-            ConvocationService convocationService) {
+            ConvocationService convocationService,
+            EntenteStageService ententeStageService) {
 
         return args -> {
             try {
@@ -72,7 +73,6 @@ public class LeandrOseApplication {
 
                 // === Nouveau code pour la convocation ===
 
-                // 1. Créer un nouvel employeur pour la convocation
                 EmployeurDto employeurConvocation = employeurService.createEmployeur(
                         "Marie",
                         "Tremblay",
@@ -132,9 +132,7 @@ public class LeandrOseApplication {
                         location,
                         message);
                 System.out.println("Convocation créée avec succès pour la candidature ID: " + candidatureDto.getId());
-                // === Code pour Alexandre Dubois - Convoqué ET accepté par l'employeur ===
 
-                // 1. Créer l'étudiant Alexandre
                 StudentDto studentConvocation2 = studentService.createStudent(
                         "Alexandre",
                         "Dubois",
@@ -144,7 +142,6 @@ public class LeandrOseApplication {
                         Program.SOFTWARE_ENGINEERING.getTranslationKey());
                 System.out.println("Étudiant pour convocation et acceptation créé: " + studentConvocation2);
 
-// 2. Créer et approuver le CV pour Alexandre
                 MultipartFile cvFile2 = loadPdfFromResources("test.pdf", "CV_Alexandre_Dubois.pdf");
                 CvDto cvDto2 = cvService.uploadCv(studentConvocation2.getId(), cvFile2);
                 System.out.println("CV créé pour Alexandre: " + cvDto2);
@@ -152,14 +149,12 @@ public class LeandrOseApplication {
                 CvDto cvApproved2 = gestionnaireService.approveCv(cvDto2.getId());
                 System.out.println("CV approuvé pour Alexandre: " + cvApproved2);
 
-// 3. Alexandre postule à la même offre que Sophie
                 CandidatureDto candidatureDto2 = candidatureService.postuler(
                         studentConvocation2.getId(),
                         offerApproved.getId(),
                         cvApproved2.getId());
                 System.out.println("Candidature créée pour Alexandre: " + candidatureDto2);
 
-// 4. Créer une convocation pour Alexandre
                 LocalDateTime convocationDate2 = LocalDateTime.now().plusDays(8).withHour(10).withMinute(30);
                 String location2 = "TechInnovation Inc., Salle B, 123 Rue Principale, Montréal";
                 String message2 = "Bonjour Alexandre,\n\n" +
@@ -174,9 +169,32 @@ public class LeandrOseApplication {
                         message2);
                 System.out.println("Convocation créée pour Alexandre, candidature ID: " + candidatureDto2.getId());
 
-// 5. L'employeur accepte la candidature d'Alexandre
                 CandidatureDto candidatureAccepted = candidatureService.acceptByEmployeur(candidatureDto2.getId());
                 System.out.println("Candidature acceptée par l'employeur pour Alexandre: " + candidatureAccepted);
+
+                // === STORY 39 : Création et signature d'une entente de stage ===
+                EntenteStageDto ententeDto = EntenteStageDto.builder()
+                        .candidatureId(candidatureAccepted.getId())
+                        .dateDebut(LocalDate.now().plusDays(10))
+                        .dateFin(LocalDate.now().plusMonths(3))
+                        .duree("12 semaines")
+                        .horaires("35h/semaine")
+                        .lieu("123 Rue Principale, Montréal, QC")
+                        .modalitesTeletravail("Hybride : 2 jours en présentiel")
+                        .remuneration(new java.math.BigDecimal("25.00"))
+                        .missionsObjectifs("Développement d'une application web full-stack avec Spring Boot et React.")
+                        .build();
+
+                EntenteStageDto nouvelleEntente = ententeStageService.creerEntente(ententeDto);
+                System.out.println("✅ Entente créée : " + nouvelleEntente.getId());
+
+                EntenteStageDto ententeValidee = ententeStageService.validerEtGenererEntente(nouvelleEntente.getId());
+
+
+                EntenteStageDto ententeSigneeEmployeur =
+                        ententeStageService.signerParEmployeur(ententeValidee.getId(), employeurConvocation.getId());
+                System.out.println("✍️ Entente signée par l'employeur : " + ententeSigneeEmployeur.getDateSignatureEmployeur());
+
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());
                 e.printStackTrace();
@@ -195,48 +213,49 @@ public class LeandrOseApplication {
             return new CustomMultipartFile(pdfContent, filename);
         }
     }
-        private record CustomMultipartFile(byte[] content, String filename) implements MultipartFile {
+
+    private record CustomMultipartFile(byte[] content, String filename) implements MultipartFile {
 
         @Override
-            public String getName() {
-                return "file";
-            }
+        public String getName() {
+            return "file";
+        }
 
-            @Override
-            public String getOriginalFilename() {
-                return filename;
-            }
+        @Override
+        public String getOriginalFilename() {
+            return filename;
+        }
 
-            @Override
-            public String getContentType() {
-                return "application/pdf";
-            }
+        @Override
+        public String getContentType() {
+            return "application/pdf";
+        }
 
-            @Override
-            public boolean isEmpty() {
-                return content == null || content.length == 0;
-            }
+        @Override
+        public boolean isEmpty() {
+            return content == null || content.length == 0;
+        }
 
-            @Override
-            public long getSize() {
-                return content.length;
-            }
+        @Override
+        public long getSize() {
+            return content.length;
+        }
 
-            @Override
-            public byte[] getBytes() throws IOException {
-                return content;
-            }
+        @Override
+        public byte[] getBytes() throws IOException {
+            return content;
+        }
 
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return new ByteArrayInputStream(content);
-            }
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return new ByteArrayInputStream(content);
+        }
 
-            @Override
-            public void transferTo(File dest) throws IOException, IllegalStateException {
-                try (FileOutputStream fos = new FileOutputStream(dest)) {
-                    fos.write(content);
-                }
+        @Override
+        public void transferTo(File dest) throws IOException, IllegalStateException {
+            try (FileOutputStream fos = new FileOutputStream(dest)) {
+                fos.write(content);
             }
         }
+    }
 }
