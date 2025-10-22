@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +21,7 @@ public class CandidatureEmployeurDto {
     private String studentProgram;
 
 
-    private LocalDate applicationDate;
+    private LocalDateTime applicationDate;
     private Candidature.Status status;
 
 

@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +25,7 @@ public class CandidatureDto {
     private Long cvId;
     private CvDto cv;
     private Candidature.Status status;
-    private LocalDate applicationDate;
+    private LocalDateTime applicationDate;
 
     public static Student getStudentFromCandidature(Candidature candidature) {
         return candidature.getStudent();
@@ -52,7 +52,7 @@ public class CandidatureDto {
                 .cv(CvDto.create(candidature.getCv()))
                 .status(candidature.getStatus())
                 .applicationDate(candidature.getApplicationDate())
-                .employeurId(candidature.getEmployeurId())  // ✅ Loi de Déméter respectée
+                .employeurId(candidature.getEmployeurId())
                 .build();
     }
 }

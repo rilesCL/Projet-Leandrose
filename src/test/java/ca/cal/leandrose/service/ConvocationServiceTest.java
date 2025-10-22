@@ -91,7 +91,7 @@ class ConvocationServiceTest {
                 .internshipOffer(testOffer)
                 .cv(testCv)
                 .status(Candidature.Status.PENDING)
-                .applicationDate(LocalDate.now())
+                .applicationDate(LocalDateTime.now())
                 .build());
     }
 
@@ -221,7 +221,7 @@ class ConvocationServiceTest {
                 .internshipOffer(testOffer)
                 .cv(cv2)
                 .status(Candidature.Status.PENDING)
-                .applicationDate(LocalDate.now())
+                .applicationDate(LocalDateTime.now())
                 .build());
 
         convocationService.addConvocation(testCandidature.getId(), futureDate, "Bureau 301", "Message 1");

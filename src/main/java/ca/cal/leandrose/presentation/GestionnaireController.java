@@ -5,7 +5,12 @@ import ca.cal.leandrose.service.CvService;
 import ca.cal.leandrose.service.EntenteStageService;
 import ca.cal.leandrose.service.GestionnaireService;
 import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.dto.*;
+import ca.cal.leandrose.service.dto.CandidatureDto;
+import ca.cal.leandrose.service.dto.CvDto;
+import ca.cal.leandrose.service.dto.EntenteStageDto;
+import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.dto.ProgramDto;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -14,18 +19,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/gestionnaire")
 @CrossOrigin(origins = {"http://localhost:5173"})
 @RequiredArgsConstructor
 public class GestionnaireController {
-
     private final InternshipOfferService internshipOfferService;
     private final GestionnaireService gestionnaireService;
     private final CvService cvService;
@@ -74,7 +79,6 @@ public class GestionnaireController {
         try{
             Resource resource = cvService.downloadCv(cvId);
             Path filepath = Paths.get(resource.getFile().getAbsolutePath());
-
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filepath.getFileName() + "\"")
@@ -124,35 +128,81 @@ public class GestionnaireController {
 
     @PostMapping("/ententes")
     public ResponseEntity<EntenteStageDto> creerEntente(@RequestBody EntenteStageDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ententeStageService.creerEntente(dto));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ententeStageService.creerEntente(dto));
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(EntenteStageDto.withError(error));
+        } catch (EntityNotFoundException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(EntenteStageDto.withError(error));
+        }
     }
 
     @PutMapping("/ententes/{ententeId}")
     public ResponseEntity<EntenteStageDto> modifierEntente(
             @PathVariable Long ententeId,
             @RequestBody EntenteStageDto dto) {
-        return ResponseEntity.ok(ententeStageService.modifierEntente(ententeId, dto));
+        try {
+            return ResponseEntity.ok(ententeStageService.modifierEntente(ententeId, dto));
+        } catch (EntityNotFoundException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(EntenteStageDto.withError(error));
+        } catch (IllegalStateException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(EntenteStageDto.withError(error));
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(EntenteStageDto.withError(error));
+        }
     }
 
     @PostMapping("/ententes/{ententeId}/valider")
     public ResponseEntity<EntenteStageDto> validerEntente(@PathVariable Long ententeId) {
-        return ResponseEntity.ok(ententeStageService.validerEtGenererEntente(ententeId));
+        try {
+            return ResponseEntity.ok(ententeStageService.validerEtGenererEntente(ententeId));
+        } catch (EntityNotFoundException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(EntenteStageDto.withError(error));
+        } catch (IllegalStateException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(EntenteStageDto.withError(error));
+        }
     }
 
     @GetMapping("/ententes/{ententeId}/telecharger")
-    public ResponseEntity<byte[]> telechargerPDFEntente(@PathVariable Long ententeId) {
-        byte[] pdfBytes = ententeStageService.telechargerPDF(ententeId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDisposition(org.springframework.http.ContentDisposition.attachment()
-                .filename("entente_stage_" + ententeId + ".pdf")
-                .build());
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(pdfBytes);
+    public ResponseEntity<?> telechargerPDFEntente(@PathVariable Long ententeId) {
+        try {
+            byte[] pdfBytes = ententeStageService.telechargerPDF(ententeId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(org.springframework.http.ContentDisposition.attachment()
+                    .filename("entente_stage_" + ententeId + ".pdf")
+                    .build());
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfBytes);
+        } catch (EntityNotFoundException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(EntenteStageDto.withError(error));
+        }
     }
 
     @GetMapping("/ententes")
@@ -162,12 +212,25 @@ public class GestionnaireController {
 
     @GetMapping("/ententes/{ententeId}")
     public ResponseEntity<EntenteStageDto> getEntente(@PathVariable Long ententeId) {
-        return ResponseEntity.ok(ententeStageService.getEntenteById(ententeId));
+        try {
+            return ResponseEntity.ok(ententeStageService.getEntenteById(ententeId));
+        } catch (EntityNotFoundException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(EntenteStageDto.withError(error));
+        }
     }
 
     @DeleteMapping("/ententes/{ententeId}")
     public ResponseEntity<Void> supprimerEntente(@PathVariable Long ententeId) {
-        ententeStageService.supprimerEntente(ententeId);
-        return ResponseEntity.noContent().build();
+        try {
+            ententeStageService.supprimerEntente(ententeId);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            // Pour DELETE, on ne peut pas retourner un body avec noContent()
+            // On doit utiliser un statut différent
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -49,7 +49,7 @@ public class CandidatureService {
                 .internshipOffer(offer)
                 .cv(cv)
                 .status(Candidature.Status.PENDING)
-                .applicationDate(LocalDate.now())
+                .applicationDate(LocalDateTime.now())
                 .build();
 
         Candidature saved = candidatureRepository.save(candidature);
