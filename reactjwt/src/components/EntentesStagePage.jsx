@@ -1,14 +1,17 @@
 // src/components/EntentesStagePage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { FaArrowLeft } from "react-icons/fa";
 import { getCandidaturesAcceptees, previewCv } from "../api/apiGestionnaire.jsx";
 import PdfViewer from "./PdfViewer";
 
 export default function EntentesStagePage() {
+    const { t } = useTranslation();
     const [candidatures, setCandidatures] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [cvToPreview, setCvToPreview] = useState(null); // Blob PDF pour PdfViewer
+    const [cvToPreview, setCvToPreview] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,33 +40,46 @@ export default function EntentesStagePage() {
     const handlePreviewCv = async (cvId) => {
         try {
             const blob = await previewCv(cvId);
-            setCvToPreview(blob); // on ouvre dans PdfViewer
+            setCvToPreview(blob);
         } catch (err) {
             console.error("Erreur preview CV:", err);
-            alert("Impossible d'ouvrir le CV : " + (err.message || ""));
+            alert(`${t("ententesStagePage.previewError")} : ${err.message || ""}`);
         }
     };
 
     if (loading)
         return (
             <div className="bg-white shadow rounded p-4 text-center">
-                Chargement des candidatures acceptées...
+                {t("ententesStagePage.loading")}
             </div>
         );
 
     if (error)
         return (
             <div className="bg-white shadow rounded p-4 text-red-600 text-center">
-                Erreur : {error}
+                {t("ententesStagePage.error")} : {error}
             </div>
         );
 
     return (
         <div className="bg-white shadow rounded p-6">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-900">Candidatures acceptées</h2>
+            {/* Bouton retour */}
+            <button
+                onClick={() => navigate("/dashboard/gestionnaire")}
+                className="mb-4 flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+            >
+                <FaArrowLeft className="mr-2" />
+                <span>{t("ententesStagePage.back")}</span>
+            </button>
+
+            <h2 className="text-2xl font-semibold mb-6 text-gray-900">
+                {t("ententesStagePage.title")}
+            </h2>
 
             {candidatures.length === 0 ? (
-                <p className="text-sm text-gray-600">Aucune candidature acceptée trouvée.</p>
+                <p className="text-sm text-gray-600">
+                    {t("ententesStagePage.noApplications")}
+                </p>
             ) : (
                 <div className="space-y-6">
                     {candidatures.map((c) => {
@@ -81,22 +97,30 @@ export default function EntentesStagePage() {
                                     <div className="text-lg font-medium text-gray-900">
                                         {student.fullName || `${student.firstName ?? ""} ${student.lastName ?? ""}`}
                                     </div>
-                                    <div className="text-sm text-gray-700">Offre : {offer.description ?? "—"}</div>
-                                    <div className="text-sm text-gray-700">Entreprise : {offer.companyName ?? "—"}</div>
-                                    <div className="text-sm text-gray-500">
-                                        Date début : {offer.startDate ? new Date(offer.startDate).toLocaleDateString("fr-FR") : "—"}
+                                    <div className="text-sm text-gray-700">
+                                        {t("ententesStagePage.offer")} : {offer.description ?? t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-700">
+                                        {t("ententesStagePage.company")} : {offer.companyName ?? t("ententesStagePage.notDefined")}
                                     </div>
                                     <div className="text-sm text-gray-500">
-                                        Durée : {offer.durationInWeeks ? `${offer.durationInWeeks} semaine(s)` : "—"}
+                                        {t("ententesStagePage.startDate")} : {offer.startDate ? new Date(offer.startDate).toLocaleDateString() : t("ententesStagePage.notDefined")}
                                     </div>
-                                    <div className="text-sm text-gray-500">Adresse : {offer.address ?? "—"}</div>
                                     <div className="text-sm text-gray-500">
-                                        Rémunération : {offer.remuneration ? `${offer.remuneration} $/h` : "—"}
+                                        {t("ententesStagePage.duration")} : {offer.durationInWeeks ? `${offer.durationInWeeks} ${t("ententesStagePage.weeks")}` : t("ententesStagePage.notDefined")}
                                     </div>
-                                    <div className="text-sm text-gray-500">Statut candidature : {c.status}</div>
+                                    <div className="text-sm text-gray-500">
+                                        {t("ententesStagePage.address")} : {offer.address ?? t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        {t("ententesStagePage.remuneration")} : {offer.remuneration ? `${offer.remuneration} $/h` : t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        {t("ententesStagePage.status")} : {c.status}
+                                    </div>
                                     {entente && (
                                         <div className="text-sm text-green-700 font-medium">
-                                            Entente créée le : {new Date(entente.creationDate).toLocaleDateString("fr-FR")}
+                                            {t("ententesStagePage.ententeCreated")} : {new Date(entente.creationDate).toLocaleDateString()}
                                         </div>
                                     )}
                                 </div>
@@ -105,9 +129,9 @@ export default function EntentesStagePage() {
                                     {cv && (
                                         <button
                                             onClick={() => handlePreviewCv(cv.id)}
-                                            className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 rounded hover:bg-indigo-100"
+                                            className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 rounded hover:bg-indigo-100 transition-colors"
                                         >
-                                            Voir CV
+                                            {t("ententesStagePage.viewCv")}
                                         </button>
                                     )}
                                     {!entente && (
@@ -115,14 +139,14 @@ export default function EntentesStagePage() {
                                             onClick={() =>
                                                 navigate(`/dashboard/gestionnaire/ententes/create?candidatureId=${c.id}`)
                                             }
-                                            className="px-3 py-1 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100"
+                                            className="px-3 py-1 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100 transition-colors"
                                         >
-                                            Créer entente
+                                            {t("ententesStagePage.createEntente")}
                                         </button>
                                     )}
                                     {entente && (
                                         <span className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded">
-                                            Entente déjà créée
+                                            {t("ententesStagePage.ententeAlreadyCreated")}
                                         </span>
                                     )}
                                 </div>
