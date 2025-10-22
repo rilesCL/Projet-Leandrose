@@ -1,16 +1,10 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.presentation.request.RejectOfferRequest;
-import ca.cal.leandrose.service.CvService;
-import ca.cal.leandrose.service.EntenteStageService;
-import ca.cal.leandrose.service.GestionnaireService;
-import ca.cal.leandrose.service.InternshipOfferService;
-import ca.cal.leandrose.service.dto.CandidatureDto;
-import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.EntenteStageDto;
-import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import ca.cal.leandrose.service.dto.ProgramDto;
+import ca.cal.leandrose.service.*;
+import ca.cal.leandrose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -35,6 +29,7 @@ public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
     private final CvService cvService;
     private final EntenteStageService ententeStageService;
+    private final UserAppService userAppService;
 
     @PostMapping("/cv/{cvId}/approve")
     public ResponseEntity<CvDto> approveCv(@PathVariable Long cvId) {
@@ -231,6 +226,26 @@ public class GestionnaireController {
             // Pour DELETE, on ne peut pas retourner un body avec noContent()
             // On doit utiliser un statut différent
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    @PostMapping("/ententes/{ententeId}/signer")
+    public ResponseEntity<EntenteStageDto> signerEntenteParGestionnaire(
+            HttpServletRequest request,
+            @PathVariable Long ententeId
+    ) {
+        UserDTO me = userAppService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("GESTIONNAIRE")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EntenteStageDto result = ententeStageService.signerParGestionnaire(ententeId, me.getId());
+            return ResponseEntity.ok(result);
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(404).body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
         }
     }
 }
