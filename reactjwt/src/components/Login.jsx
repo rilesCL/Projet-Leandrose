@@ -134,6 +134,7 @@ const Login = () => {
             if (response.ok) {
                 const userData = await response.json();
                 console.log("User data:", userData);
+                sessionStorage.setItem('email', userData.email);
 
                 switch (userData.role) {
                     case 'STUDENT':

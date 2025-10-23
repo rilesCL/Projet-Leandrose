@@ -214,11 +214,11 @@ public class LeandrOseApplication {
                 EntenteStageDto ententeValidee39 = ententeStageService.validerEtGenererEntente(ententeCreated39.getId());
                 System.out.println("📄 Entente STORY 39 validée par le gestionnaire.");
 
-                EntenteStageDto ententeSignee39 = ententeStageService.signerParEmployeur(
-                        ententeValidee39.getId(),
-                        employeurEntente.getId());
-                System.out.println("✍️ Entente STORY 39 signée par l'employeur : "
-                        + ententeSignee39.getDateSignatureEmployeur());
+//                EntenteStageDto ententeSignee39 = ententeStageService.signerParEmployeur(
+//                        ententeValidee39.getId(),
+//                        employeurEntente.getId());
+//                System.out.println("✍️ Entente STORY 39 signée par l'employeur : "
+//                        + ententeSignee39.getDateSignatureEmployeur());
 
                 System.out.println("===== FIN STORY 39 =====\n");
 

@@ -48,6 +48,7 @@ public class SecurityConfiguration {
                         .requestMatchers(POST, "/student/**").hasAuthority("STUDENT")
                         .requestMatchers(GET, "/student/**").hasAuthority("STUDENT")
                         .requestMatchers(POST,"/employeur/**").hasAuthority("EMPLOYEUR")
+                        .requestMatchers(POST, "/employer/ententes/*/signer").hasAuthority("EMPLOYEUR")
                         .requestMatchers(PUT,"/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/employeur/**").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/student/offers", "/student/offers/*", "/student/offers/*/pdf", "/student/applications").hasAuthority("STUDENT")

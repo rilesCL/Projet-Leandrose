@@ -83,6 +83,19 @@ export default function DashBoardEmployeur() {
                     </p>
 
                     <InternshipOffersList />
+
+                    <div className="mt-8">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-2">Actions</h2>
+                        <div className="space-x-4">
+                            <Link
+                                to="/dashboard/employeur/entente/1/sign" // remplacer cela plus tard, pour mettre dynamiquement
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                            >
+                                Signer une entente
+                            </Link>
+                        </div>
+                    </div>
+
                 </div>
             </main>
         </div>
