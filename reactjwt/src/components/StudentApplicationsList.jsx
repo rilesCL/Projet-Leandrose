@@ -104,6 +104,7 @@ export default function StudentApplicationsList() {
 
     const openConvocationModal = (candidature) => {
         const convocation = convocations.find(conv => conv.candidatureId === candidature.id);
+        console.log(convocation)
         setSelectedConvocation(convocation);
         setShowConvocationModal(true);
     };
@@ -349,9 +350,96 @@ export default function StudentApplicationsList() {
                             </div>
 
                             <div className="flex justify-end space-x-2">
-                                <button onClick={closeRejectModal} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">{t("studentApplicationsList.actions.cancel")}</button>
+                                <button onClick={closeRejectModal} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">{t("studentApplicationsList.rejectModal.cancel")}</button>
                                 <button onClick={confirmRejectCandidature} className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">{t("studentApplicationsList.actions.reject")}</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showConvocationModal && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50' onClick={closeConvocationModal}>
+                    <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative' onClick={(e) => e.stopPropagation()}>
+                        <button
+                            type='button'
+                            onClick={closeConvocationModal}
+                            className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors'
+                        >
+                            <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                            </svg>
+                        </button>
+
+                        <h3 className='text-lg font-semibold mb-4 pr-8'>
+                            {t('studentApplicationsList.convocationModal.title')}
+                        </h3>
+
+                        {selectedConvocation ? (
+                            <div className='space-y-4'>
+                                <div className='bg-blue-50 border-l-4 border-blue-500 p-4 rounded'>
+                                    <p className='text-sm text-blue-800 font-medium'>
+                                        {t('studentApplicationsList.convocationModal.description')}
+                                    </p>
+                                </div>
+
+                                <div className='space-y-3'>
+                                    <div className='flex items-start'>
+                                        <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                        </svg>
+                                        <div className='flex-1'>
+                                            <p className='text-xs text-gray-500 uppercase font-medium'>{t('studentApplicationsList.convocationModal.date')}</p>
+                                            <p className='text-sm font-semibold text-gray-900'>{formatDateTime(selectedConvocation.convocationDate)}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className='flex items-start'>
+                                        <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
+                                        </svg>
+                                        <div className='flex-1'>
+                                            <p className='text-xs text-gray-500 uppercase font-medium'>{t('studentApplicationsList.convocationModal.location')}</p>
+                                            <p className='text-sm font-semibold text-gray-900'>{selectedConvocation.location}</p>
+                                        </div>
+                                    </div>
+
+                                    {selectedConvocation.message && (
+                                        <div className='flex items-start'>
+                                            <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' />
+                                            </svg>
+                                            <div className='flex-1'>
+                                                <p className='text-xs text-gray-500 uppercase font-medium mb-2'>{t('studentApplicationsList.convocationModal.message')}</p>
+                                                {selectedConvocation.message ? (
+                                                    <div className='bg-gray-50 border border-gray-200 rounded-lg p-3'>
+                                                        <p className='text-sm text-gray-800 leading-relaxed whitespace-pre-wrap'>{selectedConvocation.message}</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className='bg-gray-50 border border-gray-200 rounded-lg p-3'>
+                                                        <p className='text-sm text-gray-500 italic'>{t('studentApplicationsList.convocationModal.noMessage', 'Aucun message additionnel')}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className='bg-gray-50 p-4 rounded-lg'>
+                                <p className='text-sm text-gray-500 text-center'>
+                                    {t('studentApplicationsList.convocationModal.noInfo')}
+                                </p>
+                            </div>
+                        )}
+
+                        <div className='mt-6 flex justify-end'>
+                            <button
+                                onClick={closeConvocationModal}
+                                className='px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700'
+                            >
+                                {t('studentApplicationsList.convocationModal.close')}
+                            </button>
                         </div>
                     </div>
                 </div>

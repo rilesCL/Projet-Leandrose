@@ -177,6 +177,52 @@ public class LeandrOseApplication {
 // 5. L'employeur accepte la candidature d'Alexandre
                 CandidatureDto candidatureAccepted = candidatureService.acceptByEmployeur(candidatureDto2.getId());
                 System.out.println("Candidature acceptée par l'employeur pour Alexandre: " + candidatureAccepted);
+
+
+                // 1. Créer l'étudiant Alexandre
+                StudentDto studentConvocation3 = studentService.createStudent(
+                        "Alexandre",
+                        "Gagné",
+                        "alexandre.gagne@student.com",
+                        "Password123",
+                        "STU004",
+                        Program.SOFTWARE_ENGINEERING.getTranslationKey());
+                System.out.println("Étudiant pour convocation et acceptation créé: " + studentConvocation2);
+
+// 2. Créer et approuver le CV pour Alexandre
+                MultipartFile cvFile3 = loadPdfFromResources("test.pdf", "CV_Alexandre_Gagne.pdf");
+                CvDto cvDto3 = cvService.uploadCv(studentConvocation3.getId(), cvFile3);
+                System.out.println("CV créé pour Alexandre: " + cvDto3);
+
+                CvDto cvApproved3 = gestionnaireService.approveCv(cvDto3.getId());
+                System.out.println("CV approuvé pour Alexandre: " + cvApproved3);
+
+// 3. Alexandre postule à la même offre que Sophie
+                CandidatureDto candidatureDto3 = candidatureService.postuler(
+                        studentConvocation3.getId(),
+                        offerApproved.getId(),
+                        cvApproved3.getId());
+                System.out.println("Candidature créée pour Alexandre: " + candidatureDto3);
+
+// 4. Créer une convocation pour Alexandre
+                LocalDateTime convocationDate3 = LocalDateTime.now().plusDays(8).withHour(10).withMinute(30);
+                String location3 = "TechInnovation Inc., Salle B, 123 Rue Principale, Montréal";
+                String message3 = "Bonjour Alexandre,\n\n" +
+                        "Nous vous invitons à un entretien pour le poste de Développeur Full-Stack Junior.\n" +
+                        "Apportez une pièce d'identité et votre CV.\n\n" +
+                        "Cordialement,\nL'équipe RH";
+
+                convocationService.addConvocation(
+                        candidatureDto3.getId(),
+                        convocationDate3,
+                        location3,
+                        message3);
+                System.out.println("Convocation créée pour Alexandre, candidature ID: " + candidatureDto3.getId());
+
+// 5. L'employeur accepte la candidature d'Alexandre
+                CandidatureDto candidatureAccepted2 = candidatureService.acceptByEmployeur(candidatureDto3.getId());
+                System.out.println("Candidature acceptée par l'employeur pour Alexandre: " + candidatureAccepted);
+
             } catch (Exception e) {
                 System.err.println("Erreur générale non prévue: " + e.getMessage());
                 e.printStackTrace();
