@@ -256,7 +256,7 @@ public class EmployeurController {
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_PDF)
                         .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"CV_" + candidatureDto.getStudentName() + ".pdf\"")
+                                "attachment; filename=\"CV_" + candidatureDto.getStudent().getName() + ".pdf\"")
                         .body(resource);
             } else {
                 return ResponseEntity.notFound().build();

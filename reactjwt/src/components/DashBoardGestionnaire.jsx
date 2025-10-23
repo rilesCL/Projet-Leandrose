@@ -67,16 +67,16 @@ export default function DashBoardGestionnaire() {
 
             <main className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
-                    {/* Barre d'onglets placée juste au-dessus du Welcome */}
-                    <div className="mb-4">
-                        <nav className="flex space-x-4 border-b">
+                    {/* Barre d'onglets améliorée avec design moderne */}
+                    <div className="mb-6">
+                        <nav className="flex space-x-1 bg-gray-100 p-1 rounded-lg shadow-sm">
                             <Link
                                 to="/dashboard/gestionnaire/offers"
                                 className={
-                                    "px-3 py-2 -mb-px text-sm font-medium " +
+                                    "flex-1 px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 text-center " +
                                     (isActive("/dashboard/gestionnaire/offers")
-                                        ? "text-indigo-600 border-b-2 border-indigo-600"
-                                        : "text-gray-600 hover:text-indigo-600")
+                                        ? "bg-white text-indigo-600 shadow-sm"
+                                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50")
                                 }
                             >
                                 {t("dashboardGestionnaire.offer")}
@@ -85,10 +85,10 @@ export default function DashBoardGestionnaire() {
                             <Link
                                 to="/dashboard/gestionnaire/ententes"
                                 className={
-                                    "px-3 py-2 -mb-px text-sm font-medium " +
+                                    "flex-1 px-4 py-2.5 text-sm font-medium rounded-md transition-all duration-200 text-center " +
                                     (isActive("/dashboard/gestionnaire/ententes")
-                                        ? "text-indigo-600 border-b-2 border-indigo-600"
-                                        : "text-gray-600 hover:text-indigo-600")
+                                        ? "bg-white text-indigo-600 shadow-sm"
+                                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50")
                                 }
                             >
                                 {t("dashboardGestionnaire.ententes")}

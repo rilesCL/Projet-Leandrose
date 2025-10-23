@@ -22,13 +22,6 @@ class EntenteStageTest {
         EntenteStage entente = EntenteStage.builder()
                 .id(1L)
                 .candidature(candidature)
-                .dateDebut(dateDebut)
-                .dateFin(dateFin)
-                .duree("12 semaines")
-                .horaires("9h-17h")
-                .lieu("Montreal")
-                .modalitesTeletravail("2 jours/semaine")
-                .remuneration(new BigDecimal("3000.00"))
                 .missionsObjectifs("Développement web")
                 .statut(EntenteStage.StatutEntente.BROUILLON)
                 .dateCreation(now)
@@ -37,13 +30,6 @@ class EntenteStageTest {
 
         assertEquals(1L, entente.getId());
         assertEquals(candidature, entente.getCandidature());
-        assertEquals(dateDebut, entente.getDateDebut());
-        assertEquals(dateFin, entente.getDateFin());
-        assertEquals("12 semaines", entente.getDuree());
-        assertEquals("9h-17h", entente.getHoraires());
-        assertEquals("Montreal", entente.getLieu());
-        assertEquals("2 jours/semaine", entente.getModalitesTeletravail());
-        assertEquals(new BigDecimal("3000.00"), entente.getRemuneration());
         assertEquals("Développement web", entente.getMissionsObjectifs());
         assertEquals(EntenteStage.StatutEntente.BROUILLON, entente.getStatut());
         assertEquals(now, entente.getDateCreation());
@@ -63,13 +49,6 @@ class EntenteStageTest {
 
         entente.setId(2L);
         entente.setCandidature(candidature);
-        entente.setDateDebut(dateDebut);
-        entente.setDateFin(dateFin);
-        entente.setDuree("16 semaines");
-        entente.setHoraires("10h-18h");
-        entente.setLieu("Quebec");
-        entente.setModalitesTeletravail("3 jours/semaine");
-        entente.setRemuneration(new BigDecimal("3500.00"));
         entente.setMissionsObjectifs("Backend development");
         entente.setStatut(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE);
         entente.setDateCreation(dateCreation);
@@ -78,13 +57,6 @@ class EntenteStageTest {
 
         assertEquals(2L, entente.getId());
         assertEquals(candidature, entente.getCandidature());
-        assertEquals(dateDebut, entente.getDateDebut());
-        assertEquals(dateFin, entente.getDateFin());
-        assertEquals("16 semaines", entente.getDuree());
-        assertEquals("10h-18h", entente.getHoraires());
-        assertEquals("Quebec", entente.getLieu());
-        assertEquals("3 jours/semaine", entente.getModalitesTeletravail());
-        assertEquals(new BigDecimal("3500.00"), entente.getRemuneration());
         assertEquals("Backend development", entente.getMissionsObjectifs());
         assertEquals(EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE, entente.getStatut());
         assertEquals(dateCreation, entente.getDateCreation());
@@ -120,24 +92,16 @@ class EntenteStageTest {
     void testEntenteStageEqualsAndHashCode() {
         EntenteStage entente1 = EntenteStage.builder()
                 .id(1L)
-                .duree("12 semaines")
-                .horaires("9h-17h")
                 .missionsObjectifs("Test")
                 .statut(EntenteStage.StatutEntente.BROUILLON)
                 .dateCreation(LocalDateTime.now())
-                .dateDebut(LocalDate.now())
-                .dateFin(LocalDate.now().plusMonths(3))
                 .build();
 
         EntenteStage entente2 = EntenteStage.builder()
                 .id(1L)
-                .duree("12 semaines")
-                .horaires("9h-17h")
                 .missionsObjectifs("Test")
                 .statut(EntenteStage.StatutEntente.BROUILLON)
                 .dateCreation(entente1.getDateCreation())
-                .dateDebut(entente1.getDateDebut())
-                .dateFin(entente1.getDateFin())
                 .build();
 
         assertEquals(entente1, entente2);

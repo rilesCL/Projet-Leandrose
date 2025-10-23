@@ -41,4 +41,8 @@ public class StudentDto extends UserDTO{
     public static StudentDto empty() {
         return new StudentDto();
     }
+
+    public String getName() {
+        return this.getFirstName() + this.getLastName();
+    }
 }
