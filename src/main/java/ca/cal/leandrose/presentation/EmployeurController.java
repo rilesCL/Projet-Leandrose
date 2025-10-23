@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -336,6 +337,26 @@ public class EmployeurController {
             return ResponseEntity.status(404).body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/ententes")
+    public ResponseEntity<List<EntenteStageDto>> getEntentesPourEmployeur(HttpServletRequest request) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            List<EntenteStageDto> allEntentes = ententeStageService.getAllEntentes();
+            List<EntenteStageDto> employerEntentes = allEntentes.stream()
+                    .filter(entente -> entente.getContactEntreprise() != null &&
+                            entente.getContactEntreprise().equals(me.getEmail()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(employerEntentes);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 }

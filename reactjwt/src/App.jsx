@@ -20,6 +20,7 @@ import ApplicationsPage from "./components/ApplicationsPage.jsx";
 import OfferCandidaturesList from "./components/OfferCandidaturesList.jsx";
 import EntentesStagePage from "./components/EntentesStagePage.jsx";
 import SignerEntentePage from "./components/SignerEntentePage.jsx";
+import EmployeurListeStages from "./components/EmployeurListeStages.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -37,7 +38,9 @@ function App() {
                 <Route path="dashboard/employeur" element={<DashBoardEmployeur />} />
                 <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur />} />
                 <Route path="dashboard/employeur/offers/:offerId/candidatures" element={<OfferCandidaturesList />} />
-                <Route path="dashboard/employeur/entente/:id/sign" element={<SignerEntentePage/>}/>
+                <Route path="dashboard/employeur/ententes" element={<EmployeurListeStages/>}/>
+
+                <Route path="dashboard/employeur/ententes/:id/signer" element={<SignerEntentePage/>}/>
                 {/* Student Routes */}
                 <Route path="dashboard/student" element={<DashBoardStudent />} />
                 <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />

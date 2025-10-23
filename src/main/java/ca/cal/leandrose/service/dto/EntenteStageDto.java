@@ -49,6 +49,7 @@ public class EntenteStageDto {
     private LocalDateTime dateSignatureEmployeur;
     private LocalDateTime dateSignatureGestionnaire;
     private Map<String, String> error;
+    private boolean employeurASigner;
 
     // Factory pour créer un DTO contenant une map d'erreurs
     public static EntenteStageDto withError(Map<String, String> error) {
@@ -88,6 +89,7 @@ public class EntenteStageDto {
                 .dateSignatureEtudiant(entente.getDateSignatureEtudiant())
                 .dateSignatureEmployeur(entente.getDateSignatureEmployeur())
                 .dateSignatureGestionnaire(entente.getDateSignatureGestionnaire())
+                .employeurASigner(entente.getDateSignatureEmployeur() != null)
                 .build();
     }
     public static EntenteStageDto withErrorMessage(String message) {
