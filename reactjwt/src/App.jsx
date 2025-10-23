@@ -21,6 +21,7 @@ import OfferCandidaturesList from "./components/OfferCandidaturesList.jsx";
 import EntentesStagePage from "./components/EntentesStagePage.jsx";
 import SignerEntentePage from "./components/SignerEntentePage.jsx";
 import EmployeurListeStages from "./components/EmployeurListeStages.jsx";
+import CreateEntenteForm from "./components/CreateEntenteForm.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -41,6 +42,7 @@ function App() {
                 <Route path="dashboard/employeur/ententes" element={<EmployeurListeStages/>}/>
 
                 <Route path="dashboard/employeur/ententes/:id/signer" element={<SignerEntentePage/>}/>
+
                 {/* Student Routes */}
                 <Route path="dashboard/student" element={<DashBoardStudent />} />
                 <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />
@@ -56,6 +58,7 @@ function App() {
                 <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
                 <Route path="dashboard/gestionnaire/ententes" element={<EntentesStagePage/>} />
                 <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
+                <Route path="/dashboard/gestionnaire/ententes/create" element={<CreateEntenteForm />} />
 
 
                 {/* Fallback Dashboard Route */}
