@@ -36,8 +36,10 @@ export default function EmployeurListeStages() {
 
                 if (ententesResponse.ok) {
                     const allEntentes = await ententesResponse.json();
-                    const employerEntentes = allEntentes.filter(entente =>
-                        entente.contactEntreprise === userData.email
+                    const employerEntentes = allEntentes.filter(entente =>{
+                            const employeurEmail = entente.internshipOffer?.employeurDto?.email;
+                            return employeurEmail === userData.email;
+                        }
                     );
                     setEntentes(employerEntentes);
                 }
@@ -107,6 +109,13 @@ export default function EmployeurListeStages() {
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString('fr-FR');
+    };
+
+    const calculateDateFin = (dateDebut, dureeSemaines) => {
+        if (!dateDebut || !dureeSemaines) return null;
+        const date = new Date(dateDebut);
+        date.setDate(date.getDate() + (dureeSemaines * 7)); // Convert weeks to days
+        return date.toISOString().split('T')[0]; // Return as YYYY-MM-DD
     };
 
     if (loading) {
@@ -212,18 +221,18 @@ export default function EmployeurListeStages() {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div>
                                                 <div className="text-sm font-medium text-gray-900">
-                                                    {entente.studentPrenom} {entente.studentNom}
+                                                    {entente.student?.firstName} {entente.student?.lastName}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-sm text-gray-900 max-w-xs truncate">
-                                                {entente.internshipOfferDescription}
+                                                {entente.internshipOffer?.description}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm text-gray-900">
-                                                {formatDate(entente.dateDebut)} - {formatDate(entente.dateFin)}
+                                                {formatDate(entente.dateDebut)} - {formatDate(calculateDateFin(entente.dateDebut, entente.duree))}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">

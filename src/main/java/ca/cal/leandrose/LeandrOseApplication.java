@@ -198,21 +198,14 @@ public class LeandrOseApplication {
                 EntenteStageDto ententeDto39 = EntenteStageDto.builder()
                         .candidatureId(candidatureConfirmed39.getId())
                         .dateDebut(LocalDate.now().plusWeeks(4))
-                        .dateFin(LocalDate.now().plusMonths(3))
-                        .duree("10 semaines")
-                        .horaires("37.5h/semaine")
+                        .duree(10)
                         .lieu("850 Rue Saint-Denis, Montréal")
-                        .modalitesTeletravail("Présentiel complet")
-                        .remuneration(new java.math.BigDecimal("23.50"))
+                        .remuneration(23.50f)
                         .missionsObjectifs("Tests automatisés, scripts CI/CD et outils de QA avec Selenium et Jenkins.")
                         .build();
 
                 EntenteStageDto ententeCreated39 = ententeStageService.creerEntente(ententeDto39);
-                System.out.println("✅ Entente STORY 39 créée : " + ententeCreated39.getId());
-
-                // 9️⃣ Validation et signature
-                EntenteStageDto ententeValidee39 = ententeStageService.validerEtGenererEntente(ententeCreated39.getId());
-                System.out.println("📄 Entente STORY 39 validée par le gestionnaire.");
+                System.out.println("✅ Entente STORY 39 créée et prête à signature : " + ententeCreated39.getId());
 
 //                EntenteStageDto ententeSignee39 = ententeStageService.signerParEmployeur(
 //                        ententeValidee39.getId(),

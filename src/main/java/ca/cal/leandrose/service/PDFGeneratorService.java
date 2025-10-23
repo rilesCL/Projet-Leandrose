@@ -126,8 +126,8 @@ public class PDFGeneratorService {
         document.add(new Paragraph("L'ENTREPRISE :", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11)));
         document.add(new Paragraph("Nom de l'entreprise : " + offer.getCompanyName(), normalFont));
         document.add(new Paragraph("Personne contact : " + offer.getEmployeurEmail(), normalFont));
-        if (entente.getLieu() != null) {
-            document.add(new Paragraph("Adresse : " + entente.getLieu(), normalFont));
+        if (entente.getAddress() != null) {
+            document.add(new Paragraph("Adresse : " + entente.getAddress(), normalFont));
         }
         document.add(Chunk.NEWLINE);
 
@@ -157,22 +157,15 @@ public class PDFGeneratorService {
         Font cellBoldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
 
         addTableRow(table, "Description", offer.getDescription(), cellBoldFont, cellFont);
-        addTableRow(table, "Date de début", entente.getDateDebut().format(DATE_FORMATTER), cellBoldFont, cellFont);
-        addTableRow(table, "Date de fin", entente.getDateFin().format(DATE_FORMATTER), cellBoldFont, cellFont);
-        addTableRow(table, "Durée", entente.getDuree(), cellBoldFont, cellFont);
-        addTableRow(table, "Horaires", entente.getHoraires(), cellBoldFont, cellFont);
+        addTableRow(table, "Date de début", entente.getStartDate().format(DATE_FORMATTER), cellBoldFont, cellFont);
+        addTableRow(table, "Durée", String.valueOf(entente.getDurationInWeeks()), cellBoldFont, cellFont);
 
-        if (entente.getLieu() != null && !entente.getLieu().isBlank()) {
-            addTableRow(table, "Lieu", entente.getLieu(), cellBoldFont, cellFont);
+
+        if (entente.getAddress() != null && !entente.getAddress().isBlank()) {
+            addTableRow(table, "Lieu", entente.getAddress(), cellBoldFont, cellFont);
         }
 
-        if (entente.getModalitesTeletravail() != null && !entente.getModalitesTeletravail().isBlank()) {
-            addTableRow(table, "Télétravail", entente.getModalitesTeletravail(), cellBoldFont, cellFont);
-        }
-
-        if (entente.getRemuneration() != null) {
-            addTableRow(table, "Rémunération", entente.getRemuneration() + " $", cellBoldFont, cellFont);
-        }
+        addTableRow(table, "Rémunération", entente.getRemuneration() + " $", cellBoldFont, cellFont);
 
         document.add(table);
     }

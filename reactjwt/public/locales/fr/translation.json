@@ -211,7 +211,8 @@
     "logout": "Se déconnecter",
     "welcome": "Bienvenue",
     "addProgram": "Ajouter un programme",
-    "offer": "offre"
+    "offer": "offre",
+    "ententes": "Ententes"
   },
   "dashboardStudent": {
     "logout": "Se déconnecter",
@@ -656,7 +657,61 @@
       "PUBLISHED": "approuvé"
     }
   },
+  "ententesStagePage": {
+    "title": "Candidatures acceptées",
+    "loading": "Chargement des candidatures acceptées...",
+    "error": "Erreur",
+    "noApplications": "Aucune candidature acceptée trouvée.",
+    "student": "Étudiant",
+    "offer": "Offre",
+    "company": "Entreprise",
+    "startDate": "Date début",
+    "duration": "Durée",
+    "weeks": "semaine(s)",
+    "address": "Adresse",
+    "remuneration": "Rémunération",
+    "status": "Statut candidature",
+    "ententeCreated": "Entente créée le",
+    "viewCv": "Voir CV",
+    "createEntente": "Créer entente",
+    "ententeAlreadyCreated": "Entente déjà créée",
+    "notDefined": "—",
+    "previewError": "Impossible d'ouvrir le CV",
+    "back": "Retour"
+  },
   "common": {
     "cancel": "Annuler"
+  },
+  "createEntenteForm": {
+    "title": "Créer une entente de stage",
+    "error": "Erreur",
+    "success": "Entente créée avec succès !",
+    "candidatureLabel": "Candidature acceptée *",
+    "candidaturePlaceholder": "-- Sélectionner une candidature --",
+    "candidatureRequired": "La candidature est obligatoire",
+    "studentInfo": "Informations de l'étudiant",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "studentNumber": "Numéro étudiant",
+    "program": "Programme",
+    "companyInfo": "Informations de l'entreprise",
+    "companyName": "Nom de l'entreprise",
+    "offerDescription": "Description de l'offre",
+    "startDate": "Date de début",
+    "duration": "Durée",
+    "weeks": "semaines",
+    "location": "Lieu",
+    "remuneration": "Rémunération",
+    "notPaid": "Non rémunéré",
+    "missionsLabel": "Missions et objectifs du stage *",
+    "missionsPlaceholder": "Décrivez les missions et objectifs...",
+    "missionsRequired": "Les missions et objectifs sont obligatoires",
+    "cancelButton": "Annuler",
+    "submitButton": "Créer l'entente",
+    "submitting": "Création en cours...",
+    "createError": "Erreur lors de la création de l'entente",
+    "loadError": "Impossible de charger les candidatures",
+    "notDefined": "—",
+    "back": "Retour"
   }
 }

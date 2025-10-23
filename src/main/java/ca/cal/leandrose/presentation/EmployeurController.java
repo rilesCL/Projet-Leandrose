@@ -257,7 +257,7 @@ public class EmployeurController {
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_PDF)
                         .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"CV_" + candidatureDto.getStudentName() + ".pdf\"")
+                                "attachment; filename=\"CV_" + candidatureDto.getStudent().getName() + ".pdf\"")
                         .body(resource);
             } else {
                 return ResponseEntity.notFound().build();
@@ -351,8 +351,13 @@ public class EmployeurController {
         try {
             List<EntenteStageDto> allEntentes = ententeStageService.getAllEntentes();
             List<EntenteStageDto> employerEntentes = allEntentes.stream()
-                    .filter(entente -> entente.getContactEntreprise() != null &&
-                            entente.getContactEntreprise().equals(me.getEmail()))
+                    .filter(entente -> {
+                        if (entente.getInternshipOffer() == null ||
+                                entente.getInternshipOffer().getEmployeurDto() == null) {
+                            return false;
+                        }
+                        return me.getEmail().equals(entente.getInternshipOffer().getEmployeurDto().getEmail());
+                    })
                     .collect(Collectors.toList());
             return ResponseEntity.ok(employerEntentes);
         } catch (Exception e) {

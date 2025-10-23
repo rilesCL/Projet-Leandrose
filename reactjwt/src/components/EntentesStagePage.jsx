@@ -1,12 +1,17 @@
 // src/components/EntentesStagePage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { FaArrowLeft } from "react-icons/fa";
 import { getCandidaturesAcceptees, previewCv } from "../api/apiGestionnaire.jsx";
+import PdfViewer from "./PdfViewer";
 
 export default function EntentesStagePage() {
+    const { t } = useTranslation();
     const [candidatures, setCandidatures] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [cvToPreview, setCvToPreview] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,6 +20,7 @@ export default function EntentesStagePage() {
             navigate("/login");
             return;
         }
+
         const fetchData = async () => {
             try {
                 setLoading(true);
@@ -27,55 +33,131 @@ export default function EntentesStagePage() {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, [navigate]);
 
     const handlePreviewCv = async (cvId) => {
         try {
             const blob = await previewCv(cvId);
-            downloadBlobInNewTab(blob);
+            setCvToPreview(blob);
         } catch (err) {
             console.error("Erreur preview CV:", err);
-            alert("Impossible d'ouvrir le CV : " + (err.message || ""));
+            alert(`${t("ententesStagePage.previewError")} : ${err.message || ""}`);
         }
     };
 
-    function downloadBlobInNewTab(blob) {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, "_blank");
-        setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
-    }
+    if (loading)
+        return (
+            <div className="bg-white shadow rounded p-4 text-center">
+                {t("ententesStagePage.loading")}
+            </div>
+        );
 
-    if (loading) return <div className="bg-white shadow rounded p-4">Chargement des candidatures acceptées...</div>;
-    if (error) return <div className="bg-white shadow rounded p-4 text-red-600">Erreur : {error}</div>;
+    if (error)
+        return (
+            <div className="bg-white shadow rounded p-4 text-red-600 text-center">
+                {t("ententesStagePage.error")} : {error}
+            </div>
+        );
 
     return (
-        <div className="bg-white shadow rounded p-4">
-            <h2 className="text-lg font-medium mb-3">Candidatures acceptées</h2>
+        <div className="bg-white shadow rounded p-6">
+            {/* Bouton retour */}
+            <button
+                onClick={() => navigate("/dashboard/gestionnaire")}
+                className="mb-4 flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
+            >
+                <FaArrowLeft className="mr-2" />
+                <span>{t("ententesStagePage.back")}</span>
+            </button>
+
+            <h2 className="text-2xl font-semibold mb-6 text-gray-900">
+                {t("ententesStagePage.title")}
+            </h2>
+
             {candidatures.length === 0 ? (
-                <p className="text-sm text-gray-600">Aucune candidature acceptée trouvée.</p>
+                <p className="text-sm text-gray-600">
+                    {t("ententesStagePage.noApplications")}
+                </p>
             ) : (
-                <div className="space-y-3">
-                    {candidatures.map((c) => (
-                        <div key={c.id} className="border rounded p-3 flex justify-between items-center">
-                            <div>
-                                <div className="font-medium">{c.studentName ?? `${c.studentPrenom ?? ""} ${c.studentNom ?? ""}`}</div>
-                                <div className="text-sm text-gray-600">Offre : {c.offerDescription ?? c.internshipOfferDescription ?? "—"}</div>
-                                <div className="text-sm text-gray-500">Candidature ID: {c.id}</div>
+                <div className="space-y-6">
+                    {candidatures.map((c) => {
+                        const student = c.student || {};
+                        const offer = c.internshipOffer || {};
+                        const cv = c.cv || null;
+                        const entente = c.entente || null;
+
+                        return (
+                            <div
+                                key={c.id}
+                                className="border rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <div className="flex-1 space-y-1">
+                                    <div className="text-lg font-medium text-gray-900">
+                                        {student.fullName || `${student.firstName ?? ""} ${student.lastName ?? ""}`}
+                                    </div>
+                                    <div className="text-sm text-gray-700">
+                                        {t("ententesStagePage.offer")} : {offer.description ?? t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-700">
+                                        {t("ententesStagePage.company")} : {offer.companyName ?? t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        {t("ententesStagePage.startDate")} : {offer.startDate ? new Date(offer.startDate).toLocaleDateString() : t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        {t("ententesStagePage.duration")} : {offer.durationInWeeks ? `${offer.durationInWeeks} ${t("ententesStagePage.weeks")}` : t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        {t("ententesStagePage.address")} : {offer.address ?? t("ententesStagePage.notDefined")}
+                                    </div>
+                                    <div className="text-sm text-gray-500">
+                                        {t("ententesStagePage.remuneration")} : {offer.remuneration ? `${offer.remuneration} $/h` : t("ententesStagePage.notDefined")}
+                                    </div>
+                                    {entente && (
+                                        <div className="text-sm text-green-700 font-medium">
+                                            {t("ententesStagePage.ententeCreated")} : {new Date(entente.creationDate).toLocaleDateString()}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+                                    {cv && (
+                                        <button
+                                            onClick={() => handlePreviewCv(cv.id)}
+                                            className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 rounded hover:bg-indigo-100 transition-colors"
+                                        >
+                                            {t("ententesStagePage.viewCv")}
+                                        </button>
+                                    )}
+                                    {!entente && (
+                                        <button
+                                            onClick={() =>
+                                                navigate(`/dashboard/gestionnaire/ententes/create?candidatureId=${c.id}`)
+                                            }
+                                            className="px-3 py-1 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100 transition-colors"
+                                        >
+                                            {t("ententesStagePage.createEntente")}
+                                        </button>
+                                    )}
+                                    {entente && (
+                                        <span className="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded">
+                                            {t("ententesStagePage.ententeAlreadyCreated")}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                {c.cvId && (
-                                    <button onClick={() => handlePreviewCv(c.cvId)} className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 rounded hover:bg-indigo-100">
-                                        Voir CV
-                                    </button>
-                                )}
-                                <button onClick={() => navigate(`/dashboard/gestionnaire/ententes/create?candidatureId=${c.id}`)} className="px-3 py-1 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100">
-                                    Créer entente
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
+            )}
+
+            {cvToPreview && (
+                <PdfViewer
+                    file={cvToPreview}
+                    onClose={() => setCvToPreview(null)}
+                />
             )}
         </div>
     );
