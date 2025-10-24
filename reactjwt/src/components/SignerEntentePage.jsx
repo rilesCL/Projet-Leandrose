@@ -15,7 +15,7 @@ export default function SignerEntentePage() {
         const loadCurrentUser = async () => {
             const token = sessionStorage.getItem("accessToken");
             if (!token) {
-                console.log("❌ No token found in sessionStorage");
+                console.log("No token found in sessionStorage");
                 return;
             }
 
