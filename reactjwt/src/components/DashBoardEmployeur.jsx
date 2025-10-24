@@ -63,7 +63,7 @@ export default function DashBoardEmployeur() {
                             >
                                 <FaSignature className="mr-1"/>
                                 <span className="hidden sm:inline">
-                                    Ententes de stage
+                                    {t("dashboardEmployeur.stage")}
                                 </span>
 
                             </Link>

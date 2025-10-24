@@ -205,7 +205,8 @@
     "description": "Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.",
     "navigation": {
       "mainNavigation": "Navigation principale"
-    }
+    },
+    "stage": "Entente de stage"
   },
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
@@ -713,5 +714,50 @@
     "loadError": "Impossible de charger les candidatures",
     "notDefined": "—",
     "back": "Retour"
+  },
+  "ententeStage": {
+    "title": "Ententes de stages",
+    "description": "Gérez et signez les ententes de stage",
+    "loading": "Chargement des ententes...",
+    "back": "Retour au tableau de bord",
+    "noneStagetitle": "Aucune entente de stage",
+    "noneStagedescription": "Vous n'avez aucune entente de stage en cours pour le moment.",
+    "student": "Étudiant",
+    "stage": "Stage",
+    "period": "Période",
+    "status": {
+      "title": "statut",
+      "validation": "Validée",
+      "waiting_other_signatures": "En attente des autres signatures",
+      "waiting_your_signature": "En attente de votre signature",
+      "draft": "Brouillon"
+    },
+    "created_at": "Crée le",
+    "actions": {
+      "title": "Actions",
+      "look": "Voir",
+      "sign": "Signer"
+    },
+    "stats": {
+      "totalEntentes": "Total des ententes",
+      "waitingSignature": "En attente de signature",
+      "agreementValidated": "Ententes validées"
+    }
+  },
+  "signerEntente": {
+    "errors": {
+      "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
+      "incorrectedPassword": "Mot de passe incorrect. Veuillez rééssayer",
+      "accessForbidden": "Accès refusé. Seuls les employeurs peuvent signer les ententes",
+      "notFound": "Entente non trouvée",
+      "unexpectedError": "Une erreur est survenue lors de la signature."
+    },
+    "success": "Entente signée avec succès !",
+    "title": "Signature de l'entente",
+    "description": "Confirmez votre mot de passe pour signer cette entente:",
+    "placeholder": "Votre mot de passe",
+    "loading": "Signature en cours",
+    "button": "Signer l'entente",
+    "back": "Annuler et retourner au tableau de bord."
   }
 }

@@ -204,7 +204,8 @@
     "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
     "navigation": {
       "mainNavigation": "Main navigation"
-    }
+    },
+    "stage": "Internship Agreement"
   },
   "dashboardGestionnaire": {
     "logout": "Logout",
@@ -711,5 +712,50 @@
     "loadError": "Unable to load applications",
     "notDefined": "—",
     "back": "Back"
+  },
+  "ententeStage": {
+    "title": "Internship Agreements",
+    "description": "Manage and sign internship agreements with your interns",
+    "loading": "Loading agreements...",
+    "back": "Return to dashboard",
+    "noneStagetitle": "No internship agreement",
+    "noneStagedescription": "You do not have any current internship agreements at the moment.",
+    "student": "Student",
+    "stage": "Internship",
+    "period": "Period",
+    "status": {
+      "title": "status",
+      "validation": "Validated",
+      "waiting_other_signatures": "In waiting for others signatures",
+      "waiting_your_signature": "In waiting for your signature",
+      "draft": "Draft"
+    },
+    "created_at": "Created at",
+    "actions": {
+      "title": "Actions",
+      "look": "Look",
+      "sign": "Sign"
+    },
+    "stats": {
+      "totalEntentes": "Total Internships",
+      "waitingSignature": "Waiting for signatures",
+      "agreementValidated": "Internship Validated"
+    }
+  },
+  "signerEntente": {
+    "errors": {
+      "sessionExpired": "Session expired. \nPlease log in again.",
+      "incorrectedPassword": "Password incorrect. Please try again",
+      "accessForbidden": "Access refused. Only employers can signed the agreement.",
+      "notFound": "agreement not found",
+      "unexpectedError": "An error occurred while signing."
+    },
+    "success": "Agreement signed succesfully !",
+    "title": "Signing of the agreement",
+    "description": "Confirm your password to sign this agreement:",
+    "placeholder": "Your password",
+    "loading": "Signature in progress",
+    "button": "Sign the agreement",
+    "back": "Cancel and return to the dashboard."
   }
 }
