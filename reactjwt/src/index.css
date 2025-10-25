@@ -20,10 +20,13 @@
 /* RESPONSIVE FIXES - ADD THESE */
 * {
     box-sizing: border-box;
+    margin: 0;  /* ADD THIS */
+    padding: 0; /* ADD THIS */
 }
 
 body {
-    margin: 0;
+    margin: 0;  /* Make sure this is here */
+    padding: 0; /* ADD THIS */
     width: 100%;
     min-width: 320px;
     min-height: 100vh;
@@ -33,6 +36,8 @@ body {
 #root {
     width: 100%;
     min-height: 100vh;
+    margin: 0;  /* ADD THIS */
+    padding: 0; /* ADD THIS */
 }
 
 /* Make tables scrollable on mobile */

@@ -190,7 +190,7 @@ const Login = () => {
 
     if (showForgotPassword) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="max-w-xl w-full">
                     <header className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-indigo-600">{t("appName")}</h1>
@@ -247,7 +247,7 @@ const Login = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="max-w-xl w-full">
                 <header className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-indigo-600">{t("appName")}</h1>
@@ -317,14 +317,6 @@ const Login = () => {
                         </div>
 
                         <div className="mt-6 text-center space-y-3">
-                            <button
-                                type="button"
-                                onClick={() => setShowForgotPassword(true)}
-                                className="text-base text-indigo-600 hover:underline"
-                            >
-                                {t("login.forgotPassword")}
-                            </button>
-
                             <div className="text-base text-gray-500">
                                 {t("login.noAccount")}{" "}
                                 <button
