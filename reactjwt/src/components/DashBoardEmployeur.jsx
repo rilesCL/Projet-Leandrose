@@ -44,7 +44,7 @@ export default function DashBoardEmployeur() {
     }, [navigate]);
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white shadow">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">

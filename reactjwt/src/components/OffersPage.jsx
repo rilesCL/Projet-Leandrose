@@ -28,7 +28,7 @@ export default function OffersPage() {
     }, [filter]);
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-gray-50 flex items-center justify-center">
             <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-md">
 
                 <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">
@@ -84,16 +84,6 @@ export default function OffersPage() {
                     </tbody>
                 </table>
 
-                <div className="mt-8 justify-center">
-                    <button
-                        type="button"
-                        onClick={() => navigate(-1)}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-gray-300
-                        text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                        {t("uploadStageEmployeur.backToDashboard")}
-                    </button>
-                </div>
             </div>
         </div>
     );

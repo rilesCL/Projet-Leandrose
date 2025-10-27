@@ -187,7 +187,7 @@ export default function CreateEntenteForm() {
                 </div>
 
                 {selectedCandidature && (
-                    <div className="space-y-4">}
+                    <div className="space-y-4">
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <h3 className="font-semibold text-blue-900 mb-3">
                                 {t("createEntenteForm.studentInfo")}

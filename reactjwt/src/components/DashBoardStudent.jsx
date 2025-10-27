@@ -52,16 +52,21 @@ export default function DashBoardStudent() {
     const Btn = ({ target, children }) => (
         <button
             onClick={() => setSection(target)}
-            className={`px-4 py-2 rounded text-sm font-medium border transition ${
+            className={`relative flex-1 min-w-[140px] px-6 py-3.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out ${
                 section === target
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-500/50 scale-105'
+                    : 'bg-white text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 hover:shadow-md shadow-sm border border-gray-200'
             }`}
-        >{children}</button>
+        >
+            {children}
+            {section === target && (
+                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-indigo-600 rounded-full"></span>
+            )}
+        </button>
     );
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white border-b">
                 <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                     <span className="text-xl font-bold text-indigo-600">{t("appName")}</span>
@@ -83,10 +88,12 @@ export default function DashBoardStudent() {
                     </h1>
                     <p className="text-gray-600 mb-6">{t("dashboardStudent.description")}</p>
 
-                    <div className="flex flex-wrap gap-3 mb-8">
-                        <Btn target="offers">{t("dashboardStudent.tabs.offers")}</Btn>
-                        <Btn target="cv">{t("dashboardStudent.tabs.cv")}</Btn>
-                        <Btn target="applications">{t("dashboardStudent.tabs.applications")}</Btn>
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-2.5 mb-6">
+                        <div className="flex flex-wrap gap-2">
+                            <Btn target="offers">{t("dashboardStudent.tabs.offers")}</Btn>
+                            <Btn target="cv">{t("dashboardStudent.tabs.cv")}</Btn>
+                            <Btn target="applications">{t("dashboardStudent.tabs.applications")}</Btn>
+                        </div>
                     </div>
 
                     {section === 'offers' && (

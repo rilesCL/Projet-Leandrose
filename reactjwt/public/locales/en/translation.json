@@ -209,9 +209,13 @@
   "dashboardGestionnaire": {
     "logout": "Logout",
     "welcome": "Welcome",
-    "addProgram": "Add Program",
-    "offer": "offer",
-    "ententes": "Agreements"
+    "description": "This is your manager dashboard. You can manage CVs, validate offers, and create agreements.",
+    "tabs": {
+      "cv": "Pending CVs",
+      "pendingOffers": "Pending Offers",
+      "offers": "All Offers",
+      "ententes": "Agreements"
+    }
   },
   "dashboardStudent": {
     "logout": "Logout",
@@ -301,7 +305,6 @@
     "remove": "Remove",
     "submit": "Publish the offer",
     "submitting": "Saving...",
-    "backToDashboard": "Back to dashboard",
     "successMessage": "Offer saved successfully. Status:",
     "statusPublished": "Published",
     "pendingapproval": "Pending approval",
@@ -675,7 +678,6 @@
     "ententeAlreadyCreated": "Agreement already created",
     "notDefined": "—",
     "previewError": "Unable to open CV",
-    "back": "Back"
   },
   "common": {
     "cancel": "Cancel"

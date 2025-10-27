@@ -63,13 +63,6 @@ export default function EntentesStagePage() {
 
     return (
         <div className="bg-white shadow rounded p-6">
-            <button
-                onClick={() => navigate("/dashboard/gestionnaire")}
-                className="mb-4 flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
-            >
-                <FaArrowLeft className="mr-2" />
-                <span>{t("ententesStagePage.back")}</span>
-            </button>
 
             <h2 className="text-2xl font-semibold mb-6 text-gray-900">
                 {t("ententesStagePage.title")}
