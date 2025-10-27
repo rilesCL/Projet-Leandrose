@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { uploadStudentCv } from "../api/apiStudent";
+import { uploadStudentCv } from "../../api/apiStudent.jsx";
 
 const MAX_FILE_SIZE_MB = 5;
 const BYTES_IN_MB = 1024 * 1024;

@@ -679,7 +679,7 @@
     "createEntente": "Créer entente",
     "ententeAlreadyCreated": "Entente déjà créée",
     "notDefined": "—",
-    "previewError": "Impossible d'ouvrir le CV",
+    "previewError": "Impossible d'ouvrir le CV"
   },
   "common": {
     "cancel": "Annuler"

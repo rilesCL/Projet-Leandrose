@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getOfferDetails, applyToOffer, getStudentCv, getMyCandidatures, previewOfferPdfStudent } from "../api/apiStudent";
+import { getOfferDetails, applyToOffer, getStudentCv, getMyCandidatures, previewOfferPdfStudent } from "../../api/apiStudent.jsx";
 import { useTranslation } from "react-i18next";
-import PdfViewer from "./PdfViewer";
+import PdfViewer from "../PdfViewer.jsx";
 
 export default function OfferDetailPage() {
     const { t } = useTranslation();

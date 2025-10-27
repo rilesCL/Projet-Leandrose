@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getOfferDetails, previewOfferPdf } from "../api/apiGestionnaire.jsx";
+import { getOfferDetails, previewOfferPdf } from "../../api/apiGestionnaire.jsx";
 import { useTranslation } from "react-i18next";
-import PdfViewer from "../components/PdfViewer.jsx";
+import PdfViewer from "../PdfViewer.jsx";
 
 export default function OfferDetailsPage() {
     const { id } = useParams();

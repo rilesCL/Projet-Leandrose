@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import InternshipOffersList from "./InternshipOffersList";
+import InternshipOffersList from "./InternshipOffersList.jsx";
 import { useNavigate, Link } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import LanguageSelector from "./LanguageSelector.jsx";
+import LanguageSelector from "../LanguageSelector.jsx";
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate();

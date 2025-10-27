@@ -5,8 +5,8 @@ import {
     approveOffer,
     rejectOffer,
     previewOfferPdf
-} from "../api/apiGestionnaire.jsx";
-import PdfViewer from "../components/PdfViewer.jsx";
+} from "../../api/apiGestionnaire.jsx";
+import PdfViewer from "../PdfViewer.jsx";
 
 export default function PendingOffersPage() {
     const { t } = useTranslation();

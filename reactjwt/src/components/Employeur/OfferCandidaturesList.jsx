@@ -5,10 +5,10 @@ import {
     createConvocation,
     rejectCandidature,
     acceptCandidature
-} from '../api/apiEmployeur';
+} from '../../api/apiEmployeur.jsx';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import PdfViewer from '../components/PdfViewer.jsx';
+import PdfViewer from '../PdfViewer.jsx';
 
 export default function OfferCandidaturesList() {
     const { offerId } = useParams();

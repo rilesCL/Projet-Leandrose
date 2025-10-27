@@ -1,10 +1,9 @@
-// src/components/EntentesStagePage.jsx
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft } from "react-icons/fa";
-import { getCandidaturesAcceptees, previewCv } from "../api/apiGestionnaire.jsx";
-import PdfViewer from "./PdfViewer";
+import { getCandidaturesAcceptees, previewCv } from "../../api/apiGestionnaire.jsx";
+import PdfViewer from "../PdfViewer.jsx";
 
 export default function EntentesStagePage() {
     const { t } = useTranslation();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { approveCv, rejectCv, getPendingCvs, previewCv } from "../api/apiGestionnaire.jsx";
-import PdfViewer from "../components/PdfViewer.jsx";
+import { approveCv, rejectCv, getPendingCvs, previewCv } from "../../api/apiGestionnaire.jsx";
+import PdfViewer from "../PdfViewer.jsx";
 
 export default function PendingCvPage() {
     const { t } = useTranslation();

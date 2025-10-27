@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft } from "react-icons/fa";
-import { creerEntente, getCandidaturesAcceptees } from "../api/apiGestionnaire";
+import { creerEntente, getCandidaturesAcceptees } from "../../api/apiGestionnaire.jsx";
 
 export default function CreateEntenteForm() {
     const { t } = useTranslation();

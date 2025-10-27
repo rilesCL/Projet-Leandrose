@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
-import {getOfferCandidatures, previewOfferPdf} from '../api/apiEmployeur';
-import PdfViewer from './PdfViewer.jsx';
+import {getOfferCandidatures, previewOfferPdf} from '../../api/apiEmployeur.jsx';
+import PdfViewer from '../PdfViewer.jsx';
 
 const API_BASE = 'http://localhost:8080';
 

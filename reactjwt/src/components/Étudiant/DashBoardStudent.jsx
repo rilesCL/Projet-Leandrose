@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import PendingCvPage from "./PendingCvPage";
-import PendingOffersPage from "./PendingOffersPage.jsx";
-import OffersPage from "./OffersPage.jsx";
-import EntentesStagePage from "./EntentesStagePage.jsx";
-import LanguageSelector from "./LanguageSelector.jsx";
+import StudentCvList from "./StudentCvList.jsx";
+import { FaSignOutAlt } from "react-icons/fa";
+import LanguageSelector from "../LanguageSelector.jsx";
+import StudentInternshipOffersList from "./StudentInternshipOffersList.jsx";
+import StudentApplicationsList from './StudentApplicationsList.jsx';
 
-export default function DashBoardGestionnaire() {
+export default function DashBoardStudent() {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [userName, setUserName] = useState("");
 
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(window.location.search);
-        const raw = (params.get('tab') || params.get('section') || 'cv').toLowerCase();
-        if (["cv", "offers", "pending", "ententes"].includes(raw)) return raw;
-        return 'cv';
+        const raw = (params.get('tab') || params.get('section') || 'offers').toLowerCase();
+        if (["offers","cv","applications"].includes(raw)) return raw;
+        return 'offers';
     });
 
     const handleLogout = () => {
@@ -44,7 +43,6 @@ export default function DashBoardGestionnaire() {
                     navigate("/login");
                 }
             } catch (error) {
-                console.error("User fetch error:", error);
                 navigate("/login");
             }
         };
@@ -69,62 +67,50 @@ export default function DashBoardGestionnaire() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <header className="bg-white shadow-md border-b border-indigo-100">
+            <header className="bg-white border-b">
                 <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-                    <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">
-                        {t("appName")}
-                    </span>
+                    <span className="text-xl font-bold text-indigo-600">{t("appName")}</span>
                     <div className="flex items-center gap-4">
                         <LanguageSelector />
                         <button
                             onClick={handleLogout}
-                            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-all duration-200"
+                            className="flex items-center text-gray-600 hover:text-red-600 text-sm"
                         >
-                            <FaSignOutAlt /> {t("dashboardGestionnaire.logout")}
+                            <FaSignOutAlt className="mr-1" /> {t("dashboardStudent.logout")}
                         </button>
                     </div>
                 </div>
             </header>
-
-            <main className="py-6">
-                <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-                    <div className="mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">
-                            {t("dashboardGestionnaire.welcome")} {userName} 👋
-                        </h1>
-                        <p className="text-gray-600 text-sm">{t("dashboardGestionnaire.description")}</p>
-                    </div>
+            <main className="py-8">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                        {t("dashboardStudent.welcome")} {userName}!
+                    </h1>
+                    <p className="text-gray-600 mb-6">{t("dashboardStudent.description")}</p>
 
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-2.5 mb-6">
                         <div className="flex flex-wrap gap-2">
-                            <Btn target="cv">{t("dashboardGestionnaire.tabs.cv")}</Btn>
-                            <Btn target="pending">{t("dashboardGestionnaire.tabs.pendingOffers")}</Btn>
-                            <Btn target="offers">{t("dashboardGestionnaire.tabs.offers")}</Btn>
-                            <Btn target="ententes">{t("dashboardGestionnaire.tabs.ententes")}</Btn>
+                            <Btn target="offers">{t("dashboardStudent.tabs.offers")}</Btn>
+                            <Btn target="cv">{t("dashboardStudent.tabs.cv")}</Btn>
+                            <Btn target="applications">{t("dashboardStudent.tabs.applications")}</Btn>
                         </div>
                     </div>
 
-                    {section === 'cv' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
-                            <PendingCvPage />
-                        </div>
-                    )}
-
-                    {section === 'pending' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
-                            <PendingOffersPage />
-                        </div>
-                    )}
-
                     {section === 'offers' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
-                            <OffersPage />
+                        <div className="space-y-8">
+                            <StudentInternshipOffersList />
                         </div>
                     )}
 
-                    {section === 'ententes' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
-                            <EntentesStagePage />
+                    {section === 'cv' && (
+                        <div>
+                            <StudentCvList />
+                        </div>
+                    )}
+
+                    {section === 'applications' && (
+                        <div>
+                            <StudentApplicationsList />
                         </div>
                     )}
                 </div>

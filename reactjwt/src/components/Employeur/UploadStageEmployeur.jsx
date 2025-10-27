@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { uploadStageEmployeur } from "../api/apiEmployeur";
+import { uploadStageEmployeur } from "../../api/apiEmployeur.jsx";
 import { useTranslation } from "react-i18next";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import PdfViewer from "./PdfViewer.jsx";
-import {previewStudentCv} from "../api/apiStudent.jsx";
+import PdfViewer from "../PdfViewer.jsx";
+import {previewStudentCv} from "../../api/apiStudent.jsx";
 
 export default function StudentCvList() {
     const { t } = useTranslation();

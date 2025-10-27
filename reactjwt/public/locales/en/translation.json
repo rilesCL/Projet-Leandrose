@@ -677,7 +677,7 @@
     "createEntente": "Create agreement",
     "ententeAlreadyCreated": "Agreement already created",
     "notDefined": "—",
-    "previewError": "Unable to open CV",
+    "previewError": "Unable to open CV"
   },
   "common": {
     "cancel": "Cancel"

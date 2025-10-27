@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getMyCandidatures } from "../api/apiStudent";
+import { getMyCandidatures } from "../../api/apiStudent.jsx";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 

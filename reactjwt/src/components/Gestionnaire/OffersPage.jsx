@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {getApprovedOffers, getRejectedOffers} from "../api/apiGestionnaire.jsx";
+import {getApprovedOffers, getRejectedOffers} from "../../api/apiGestionnaire.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 
