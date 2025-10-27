@@ -210,9 +210,13 @@
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
     "welcome": "Bienvenue",
-    "addProgram": "Ajouter un programme",
-    "offer": "offre",
-    "ententes": "Ententes"
+    "description": "Ceci est votre tableau de bord gestionnaire. Vous pouvez gérer les CVs, valider les offres et créer des ententes.",
+    "tabs": {
+      "cv": "CVs en attente",
+      "pendingOffers": "Offres en attente",
+      "offers": "Toutes les offres",
+      "ententes": "Ententes"
+    }
   },
   "dashboardStudent": {
     "logout": "Se déconnecter",
@@ -292,6 +296,7 @@
     "descriptionPlaceholder": "Description détaillée du poste...",
     "startDate": "Date de début (JJ-MM-AAAA)",
     "startDatePlaceholder": "JJ-MM-AAAA",
+    "backToDashboard": "Retour au dashboard",
     "duration": "Durée (en semaines)",
     "address": "Localisation (ville, adresse, télétravail possible)",
     "addressPlaceholder": "Ville, adresse, télétravail possible...",
@@ -302,7 +307,6 @@
     "remove": "Supprimer",
     "submit": "Publier l'offre",
     "submitting": "Enregistrement...",
-    "backToDashboard": "Retour au dashboard",
     "successMessage": "Offre enregistrée avec succès. Statut:",
     "statusPublished": "Publiée",
     "statusPending": "En attente de validation",
@@ -676,8 +680,7 @@
     "createEntente": "Créer entente",
     "ententeAlreadyCreated": "Entente déjà créée",
     "notDefined": "—",
-    "previewError": "Impossible d'ouvrir le CV",
-    "back": "Retour"
+    "previewError": "Impossible d'ouvrir le CV"
   },
   "common": {
     "cancel": "Annuler"
