@@ -201,6 +201,7 @@
   },
   "dashboardEmployeur": {
     "logout": "Se déconnecter",
+    "ententes": "Ententes de stage",
     "welcome": "Bienvenue",
     "description": "Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.",
     "navigation": {
