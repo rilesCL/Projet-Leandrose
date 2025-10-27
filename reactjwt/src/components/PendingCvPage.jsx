@@ -39,17 +39,14 @@ export default function PendingCvPage() {
         }
     };
 
-    // Ouvrir la modale de rejet
     const openRejectModal = (cvId) => {
         setRejectModal({ open: true, id: cvId, comment: "", error: null });
     };
 
-    // Fermer la modale
     const closeRejectModal = () => {
         setRejectModal({ open: false, id: null, comment: "", error: null });
     };
 
-    // Confirmer le rejet avec commentaire depuis la modale
     const confirmReject = async () => {
         const { id, comment } = rejectModal;
         const trimmed = (comment || "").trim();

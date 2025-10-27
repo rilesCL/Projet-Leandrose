@@ -59,21 +59,17 @@ export default function CreateEntenteForm() {
         return Object.keys(newErrors).length === 0;
     };
 
-    // 🔧 Fonction pour formater la date au format ISO (YYYY-MM-DD)
     const formatDateForBackend = (dateString) => {
         if (!dateString) return null;
 
-        // Si c'est déjà au format ISO (YYYY-MM-DD), le garder
         if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
             return dateString;
         }
 
-        // Si c'est un timestamp ou un format avec heure, parser et formater
         try {
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return null;
 
-            // Format YYYY-MM-DD
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
@@ -143,7 +139,6 @@ export default function CreateEntenteForm() {
 
     return (
         <div className="max-w-5xl mx-auto bg-white shadow rounded p-6">
-            {/* Bouton retour */}
             <button
                 onClick={handleCancel}
                 className="mb-4 flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
@@ -166,7 +161,6 @@ export default function CreateEntenteForm() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Sélection de la candidature */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         {t("createEntenteForm.candidatureLabel")}
@@ -192,10 +186,8 @@ export default function CreateEntenteForm() {
                     )}
                 </div>
 
-                {/* Informations de la candidature sélectionnée */}
                 {selectedCandidature && (
-                    <div className="space-y-4">
-                        {/* Étudiant */}
+                    <div className="space-y-4">}
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <h3 className="font-semibold text-blue-900 mb-3">
                                 {t("createEntenteForm.studentInfo")}
@@ -229,8 +221,6 @@ export default function CreateEntenteForm() {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Entreprise / Offre */}
                         <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                             <h3 className="font-semibold text-purple-900 mb-3">
                                 {t("createEntenteForm.companyInfo")}
@@ -291,7 +281,6 @@ export default function CreateEntenteForm() {
                     </div>
                 )}
 
-                {/* Missions et objectifs */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         {t("createEntenteForm.missionsLabel")}

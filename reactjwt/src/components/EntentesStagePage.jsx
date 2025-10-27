@@ -63,7 +63,6 @@ export default function EntentesStagePage() {
 
     return (
         <div className="bg-white shadow rounded p-6">
-            {/* Bouton retour */}
             <button
                 onClick={() => navigate("/dashboard/gestionnaire")}
                 className="mb-4 flex items-center text-gray-600 hover:text-indigo-600 transition-colors"

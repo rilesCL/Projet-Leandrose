@@ -67,7 +67,6 @@ export default function DashBoardGestionnaire() {
 
             <main className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
-                    {/* Barre d'onglets améliorée avec design moderne */}
                     <div className="mb-6">
                         <nav className="flex space-x-1 bg-gray-100 p-1 rounded-lg shadow-sm">
                             <Link
@@ -100,7 +99,6 @@ export default function DashBoardGestionnaire() {
                         {t("dashboardGestionnaire.welcome")} {userName}!
                     </h1>
 
-                    {/* Contenu par défaut : CV en attente + Offres */}
                     <PendingCvPage />
                     <div className="my-8 border-t border-gray-300"></div>
                     <PendingOffersPage />
