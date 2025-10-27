@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { uploadStudentCv } from "../api/apiStudent";
 
 const MAX_FILE_SIZE_MB = 5;
 const BYTES_IN_MB = 1024 * 1024;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * BYTES_IN_MB;
-const API_BASE = "http://localhost:8080";
 
 export default function UploadCvStudent() {
     const { t } = useTranslation();
@@ -42,29 +42,6 @@ export default function UploadCvStudent() {
         setErrors(prev => ({ ...prev, pdfFile: undefined }));
     }
 
-    async function uploadCv(file, token) {
-        const formData = new FormData();
-        formData.append("pdfFile", file);
-
-        const headers = {};
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        const response = await fetch(`${API_BASE}/student/cv`, {
-            method: "POST",
-            headers,
-            body: formData,
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || t("uploadCvStudent.errors.serverError"));
-        }
-
-        return await response.json();
-    }
-
     async function handleSubmit(evt) {
         evt.preventDefault();
         setServerMessage(null);
@@ -75,7 +52,7 @@ export default function UploadCvStudent() {
         setSubmitting(true);
         try {
             const token = sessionStorage.getItem("accessToken");
-            await uploadCv(pdfFile, token);
+            await uploadStudentCv(pdfFile, token);
 
             setServerMessage(t("uploadCvStudent.successMessage"));
             setServerMessageType("success");
