@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -336,6 +337,82 @@ public class EmployeurController {
             return ResponseEntity.status(404).body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/ententes")
+    public ResponseEntity<List<EntenteStageDto>> getEntentesPourEmployeur(HttpServletRequest request) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            List<EntenteStageDto> allEntentes = ententeStageService.getAllEntentes();
+            List<EntenteStageDto> employerEntentes = allEntentes.stream()
+                    .filter(entente -> {
+                        if (entente.getInternshipOffer() == null ||
+                                entente.getInternshipOffer().getEmployeurDto() == null) {
+                            return false;
+                        }
+                        return me.getEmail().equals(entente.getInternshipOffer().getEmployeurDto().getEmail());
+                    })
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(employerEntentes);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+
+    @GetMapping("/ententes/{ententeId}/pdf")
+    public ResponseEntity<Resource> getEntentePdf(
+            HttpServletRequest request,
+            @PathVariable Long ententeId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EntenteStageDto entente = ententeStageService.getEntenteById(ententeId);
+
+            if (entente.getInternshipOffer() == null ||
+                    entente.getInternshipOffer().getEmployeurDto() == null ||
+                    !me.getEmail().equals(entente.getInternshipOffer().getEmployeurDto().getEmail())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            if (entente.getCheminDocumentPDF() == null || entente.getCheminDocumentPDF().isBlank()) {
+                return ResponseEntity.status(404).build();
+            }
+
+            Path filePath = Paths.get(entente.getCheminDocumentPDF());
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                String filename = "Entente_Stage_" +
+                        entente.getStudent().getFirstName() + "_" +
+                        entente.getStudent().getLastName() + ".pdf";
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "inline; filename=\"" + filename + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(500).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 }

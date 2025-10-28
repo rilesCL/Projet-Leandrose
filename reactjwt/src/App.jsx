@@ -5,21 +5,23 @@ import RouteLayout from "./components/RouteLayout.jsx";
 import RegisterEtudiant from "./components/RegisterStudentForm.jsx";
 import RegisterEmployeur from "./components/RegisterEmployeurForm.jsx";
 import Login from "./components/Login.jsx";
-import UploadStageEmployeur from "./components/UploadStageEmployeur.jsx";
-import DashBoardEmployeur from "./components/DashBoardEmployeur.jsx";
-import DashBoardStudent from "./components/DashBoardStudent.jsx";
-import UploadCvStudent from "./components/UploadCvStudent.jsx";
-import DashBoardGestionnaire from "./components/DashBoardGestionnaire.jsx";
-import PendingCvPage from "./components/PendingCvPage.jsx";
+import UploadStageEmployeur from "./components/Employeur/UploadStageEmployeur.jsx";
+import DashBoardEmployeur from "./components/Employeur/DashBoardEmployeur.jsx";
+import DashBoardStudent from "./components/Étudiant/DashBoardStudent.jsx";
+import UploadCvStudent from "./components/Étudiant/UploadCvStudent.jsx";
+import DashBoardGestionnaire from "./components/Gestionnaire/DashBoardGestionnaire.jsx";
+import PendingCvPage from "./components/Gestionnaire/PendingCvPage.jsx";
 import RegisterLanding from "./components/RegisterLanding.jsx";
-import OffersPage from "./components/OffersPage.jsx";
-import OfferDetailsPage from "./components/OfferDetailsPage.jsx";
-import OfferDetailPage from "./components/OfferDetailPage.jsx";
-import StudentInternshipOffersList from "./components/StudentInternshipOffersList.jsx";
-import ApplicationsPage from "./components/ApplicationsPage.jsx";
-import OfferCandidaturesList from "./components/OfferCandidaturesList.jsx";
-import EntentesStagePage from "./components/EntentesStagePage.jsx";
-import CreateEntenteForm from "./components/CreateEntenteForm.jsx";
+import OffersPage from "./components/Gestionnaire/OffersPage.jsx";
+import OfferDetailsPage from "./components/Gestionnaire/OfferDetailsPage.jsx";
+import OfferDetailPage from "./components/Étudiant/OfferDetailPage.jsx";
+import StudentInternshipOffersList from "./components/Étudiant/StudentInternshipOffersList.jsx";
+import ApplicationsPage from "./components/Étudiant/ApplicationsPage.jsx";
+import OfferCandidaturesList from "./components/Employeur/OfferCandidaturesList.jsx";
+import EntentesStagePage from "./components/Gestionnaire/EntentesStagePage.jsx";
+import CreateEntenteForm from "./components/Gestionnaire/CreateEntenteForm.jsx";
+import EmployeurListeStages from "./components/Employeur/EmployeurListeStages.jsx";
+import SignerEntentePage from "./components/SignerEntentePage.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -37,6 +39,9 @@ function App() {
                 <Route path="dashboard/employeur" element={<DashBoardEmployeur />} />
                 <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur />} />
                 <Route path="dashboard/employeur/offers/:offerId/candidatures" element={<OfferCandidaturesList />} />
+                <Route path="dashboard/employeur/ententes" element={<EmployeurListeStages/>}/>
+
+                <Route path="dashboard/employeur/ententes/:id/signer" element={<SignerEntentePage/>}/>
 
                 {/* Student Routes */}
                 <Route path="dashboard/student" element={<DashBoardStudent />} />
