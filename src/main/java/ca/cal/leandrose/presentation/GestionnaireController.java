@@ -221,7 +221,6 @@ public class GestionnaireController {
         }
     }
 
-    // ✅ Correction complète ici
     @PostMapping("/ententes/{ententeId}/signer")
     public ResponseEntity<EntenteStageDto> signerEntenteParGestionnaire(
             HttpServletRequest request,

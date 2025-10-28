@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { verifyPassword, getCurrentUser, signAgreementEmployeur } from "../api/apiSignature";
+import { verifyPassword, getCurrentUser, signAgreementGS } from "../../api/apiSignature.jsx";
 import {useTranslation} from "react-i18next";
 
-export default function SignerEntentePage() {
+export default function SignerEntenteGsPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
@@ -58,7 +58,7 @@ export default function SignerEntentePage() {
             sessionStorage.setItem('accessToken', newToken);
 
 
-            await signAgreementEmployeur(id, newToken);
+            await signAgreementGS(id, newToken);
 
             setSuccess(t("signerEntente.success"));
             setPassword("");
@@ -140,7 +140,7 @@ export default function SignerEntentePage() {
                 <div className="mt-4 text-center">
                     <button
                         type="button"
-                        onClick={() => navigate("/dashboard/employeur/ententes")}
+                        onClick={() => navigate("/dashboard/gestionnaire/ententes")}
                         className="text-sm text-gray-600 hover:text-gray-800 underline"
                         disabled={loading}
                     >

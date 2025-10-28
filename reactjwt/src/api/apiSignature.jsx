@@ -71,8 +71,17 @@ export async function getCurrentUser(token) {
 }
 
 // Sign agreement - matches your backend endpoint exactly
-export async function signAgreement(ententeId, token) {
+export async function signAgreementEmployeur(ententeId, token) {
     return handleFetch(`${BASE_URL}/employeur/ententes/${ententeId}/signer`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+    });
+}
+export async function signAgreementGS(ententeId, token) {
+    return handleFetch(`${BASE_URL}/gestionnaire/ententes/${ententeId}/signer`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,

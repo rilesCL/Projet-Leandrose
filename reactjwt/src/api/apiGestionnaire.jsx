@@ -207,3 +207,45 @@ export async function creerEntente(ententeDto) {
     });
     return await handleJsonResponse(res);
 }
+
+// Replace the fetchAgreements function in apiGestionnaire.jsx with this:
+
+export async function fetchAgreements(setEntentes, setLoading, showToast, t) {
+    try {
+        const token = sessionStorage.getItem("accessToken");
+
+        const userResponse = await fetch('http://localhost:8080/user/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (userResponse.ok) {
+            const ententesResponse = await fetch('http://localhost:8080/gestionnaire/ententes', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (ententesResponse.ok) {
+                const allEntentes = await ententesResponse.json();
+                setEntentes(allEntentes);
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching agreements:", error);
+        if (showToast && t) {
+            showToast(t("ententeStage.errors.loading_agreements"));
+        }
+    } finally {
+        setLoading(false);
+    }
+}
+
+export async function previewEntentePdf(ententeId) {
+    const url = `${API_BASE}/ententes/${ententeId}/telecharger`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleBlobResponse(res);
+}
