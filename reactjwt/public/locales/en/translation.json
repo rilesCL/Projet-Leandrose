@@ -729,8 +729,8 @@
     "status": {
       "title": "status",
       "validation": "Validated",
-      "waiting_other_signatures": "In waiting for others signatures",
-      "waiting_your_signature": "In waiting for your signature",
+      "waiting_other_signatures": "Waiting for others signatures",
+      "waiting_your_signature": "Waiting for your signature",
       "draft": "Draft"
     },
     "errors": {
@@ -757,7 +757,7 @@
       "stage_signatures": "State of Signatures",
       "employer": "Employer",
       "sign_the": "Sign the",
-      "waiting_signature": "In waiting for signature",
+      "waiting_signature": "Waiting for signature",
       "student": "Student",
       "manager": "Manager",
       "close": "Close"
@@ -777,7 +777,7 @@
     "placeholder": "Your password",
     "loading": "Signature in progress",
     "button": "Sign the agreement",
-    "back": "Cancel and return to the dashboard."
+    "back": "Return to agreements."
   },
   "stageDetails": {
     "errors": {
@@ -791,7 +791,7 @@
       "internship_missions_notDefined": "No mission or objectif defined"
     },
     "sign_date": "Sign the",
-    "attente_signature": "In waiting for signature",
+    "attente_signature": "Waiting for signature",
     "loading": "Loading details...",
     "back": "Back to the agreements",
     "title": "Details of the internship agreement",

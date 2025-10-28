@@ -779,7 +779,7 @@
     "placeholder": "Votre mot de passe",
     "loading": "Signature en cours",
     "button": "Signer l'entente",
-    "back": "Annuler et retourner au tableau de bord."
+    "back": "Retourner aux ententes"
   },
   "stageDetails": {
     "errors": {

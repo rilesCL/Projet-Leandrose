@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import { FaEye, FaSignature, FaSort, FaSortUp, FaSortDown, FaFileAlt } from "react-icons/fa";
+import {
+    FaEye,
+    FaSignature,
+    FaSort,
+    FaSortUp,
+    FaSortDown,
+    FaFileAlt,
+    FaTimes,
+    FaCheck,
+    FaClock,
+    FaUser
+} from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
 export default function EmployeurListeStages() {
     const [ententes, setEntentes] = useState([]);
@@ -263,7 +274,7 @@ export default function EmployeurListeStages() {
                         <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">
-                                    {t("ententeStage.model.stages_signatures")}
+                                    {t("ententeStage.model.stage_signatures")}
                                 </h3>
                                 <button
                                     onClick={() => setSignatureModal({ show: false, entente: null })}

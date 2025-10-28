@@ -62,11 +62,6 @@ export default function SignerEntentePage() {
 
             setSuccess(t("signerEntente.success"));
             setPassword("");
-
-            setTimeout(() => {
-                navigate("/dashboard/employeur");
-            }, 2000);
-
         } catch (error) {
             if (error.status === 401) {
                 setError(t("signerEntente.errors.incorrectedPassword"));
@@ -145,7 +140,7 @@ export default function SignerEntentePage() {
                 <div className="mt-4 text-center">
                     <button
                         type="button"
-                        onClick={() => navigate("/dashboard/employeur")}
+                        onClick={() => navigate("/dashboard/employeur/ententes")}
                         className="text-sm text-gray-600 hover:text-gray-800 underline"
                         disabled={loading}
                     >
