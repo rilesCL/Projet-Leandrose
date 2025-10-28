@@ -21,25 +21,21 @@ function getAuthHeaders(token = null) {
     return headers;
 }
 
-export async function uploadCvStudent(pdfFile, token = null) {
-    if (!pdfFile) {
-        throw new Error('Fichier PDF manquant');
-    }
-
-    const formData = new FormData();
-    formData.append('pdfFile', pdfFile);
-
-    const headers = {};
-    const accessToken = token || sessionStorage.getItem('accessToken');
-    if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-
+export async function uploadStudentCv(file, token = null) {
     try {
+        const accessToken = token || sessionStorage.getItem('accessToken');
+        const formData = new FormData();
+        formData.append('pdfFile', file);
+
+        const headers = {};
+        if (accessToken) {
+            headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+
         const response = await fetch(`${API_BASE}/student/cv`, {
             method: 'POST',
             headers,
-            body: formData
+            body: formData,
         });
 
         await handleApiResponse(response);
@@ -92,36 +88,6 @@ export async function getOfferDetails(offerId, token = null) {
         return await response.json();
     } catch (error) {
         throw new Error(error.message || 'Erreur lors de la récupération des détails');
-    }
-}
-
-export async function downloadOfferPdf(offerId, token = null) {
-    try {
-        const accessToken = token || sessionStorage.getItem('accessToken');
-        const headers = {};
-
-        if (accessToken) {
-            headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-
-        const response = await fetch(`${API_BASE}/student/offers/${offerId}/pdf`, {
-            method: 'GET',
-            headers
-        });
-
-        await handleApiResponse(response);
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `offre_${offerId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-    } catch (error) {
-        throw new Error(error.message || 'Erreur lors du téléchargement du PDF');
     }
 }
 

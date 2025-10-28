@@ -364,4 +364,55 @@ public class EmployeurController {
             return ResponseEntity.status(500).build();
         }
     }
+
+
+    @GetMapping("/ententes/{ententeId}/pdf")
+    public ResponseEntity<Resource> getEntentePdf(
+            HttpServletRequest request,
+            @PathVariable Long ententeId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EntenteStageDto entente = ententeStageService.getEntenteById(ententeId);
+
+            if (entente.getInternshipOffer() == null ||
+                    entente.getInternshipOffer().getEmployeurDto() == null ||
+                    !me.getEmail().equals(entente.getInternshipOffer().getEmployeurDto().getEmail())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            if (entente.getCheminDocumentPDF() == null || entente.getCheminDocumentPDF().isBlank()) {
+                return ResponseEntity.status(404).build();
+            }
+
+            Path filePath = Paths.get(entente.getCheminDocumentPDF());
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                String filename = "Entente_Stage_" +
+                        entente.getStudent().getFirstName() + "_" +
+                        entente.getStudent().getLastName() + ".pdf";
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "inline; filename=\"" + filename + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(500).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
 }

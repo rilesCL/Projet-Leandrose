@@ -210,9 +210,13 @@
   "dashboardGestionnaire": {
     "logout": "Logout",
     "welcome": "Welcome",
-    "addProgram": "Add Program",
-    "offer": "offer",
-    "ententes": "Agreements"
+    "description": "This is your manager dashboard. You can manage CVs, validate offers, and create agreements.",
+    "tabs": {
+      "cv": "Pending CVs",
+      "pendingOffers": "Pending Offers",
+      "offers": "All Offers",
+      "ententes": "Agreements"
+    }
   },
   "dashboardStudent": {
     "logout": "Logout",
@@ -288,6 +292,7 @@
   },
   "uploadStageEmployeur": {
     "title": "Publish an internship offer",
+    "backToDashboard": "Back to dashboard",
     "description": "Job description",
     "descriptionPlaceholder": "Detailed job description...",
     "startDate": "Start date (DD-MM-YYYY)",
@@ -302,7 +307,6 @@
     "remove": "Remove",
     "submit": "Publish the offer",
     "submitting": "Saving...",
-    "backToDashboard": "Back to dashboard",
     "successMessage": "Offer saved successfully. Status:",
     "statusPublished": "Published",
     "pendingapproval": "Pending approval",
@@ -675,8 +679,7 @@
     "createEntente": "Create agreement",
     "ententeAlreadyCreated": "Agreement already created",
     "notDefined": "—",
-    "previewError": "Unable to open CV",
-    "back": "Back"
+    "previewError": "Unable to open CV"
   },
   "common": {
     "cancel": "Cancel"
@@ -730,6 +733,15 @@
       "waiting_your_signature": "In waiting for your signature",
       "draft": "Draft"
     },
+    "errors": {
+      "errors_fetching_agreements": "Error fetching agreements",
+      "errors_loading_agreements": "Error loading agreements",
+      "pdf_agreementNotFound": "The PDF of the agreement is not found",
+      "pdf_unauthorized": "You are not allowed to see this agreement",
+      "pdf_loading_agreements": "Error loading PDF",
+      "pdf_viewing": "Error viewing PDF:",
+      "pdf_unable_view": "Unable to view the PDF of the agreement. Try again."
+    },
     "created_at": "Created at",
     "actions": {
       "title": "Actions",
@@ -740,11 +752,20 @@
       "totalEntentes": "Total Internships",
       "waitingSignature": "Waiting for signatures",
       "agreementValidated": "Internship Validated"
+    },
+    "model": {
+      "stage_signatures": "State of Signatures",
+      "employer": "Employer",
+      "sign_the": "Sign the",
+      "waiting_signature": "In waiting for signature",
+      "student": "Student",
+      "manager": "Manager",
+      "close": "Close"
     }
   },
   "signerEntente": {
     "errors": {
-      "sessionExpired": "Session expired. \nPlease log in again.",
+      "sessionExpired": "Session expired. Please log in again.",
       "incorrectedPassword": "Password incorrect. Please try again",
       "accessForbidden": "Access refused. Only employers can signed the agreement.",
       "notFound": "agreement not found",

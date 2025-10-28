@@ -211,9 +211,13 @@
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
     "welcome": "Bienvenue",
-    "addProgram": "Ajouter un programme",
-    "offer": "offre",
-    "ententes": "Ententes"
+    "description": "Ceci est votre tableau de bord gestionnaire. Vous pouvez gérer les CVs, valider les offres et créer des ententes.",
+    "tabs": {
+      "cv": "CVs en attente",
+      "pendingOffers": "Offres en attente",
+      "offers": "Toutes les offres",
+      "ententes": "Ententes"
+    }
   },
   "dashboardStudent": {
     "logout": "Se déconnecter",
@@ -293,6 +297,7 @@
     "descriptionPlaceholder": "Description détaillée du poste...",
     "startDate": "Date de début (JJ-MM-AAAA)",
     "startDatePlaceholder": "JJ-MM-AAAA",
+    "backToDashboard": "Retour au dashboard",
     "duration": "Durée (en semaines)",
     "address": "Localisation (ville, adresse, télétravail possible)",
     "addressPlaceholder": "Ville, adresse, télétravail possible...",
@@ -303,7 +308,6 @@
     "remove": "Supprimer",
     "submit": "Publier l'offre",
     "submitting": "Enregistrement...",
-    "backToDashboard": "Retour au dashboard",
     "successMessage": "Offre enregistrée avec succès. Statut:",
     "statusPublished": "Publiée",
     "statusPending": "En attente de validation",
@@ -677,8 +681,7 @@
     "createEntente": "Créer entente",
     "ententeAlreadyCreated": "Entente déjà créée",
     "notDefined": "—",
-    "previewError": "Impossible d'ouvrir le CV",
-    "back": "Retour"
+    "previewError": "Impossible d'ouvrir le CV"
   },
   "common": {
     "cancel": "Annuler"
@@ -732,6 +735,15 @@
       "waiting_your_signature": "En attente de votre signature",
       "draft": "Brouillon"
     },
+    "errors": {
+      "errors_fetching_agreements": "Erreur lors de la récupération des ententes",
+      "errors_loading_agreements": "Error de chargement des ententes",
+      "pdf_agreementNotFound": "Le PDF du l'entente n'a pas été trouvé",
+      "pdf_unauthorized": "Vous ne pouvez pas voir cette entente",
+      "pdf_loading_agreements": "Erreur de chargement du PDF",
+      "pdf_viewing": "Erreur lors de l'affichage du PDF :",
+      "pdf_unable_view": "Impossible de visualiser le PDF de l'accord. Veuillez réessayer."
+    },
     "created_at": "Crée le",
     "actions": {
       "title": "Actions",
@@ -742,6 +754,15 @@
       "totalEntentes": "Total des ententes",
       "waitingSignature": "En attente de signature",
       "agreementValidated": "Ententes validées"
+    },
+    "model": {
+      "stage_signatures": "État de signature",
+      "employer": "Employeur",
+      "sign_the": "Signé le",
+      "waiting_signature": "En attente de signature",
+      "student": "Étudiant",
+      "manager": "Gestionnaire",
+      "close": "Fermer"
     }
   },
   "signerEntente": {
