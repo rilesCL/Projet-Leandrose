@@ -18,9 +18,6 @@ export default function EmployeurListeStages() {
 
     const showToast = (message, type = 'error') => {
         setToast({ show: true, message, type });
-        setTimeout(() => {
-            setToast({ show: false, message: '', type: '' });
-        }, 5000);
     };
 
     const fetchAgreements = async () => {

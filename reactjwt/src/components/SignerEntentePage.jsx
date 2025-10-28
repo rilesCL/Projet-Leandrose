@@ -65,10 +65,6 @@ export default function SignerEntentePage() {
             setSuccess("Entente signée avec succès !");
             setPassword("");
 
-            setTimeout(() => {
-                navigate("/dashboard/employeur");
-            }, 2000);
-
         } catch (error) {
             console.error("💥 Signature process failed:", error);
 
@@ -153,7 +149,7 @@ export default function SignerEntentePage() {
                         className="text-sm text-gray-600 hover:text-gray-800 underline"
                         disabled={loading}
                     >
-                        Annuler et retourner au tableau de bord
+                        Retourner au tableau de bord
                     </button>
                 </div>
             </div>
