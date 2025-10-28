@@ -35,6 +35,7 @@ public class EntenteStageDto {
 
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
+    private String contactEntreprise;
 
     // ✅ AJOUT: Le chemin du PDF
     private String cheminDocumentPDF;
@@ -44,6 +45,7 @@ public class EntenteStageDto {
     private LocalDateTime dateSignatureGestionnaire;
 
     private Map<String, String> error;
+    private boolean employeurASigner;
 
     public static EntenteStageDto withError(Map<String, String> error) {
         EntenteStageDto dto = new EntenteStageDto();
@@ -83,6 +85,7 @@ public class EntenteStageDto {
                 .duree(offer.getDurationInWeeks())
                 .remuneration(offer.getRemuneration())
                 .lieu(offer.getAddress())
+                .contactEntreprise(offer.getEmployeurEmail())
                 .dateCreation(entente.getDateCreation())
                 .dateModification(entente.getDateModification())
                 // ✅ AJOUT CRITIQUE: Mapper le chemin du PDF
@@ -90,6 +93,7 @@ public class EntenteStageDto {
                 .dateSignatureEtudiant(entente.getDateSignatureEtudiant())
                 .dateSignatureEmployeur(entente.getDateSignatureEmployeur())
                 .dateSignatureGestionnaire(entente.getDateSignatureGestionnaire())
+                .employeurASigner(entente.getDateSignatureEmployeur() != null)
                 .build();
     }
     public static EntenteStageDto withErrorMessage(String message) {

@@ -38,7 +38,6 @@ public class LeandrOseApplication {
 
         return args -> {
             try {
-                // === Code existant (Stories 34–38) ===
                 employeurService.createEmployeur(
                         "Leandro",
                         "Schoonewolff",
@@ -110,14 +109,22 @@ public class LeandrOseApplication {
                         studentConvocation.getId(),
                         offerApproved.getId(),
                         cvApproved.getId());
+                System.out.println("Candidature créée: " + candidatureDto);
 
                 LocalDateTime convocationDate = LocalDateTime.now().plusDays(7).withHour(14).withMinute(0);
-                String location = "TechInnovation Inc., Salle A, 123 Rue Principale, Montréal";
+                String location = "TechInnovation Inc., Salle de conférence A, 123 Rue Principale, Montréal";
+                String message = "Bonjour Sophie,\n\n" +
+                        "Nous sommes ravis de vous inviter à un entretien pour le poste de Développeur Full-Stack Junior.\n" +
+                        "Veuillez apporter une pièce d'identité et une copie de votre CV.\n\n" +
+                        "Au plaisir de vous rencontrer!\n\n" +
+                        "Cordialement,\nL'équipe RH de TechInnovation";
+
                 convocationService.addConvocation(
                         candidatureDto.getId(),
                         convocationDate,
                         location,
-                        "Convocation STORY 38");
+                        message);
+                System.out.println("Convocation créée avec succès pour la candidature ID: " + candidatureDto.getId());
 
                 StudentDto studentConvocation2 = studentService.createStudent(
                         "Alexandre",
@@ -126,112 +133,164 @@ public class LeandrOseApplication {
                         "Password123",
                         "STU004",
                         Program.SOFTWARE_ENGINEERING.getTranslationKey());
+                System.out.println("Étudiant pour convocation et acceptation créé: " + studentConvocation2);
+
                 MultipartFile cvFile2 = loadPdfFromResources("test.pdf", "CV_Alexandre_Dubois.pdf");
                 CvDto cvDto2 = cvService.uploadCv(studentConvocation2.getId(), cvFile2);
+                System.out.println("CV créé pour Alexandre: " + cvDto2);
+
                 CvDto cvApproved2 = gestionnaireService.approveCv(cvDto2.getId());
+                System.out.println("CV approuvé pour Alexandre: " + cvApproved2);
+
                 CandidatureDto candidatureDto2 = candidatureService.postuler(
                         studentConvocation2.getId(),
                         offerApproved.getId(),
                         cvApproved2.getId());
-                candidatureService.acceptByEmployeur(candidatureDto2.getId());
+                System.out.println("Candidature créée pour Alexandre: " + candidatureDto2);
 
-                // === STORY 39 : Création complète d'une entente de stage ===
-                System.out.println("\n===== STORY 39 : Création complète d'une entente de stage =====");
+                LocalDateTime convocationDate2 = LocalDateTime.now().plusDays(8).withHour(10).withMinute(30);
+                String location2 = "TechInnovation Inc., Salle B, 123 Rue Principale, Montréal";
+                String message2 = "Bonjour Alexandre,\n\n" +
+                        "Nous vous invitons à un entretien pour le poste de Développeur Full-Stack Junior.\n" +
+                        "Apportez une pièce d'identité et votre CV.\n\n" +
+                        "Cordialement,\nL'équipe RH";
 
-                // 1️⃣ Création d'un employeur
-                EmployeurDto employeurEntente = employeurService.createEmployeur(
-                        "Patrick",
-                        "Lavoie",
-                        "patrick.lavoie@innovsolutions.com",
-                        "Password123",
-                        "InnovSolutions",
-                        Program.SOFTWARE_ENGINEERING.getTranslationKey());
-                System.out.println("Employeur STORY 39 créé : " + employeurEntente.getCompanyName());
+                convocationService.addConvocation(
+                        candidatureDto2.getId(),
+                        convocationDate2,
+                        location2,
+                        message2);
+                System.out.println("Convocation créée pour Alexandre, candidature ID: " + candidatureDto2.getId());
 
-                // 2️⃣ Création d'un étudiant
-                StudentDto studentEntente = studentService.createStudent(
-                        "Camille",
-                        "Roy",
-                        "camille.roy@student.com",
+                CandidatureDto candidatureAccepted = candidatureService.acceptByEmployeur(candidatureDto2.getId());
+                System.out.println("Candidature acceptée par l'employeur pour Alexandre: " + candidatureAccepted);
+
+                StudentDto studentConvocation3 = studentService.createStudent(
+                        "Alexandre",
+                        "Gagné",
+                        "alexandre.gagne@student.com",
                         "Password123",
                         "STU005",
                         Program.SOFTWARE_ENGINEERING.getTranslationKey());
-                System.out.println("Étudiant STORY 39 créé : " + studentEntente.getFirstName());
+                System.out.println("Étudiant pour convocation et acceptation créé: " + studentConvocation3);
 
-                // 3️⃣ Upload et approbation du CV
-                MultipartFile cvFile3 = loadPdfFromResources("test.pdf", "CV_Camille_Roy.pdf");
-                CvDto cvDto3 = cvService.uploadCv(studentEntente.getId(), cvFile3);
+                MultipartFile cvFile3 = loadPdfFromResources("test.pdf", "CV_Alexandre_Gagne.pdf");
+                CvDto cvDto3 = cvService.uploadCv(studentConvocation3.getId(), cvFile3);
+                System.out.println("CV créé pour Alexandre: " + cvDto3);
+
                 CvDto cvApproved3 = gestionnaireService.approveCv(cvDto3.getId());
-                System.out.println("CV approuvé pour " + studentEntente.getFirstName());
+                System.out.println("CV approuvé pour Alexandre: " + cvApproved3);
 
-                // 4️⃣ Création et approbation de l'offre
-                MultipartFile offerFile3 = loadPdfFromResources("test.pdf", "Offre_Stage_InnovSolutions.pdf");
-                InternshipOfferDto offerDto3 = internshipOfferService.createOfferDto(
-                        "Stage QA Automatisation",
-                        LocalDate.now().plusWeeks(3),
-                        10,
-                        "850 Rue Saint-Denis, Montréal",
-                        23.50f,
+                CandidatureDto candidatureDto3 = candidatureService.postuler(
+                        studentConvocation3.getId(),
+                        offerApproved.getId(),
+                        cvApproved3.getId());
+                System.out.println("Candidature créée pour Alexandre: " + candidatureDto3);
+
+                LocalDateTime convocationDate3 = LocalDateTime.now().plusDays(8).withHour(10).withMinute(30);
+                String location3 = "TechInnovation Inc., Salle B, 123 Rue Principale, Montréal";
+                String message3 = "Bonjour Alexandre,\n\n" +
+                        "Nous vous invitons à un entretien pour le poste de Développeur Full-Stack Junior.\n" +
+                        "Apportez une pièce d'identité et votre CV.\n\n" +
+                        "Cordialement,\nL'équipe RH";
+
+                convocationService.addConvocation(
+                        candidatureDto3.getId(),
+                        convocationDate3,
+                        location3,
+                        message3);
+                System.out.println("Convocation créée pour Alexandre, candidature ID: " + candidatureDto3.getId());
+
+                CandidatureDto candidatureAccepted2 = candidatureService.acceptByEmployeur(candidatureDto3.getId());
+                System.out.println("Candidature acceptée par l'employeur pour Alexandre: " + candidatureAccepted2);
+
+                EmployeurDto employeurEntente = employeurService.createEmployeur(
+                        "Philippe",
+                        "Lavoie",
+                        "philippe.lavoie@entreprise.com",
+                        "Password123",
+                        "Solutions Logicielles Pro",
+                        Program.COMPUTER_SCIENCE.getTranslationKey());
+                System.out.println("Employeur pour entente créé: " + employeurEntente);
+
+                StudentDto studentEntente = studentService.createStudent(
+                        "Émilie",
+                        "Fortin",
+                        "emilie.fortin@student.com",
+                        "Password123",
+                        "STU006",
+                        Program.COMPUTER_SCIENCE.getTranslationKey());
+                System.out.println("Étudiant pour entente créé: " + studentEntente);
+
+                MultipartFile cvFileEntente = loadPdfFromResources("test.pdf", "CV_Emilie_Fortin.pdf");
+                CvDto cvDtoEntente = cvService.uploadCv(studentEntente.getId(), cvFileEntente);
+                CvDto cvApprovedEntente = gestionnaireService.approveCv(cvDtoEntente.getId());
+                System.out.println("CV approuvé pour Émilie: " + cvApprovedEntente);
+
+                MultipartFile offerFileEntente = loadPdfFromResources("test.pdf", "Offre_Stage_Solutions_Pro.pdf");
+                InternshipOfferDto offerDtoEntente = internshipOfferService.createOfferDto(
+                        "Stage en développement web",
+                        LocalDate.now().plusMonths(1),
+                        16,
+                        "456 Boulevard Tech, Montréal, QC",
+                        28.50f,
                         employeurEntente,
-                        offerFile3);
-                InternshipOfferDto offerApproved3 = gestionnaireService.approveOffer(offerDto3.getId());
-                System.out.println("Offre STORY 39 approuvée : ");
+                        offerFileEntente);
+                InternshipOfferDto offerApprovedEntente = gestionnaireService.approveOffer(offerDtoEntente.getId());
+                System.out.println("Offre approuvée pour entente: " + offerApprovedEntente);
 
-                // 5️⃣ L'étudiant postule à l'offre
                 CandidatureDto candidatureEntente = candidatureService.postuler(
                         studentEntente.getId(),
-                        offerApproved3.getId(),
-                        cvApproved3.getId());
-                System.out.println("Candidature STORY 39 créée : " + candidatureEntente.getId());
+                        offerApprovedEntente.getId(),
+                        cvApprovedEntente.getId());
+                System.out.println("Candidature créée pour entente: " + candidatureEntente);
 
-                // 6️⃣ L’employeur accepte la candidature
-                CandidatureDto candidatureAccepted39 = candidatureService.acceptByEmployeur(candidatureEntente.getId());
-                System.out.println("Candidature STORY 39 acceptée par l'employeur : " + candidatureAccepted39.getStatus());
+                CandidatureDto candidatureAcceptedEntente = candidatureService.acceptByEmployeur(candidatureEntente.getId());
+                System.out.println("Candidature acceptée par l'employeur: " + candidatureAcceptedEntente);
+                System.out.println("Statut après acceptation employeur: " + candidatureAcceptedEntente.getStatus());
 
-                // 7️⃣ L’étudiant confirme l’acceptation (statut devient ACCEPTED)
-                CandidatureDto candidatureConfirmed39 = candidatureService.acceptByStudent(
-                        candidatureAccepted39.getId(),
+                CandidatureDto candidatureFullyAccepted = candidatureService.acceptByStudent(
+                        candidatureAcceptedEntente.getId(),
                         studentEntente.getId());
-                System.out.println("Candidature STORY 39 confirmée par l’étudiant : " + candidatureConfirmed39.getStatus());
+                System.out.println("Candidature acceptée par l'étudiant aussi: " + candidatureFullyAccepted);
+                System.out.println("Statut final: " + candidatureFullyAccepted.getStatus());
 
-                // 8️⃣ Création de l’entente
-                EntenteStageDto ententeDto39 = EntenteStageDto.builder()
-                        .candidatureId(candidatureConfirmed39.getId())
-                        .dateDebut(LocalDate.now().plusWeeks(4))
-                        .duree(10)
-                        .lieu("850 Rue Saint-Denis, Montréal")
-                        .remuneration(23.50f)
-                        .missionsObjectifs("Tests automatisés, scripts CI/CD et outils de QA avec Selenium et Jenkins.")
-                        .build();
+                EntenteStageDto ententeDto = new EntenteStageDto();
+                ententeDto.setCandidatureId(candidatureFullyAccepted.getId());
+                ententeDto.setDateDebut(offerApprovedEntente.getStartDate());
+                ententeDto.setDuree(offerApprovedEntente.getDurationInWeeks());
+                ententeDto.setLieu(offerApprovedEntente.getAddress());
+                ententeDto.setRemuneration(offerApprovedEntente.getRemuneration());
+                ententeDto.setMissionsObjectifs(
+                        "L'étudiant(e) sera amené(e) à :\n" +
+                                "- Développer des fonctionnalités web en utilisant React et Node.js\n" +
+                                "- Participer aux revues de code et aux cérémonies Agile\n" +
+                                "- Collaborer avec l'équipe de développement sur des projets clients\n" +
+                                "- Améliorer ses compétences en développement full-stack\n\n" +
+                                "Objectifs d'apprentissage :\n" +
+                                "- Maîtriser les frameworks modernes de développement web\n" +
+                                "- Comprendre les méthodologies Agile en entreprise\n" +
+                                "- Développer son autonomie et sa capacité à résoudre des problèmes"
+                );
 
-                EntenteStageDto ententeCreated39 = ententeStageService.creerEntente(ententeDto39);
-                System.out.println("✅ Entente STORY 39 créée et prête à signature : " + ententeCreated39.getId());
+                EntenteStageDto ententeCreated = ententeStageService.creerEntente(ententeDto);
+                System.out.println("Entente créée avec succès - ID: " + ententeCreated.getId());
+                System.out.println("Statut de l'entente: " + ententeCreated.getStatut());
+                System.out.println("PDF généré: " + ententeCreated.getCheminDocumentPDF());
+                System.out.println("✅ L'entente est maintenant prête à être signée par l'employeur Philippe Lavoie!");
 
-                EntenteStageDto ententeSignee39 = ententeStageService.signerParEmployeur(
-                        ententeCreated39.getId(),
-                        employeurEntente.getId());
-                System.out.println("✍️ Entente STORY 39 signée par l'employeur : "
-                        + ententeSignee39.getDateSignatureEmployeur());
-
-                System.out.println("===== FIN STORY 39 =====\n");
-
-
-                // === STORY 40 : Signature de l’entente par l’étudiant ===
-                System.out.println("\n===== STORY 40 : Signature de l’entente par l’étudiant =====");
+                System.out.println("\n===== STORY 40 : Signature de l'entente par l'étudiant =====");
 
                 try {
-                    // 1️⃣ On réutilise l’entente STORY 39
-                    EntenteStageDto ententeEtudiant40 = ententeCreated39;
+                    EntenteStageDto ententeEtudiant40 = ententeCreated;
 
-                    // 2️⃣ Vérifions qu’elle est bien en attente de signature
                     System.out.println("Statut actuel avant signature étudiant : " + ententeEtudiant40.getStatut());
 
-                    // 3️⃣ L’étudiant signe à son tour
                     EntenteStageDto ententeSigneeEtudiant40 = ententeStageService.signerParEtudiant(
                             ententeEtudiant40.getId(),
                             studentEntente.getId());
 
-                    System.out.println("✍️ Entente STORY 40 signée par l’étudiant : "
+                    System.out.println("✍️ Entente STORY 40 signée par l'étudiant : "
                             + ententeSigneeEtudiant40.getDateSignatureEtudiant());
 
                     System.out.println("Statut après signature étudiant : " + ententeSigneeEtudiant40.getStatut());
@@ -249,7 +308,6 @@ public class LeandrOseApplication {
         };
     }
 
-    /** Charge un fichier PDF depuis les resources */
     private MultipartFile loadPdfFromResources(String resourcePath, String filename) throws IOException {
         ClassPathResource resource = new ClassPathResource(resourcePath);
         try (InputStream inputStream = resource.getInputStream()) {
@@ -270,5 +328,4 @@ public class LeandrOseApplication {
             try (FileOutputStream fos = new FileOutputStream(dest)) { fos.write(content); }
         }
     }
-
 }

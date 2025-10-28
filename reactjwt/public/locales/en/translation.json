@@ -200,6 +200,7 @@
   },
   "dashboardEmployeur": {
     "logout": "Logout",
+    "ententes": "Agreements",
     "welcome": "Welcome",
     "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
     "navigation": {
@@ -209,9 +210,13 @@
   "dashboardGestionnaire": {
     "logout": "Logout",
     "welcome": "Welcome",
-    "addProgram": "Add Program",
-    "offer": "offer",
-    "ententes": "Agreements"
+    "description": "This is your manager dashboard. You can manage CVs, validate offers, and create agreements.",
+    "tabs": {
+      "cv": "Pending CVs",
+      "pendingOffers": "Pending Offers",
+      "offers": "All Offers",
+      "ententes": "Agreements"
+    }
   },
   "dashboardStudent": {
     "logout": "Logout",
@@ -287,6 +292,7 @@
   },
   "uploadStageEmployeur": {
     "title": "Publish an internship offer",
+    "backToDashboard": "Back to dashboard",
     "description": "Job description",
     "descriptionPlaceholder": "Detailed job description...",
     "startDate": "Start date (DD-MM-YYYY)",
@@ -301,7 +307,6 @@
     "remove": "Remove",
     "submit": "Publish the offer",
     "submitting": "Saving...",
-    "backToDashboard": "Back to dashboard",
     "successMessage": "Offer saved successfully. Status:",
     "statusPublished": "Published",
     "pendingapproval": "Pending approval",
@@ -674,8 +679,7 @@
     "createEntente": "Create agreement",
     "ententeAlreadyCreated": "Agreement already created",
     "notDefined": "—",
-    "previewError": "Unable to open CV",
-    "back": "Back"
+    "previewError": "Unable to open CV"
   },
   "common": {
     "cancel": "Cancel"

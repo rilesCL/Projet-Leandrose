@@ -134,6 +134,7 @@ const Login = () => {
             if (response.ok) {
                 const userData = await response.json();
                 console.log("User data:", userData);
+                sessionStorage.setItem('email', userData.email);
 
                 switch (userData.role) {
                     case 'STUDENT':
@@ -190,22 +191,22 @@ const Login = () => {
 
     if (showForgotPassword) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                <div className="max-w-3xl w-full">
-                    <header className="text-center mb-6">
-                        <h1 className="text-3xl font-bold text-indigo-600">{t("appName")}</h1>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="max-w-xl w-full">
+                    <header className="text-center mb-8">
+                        <h1 className="text-4xl font-bold text-indigo-600">{t("appName")}</h1>
                     </header>
 
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <div className="flex justify-between items-center mb-2">
-                            <h2 className="text-2xl font-semibold text-gray-800">{t("login.forgotPasswordModal.title")}</h2>
+                    <div className="bg-white rounded-lg shadow-lg p-8">
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="text-3xl font-semibold text-gray-800">{t("login.forgotPasswordModal.title")}</h2>
                             <LanguageSelector />
                         </div>
-                        <p className="text-sm text-gray-500 mb-6">{t("login.forgotPasswordModal.subtitle")}</p>
+                        <p className="text-base text-gray-500 mb-8">{t("login.forgotPasswordModal.subtitle")}</p>
 
                         <form onSubmit={handleForgotPassword}>
-                            <div className="mb-4">
-                                <label htmlFor="forgotEmail" className="block text-sm font-medium text-gray-700">
+                            <div className="mb-6">
+                                <label htmlFor="forgotEmail" className="block text-base font-medium text-gray-700 mb-2">
                                     {t("login.forgotPasswordModal.email")}
                                 </label>
                                 <input
@@ -213,17 +214,17 @@ const Login = () => {
                                     type="email"
                                     value={forgotPasswordEmail}
                                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
                                     placeholder={t("login.placeholders.email")}
                                 />
-                                {warnings.email && <div className="mt-1 text-xs text-red-600">{warnings.email}</div>}
+                                {warnings.email && <div className="mt-2 text-sm text-red-600">{warnings.email}</div>}
                             </div>
 
-                            <div className="flex gap-2">
+                            <div className="flex gap-3">
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className={`flex-1 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                    className={`flex-1 px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
                                 >
                                     {isSubmitting ? t("login.forgotPasswordModal.submitting") : t("login.forgotPasswordModal.submit")}
                                 </button>
@@ -234,7 +235,7 @@ const Login = () => {
                                         setWarnings({ email: "", password: "" });
                                         setForgotPasswordEmail("");
                                     }}
-                                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
+                                    className="px-6 py-3 border border-gray-300 text-base font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
                                 >
                                     {t("login.forgotPasswordModal.back")}
                                 </button>
@@ -247,32 +248,32 @@ const Login = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="max-w-md w-full">
-                <header className="text-center mb-6">
-                    <h1 className="text-3xl font-bold text-indigo-600">{t("appName")}</h1>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="max-w-xl w-full">
+                <header className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-indigo-600">{t("appName")}</h1>
                 </header>
 
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-2xl font-semibold text-gray-800">{t("login.title")}</h2>
-                        <div className="w-32">
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                    <div className="flex justify-between items-center mb-3">
+                        <h2 className="text-3xl font-semibold text-gray-800">{t("login.title")}</h2>
+                        <div className="w-36">
                             <select
                                 value={i18n.language}
                                 onChange={(e) => i18n.changeLanguage(e.target.value)}
-                                className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                className="block w-full bg-white border border-gray-300 text-gray-700 py-2.5 px-4 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             >
                                 <option value="en">English</option>
                                 <option value="fr">Français</option>
                             </select>
                         </div>
                     </div>
-                    <p className="text-sm text-gray-500 mb-6">{t("login.subtitle")}</p>
+                    <p className="text-base text-gray-500 mb-8">{t("login.subtitle")}</p>
 
                     <form onSubmit={handleSubmit}>
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">
                                     {t("login.email")}
                                 </label>
                                 <input
@@ -281,15 +282,15 @@ const Login = () => {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChanges}
-                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
                                     placeholder={t("login.placeholders.email")}
                                     required
                                 />
-                                {warnings.email && <div className="mt-1 text-xs text-red-600">{warnings.email}</div>}
+                                {warnings.email && <div className="mt-2 text-sm text-red-600">{warnings.email}</div>}
                             </div>
 
                             <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                                <label htmlFor="password" className="block text-base font-medium text-gray-700 mb-2">
                                     {t("login.password")}
                                 </label>
                                 <input
@@ -298,34 +299,26 @@ const Login = () => {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChanges}
-                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.password ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.password ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
                                     placeholder={t("login.placeholders.password")}
                                     required
                                 />
-                                {warnings.password && <div className="mt-1 text-xs text-red-600">{warnings.password}</div>}
+                                {warnings.password && <div className="mt-2 text-sm text-red-600">{warnings.password}</div>}
                             </div>
                         </div>
 
-                        <div className="mt-6">
+                        <div className="mt-8">
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className={`w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                className={`w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
                             >
                                 {isSubmitting ? t("login.submitting") : t("login.submit")}
                             </button>
                         </div>
 
-                        <div className="mt-4 text-center space-y-2">
-                            <button
-                                type="button"
-                                onClick={() => setShowForgotPassword(true)}
-                                className="text-sm text-indigo-600 hover:underline"
-                            >
-                                {t("login.forgotPassword")}
-                            </button>
-
-                            <div className="text-sm text-gray-500">
+                        <div className="mt-6 text-center space-y-3">
+                            <div className="text-base text-gray-500">
                                 {t("login.noAccount")}{" "}
                                 <button
                                     type="button"

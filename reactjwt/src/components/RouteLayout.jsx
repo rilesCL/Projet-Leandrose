@@ -1,13 +1,11 @@
-import { Outlet } from 'react-router';
+import { Outlet } from 'react-router-dom';
 
-function RouteLayout() {
+export default function RouteLayout() {
     return (
-        <>
-            <main>
+        <div className="w-full min-h-screen">
+            <main className="w-full">
                 <Outlet />
             </main>
-        </>
+        </div>
     );
 }
-
-export default RouteLayout;
