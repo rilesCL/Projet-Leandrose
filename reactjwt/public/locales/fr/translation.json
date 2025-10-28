@@ -206,7 +206,8 @@
     "description": "Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.",
     "navigation": {
       "mainNavigation": "Navigation principale"
-    }
+    },
+    "stage": "Entente de stage"
   },
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
@@ -717,5 +718,118 @@
     "loadError": "Impossible de charger les candidatures",
     "notDefined": "—",
     "back": "Retour"
+  },
+  "ententeStage": {
+    "title": "Ententes de stages",
+    "description": "Gérez et signez les ententes de stage",
+    "loading": "Chargement des ententes...",
+    "back": "Retour au tableau de bord",
+    "noneStagetitle": "Aucune entente de stage",
+    "noneStagedescription": "Vous n'avez aucune entente de stage en cours pour le moment.",
+    "student": "Étudiant",
+    "stage": "Stage",
+    "period": "Période",
+    "status": {
+      "title": "statut",
+      "validation": "Validée",
+      "waiting_other_signatures": "En attente des autres signatures",
+      "waiting_your_signature": "En attente de votre signature",
+      "draft": "Brouillon"
+    },
+    "errors": {
+      "errors_fetching_agreements": "Erreur lors de la récupération des ententes",
+      "errors_loading_agreements": "Error de chargement des ententes",
+      "pdf_agreementNotFound": "Le PDF du l'entente n'a pas été trouvé",
+      "pdf_unauthorized": "Vous ne pouvez pas voir cette entente",
+      "pdf_loading_agreements": "Erreur de chargement du PDF",
+      "pdf_viewing": "Erreur lors de l'affichage du PDF :",
+      "pdf_unable_view": "Impossible de visualiser le PDF de l'accord. Veuillez réessayer."
+    },
+    "created_at": "Crée le",
+    "actions": {
+      "title": "Actions",
+      "look": "Voir",
+      "sign": "Signer"
+    },
+    "stats": {
+      "totalEntentes": "Total des ententes",
+      "waitingSignature": "En attente de signature",
+      "agreementValidated": "Ententes validées"
+    },
+    "model": {
+      "stage_signatures": "État de signature",
+      "employer": "Employeur",
+      "sign_the": "Signé le",
+      "waiting_signature": "En attente de signature",
+      "student": "Étudiant",
+      "manager": "Gestionnaire",
+      "close": "Fermer"
+    }
+  },
+  "signerEntente": {
+    "errors": {
+      "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
+      "incorrectedPassword": "Mot de passe incorrect. Veuillez rééssayer",
+      "accessForbidden": "Accès refusé. Seuls les employeurs peuvent signer les ententes",
+      "notFound": "Entente non trouvée",
+      "unexpectedError": "Une erreur est survenue lors de la signature."
+    },
+    "success": "Entente signée avec succès !",
+    "title": "Signature de l'entente",
+    "description": "Confirmez votre mot de passe pour signer cette entente:",
+    "placeholder": "Votre mot de passe",
+    "loading": "Signature en cours",
+    "button": "Signer l'entente",
+    "back": "Retourner aux ententes"
+  },
+  "stageDetails": {
+    "errors": {
+      "fetching_agreements": "Erreur lors de la récupération des accords.",
+      "not_defined": "Non définie.",
+      "date_invalide": "Date invalide",
+      "agreement_notFound": "Entente non trouvée",
+      "email_notAvailable": "Non disponible",
+      "place_notSpecified": "Non spécifié",
+      "internship_description_notSpecified": "Aucun titre spécifié",
+      "internship_missions_notDefined": "Aucune mission ou objectif défini"
+    },
+    "sign_date": "Signé le",
+    "attente_signature": "En attente de signature",
+    "loading": "Chargement des détails...",
+    "back": "Retour aux ententes",
+    "title": "Détails de l'entente de stage",
+    "description": "Informations complètes sur l'entente de stage",
+    "sign_agreement": "Signer l'entente",
+    "general_informations": "Informations générales",
+    "student": "Étudiant",
+    "student_name": "Nom: ",
+    "student_role": " de l'étudiant",
+    "email": "Courriel: ",
+    "company": "Entreprise",
+    "company_name": "Nom: ",
+    "company_contact": "Contact: ",
+    "internship_details": "Détail du stage",
+    "date_begin": "Date de début",
+    "date_end": "Date de fin",
+    "duration": "Durée",
+    "weeks": "semaines",
+    "place": "Lieu",
+    "title_internship": "Titre du stage",
+    "missions_objectifs": "Missions et objectifs",
+    "remuneration": "Rémunération",
+    "hourly": "$/heure",
+    "notRemunerated": "Non rémunéré",
+    "signatures": "Signatures",
+    "employer": "Employeur",
+    "employer_role" : " de l'employeur",
+    "manager": "Gestionnaire",
+    "admin": "Administration",
+    "manager_role": " du gestionnaire",
+    "status": {
+      "title": "Statut global de l'entente",
+      "validated": "Entente validée et signée par toutes les parties",
+      "waiting_signatures": "En attente de signatures",
+      "draft": "Brouillon"
+    }
   }
 }

@@ -205,7 +205,8 @@
     "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
     "navigation": {
       "mainNavigation": "Main navigation"
-    }
+    },
+    "stage": "Internship Agreement"
   },
   "dashboardGestionnaire": {
     "logout": "Logout",
@@ -715,5 +716,118 @@
     "loadError": "Unable to load applications",
     "notDefined": "—",
     "back": "Back"
+  },
+  "ententeStage": {
+    "title": "Internship Agreements",
+    "description": "Manage and sign internship agreements with your interns",
+    "loading": "Loading agreements...",
+    "back": "Return to dashboard",
+    "noneStagetitle": "No internship agreement",
+    "noneStagedescription": "You do not have any current internship agreements at the moment.",
+    "student": "Student",
+    "stage": "Internship",
+    "period": "Period",
+    "status": {
+      "title": "status",
+      "validation": "Validated",
+      "waiting_other_signatures": "Waiting for others signatures",
+      "waiting_your_signature": "Waiting for your signature",
+      "draft": "Draft"
+    },
+    "errors": {
+      "errors_fetching_agreements": "Error fetching agreements",
+      "errors_loading_agreements": "Error loading agreements",
+      "pdf_agreementNotFound": "The PDF of the agreement is not found",
+      "pdf_unauthorized": "You are not allowed to see this agreement",
+      "pdf_loading_agreements": "Error loading PDF",
+      "pdf_viewing": "Error viewing PDF:",
+      "pdf_unable_view": "Unable to view the PDF of the agreement. Try again."
+    },
+    "created_at": "Created at",
+    "actions": {
+      "title": "Actions",
+      "look": "Look",
+      "sign": "Sign"
+    },
+    "stats": {
+      "totalEntentes": "Total Internships",
+      "waitingSignature": "Waiting for signatures",
+      "agreementValidated": "Internship Validated"
+    },
+    "model": {
+      "stage_signatures": "State of Signatures",
+      "employer": "Employer",
+      "sign_the": "Sign the",
+      "waiting_signature": "Waiting for signature",
+      "student": "Student",
+      "manager": "Manager",
+      "close": "Close"
+    }
+  },
+  "signerEntente": {
+    "errors": {
+      "sessionExpired": "Session expired. Please log in again.",
+      "incorrectedPassword": "Password incorrect. Please try again",
+      "accessForbidden": "Access refused. Only employers can signed the agreement.",
+      "notFound": "agreement not found",
+      "unexpectedError": "An error occurred while signing."
+    },
+    "success": "Agreement signed succesfully !",
+    "title": "Signing of the agreement",
+    "description": "Confirm your password to sign this agreement:",
+    "placeholder": "Your password",
+    "loading": "Signature in progress",
+    "button": "Sign the agreement",
+    "back": "Return to agreements."
+  },
+  "stageDetails": {
+    "errors": {
+      "fetching_agreements": "Error fetching agreements.",
+      "not_defined": "Not defined.",
+      "date_invalide": "Invalid date",
+      "agreement_notFound": "Agreement not found",
+      "email_notAvailable": "Not available",
+      "place_notSpecified": "Not specified",
+      "internship_description_notSpecified": "No title specified",
+      "internship_missions_notDefined": "No mission or objectif defined"
+    },
+    "sign_date": "Sign the",
+    "attente_signature": "Waiting for signature",
+    "loading": "Loading details...",
+    "back": "Back to the agreements",
+    "title": "Details of the internship agreement",
+    "description": "Complete informations of the internship agreement",
+    "sign_agreement": "Sign the agreement",
+    "general_informations": "General Informations",
+    "student": "Student",
+    "student_name": "Name: ",
+    "student_role": " of student",
+    "email": "Email: ",
+    "company": "Company",
+    "company_name": "Name: ",
+    "company_contact": "Contact: ",
+    "internship_details": "Internship Details",
+    "date_begin": "Start date",
+    "date_end": "End date",
+    "duration": "Duration",
+    "weeks": "weeks",
+    "place": "Place",
+    "title_internship": "Title of Internship",
+    "missions_objectifs": "Missions and objectifs",
+    "remuneration": "Remuneration",
+    "hourly": "$/hour",
+    "notRemunerated": "Not remunerated",
+    "signatures": "Signatures",
+    "employer": "Employer",
+    "employer_role": " of employer",
+    "manager": "Manager",
+    "admin": "Administration",
+    "manager_role": " of manager",
+    "status": {
+      "title": "Overall status of the agreement",
+      "validated": "Agreement validated and signed by all parties",
+      "waiting_signatures": "In waiting for signatures",
+      "draft": "Draft"
+    }
   }
 }
