@@ -225,6 +225,7 @@
     "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage.",
     "tabs": {
       "offers": "Offres",
+      "ententes": "Ententes de stage",
       "cv": "Mon CV",
       "applications": "Mes candidatures"
     }

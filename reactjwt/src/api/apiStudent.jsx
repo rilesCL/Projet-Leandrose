@@ -215,4 +215,5 @@ export async function previewStudentCv(token = null) {
     } catch (error) {
         throw new Error(error.message || "Erreur lors du chargement du CV");
     }
+
 }

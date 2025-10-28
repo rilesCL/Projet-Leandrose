@@ -44,12 +44,13 @@ function App() {
                 <Route path="dashboard/employeur/ententes/:id/signer" element={<SignerEntentePage/>}/>
 
                 {/* Student Routes */}
+                {/* Student Routes */}
                 <Route path="dashboard/student" element={<DashBoardStudent />} />
                 <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />
                 <Route path="dashboard/student/offers" element={<StudentInternshipOffersList />} />
                 <Route path="dashboard/student/offers/:offerId" element={<OfferDetailPage />} />
                 <Route path="dashboard/student/applications" element={<ApplicationsPage />} />
-
+                <Route path="dashboard/student/ententes/:id/signer" element={<SignerEntentePage/>}/>
                 {/* Gestionnaire Routes */}
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />

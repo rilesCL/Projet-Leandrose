@@ -220,11 +220,11 @@
   },
   "dashboardStudent": {
     "logout": "Logout",
-    "welcome": "Welcome",
-    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
+    "welcome": "Welcome",    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
     "tabs": {
       "offers": "Offers",
       "cv": "My CV",
+      "ententes": "Agreements",
       "applications": "My Applications"
     }
   },

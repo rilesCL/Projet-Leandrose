@@ -279,6 +279,64 @@ public class LeandrOseApplication {
                 System.out.println("PDF généré: " + ententeCreated.getCheminDocumentPDF());
                 System.out.println("✅ L'entente est maintenant prête à être signée par l'employeur Philippe Lavoie!");
 
+                // ============ CRÉATION DEUXIÈME ENTENTE POUR LUCAS ============
+                System.out.println("\n===== CRÉATION DEUXIÈME ENTENTE POUR LUCAS =====");
+
+                StudentDto studentEntente2 = studentService.createStudent(
+                        "Lucas",
+                        "Bergeron",
+                        "lucas.bergeron@student.com",
+                        "Password123",
+                        "STU007",
+                        Program.COMPUTER_SCIENCE.getTranslationKey());
+                System.out.println("Deuxième étudiant pour entente créé: " + studentEntente2);
+
+                MultipartFile cvFileEntente2 = loadPdfFromResources("test.pdf", "CV_Lucas_Bergeron.pdf");
+                CvDto cvDtoEntente2 = cvService.uploadCv(studentEntente2.getId(), cvFileEntente2);
+                CvDto cvApprovedEntente2 = gestionnaireService.approveCv(cvDtoEntente2.getId());
+
+                MultipartFile offerFileEntente2 = loadPdfFromResources("test.pdf", "Offre_Stage_Solutions_Pro_2.pdf");
+                InternshipOfferDto offerDtoEntente2 = internshipOfferService.createOfferDto(
+                        "Stage en développement mobile",
+                        LocalDate.now().plusMonths(2),
+                        12,
+                        "789 Avenue Innovation, Montréal, QC",
+                        26.00f,
+                        employeurEntente,
+                        offerFileEntente2);
+                InternshipOfferDto offerApprovedEntente2 = gestionnaireService.approveOffer(offerDtoEntente2.getId());
+
+                CandidatureDto candidatureEntente2 = candidatureService.postuler(
+                        studentEntente2.getId(),
+                        offerApprovedEntente2.getId(),
+                        cvApprovedEntente2.getId());
+
+                CandidatureDto candidatureAcceptedEntente2 = candidatureService.acceptByEmployeur(candidatureEntente2.getId());
+                CandidatureDto candidatureFullyAccepted2 = candidatureService.acceptByStudent(
+                        candidatureAcceptedEntente2.getId(),
+                        studentEntente2.getId());
+
+                EntenteStageDto ententeDto2 = new EntenteStageDto();
+                ententeDto2.setCandidatureId(candidatureFullyAccepted2.getId());
+                ententeDto2.setDateDebut(offerApprovedEntente2.getStartDate());
+                ententeDto2.setDuree(offerApprovedEntente2.getDurationInWeeks());
+                ententeDto2.setLieu(offerApprovedEntente2.getAddress());
+                ententeDto2.setRemuneration(offerApprovedEntente2.getRemuneration());
+                ententeDto2.setMissionsObjectifs(
+                        "L'étudiant(e) sera amené(e) à :\n" +
+                                "- Développer des applications mobiles avec React Native\n" +
+                                "- Apprendre Flutter et Dart\n" +
+                                "- Participer aux tests et au déploiement\n\n" +
+                                "Objectifs d'apprentissage :\n" +
+                                "- Maîtriser le développement mobile cross-platform\n" +
+                                "- Comprendre l'architecture des applications mobiles");
+
+                EntenteStageDto ententeCreated2 = ententeStageService.creerEntente(ententeDto2);
+                System.out.println("Deuxième entente créée - ID: " + ententeCreated2.getId());
+                System.out.println("✅ Entente de Lucas prête à être signée!");
+                System.out.println("===== FIN CRÉATION DEUXIÈME ENTENTE =====\n");
+
+
                 System.out.println("\n===== STORY 40 : Signature de l'entente par l'étudiant =====");
 
                 try {
