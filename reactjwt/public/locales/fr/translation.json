@@ -781,7 +781,7 @@
     "placeholder": "Votre mot de passe",
     "loading": "Signature en cours",
     "button": "Signer l'entente",
-    "back": "Retourner aux ententes"
+    "back": "Retour au dashboard"
   },
   "stageDetails": {
     "errors": {
@@ -797,7 +797,7 @@
     "sign_date": "Signé le",
     "attente_signature": "En attente de signature",
     "loading": "Chargement des détails...",
-    "back": "Retour aux ententes",
+    "back": "Retour",
     "title": "Détails de l'entente de stage",
     "description": "Informations complètes sur l'entente de stage",
     "sign_agreement": "Signer l'entente",

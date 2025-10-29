@@ -140,7 +140,7 @@ export default function SignerEntenteGsPage() {
                 <div className="mt-4 text-center">
                     <button
                         type="button"
-                        onClick={() => navigate("/dashboard/gestionnaire/ententes")}
+                        onClick={() => navigate("/dashboard/gestionnaire")}
                         className="text-sm text-gray-600 hover:text-gray-800 underline"
                         disabled={loading}
                     >
