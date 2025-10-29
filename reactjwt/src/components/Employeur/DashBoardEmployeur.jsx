@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import InternshipOffersList from "./InternshipOffersList.jsx";
 import { useNavigate, Link } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
+import {FaSignature, FaSignOutAlt} from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../LanguageSelector.jsx";
 
@@ -58,6 +58,15 @@ export default function DashBoardEmployeur() {
                             className="flex items-center space-x-4"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
+                            <Link to="/dashboard/employeur/ententes"
+                                  className="flex items-center text-gray-600 hover:text-indigo-600 transition"
+                            >
+                                <FaSignature className="mr-1"/>
+                                <span className="hidden sm:inline">
+                                    {t("dashboardEmployeur.stage")}
+                                </span>
+
+                            </Link>
                             <LanguageSelector />
                             <button
                                 onClick={handleLogout}
@@ -84,17 +93,6 @@ export default function DashBoardEmployeur() {
 
                     <InternshipOffersList />
 
-                    <div className="mt-8">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-2">Actions</h2>
-                        <div className="space-x-4">
-                            <Link
-                                to="/dashboard/employeur/ententes"
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-                            >
-                                {t("dashboardEmployeur.ententes")}
-                            </Link>
-                        </div>
-                    </div>
 
                 </div>
             </main>

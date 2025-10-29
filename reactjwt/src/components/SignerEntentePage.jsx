@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { verifyPassword, getCurrentUser, signAgreement } from "../api/apiSignature";
+import {useTranslation} from "react-i18next";
 
 export default function SignerEntentePage() {
     const { id } = useParams();
@@ -10,6 +11,7 @@ export default function SignerEntentePage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [userInfo, setUserInfo] = useState(null);
+    const {t, i18n} = useTranslation()
 
     useEffect(() => {
         const loadCurrentUser = async () => {
@@ -29,6 +31,7 @@ export default function SignerEntentePage() {
                     sessionStorage.setItem('email', userData.email);
                 }
             } catch (error) {
+                setError(t("signerEntente.errors.sessionExpired"));
                 console.error("❌ Error loading user:", error);
                 setError("Session expirée. Veuillez vous reconnecter.");
             }
@@ -69,7 +72,7 @@ export default function SignerEntentePage() {
             console.log(`📝 Signing as ${verifiedUser.role} for entente ${id}`);
             await signAgreement(id, newToken, verifiedUser.role);
 
-            setSuccess("Entente signée avec succès !");
+            setSuccess(t("signerEntente.success"));
             setPassword("");
 
             // Rediriger selon le rôle après 2 secondes
@@ -84,18 +87,16 @@ export default function SignerEntentePage() {
             }, 2000);
 
         } catch (error) {
-            console.error("💥 Signature process failed:", error);
-
             if (error.status === 401) {
-                setError("Mot de passe incorrect. Veuillez réessayer.");
+                setError(t("signerEntente.errors.incorrectedPassword"));
             } else if (error.status === 403) {
-                setError("Accès refusé. Vous n'êtes pas autorisé à signer cette entente.");
+                setError(t("signerEntente.errors.accessForbidden"));
             } else if (error.status === 404) {
-                setError("Entente non trouvée.");
-            } else if (error.message?.includes("Mot de passe incorrect")) {
-                setError("Mot de passe incorrect. Veuillez réessayer.");
+                setError(t("signerEntente.errors.notFound"));
+            } else if (error.message.includes("Mot de passe incorrect")) {
+                setError(t("signerEntente.errors.incorrectedPassword"));
             } else {
-                setError(error.message || "Une erreur est survenue lors de la signature.");
+                setError(error.message || t("signerEntente.errors.unexpectedError"));
             }
         } finally {
             setLoading(false);
@@ -115,15 +116,15 @@ export default function SignerEntentePage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
             <div className="max-w-md w-full bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-                    Signature de l'entente
+                    {t("signerEntente.title")}
                 </h2>
 
                 {userInfo && (
                     <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                         <p className="text-sm text-blue-700 text-center">
-                            Connecté en tant que: <strong>{userInfo.firstName} {userInfo.lastName}</strong>
+                            {t("signerEntente.connect_as")} <strong>{userInfo.firstName} {userInfo.lastName}</strong>
                             <br />
-                            <span className="text-xs">({userInfo.role})</span>
+                            <span className="text-xs">{t("signerEntente.role." + userInfo.role)}</span>
                         </p>
                     </div>
                 )}
@@ -131,14 +132,14 @@ export default function SignerEntentePage() {
                 <form onSubmit={handleSign}>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-medium mb-2">
-                            Confirmez votre mot de passe pour signer cette entente:
+                            {t("signerEntente.description")}
                         </label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="Votre mot de passe"
+                            placeholder={t("signerEntente.placeholder")}
                             required
                             disabled={loading}
                         />
@@ -171,10 +172,10 @@ export default function SignerEntentePage() {
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                Signature en cours...
+                                {t("signerEntente.loading")}
                             </span>
                         ) : (
-                            "Signer l'entente"
+                            t("signerEntente.button")
                         )}
                     </button>
                 </form>
@@ -186,7 +187,7 @@ export default function SignerEntentePage() {
                         className="text-sm text-gray-600 hover:text-gray-800 underline"
                         disabled={loading}
                     >
-                        Retourner au tableau de bord
+                        {t("signerEntente.back")}
                     </button>
                 </div>
             </div>
