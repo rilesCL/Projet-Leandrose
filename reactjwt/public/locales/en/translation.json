@@ -219,13 +219,51 @@
     }
   },
   "dashboardStudent": {
-    "logout": "Logout",
-    "welcome": "Welcome",    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
+    "logout": "Log out",
+    "welcome": "Welcome",
+    "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
     "tabs": {
       "offers": "Offers",
+      "ententes": "Internship Agreements",
       "cv": "My CV",
-      "ententes": "Agreements",
       "applications": "My Applications"
+    }
+  },
+
+  "studentEntentes": {
+    "loading": "Loading agreements...",
+    "error": "Error loading agreements",
+    "title": "My Internship Agreements",
+    "subtitle": "View and sign your internship agreements",
+    "noEntentes": "No internship agreement",
+    "noEntentesDescription": "You don't have any internship agreements at the moment.",
+    "company": "Company",
+    "internship": "Internship",
+    "period": "Period",
+    "status": "Status",
+    "createdOn": "Created on",
+    "actions": "Actions",
+    "viewPdf": "View PDF",
+    "sign": "Sign",
+    "signatureStatus": "Signature Status",
+    "employer": "Employer",
+    "student": "Student",
+    "manager": "Manager",
+    "signedOn": "Signed on",
+    "awaitingSignature": "Awaiting signature",
+    "close": "Close",
+    "pdfNotFound": "The agreement PDF was not found",
+    "accessDenied": "You are not authorized to view this agreement",
+    "pdfLoadError": "Error loading the PDF",
+    "pdfViewError": "Unable to display the agreement PDF. Please try again.",
+    "statusValidated": "Validated",
+    "statusAwaitingOthers": "Awaiting other signatures",
+    "statusAwaitingYours": "Awaiting your signature",
+    "statusDraft": "Draft",
+    "stats": {
+      "total": "Total agreements",
+      "awaitingSignature": "Awaiting signature",
+      "validated": "Validated agreements"
     }
   },
   "programsList": {

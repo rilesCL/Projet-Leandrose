@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FaEye, FaSignature, FaSort, FaSortUp, FaSortDown, FaFileAlt, FaTimes, FaCheck, FaClock, FaUser } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
 
 export default function StudentEntentesListe() {
+    const { t } = useTranslation();
     const [ententes, setEntentes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortField, setSortField] = useState("dateCreation");
@@ -52,7 +54,7 @@ export default function StudentEntentesListe() {
             }
         } catch (error) {
             console.error("Error fetching agreements:", error);
-            showToast("Erreur lors du chargement des ententes");
+            showToast(t("studentEntentes.error"));
         } finally {
             setLoading(false);
         }
@@ -70,11 +72,11 @@ export default function StudentEntentesListe() {
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    showToast("Le PDF de l'entente n'a pas été trouvé");
+                    showToast(t("studentEntentes.pdfNotFound"));
                 } else if (response.status === 403) {
-                    showToast("Vous n'êtes pas autorisé à voir cette entente");
+                    showToast(t("studentEntentes.accessDenied"));
                 } else {
-                    showToast("Erreur lors du chargement du PDF");
+                    showToast(t("studentEntentes.pdfLoadError"));
                 }
                 return;
             }
@@ -83,7 +85,7 @@ export default function StudentEntentesListe() {
             setPdfToPreview(blob);
         } catch (error) {
             console.error("Erreur lors de la visualisation du PDF:", error);
-            showToast("Impossible d'afficher le PDF de l'entente. Veuillez réessayer.");
+            showToast(t("studentEntentes.pdfViewError"));
         }
     };
 
@@ -96,17 +98,17 @@ export default function StudentEntentesListe() {
             employeur: {
                 signed: entente.dateSignatureEmployeur !== null,
                 date: entente.dateSignatureEmployeur,
-                name: entente.internshipOffer?.employeurDto?.companyName || 'Employeur'
+                name: entente.internshipOffer?.employeurDto?.companyName || t("studentEntentes.employer")
             },
             etudiant: {
                 signed: entente.dateSignatureEtudiant !== null,
                 date: entente.dateSignatureEtudiant,
-                name: `${entente.student?.firstName} ${entente.student?.lastName}` || 'Étudiant'
+                name: `${entente.student?.firstName} ${entente.student?.lastName}` || t("studentEntentes.student")
             },
             gestionnaire: {
                 signed: entente.dateSignatureGestionnaire !== null,
                 date: entente.dateSignatureGestionnaire,
-                name: 'Gestionnaire'
+                name: t("studentEntentes.manager")
             }
         };
     };
@@ -149,7 +151,7 @@ export default function StudentEntentesListe() {
                     onClick={() => handleStatusClick(entente)}
                     className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors cursor-pointer"
                 >
-                    Validée
+                    {t("studentEntentes.statusValidated")}
                 </button>
             );
         }
@@ -160,7 +162,7 @@ export default function StudentEntentesListe() {
                     onClick={() => handleStatusClick(entente)}
                     className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
                 >
-                    En attente des autres signatures
+                    {t("studentEntentes.statusAwaitingOthers")}
                 </button>
             );
         }
@@ -171,7 +173,7 @@ export default function StudentEntentesListe() {
                     onClick={() => handleStatusClick(entente)}
                     className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
                 >
-                    En attente de votre signature
+                    {t("studentEntentes.statusAwaitingYours")}
                 </button>
             );
         }
@@ -182,7 +184,7 @@ export default function StudentEntentesListe() {
                     onClick={() => handleStatusClick(entente)}
                     className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
                 >
-                    Brouillon
+                    {t("studentEntentes.statusDraft")}
                 </button>
             );
         }
@@ -229,7 +231,7 @@ export default function StudentEntentesListe() {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Chargement des ententes...</p>
+                    <p className="mt-4 text-gray-600">{t("studentEntentes.loading")}</p>
                 </div>
             </div>
         );
@@ -265,7 +267,7 @@ export default function StudentEntentesListe() {
                         <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">
-                                    État des signatures
+                                    {t("studentEntentes.signatureStatus")}
                                 </h3>
                                 <button
                                     onClick={() => setSignatureModal({ show: false, entente: null })}
@@ -292,15 +294,15 @@ export default function StudentEntentesListe() {
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
                                                         <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">Employeur</span>
+                                                        <span className="font-medium text-gray-900">{t("studentEntentes.employer")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
                                                     {signatures.employeur.signed ? (
                                                         <p className="text-xs text-green-600 mt-1">
-                                                            Signé le {formatDateTime(signatures.employeur.date)}
+                                                            {t("studentEntentes.signedOn")} {formatDateTime(signatures.employeur.date)}
                                                         </p>
                                                     ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">En attente de signature</p>
+                                                        <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -317,15 +319,15 @@ export default function StudentEntentesListe() {
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
                                                         <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">Étudiant</span>
+                                                        <span className="font-medium text-gray-900">{t("studentEntentes.student")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
                                                     {signatures.etudiant.signed ? (
                                                         <p className="text-xs text-green-600 mt-1">
-                                                            Signé le {formatDateTime(signatures.etudiant.date)}
+                                                            {t("studentEntentes.signedOn")} {formatDateTime(signatures.etudiant.date)}
                                                         </p>
                                                     ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">En attente de signature</p>
+                                                        <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -342,15 +344,15 @@ export default function StudentEntentesListe() {
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
                                                         <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">Gestionnaire</span>
+                                                        <span className="font-medium text-gray-900">{t("studentEntentes.manager")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
                                                     {signatures.gestionnaire.signed ? (
                                                         <p className="text-xs text-green-600 mt-1">
-                                                            Signé le {formatDateTime(signatures.gestionnaire.date)}
+                                                            {t("studentEntentes.signedOn")} {formatDateTime(signatures.gestionnaire.date)}
                                                         </p>
                                                     ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">En attente de signature</p>
+                                                        <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -364,7 +366,7 @@ export default function StudentEntentesListe() {
                                     onClick={() => setSignatureModal({ show: false, entente: null })}
                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                 >
-                                    Fermer
+                                    {t("studentEntentes.close")}
                                 </button>
                             </div>
                         </div>
@@ -375,9 +377,9 @@ export default function StudentEntentesListe() {
                 <div className="mb-8">
                     <div className="flex justify-between items-center">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Mes ententes de stage</h1>
+                            <h1 className="text-2xl font-bold text-gray-900">{t("studentEntentes.title")}</h1>
                             <p className="text-gray-600 mt-2">
-                                Consultez et signez vos ententes de stage
+                                {t("studentEntentes.subtitle")}
                             </p>
                         </div>
                     </div>
@@ -391,10 +393,10 @@ export default function StudentEntentesListe() {
                                 <FaFileAlt className="text-2xl text-gray-400" />
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                Aucune entente de stage
+                                {t("studentEntentes.noEntentes")}
                             </h3>
                             <p className="text-gray-500 mb-6">
-                                Vous n'avez aucune entente de stage pour le moment.
+                                {t("studentEntentes.noEntentesDescription")}
                             </p>
                         </div>
                     </div>
@@ -405,20 +407,20 @@ export default function StudentEntentesListe() {
                                 <thead className="bg-gray-50">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Entreprise
+                                        {t("studentEntentes.company")}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Stage
+                                        {t("studentEntentes.internship")}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Période
+                                        {t("studentEntentes.period")}
                                     </th>
                                     <th
                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                         onClick={() => handleSort("statut")}
                                     >
                                         <div className="flex items-center space-x-1">
-                                            <span>Statut</span>
+                                            <span>{t("studentEntentes.status")}</span>
                                             {getSortIcon("statut")}
                                         </div>
                                     </th>
@@ -427,12 +429,12 @@ export default function StudentEntentesListe() {
                                         onClick={() => handleSort("dateCreation")}
                                     >
                                         <div className="flex items-center space-x-1">
-                                            <span>Créée le</span>
+                                            <span>{t("studentEntentes.createdOn")}</span>
                                             {getSortIcon("dateCreation")}
                                         </div>
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Actions
+                                        {t("studentEntentes.actions")}
                                     </th>
                                 </tr>
                                 </thead>
@@ -467,7 +469,7 @@ export default function StudentEntentesListe() {
                                                     className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
                                                 >
                                                     <FaEye className="text-sm" />
-                                                    <span>Voir</span>
+                                                    <span>{t("studentEntentes.viewPdf")}</span>
                                                 </button>
                                                 {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasStudentSigned(entente) && (
                                                     <Link
@@ -475,7 +477,7 @@ export default function StudentEntentesListe() {
                                                         className="text-green-600 hover:text-green-900 flex items-center space-x-1"
                                                     >
                                                         <FaSignature className="text-sm" />
-                                                        <span>Signer</span>
+                                                        <span>{t("studentEntentes.sign")}</span>
                                                     </Link>
                                                 )}
                                             </div>
@@ -494,7 +496,7 @@ export default function StudentEntentesListe() {
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
                                 <dt className="text-sm font-medium text-gray-500 truncate">
-                                    Total des ententes
+                                    {t("studentEntentes.stats.total")}
                                 </dt>
                                 <dd className="mt-1 text-3xl font-semibold text-gray-900">
                                     {sortedEntentes.length}
@@ -504,7 +506,7 @@ export default function StudentEntentesListe() {
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
                                 <dt className="text-sm font-medium text-gray-500 truncate">
-                                    En attente de signature
+                                    {t("studentEntentes.stats.awaitingSignature")}
                                 </dt>
                                 <dd className="mt-1 text-3xl font-semibold text-orange-600">
                                     {waitingForStudentSignature}
@@ -514,7 +516,7 @@ export default function StudentEntentesListe() {
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
                                 <dt className="text-sm font-medium text-gray-500 truncate">
-                                    Ententes validées
+                                    {t("studentEntentes.stats.validated")}
                                 </dt>
                                 <dd className="mt-1 text-3xl font-semibold text-green-600">
                                     {sortedEntentes.filter(e => e.statut === 'VALIDEE').length}

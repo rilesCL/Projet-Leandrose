@@ -229,7 +229,7 @@
       "cv": "Mon CV",
       "applications": "Mes candidatures"
     }
-  },
+},
   "programsList": {
     "title": "Programmes Existants",
     "description": "Consultez tous les programmes académiques actuellement enregistrés dans le système.",
@@ -325,6 +325,43 @@
       "pdfFormat": "Le fichier doit être un PDF.",
       "pdfSize": "Le PDF dépasse la taille maximale de 5MB.",
       "serverError": "Erreur lors de l'enregistrement."
+    }
+  },
+
+  "studentEntentes": {
+    "loading": "Chargement des ententes...",
+    "error": "Erreur lors du chargement des ententes",
+    "title": "Mes ententes de stage",
+    "subtitle": "Consultez et signez vos ententes de stage",
+    "noEntentes": "Aucune entente de stage",
+    "noEntentesDescription": "Vous n'avez aucune entente de stage pour le moment.",
+    "company": "Entreprise",
+    "internship": "Stage",
+    "period": "Période",
+    "status": "Statut",
+    "createdOn": "Créée le",
+    "actions": "Actions",
+    "viewPdf": "Voir le PDF",
+    "sign": "Signer",
+    "signatureStatus": "État des signatures",
+    "employer": "Employeur",
+    "student": "Étudiant",
+    "manager": "Gestionnaire",
+    "signedOn": "Signé le",
+    "awaitingSignature": "En attente de signature",
+    "close": "Fermer",
+    "pdfNotFound": "Le PDF de l'entente n'a pas été trouvé",
+    "accessDenied": "Vous n'êtes pas autorisé à voir cette entente",
+    "pdfLoadError": "Erreur lors du chargement du PDF",
+    "pdfViewError": "Impossible d'afficher le PDF de l'entente. Veuillez réessayer.",
+    "statusValidated": "Validée",
+    "statusAwaitingOthers": "En attente des autres signatures",
+    "statusAwaitingYours": "En attente de votre signature",
+    "statusDraft": "Brouillon",
+    "stats": {
+      "total": "Total des ententes",
+      "awaitingSignature": "En attente de signature",
+      "validated": "Ententes validées"
     }
   },
   "studentCvList": {
