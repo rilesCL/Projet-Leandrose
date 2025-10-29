@@ -276,7 +276,6 @@ public class StudentController {
             return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
         }
     }
-
     @GetMapping("/ententes")
     public ResponseEntity<List<EntenteStageDto>> getEntentesPourEtudiant(HttpServletRequest request) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
@@ -286,15 +285,8 @@ public class StudentController {
         }
 
         try {
-            List<EntenteStageDto> allEntentes = ententeStageService.getAllEntentes();
-            List<EntenteStageDto> studentEntentes = allEntentes.stream()
-                    .filter(entente -> {
-                        if (entente.getStudent() == null) {
-                            return false;
-                        }
-                        return me.getEmail().equals(entente.getStudent().getEmail());
-                    })
-                    .collect(Collectors.toList());
+            // Utiliser la nouvelle méthode du service qui filtre directement par studentId
+            List<EntenteStageDto> studentEntentes = ententeStageService.getEntentesByStudentId(me.getId());
             return ResponseEntity.ok(studentEntentes);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
