@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import {
-    FaEye,
-    FaSignature,
-    FaSort,
-    FaSortUp,
-    FaSortDown,
-    FaFileAlt,
-    FaTimes,
-    FaCheck,
-    FaClock,
-    FaUser
-} from "react-icons/fa";
+import { FaEye, FaSignature, FaSort, FaSortUp, FaSortDown, FaFileAlt, FaTimes, FaClock, FaUser } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
 export default function EmployeurListeStages() {
     const [ententes, setEntentes] = useState([]);

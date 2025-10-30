@@ -199,7 +199,7 @@
     }
   },
   "dashboardEmployeur": {
-    "logout": "Logout",
+    "logout": "Log out",
     "ententes": "Agreements",
     "welcome": "Welcome",
     "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
@@ -209,7 +209,7 @@
     "stage": "Internship Agreement"
   },
   "dashboardGestionnaire": {
-    "logout": "Logout",
+    "logout": "Log out",
     "welcome": "Welcome",
     "description": "This is your manager dashboard. You can manage CVs, validate offers, and create agreements.",
     "tabs": {
@@ -220,13 +220,51 @@
     }
   },
   "dashboardStudent": {
-    "logout": "Logout",
+    "logout": "Log out",
     "welcome": "Welcome",
     "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
     "tabs": {
       "offers": "Offers",
+      "ententes": "Internship Agreements",
       "cv": "My CV",
       "applications": "My Applications"
+    }
+  },
+
+  "studentEntentes": {
+    "loading": "Loading agreements...",
+    "error": "Error loading agreements",
+    "title": "My Internship Agreements",
+    "subtitle": "View and sign your internship agreements",
+    "noEntentes": "No internship agreement",
+    "noEntentesDescription": "You don't have any internship agreements at the moment.",
+    "company": "Company",
+    "internship": "Internship",
+    "period": "Period",
+    "status": "Status",
+    "createdOn": "Created on",
+    "actions": "Actions",
+    "viewPdf": "View PDF",
+    "sign": "Sign",
+    "signatureStatus": "Signature Status",
+    "employer": "Employer",
+    "student": "Student",
+    "manager": "Manager",
+    "signedOn": "Signed on",
+    "awaitingSignature": "Awaiting signature",
+    "close": "Close",
+    "pdfNotFound": "The agreement PDF was not found",
+    "accessDenied": "You are not authorized to view this agreement",
+    "pdfLoadError": "Error loading the PDF",
+    "pdfViewError": "Unable to display the agreement PDF. Please try again.",
+    "statusValidated": "Validated",
+    "statusAwaitingOthers": "Awaiting other signatures",
+    "statusAwaitingYours": "Awaiting your signature",
+    "statusDraft": "Draft",
+    "stats": {
+      "total": "Total agreements",
+      "awaitingSignature": "Awaiting signature",
+      "validated": "Validated agreements"
     }
   },
   "programsList": {
@@ -778,7 +816,13 @@
     "placeholder": "Your password",
     "loading": "Signature in progress",
     "button": "Sign the agreement",
-    "back": "Return to agreements."
+    "back": "Cancel and return to the dashboard.",
+    "connect_as": "Connect as:",
+    "role": {
+      "EMPLOYEUR": "Employer",
+      "STUDENT": "Student",
+      "GESTIONNAIRE": "Manager"
+    }
   },
   "stageDetails": {
     "errors": {

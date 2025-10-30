@@ -37,7 +37,6 @@ public class EntenteStageDto {
     private LocalDateTime dateModification;
     private String contactEntreprise;
 
-    // ✅ AJOUT: Le chemin du PDF
     private String cheminDocumentPDF;
 
     private LocalDateTime dateSignatureEtudiant;
