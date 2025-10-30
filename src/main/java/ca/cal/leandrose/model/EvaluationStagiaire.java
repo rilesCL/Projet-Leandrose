@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.List;
+
 
 @Entity
 @Data
@@ -16,4 +19,33 @@ public class EvaluationStagiaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private LocalDate dateEvaluation;
+
+    @ManyToOne
+    @JoinColumn(name = "employeur_id")
+    private Employeur employeur;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
+
+    @ManyToOne
+    @JoinColumn(name = "internship_id")
+    private InternshipOffer internshipOffer;
+
+    @Column(columnDefinition = "TEXT")
+    private String evaluationTemplate;
+
+    @Column(columnDefinition = "TEXT")
+    private String evaluationResponses;
+
+//    @OneToMany(mappedBy = "evaluation", cascade=CascadeType.ALL, orphanRemoval = true)
+//    private List<EvaluationQuestion> questions;
+
+    @Column(length = 2000)
+    private String generalComment;
+
+    private boolean submitted;
+
 }
