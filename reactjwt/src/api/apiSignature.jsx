@@ -70,7 +70,7 @@ export async function getCurrentUser(token) {
     });
 }
 
-// Sign agreement - matches your backend endpoint exactly
+// Sign agreement for EMPLOYEUR
 export async function signAgreementEmployeur(ententeId, token) {
     return handleFetch(`${BASE_URL}/employeur/ententes/${ententeId}/signer`, {
         method: "POST",
@@ -80,12 +80,32 @@ export async function signAgreementEmployeur(ententeId, token) {
         },
     });
 }
-export async function signAgreementGS(ententeId, token) {
-    return handleFetch(`${BASE_URL}/gestionnaire/ententes/${ententeId}/signer`, {
+
+// Sign agreement for STUDENT
+export async function signAgreementStudent(ententeId, token) {
+    return handleFetch(`${BASE_URL}/student/ententes/${ententeId}/signer`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
         },
     });
+}
+
+export async function signAgreement(ententeId, token, userRole = null) {
+    if (!userRole) {
+        const userData = await getCurrentUser(token);
+        userRole = userData.role;
+    }
+
+    if (userRole === "EMPLOYEUR") {
+        return signAgreementEmployeur(ententeId, token);
+    } else if (userRole === "STUDENT") {
+        return signAgreementStudent(ententeId, token);
+    } else {
+        throw {
+            status: 403,
+            message: "Rôle non autorisé pour signer une entente"
+        };
+    }
 }

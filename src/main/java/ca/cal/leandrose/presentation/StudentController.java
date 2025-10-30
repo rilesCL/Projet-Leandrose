@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/student")
@@ -273,6 +274,71 @@ public class StudentController {
             return ResponseEntity.status(404).body(EntenteStageDto.withErrorMessage("Entente non trouvée"));
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(EntenteStageDto.withErrorMessage(e.getMessage()));
+        }
+    }
+    @GetMapping("/ententes")
+    public ResponseEntity<List<EntenteStageDto>> getEntentesPourEtudiant(HttpServletRequest request) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            // Utiliser la nouvelle méthode du service qui filtre directement par studentId
+            List<EntenteStageDto> studentEntentes = ententeStageService.getEntentesByStudentId(me.getId());
+            return ResponseEntity.ok(studentEntentes);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    @GetMapping("/ententes/{ententeId}/pdf")
+    public ResponseEntity<Resource> getEntentePdf(
+            HttpServletRequest request,
+            @PathVariable Long ententeId
+    ) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("STUDENT")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EntenteStageDto entente = ententeStageService.getEntenteById(ententeId);
+
+            if (entente.getStudent() == null ||
+                    !me.getEmail().equals(entente.getStudent().getEmail())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            if (entente.getCheminDocumentPDF() == null || entente.getCheminDocumentPDF().isBlank()) {
+                return ResponseEntity.status(404).build();
+            }
+
+            Path filePath = Paths.get(entente.getCheminDocumentPDF());
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                String filename = "Entente_Stage_" +
+                        entente.getStudent().getFirstName() + "_" +
+                        entente.getStudent().getLastName() + ".pdf";
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "inline; filename=\"" + filename + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(500).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
         }
     }
 

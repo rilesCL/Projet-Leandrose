@@ -6,6 +6,7 @@ import { FaSignOutAlt } from "react-icons/fa";
 import LanguageSelector from "../LanguageSelector.jsx";
 import StudentInternshipOffersList from "./StudentInternshipOffersList.jsx";
 import StudentApplicationsList from './StudentApplicationsList.jsx';
+import StudentEntentesListe from "./StudentEntentesListe.jsx";
 
 export default function DashBoardStudent() {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function DashBoardStudent() {
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(window.location.search);
         const raw = (params.get('tab') || params.get('section') || 'offers').toLowerCase();
-        if (["offers","cv","applications"].includes(raw)) return raw;
+        if (["offers","cv","applications","ententes"].includes(raw)) return raw;
         return 'offers';
     });
 
@@ -93,6 +94,7 @@ export default function DashBoardStudent() {
                             <Btn target="offers">{t("dashboardStudent.tabs.offers")}</Btn>
                             <Btn target="cv">{t("dashboardStudent.tabs.cv")}</Btn>
                             <Btn target="applications">{t("dashboardStudent.tabs.applications")}</Btn>
+                            <Btn target="ententes">{t("dashboardStudent.tabs.ententes") || "Ententes"}</Btn>
                         </div>
                     </div>
 
@@ -111,6 +113,12 @@ export default function DashBoardStudent() {
                     {section === 'applications' && (
                         <div>
                             <StudentApplicationsList />
+                        </div>
+                    )}
+
+                    {section === 'ententes' && (
+                        <div>
+                            <StudentEntentesListe />
                         </div>
                     )}
                 </div>
