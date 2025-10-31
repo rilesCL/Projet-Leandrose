@@ -167,7 +167,7 @@ class RegisterControllerTest {
         RegisterEmployeur request = new RegisterEmployeur();
         request.setFirstName("John");
         request.setLastName("Doe");
-        request.setEmail(null); // Invalid: null email
+        request.setEmail(null);
         request.setPassword("password123");
         request.setCompanyName("TechCorp");
         request.setField("IT");

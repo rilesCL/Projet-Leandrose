@@ -22,7 +22,6 @@ import EntentesStagePage from "./components/Gestionnaire/EntentesStagePage.jsx";
 import CreateEntenteForm from "./components/Gestionnaire/CreateEntenteForm.jsx";
 import EmployeurListeStages from "./components/Employeur/EmployeurListeStages.jsx";
 import SignerEntentePage from "./components/SignerEntentePage.jsx";
-import SignerEntenteGsPage from "./components/Gestionnaire/SignerEntenteGsPage.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -59,7 +58,7 @@ function App() {
                 </Route>
                 <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
                 <Route path="dashboard/gestionnaire/ententes" element={<EntentesStagePage/>} />
-                <Route path="dashboard/gestionnaire/ententes/:id/signer" element={<SignerEntenteGsPage/>}/>
+                <Route path="dashboard/gestionnaire/ententes/:id/signer" element={<SignerEntentePage/>}/>
                 <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
                 <Route path="/dashboard/gestionnaire/ententes/create" element={<CreateEntenteForm />} />
 

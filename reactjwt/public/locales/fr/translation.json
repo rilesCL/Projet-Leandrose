@@ -809,7 +809,7 @@
     "errors": {
       "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
       "incorrectedPassword": "Mot de passe incorrect. Veuillez rééssayer",
-      "accessForbidden": "Accès refusé. Seuls les employeurs peuvent signer les ententes",
+      "accessForbidden": "Accès refusé. Seuls les acteurs concernés peuvent signer l'entente",
       "notFound": "Entente non trouvée",
       "unexpectedError": "Une erreur est survenue lors de la signature."
     },

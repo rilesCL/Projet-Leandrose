@@ -807,7 +807,7 @@
     "errors": {
       "sessionExpired": "Session expired. Please log in again.",
       "incorrectedPassword": "Password incorrect. Please try again",
-      "accessForbidden": "Access refused. Only employers can signed the agreement.",
+      "accessForbidden": "Access refused. Only the concerned actors can signe the agreement.",
       "notFound": "agreement not found",
       "unexpectedError": "An error occurred while signing."
     },

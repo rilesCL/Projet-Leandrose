@@ -261,16 +261,13 @@
             throw new IllegalStateException("L'entente doit être en attente de signature.");
         }
 
-        // ⚠️ Si déjà signé
         if (entente.getDateSignatureGestionnaire() != null) {
             throw new IllegalStateException("Le gestionnaire a déjà signé cette entente.");
         }
 
-        // ✅ Signature du gestionnaire
         entente.setDateSignatureGestionnaire(LocalDateTime.now());
         entente.setDateModification(LocalDateTime.now());
 
-        // Si tous ont signé, statut = VALIDÉE
         if (entente.getDateSignatureEtudiant() != null &&
                 entente.getDateSignatureEmployeur() != null) {
             entente.setStatut(EntenteStage.StatutEntente.VALIDEE);
@@ -279,5 +276,34 @@
         EntenteStage saved = ententeRepository.save(entente);
         return EntenteStageDto.fromEntity(saved);
     }
+    public List<EntenteStageDto> getEntentesByEmployeurId(Long employeurId) {
+        if (employeurId == null) {
+            return List.of();
+        }
 
+        return ententeRepository.findAll().stream()
+                .filter(entente -> {
+                    Long employeurEntenteId = entente.getCandidature()
+                            .getInternshipOffer()
+                            .getEmployeurId();
+                    return employeurEntenteId != null && employeurEntenteId.equals(employeurId);
+                })
+                .map(EntenteStageDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+    public List<EntenteStageDto> getEntentesByStudentId(Long studentId) {
+        if (studentId == null) {
+            return List.of();
+        }
+
+        return ententeRepository.findAll().stream()
+                .filter(entente -> {
+                    Long studentEntenteId = entente.getCandidature()
+                            .getStudent()
+                            .getId();
+                    return studentEntenteId != null && studentEntenteId.equals(studentId);
+                })
+                .map(EntenteStageDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

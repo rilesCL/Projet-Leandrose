@@ -82,36 +82,6 @@ public class CandidatureService {
                 .map(CandidatureEmployeurDto::fromEntity)
                 .toList();
     }
-    /**
-    @Transactional
-    public void rejectCandidature(Long candidatureId) {
-        Candidature candidature = candidatureRepository.findById(candidatureId)
-                .orElseThrow(() -> new RuntimeException("Candidature non trouvée avec l'ID: " + candidatureId));
-
-        if (candidature.getStatus() == Candidature.Status.REJECTED) {
-            throw new IllegalStateException("Cette candidature est déjà rejetée");
-        }
-
-        if (candidature.getStatus() == Candidature.Status.ACCEPTED) {
-            throw new IllegalStateException("Impossible de rejeter une candidature déjà acceptée");
-        }
-
-        candidature.setStatus(Candidature.Status.REJECTED);
-        candidatureRepository.save(candidature);
-    }
-    **/
-    /**
-    @Transactional
-    public CandidatureDto accept(Long candidatureId) {
-        Candidature cand = candidatureRepository
-                .findById(candidatureId)
-                .orElseThrow(() -> new RuntimeException("Candidature introuvable ou non autorisée"));
-
-        cand.setStatus(Candidature.Status.ACCEPTED);
-        Candidature saved = candidatureRepository.save(cand);
-        return CandidatureDto.fromEntity(saved);
-    }
-/**/
 
     @Transactional
     public CandidatureDto acceptByEmployeur(Long candidatureId) {
@@ -191,16 +161,5 @@ public class CandidatureService {
         Candidature saved = candidatureRepository.save(cand);
         return CandidatureDto.fromEntity(saved);
     }
-    /**
-    @Transactional
-    public CandidatureDto reject(Long candidatureId) {
-        Candidature cand = candidatureRepository
-                .findById(candidatureId)
-                .orElseThrow(() -> new RuntimeException("Candidature introuvable ou non autorisée"));
 
-        cand.setStatus(Candidature.Status.REJECTED);
-        Candidature saved = candidatureRepository.save(cand);
-        return CandidatureDto.fromEntity(saved);
-    }
-    /**/
 }

@@ -41,7 +41,6 @@ export default function GestionnaireListeEntentes() {
         } catch (error) {
             console.error(t("ententeStage.errors.pdf_viewing"), error);
 
-            // Parse error message to show appropriate toast
             const errorMsg = error.message || '';
             if (errorMsg.includes('404')) {
                 showToast(t("ententeStage.errors.pdf_agreementNotFound"));
@@ -203,7 +202,6 @@ export default function GestionnaireListeEntentes() {
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Toast Notification */}
                 {toast.show && (
                     <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
                         toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
@@ -218,7 +216,6 @@ export default function GestionnaireListeEntentes() {
                     </div>
                 )}
 
-                {/* Modal des signatures */}
                 {signatureModal.show && signatureModal.entente && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
@@ -239,7 +236,6 @@ export default function GestionnaireListeEntentes() {
                                     const signatures = getSignatureStatus(signatureModal.entente);
                                     return (
                                         <>
-                                            {/* Employeur */}
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                                                 <div className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.employeur.signed ? (
@@ -264,7 +260,6 @@ export default function GestionnaireListeEntentes() {
                                                 </div>
                                             </div>
 
-                                            {/* Étudiant */}
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                                                 <div className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.etudiant.signed ? (
@@ -289,7 +284,6 @@ export default function GestionnaireListeEntentes() {
                                                 </div>
                                             </div>
 
-                                            {/* Gestionnaire */}
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                                                 <div className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.gestionnaire.signed ? (
@@ -330,7 +324,6 @@ export default function GestionnaireListeEntentes() {
                     </div>
                 )}
 
-                {/* Header */}
                 <div className="mb-8">
                     <div className="flex justify-center items-center">
                         <div>
@@ -342,7 +335,6 @@ export default function GestionnaireListeEntentes() {
                     </div>
                 </div>
 
-                {/* Agreements Table */}
                 {sortedEntentes.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-8 text-center">
                         <div className="max-w-md mx-auto">
@@ -489,7 +481,6 @@ export default function GestionnaireListeEntentes() {
                         </div>
                     </div>
                 )}
-                {/* PDF Viewer Modal */}
                 {pdfToPreview && (
                     <PdfViewer
                         file={pdfToPreview}

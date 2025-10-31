@@ -163,10 +163,6 @@ export async function previewOfferPdfStudent(offerId, token = null) {
     }
 }
 
-/**
- * L'étudiant accepte une candidature qui a été acceptée par l'employeur
- * Transition: ACCEPTEDBYEMPLOYEUR → ACCEPTED
- */
 export async function acceptCandidatureByStudent(candidatureId, token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/applications/${candidatureId}/accept`, {
@@ -181,10 +177,7 @@ export async function acceptCandidatureByStudent(candidatureId, token = null) {
     }
 }
 
-/**
- * L'étudiant refuse une candidature qui a été acceptée par l'employeur
- * Transition: ACCEPTEDBYEMPLOYEUR -> REJECTED
- */
+
 export async function rejectCandidatureByStudent(candidatureId, token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/applications/${candidatureId}/reject`, {

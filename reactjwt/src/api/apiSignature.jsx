@@ -50,7 +50,6 @@ async function handleFetch(url, options) {
     }
 }
 
-// Verify password and get token
 export async function verifyPassword(email, password) {
     return handleFetch(`${BASE_URL}/user/login`, {
         method: "POST",
@@ -59,7 +58,6 @@ export async function verifyPassword(email, password) {
     });
 }
 
-// Get current user info
 export async function getCurrentUser(token) {
     return handleFetch(`${BASE_URL}/user/me`, {
         method: "GET",
@@ -70,7 +68,6 @@ export async function getCurrentUser(token) {
     });
 }
 
-// Sign agreement for EMPLOYEUR
 export async function signAgreementEmployeur(ententeId, token) {
     return handleFetch(`${BASE_URL}/employeur/ententes/${ententeId}/signer`, {
         method: "POST",
@@ -81,9 +78,17 @@ export async function signAgreementEmployeur(ententeId, token) {
     });
 }
 
-// Sign agreement for STUDENT
 export async function signAgreementStudent(ententeId, token) {
     return handleFetch(`${BASE_URL}/student/ententes/${ententeId}/signer`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+    });
+}
+export async function signAgreementGS(ententeId, token) {
+    return handleFetch(`${BASE_URL}/gestionnaire/ententes/${ententeId}/signer`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -102,7 +107,10 @@ export async function signAgreement(ententeId, token, userRole = null) {
         return signAgreementEmployeur(ententeId, token);
     } else if (userRole === "STUDENT") {
         return signAgreementStudent(ententeId, token);
-    } else {
+    } else if (userRole == "GESTIONNAIRE") {
+        return signAgreementGS(ententeId, token);
+    }
+    else {
         throw {
             status: 403,
             message: "Rôle non autorisé pour signer une entente"

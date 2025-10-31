@@ -62,26 +62,26 @@ export default function SignerEntentePage() {
             const newToken = loginData.accessToken;
             console.log("✅ New token received");
 
-            // Vérifier le nouvel utilisateur
             const verifiedUser = await getCurrentUser(newToken);
             console.log("✅ User verified:", verifiedUser);
 
             sessionStorage.setItem('accessToken', newToken);
 
-            // Signer avec le rôle de l'utilisateur
             console.log(`📝 Signing as ${verifiedUser.role} for entente ${id}`);
             await signAgreement(id, newToken, verifiedUser.role);
 
             setSuccess(t("signerEntente.success"));
             setPassword("");
 
-            // Rediriger selon le rôle après 2 secondes
             setTimeout(() => {
                 if (verifiedUser.role === "EMPLOYEUR") {
                     navigate("/dashboard/employeur/ententes");
                 } else if (verifiedUser.role === "STUDENT") {
                     navigate("/dashboard/student?tab=ententes");
-                } else {
+                } else if (verifiedUser.role === "GESTIONNAIRE") {
+                    navigate("/dashboard/gestionnaire?tab=ententes");
+                }
+                else {
                     navigate("/dashboard");
                 }
             }, 2000);
@@ -108,6 +108,8 @@ export default function SignerEntentePage() {
             return "/dashboard/employeur/ententes";
         } else if (userInfo?.role === "STUDENT") {
             return "/dashboard/student?tab=ententes";
+        } else if (userInfo?.role === "GESTIONNAIRE") {
+            return "/dashboard/gestionnaire?tab=ententes";
         }
         return "/dashboard";
     };

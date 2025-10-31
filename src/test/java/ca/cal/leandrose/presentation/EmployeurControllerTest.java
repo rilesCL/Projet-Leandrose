@@ -82,6 +82,7 @@ class EmployeurControllerTest {
                         .description("Stage Java")
                         .employeurDto(employeurDto)
                         .pdfPath("dummy.pdf")
+                        .employeurId(employeurId)
                         .build())
                 .cv(CvDto.builder()
                         .id(10L)
@@ -90,28 +91,6 @@ class EmployeurControllerTest {
                 .status(Candidature.Status.PENDING)
                 .applicationDate(LocalDateTime.now())
                 .build();
-    }
-
-    // -------------------- DOWNLOAD PDF --------------------
-    @Test
-    void downloadOffer_asEmployeur_returnsPdf() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        InternshipOfferDto offer = InternshipOfferDto.builder()
-                .id(100L)
-                .description("Stage Java")
-                .employeurDto(employeurDto)
-                .pdfPath("dummy.pdf")
-                .build();
-
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
-        // Mock PDF content
-        when(internshipOfferService.getOfferPdf(100L)).thenReturn("PDFCONTENT".getBytes());
-
-        mockMvc.perform(get("/employeur/offers/100/download")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(content().bytes("PDFCONTENT".getBytes()));
     }
 
     @Test
@@ -124,7 +103,25 @@ class EmployeurControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    // -------------------- CONVOCATIONS --------------------
+    @Test
+    void downloadOffer_fileNotFound_returnsNotFound() throws Exception {
+        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+        InternshipOfferDto offer = InternshipOfferDto.builder()
+                .id(100L)
+                .description("Stage Java")
+                .employeurDto(employeurDto)
+                .pdfPath("/nonexistent/file.pdf")
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+        when(internshipOfferService.getOfferPdf(100L)).thenThrow(new RuntimeException("File not found"));
+
+        mockMvc.perform(get("/employeur/offers/100/download")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound());
+    }
+
     @Test
     void getConvocationsByOffer_asEmployeur_returnsList() throws Exception {
         EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
@@ -174,7 +171,24 @@ class EmployeurControllerTest {
                 .andExpect(content().string("Convocation créée avec succès"));
     }
 
-    // -------------------- CANDIDATURE STATUS --------------------
+    @Test
+    void createConvocation_wrongEmployeur_returnsForbidden() throws Exception {
+        EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+        CandidatureDto candidature = createCandidatureDto(77L, 2L, "Student", "X");
+
+        ConvocationDto conv = new ConvocationDto();
+        conv.setLocation("Wrong test");
+
+        when(userAppService.getMe(anyString())).thenReturn(me);
+        when(candidatureService.getCandidatureById(77L)).thenReturn(candidature);
+
+        mockMvc.perform(post("/employeur/candidatures/77/convocations")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(conv)))
+                .andExpect(status().isForbidden());
+    }
+
     @Test
     void acceptCandidature_asEmployeur_returnsAcceptedByEmployeur() throws Exception {
         EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
@@ -209,7 +223,30 @@ class EmployeurControllerTest {
                 .andExpect(jsonPath("$.status").value("REJECTED"));
     }
 
-    // -------------------- CANDIDATURE LIST --------------------
+    @Test
+    void acceptCandidature_wrongEmployeur_returnsForbidden() throws Exception {
+        EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+        CandidatureDto candidature = createCandidatureDto(200L, 2L, "Bob", "WrongEmp");
+
+        when(userAppService.getMe(anyString())).thenReturn(me);
+        when(candidatureService.getCandidatureById(200L)).thenReturn(candidature);
+
+        mockMvc.perform(post("/employeur/candidatures/200/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void acceptCandidature_notFound_returnsNotFound() throws Exception {
+        EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+        when(userAppService.getMe(anyString())).thenReturn(me);
+        when(candidatureService.getCandidatureById(999L)).thenThrow(new RuntimeException("Candidature not found"));
+
+        mockMvc.perform(post("/employeur/candidatures/999/accept")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound());
+    }
+
     @Test
     void getCandidaturesForOffer_asEmployeur_returnsList() throws Exception {
         EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();

@@ -285,7 +285,7 @@ public class StudentController {
         }
 
         try {
-            // Utiliser la nouvelle méthode du service qui filtre directement par studentId
+
             List<EntenteStageDto> studentEntentes = ententeStageService.getEntentesByStudentId(me.getId());
             return ResponseEntity.ok(studentEntentes);
         } catch (Exception e) {

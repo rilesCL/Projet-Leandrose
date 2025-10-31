@@ -279,7 +279,7 @@ public class LeandrOseApplication {
                 System.out.println("PDF généré: " + ententeCreated.getCheminDocumentPDF());
                 System.out.println("✅ L'entente est maintenant prête à être signée par l'employeur Philippe Lavoie!");
 
-                // ============ CRÉATION DEUXIÈME ENTENTE POUR LUCAS ============
+
                 System.out.println("\n===== CRÉATION DEUXIÈME ENTENTE POUR LUCAS =====");
 
                 StudentDto studentEntente2 = studentService.createStudent(

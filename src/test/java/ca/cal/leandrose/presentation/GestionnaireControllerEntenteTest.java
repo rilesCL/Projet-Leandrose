@@ -2,10 +2,7 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.EntenteStage;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
-import ca.cal.leandrose.service.CvService;
-import ca.cal.leandrose.service.EntenteStageService;
-import ca.cal.leandrose.service.GestionnaireService;
-import ca.cal.leandrose.service.InternshipOfferService;
+import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -46,6 +43,8 @@ class GestionnaireControllerEntenteTest {
     @MockitoBean private GestionnaireService gestionnaireService;
 
     @MockitoBean private CvService cvService;
+
+    @MockitoBean private UserAppService userAppService;
 
     private EntenteStageDto ententeDto;
     private CandidatureDto candidatureDto;
@@ -105,7 +104,6 @@ class GestionnaireControllerEntenteTest {
                         .dateCreation(LocalDateTime.now())
                         .build();
 
-        // ✅ Correction ici : structure imbriquée cohérente avec ton DTO
         candidatureDto =
                 CandidatureDto.builder()
                         .id(1L)

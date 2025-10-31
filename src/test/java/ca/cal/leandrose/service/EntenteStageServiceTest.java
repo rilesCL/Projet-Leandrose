@@ -46,7 +46,6 @@ class EntenteStageServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Setup Student
         student = Student.builder()
                 .id(1L)
                 .firstName("John")
@@ -57,7 +56,6 @@ class EntenteStageServiceTest {
                 .program(Program.COMPUTER_SCIENCE.getTranslationKey())
                 .build();
 
-        // Setup Employeur
         employeur = Employeur.builder()
                 .id(1L)
                 .firstName("Jane")
@@ -68,7 +66,6 @@ class EntenteStageServiceTest {
                 .field("Software")
                 .build();
 
-        // Setup CV
         Cv cv = Cv.builder()
                 .id(1L)
                 .student(student)
@@ -76,7 +73,6 @@ class EntenteStageServiceTest {
                 .status(Cv.Status.APPROVED)
                 .build();
 
-        // Setup InternshipOffer
         InternshipOffer offer = InternshipOffer.builder()
                 .id(1L)
                 .description("Stage développement")
@@ -87,7 +83,6 @@ class EntenteStageServiceTest {
                 .employeur(employeur)
                 .build();
 
-        // Setup Candidature
         candidature = Candidature.builder()
                 .id(1L)
                 .student(student)
@@ -97,7 +92,6 @@ class EntenteStageServiceTest {
                 .applicationDate(LocalDateTime.now())
                 .build();
 
-        // Setup EntenteStage
         entente = EntenteStage.builder()
                 .id(1L)
                 .candidature(candidature)
@@ -106,7 +100,6 @@ class EntenteStageServiceTest {
                 .dateCreation(LocalDateTime.now())
                 .build();
 
-        // Setup EntenteStageDto
         ententeDto = EntenteStageDto.builder()
                 .candidatureId(1L)
                 .dateDebut(LocalDate.of(2025, 6, 1))

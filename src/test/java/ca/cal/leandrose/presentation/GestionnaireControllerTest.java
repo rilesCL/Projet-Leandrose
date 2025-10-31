@@ -3,10 +3,7 @@ package ca.cal.leandrose.presentation;
 import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
-import ca.cal.leandrose.service.CvService;
-import ca.cal.leandrose.service.EntenteStageService;
-import ca.cal.leandrose.service.GestionnaireService;
-import ca.cal.leandrose.service.InternshipOfferService;
+import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +57,9 @@ class GestionnaireControllerTest {
 
     @MockitoBean
     private EntenteStageService ententeStageService;
+
+    @MockitoBean
+    private UserAppService userAppService;
 
     private CvDto sampleCvDto;
     private Cv sampleCv;

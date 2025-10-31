@@ -87,7 +87,6 @@ public class EntenteStageDto {
                 .contactEntreprise(offer.getEmployeurEmail())
                 .dateCreation(entente.getDateCreation())
                 .dateModification(entente.getDateModification())
-                // ✅ AJOUT CRITIQUE: Mapper le chemin du PDF
                 .cheminDocumentPDF(entente.getCheminDocumentPDF())
                 .dateSignatureEtudiant(entente.getDateSignatureEtudiant())
                 .dateSignatureEmployeur(entente.getDateSignatureEmployeur())

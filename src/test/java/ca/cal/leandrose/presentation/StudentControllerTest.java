@@ -71,7 +71,6 @@ class StudentControllerTest {
                 .build();
     }
 
-    // ===== TESTS POUR CV =====
 
     @Test
     void getCv_missingAuthorization_returnsUnauthorized() throws Exception {
@@ -138,7 +137,6 @@ class StudentControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ===== TESTS POUR OFFRES DE STAGE =====
 
     @Test
     void getPublishedOffers_returnsList() throws Exception {
@@ -223,7 +221,6 @@ class StudentControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ===== TESTS POUR CANDIDATURES =====
 
     @Test
     void applyToOffer_asStudent_returnsCandidature() throws Exception {
@@ -297,7 +294,6 @@ class StudentControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ===== TESTS POUR ACCEPTATION DE CANDIDATURE PAR L'ÉTUDIANT =====
 
     @Test
     void acceptCandidature_asStudent_returnsAcceptedCandidature() throws Exception {
@@ -376,7 +372,6 @@ class StudentControllerTest {
                 .andExpect(content().string("Cette candidature ne vous appartient pas"));
     }
 
-    // ===== TESTS POUR REJET DE CANDIDATURE PAR L'ÉTUDIANT =====
 
     @Test
     void rejectCandidature_asStudent_returnsRejectedCandidature() throws Exception {
@@ -454,7 +449,6 @@ class StudentControllerTest {
                 .andExpect(content().string("Cette candidature ne vous appartient pas"));
     }
 
-    // ===== TESTS POUR POST /student/ententes/{ententeId}/signer =====
 
     @Test
     void signerEntente_asStudent_returnsOk() throws Exception {
@@ -532,7 +526,6 @@ class StudentControllerTest {
                 .andExpect(jsonPath("$.error.message").value("L'entente doit être en attente de signature."));
     }
 
-    // ===== TESTS POUR GET /student/ententes =====
 
     @Test
     void getEntentesPourEtudiant_asStudent_returnsFilteredList() throws Exception {
@@ -600,8 +593,6 @@ class StudentControllerTest {
                         .header("Authorization", "Bearer token"))
                 .andExpect(status().isInternalServerError());
     }
-
-    // ===== TESTS POUR GET /student/ententes/{ententeId}/pdf =====
 
     @Test
     void getEntentePdf_asStudent_ownEntente_returnsPdf() throws Exception {
