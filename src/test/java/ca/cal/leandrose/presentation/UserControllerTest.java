@@ -16,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,64 +27,63 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private AuthService authService;
+  @MockitoBean private AuthService authService;
 
-    @MockitoBean
-    private UserAppService userService;
+  @MockitoBean private UserAppService userService;
 
+  @Test
+  @DisplayName("POST /user/login returns 200 and JWT token on success")
+  void authenticateUser_success_returnsToken() throws Exception {
+    LoginDTO loginDto = new LoginDTO("user@example.com", "password");
+    when(authService.login(any(LoginDTO.class))).thenReturn("jwt-token-123");
 
+    mockMvc
+        .perform(
+            post("/user/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginDto)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.accessToken").value("jwt-token-123"));
+  }
 
-    @Test
-    @DisplayName("POST /user/login returns 200 and JWT token on success")
-    void authenticateUser_success_returnsToken() throws Exception {
-        LoginDTO loginDto = new LoginDTO("user@example.com", "password");
-        when(authService.login(any(LoginDTO.class))).thenReturn("jwt-token-123");
+  @Test
+  @DisplayName("POST /user/login returns 401 on invalid credentials")
+  void authenticateUser_failure_returnsUnauthorized() throws Exception {
+    LoginDTO loginDto = new LoginDTO("user@example.com", "wrongpass");
+    when(authService.login(any(LoginDTO.class)))
+        .thenThrow(new RuntimeException("Invalid credentials"));
 
-        mockMvc.perform(post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginDto)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.accessToken").value("jwt-token-123"));
-    }
+    mockMvc
+        .perform(
+            post("/user/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginDto)))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error").value("Invalid credentials"));
+  }
 
-    @Test
-    @DisplayName("POST /user/login returns 401 on invalid credentials")
-    void authenticateUser_failure_returnsUnauthorized() throws Exception {
-        LoginDTO loginDto = new LoginDTO("user@example.com", "wrongpass");
-        when(authService.login(any(LoginDTO.class))).thenThrow(new RuntimeException("Invalid credentials"));
+  @Test
+  @DisplayName("GET /user/me returns UserDTO")
+  void getMe_returnsUserDto() throws Exception {
+    String token = "Bearer jwt-token";
+    UserDTO dto = new UserDTO();
+    dto.setId(1L);
+    dto.setEmail("user@example.com");
+    dto.setRole(Role.EMPLOYEUR);
 
-        mockMvc.perform(post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginDto)))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.error").value("Invalid credentials"));
-    }
+    when(userService.getMe(token)).thenReturn(dto);
 
-    @Test
-    @DisplayName("GET /user/me returns UserDTO")
-    void getMe_returnsUserDto() throws Exception {
-        String token = "Bearer jwt-token";
-        UserDTO dto = new UserDTO();
-        dto.setId(1L);
-        dto.setEmail("user@example.com");
-        dto.setRole(Role.EMPLOYEUR);
-
-        when(userService.getMe(token)).thenReturn(dto);
-
-        mockMvc.perform(get("/user/me")
-                        .header("Authorization", token))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.email").value("user@example.com"))
-                .andExpect(jsonPath("$.role").value("EMPLOYEUR"));
-    }
+    mockMvc
+        .perform(get("/user/me").header("Authorization", token))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.email").value("user@example.com"))
+        .andExpect(jsonPath("$.role").value("EMPLOYEUR"));
+  }
 }

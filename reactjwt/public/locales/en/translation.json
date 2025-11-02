@@ -1,5 +1,11 @@
 {
   "appName": "LeandrOSE",
+  "terms": {
+    "term": "Term",
+    "FALL": "Fall",
+    "WINTER": "Winter",
+    "SUMMER": "Summer"
+  },
   "previewPdf": {
     "preview": "Preview",
     "next": "Next",
@@ -9,6 +15,7 @@
     "error": "Unable to preview de document"
   },
   "program": {
+    "description": "Academic Program",
     "computer_science": "Computer Science",
     "software_engineering": "Software Engineering",
     "information_technology": "Information Technology",

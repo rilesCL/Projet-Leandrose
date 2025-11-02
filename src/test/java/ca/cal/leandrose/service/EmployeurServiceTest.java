@@ -19,83 +19,82 @@ import static org.mockito.Mockito.*;
 
 class EmployeurServiceTest {
 
-    @Mock
-    private EmployeurRepository employeurRepository;
+  @Mock private EmployeurRepository employeurRepository;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+  @Mock private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
-    private EmployeurService employeurService;
+  @InjectMocks private EmployeurService employeurService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
 
-    @Test
-    void testCreateEmployeur() {
-        String rawPassword = "password123";
-        String encodedPassword = "encodedPass";
+  @Test
+  void testCreateEmployeur() {
+    String rawPassword = "password123";
+    String encodedPassword = "encodedPass";
 
-        when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
+    when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
 
-        Employeur savedEmployeur = Employeur.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@example.com")
-                .password(encodedPassword)
-                .companyName("TechCorp")
-                .field("IT")
-                .build();
+    Employeur savedEmployeur =
+        Employeur.builder()
+            .id(1L)
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@example.com")
+            .password(encodedPassword)
+            .companyName("TechCorp")
+            .field("IT")
+            .build();
 
-        when(employeurRepository.save(any(Employeur.class))).thenReturn(savedEmployeur);
+    when(employeurRepository.save(any(Employeur.class))).thenReturn(savedEmployeur);
 
-        EmployeurDto dto = employeurService.createEmployeur(
-                "John", "Doe", "john.doe@example.com", rawPassword, "TechCorp", "IT"
-        );
+    EmployeurDto dto =
+        employeurService.createEmployeur(
+            "John", "Doe", "john.doe@example.com", rawPassword, "TechCorp", "IT");
 
-        assertNotNull(dto);
-        assertEquals(1L, dto.getId());
-        assertEquals("John", dto.getFirstName());
-        assertEquals("Doe", dto.getLastName());
-        assertEquals("john.doe@example.com", dto.getEmail());
-        assertEquals("TechCorp", dto.getCompanyName());
-        assertEquals("IT", dto.getField());
+    assertNotNull(dto);
+    assertEquals(1L, dto.getId());
+    assertEquals("John", dto.getFirstName());
+    assertEquals("Doe", dto.getLastName());
+    assertEquals("john.doe@example.com", dto.getEmail());
+    assertEquals("TechCorp", dto.getCompanyName());
+    assertEquals("IT", dto.getField());
 
-        verify(passwordEncoder).encode(rawPassword);
+    verify(passwordEncoder).encode(rawPassword);
 
-        ArgumentCaptor<Employeur> captor = ArgumentCaptor.forClass(Employeur.class);
-        verify(employeurRepository).save(captor.capture());
-        assertEquals(encodedPassword, captor.getValue().getPassword());
-    }
+    ArgumentCaptor<Employeur> captor = ArgumentCaptor.forClass(Employeur.class);
+    verify(employeurRepository).save(captor.capture());
+    assertEquals(encodedPassword, captor.getValue().getPassword());
+  }
 
-    @Test
-    void testGetEmployeurByIdFound() {
-        Employeur employeur = Employeur.builder()
-                .id(2L)
-                .firstName("Alice")
-                .lastName("Smith")
-                .email("alice.smith@example.com")
-                .password("pass")
-                .companyName("InnoTech")
-                .field("Software")
-                .build();
+  @Test
+  void testGetEmployeurByIdFound() {
+    Employeur employeur =
+        Employeur.builder()
+            .id(2L)
+            .firstName("Alice")
+            .lastName("Smith")
+            .email("alice.smith@example.com")
+            .password("pass")
+            .companyName("InnoTech")
+            .field("Software")
+            .build();
 
-        when(employeurRepository.findById(2L)).thenReturn(Optional.of(employeur));
+    when(employeurRepository.findById(2L)).thenReturn(Optional.of(employeur));
 
-        EmployeurDto dto = employeurService.getEmployeurById(2L);
+    EmployeurDto dto = employeurService.getEmployeurById(2L);
 
-        assertNotNull(dto);
-        assertEquals(2L, dto.getId());
-        assertEquals("Alice", dto.getFirstName());
-    }
+    assertNotNull(dto);
+    assertEquals(2L, dto.getId());
+    assertEquals("Alice", dto.getFirstName());
+  }
 
-    @Test
-    void testGetEmployeurByIdNotFound() {
-        when(employeurRepository.findById(99L)).thenReturn(Optional.empty());
+  @Test
+  void testGetEmployeurByIdNotFound() {
+    when(employeurRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> employeurService.getEmployeurById(99L));
-    }
+    assertThrows(UserNotFoundException.class, () -> employeurService.getEmployeurById(99L));
+  }
 }

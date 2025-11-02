@@ -33,274 +33,277 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfiguration.class)
 class EmployeurControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private UserAppService userAppService;
+  @MockitoBean private UserAppService userAppService;
 
-    @MockitoBean
-    private InternshipOfferService internshipOfferService;
+  @MockitoBean private InternshipOfferService internshipOfferService;
 
-    @MockitoBean
-    private EmployeurRepository employeurRepository;
+  @MockitoBean private EmployeurRepository employeurRepository;
 
-    @MockitoBean
-    private CandidatureService candidatureService;
+  @MockitoBean private CandidatureService candidatureService;
 
-    @MockitoBean
-    private ConvocationService convocationService;
+  @MockitoBean private ConvocationService convocationService;
 
-    @MockitoBean
-    private EmployeurService employeurService;
+  @MockitoBean private EmployeurService employeurService;
 
-    @MockitoBean
-    private EntenteStageService ententeStageService;
+  @MockitoBean private EntenteStageService ententeStageService;
 
-    private CandidatureDto createCandidatureDto(Long id, Long employeurId, String studentFirstName, String studentLastName) {
-        EmployeurDto employeurDto = EmployeurDto.builder()
-                .id(employeurId)
-                .role(Role.EMPLOYEUR)
-                .firstName("Employeur")
-                .lastname("Test")
-                .email("employeur@test.com")
-                .companyName("TechCorp")
-                .build();
+  private CandidatureDto createCandidatureDto(
+      Long id, Long employeurId, String studentFirstName, String studentLastName) {
+    EmployeurDto employeurDto =
+        EmployeurDto.builder()
+            .id(employeurId)
+            .role(Role.EMPLOYEUR)
+            .firstName("Employeur")
+            .lastname("Test")
+            .email("employeur@test.com")
+            .companyName("TechCorp")
+            .build();
 
-        return CandidatureDto.builder()
-                .id(id)
-                .student(StudentDto.builder()
-                        .id(1L)
-                        .firstName(studentFirstName)
-                        .lastName(studentLastName)
-                        .build())
-                .internshipOffer(InternshipOfferDto.builder()
-                        .id(100L)
-                        .description("Stage Java")
-                        .employeurDto(employeurDto)
-                        .pdfPath("dummy.pdf")
-                        .employeurId(employeurId)
-                        .build())
-                .cv(CvDto.builder()
-                        .id(10L)
-                        .pdfPath("dummy.pdf")
-                        .build())
-                .status(Candidature.Status.PENDING)
-                .applicationDate(LocalDateTime.now())
-                .build();
-    }
-
-    @Test
-    void downloadOffer_notEmployeur_returnsForbidden() throws Exception {
-        UserDTO studentDto = StudentDto.builder().id(2L).role(Role.STUDENT).build();
-        when(userAppService.getMe(anyString())).thenReturn(studentDto);
-
-        mockMvc.perform(get("/employeur/offers/100/download")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void downloadOffer_fileNotFound_returnsNotFound() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        InternshipOfferDto offer = InternshipOfferDto.builder()
+    return CandidatureDto.builder()
+        .id(id)
+        .student(
+            StudentDto.builder()
+                .id(1L)
+                .firstName(studentFirstName)
+                .lastName(studentLastName)
+                .build())
+        .internshipOffer(
+            InternshipOfferDto.builder()
                 .id(100L)
                 .description("Stage Java")
                 .employeurDto(employeurDto)
-                .pdfPath("/nonexistent/file.pdf")
-                .build();
+                .pdfPath("dummy.pdf")
+                .employeurId(employeurId)
+                .build())
+        .cv(CvDto.builder().id(10L).pdfPath("dummy.pdf").build())
+        .status(Candidature.Status.PENDING)
+        .applicationDate(LocalDateTime.now())
+        .build();
+  }
 
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
-        when(internshipOfferService.getOfferPdf(100L)).thenThrow(new RuntimeException("File not found"));
+  @Test
+  void downloadOffer_notEmployeur_returnsForbidden() throws Exception {
+    UserDTO studentDto = StudentDto.builder().id(2L).role(Role.STUDENT).build();
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
 
-        mockMvc.perform(get("/employeur/offers/100/download")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isNotFound());
-    }
+    mockMvc
+        .perform(get("/employeur/offers/100/download").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+  }
 
-    @Test
-    void getConvocationsByOffer_asEmployeur_returnsList() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        InternshipOfferDto offer = InternshipOfferDto.builder().id(100L).employeurDto(employeurDto).build();
-        ConvocationDto convocationDto = ConvocationDto.builder().id(10L).location("Bureau 301").build();
+  @Test
+  void downloadOffer_fileNotFound_returnsNotFound() throws Exception {
+    EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    InternshipOfferDto offer =
+        InternshipOfferDto.builder()
+            .id(100L)
+            .description("Stage Java")
+            .employeurDto(employeurDto)
+            .pdfPath("/nonexistent/file.pdf")
+            .build();
 
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
-        when(convocationService.getAllConvocationsByInterShipOfferId(100L)).thenReturn(List.of(convocationDto));
+    when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+    when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+    when(internshipOfferService.getOfferPdf(100L))
+        .thenThrow(new RuntimeException("File not found"));
 
-        mockMvc.perform(get("/employeur/offers/100/convocations")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(10))
-                .andExpect(jsonPath("$[0].location").value("Bureau 301"));
-    }
+    mockMvc
+        .perform(get("/employeur/offers/100/download").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound());
+  }
 
-    @Test
-    void getConvocationsByOffer_notEmployeur_returnsForbidden() throws Exception {
-        UserDTO studentDto = StudentDto.builder().id(2L).role(Role.STUDENT).build();
-        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+  @Test
+  void getConvocationsByOffer_asEmployeur_returnsList() throws Exception {
+    EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    InternshipOfferDto offer =
+        InternshipOfferDto.builder().id(100L).employeurDto(employeurDto).build();
+    ConvocationDto convocationDto = ConvocationDto.builder().id(10L).location("Bureau 301").build();
 
-        mockMvc.perform(get("/employeur/offers/100/convocations")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isForbidden());
-    }
+    when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+    when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+    when(convocationService.getAllConvocationsByInterShipOfferId(100L))
+        .thenReturn(List.of(convocationDto));
 
-    @Test
-    void createConvocation_asEmployeur_createsSuccessfully() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        ConvocationDto request = new ConvocationDto();
-        request.setConvocationDate(LocalDateTime.now().plusDays(5));
-        request.setLocation("Bureau 301");
-        request.setMessage("Message perso");
+    mockMvc
+        .perform(get("/employeur/offers/100/convocations").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(10))
+        .andExpect(jsonPath("$[0].location").value("Bureau 301"));
+  }
 
-        CandidatureDto candidatureDto = createCandidatureDto(50L, 1L, "Alice", "Martin");
+  @Test
+  void getConvocationsByOffer_notEmployeur_returnsForbidden() throws Exception {
+    UserDTO studentDto = StudentDto.builder().id(2L).role(Role.STUDENT).build();
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
 
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
-        doNothing().when(convocationService).addConvocation(anyLong(), any(), anyString(), anyString());
+    mockMvc
+        .perform(get("/employeur/offers/100/convocations").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+  }
 
-        mockMvc.perform(post("/employeur/candidatures/50/convocations")
-                        .header("Authorization", "Bearer token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Convocation créée avec succès"));
-    }
+  @Test
+  void createConvocation_asEmployeur_createsSuccessfully() throws Exception {
+    EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    ConvocationDto request = new ConvocationDto();
+    request.setConvocationDate(LocalDateTime.now().plusDays(5));
+    request.setLocation("Bureau 301");
+    request.setMessage("Message perso");
 
-    @Test
-    void createConvocation_wrongEmployeur_returnsForbidden() throws Exception {
-        EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        CandidatureDto candidature = createCandidatureDto(77L, 2L, "Student", "X");
+    CandidatureDto candidatureDto = createCandidatureDto(50L, 1L, "Alice", "Martin");
 
-        ConvocationDto conv = new ConvocationDto();
-        conv.setLocation("Wrong test");
+    when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+    when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
+    doNothing().when(convocationService).addConvocation(anyLong(), any(), anyString(), anyString());
 
-        when(userAppService.getMe(anyString())).thenReturn(me);
-        when(candidatureService.getCandidatureById(77L)).thenReturn(candidature);
+    mockMvc
+        .perform(
+            post("/employeur/candidatures/50/convocations")
+                .header("Authorization", "Bearer token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().string("Convocation créée avec succès"));
+  }
 
-        mockMvc.perform(post("/employeur/candidatures/77/convocations")
-                        .header("Authorization", "Bearer token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(conv)))
-                .andExpect(status().isForbidden());
-    }
+  @Test
+  void createConvocation_wrongEmployeur_returnsForbidden() throws Exception {
+    EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    CandidatureDto candidature = createCandidatureDto(77L, 2L, "Student", "X");
 
-    @Test
-    void acceptCandidature_asEmployeur_returnsAcceptedByEmployeur() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        CandidatureDto candidatureDto = createCandidatureDto(100L, 1L, "Alice", "Martin");
-        candidatureDto.setStatus(Candidature.Status.ACCEPTEDBYEMPLOYEUR);
+    ConvocationDto conv = new ConvocationDto();
+    conv.setLocation("Wrong test");
 
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
-        when(candidatureService.acceptByEmployeur(100L)).thenReturn(candidatureDto);
+    when(userAppService.getMe(anyString())).thenReturn(me);
+    when(candidatureService.getCandidatureById(77L)).thenReturn(candidature);
 
-        mockMvc.perform(post("/employeur/candidatures/100/accept")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(100))
-                .andExpect(jsonPath("$.status").value("ACCEPTEDBYEMPLOYEUR"));
-    }
+    mockMvc
+        .perform(
+            post("/employeur/candidatures/77/convocations")
+                .header("Authorization", "Bearer token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(conv)))
+        .andExpect(status().isForbidden());
+  }
 
-    @Test
-    void rejectCandidature_asEmployeur_returnsRejected() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        CandidatureDto candidatureDto = createCandidatureDto(100L, 1L, "Alice", "Martin");
-        candidatureDto.setStatus(Candidature.Status.REJECTED);
+  @Test
+  void acceptCandidature_asEmployeur_returnsAcceptedByEmployeur() throws Exception {
+    EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    CandidatureDto candidatureDto = createCandidatureDto(100L, 1L, "Alice", "Martin");
+    candidatureDto.setStatus(Candidature.Status.ACCEPTEDBYEMPLOYEUR);
 
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
-        when(candidatureService.rejectByEmployeur(100L)).thenReturn(candidatureDto);
+    when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+    when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+    when(candidatureService.acceptByEmployeur(100L)).thenReturn(candidatureDto);
 
-        mockMvc.perform(post("/employeur/candidatures/100/reject")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(100))
-                .andExpect(jsonPath("$.status").value("REJECTED"));
-    }
+    mockMvc
+        .perform(post("/employeur/candidatures/100/accept").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(100))
+        .andExpect(jsonPath("$.status").value("ACCEPTEDBYEMPLOYEUR"));
+  }
 
-    @Test
-    void acceptCandidature_wrongEmployeur_returnsForbidden() throws Exception {
-        EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        CandidatureDto candidature = createCandidatureDto(200L, 2L, "Bob", "WrongEmp");
+  @Test
+  void rejectCandidature_asEmployeur_returnsRejected() throws Exception {
+    EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    CandidatureDto candidatureDto = createCandidatureDto(100L, 1L, "Alice", "Martin");
+    candidatureDto.setStatus(Candidature.Status.REJECTED);
 
-        when(userAppService.getMe(anyString())).thenReturn(me);
-        when(candidatureService.getCandidatureById(200L)).thenReturn(candidature);
+    when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+    when(candidatureService.getCandidatureById(100L)).thenReturn(candidatureDto);
+    when(candidatureService.rejectByEmployeur(100L)).thenReturn(candidatureDto);
 
-        mockMvc.perform(post("/employeur/candidatures/200/accept")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isForbidden());
-    }
+    mockMvc
+        .perform(post("/employeur/candidatures/100/reject").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(100))
+        .andExpect(jsonPath("$.status").value("REJECTED"));
+  }
 
-    @Test
-    void acceptCandidature_notFound_returnsNotFound() throws Exception {
-        EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        when(userAppService.getMe(anyString())).thenReturn(me);
-        when(candidatureService.getCandidatureById(999L)).thenThrow(new RuntimeException("Candidature not found"));
+  @Test
+  void acceptCandidature_wrongEmployeur_returnsForbidden() throws Exception {
+    EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    CandidatureDto candidature = createCandidatureDto(200L, 2L, "Bob", "WrongEmp");
 
-        mockMvc.perform(post("/employeur/candidatures/999/accept")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isNotFound());
-    }
+    when(userAppService.getMe(anyString())).thenReturn(me);
+    when(candidatureService.getCandidatureById(200L)).thenReturn(candidature);
 
-    @Test
-    void getCandidaturesForOffer_asEmployeur_returnsList() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        InternshipOfferDto offer = InternshipOfferDto.builder()
-                .id(100L)
-                .employeurDto(employeurDto)
-                .build();
-        CandidatureDto candidatureDto = createCandidatureDto(50L, 1L, "Alice", "Martin");
+    mockMvc
+        .perform(post("/employeur/candidatures/200/accept").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+  }
 
-        CandidatureEmployeurDto candidatureEmployeurDto = CandidatureEmployeurDto.builder()
-                .id(candidatureDto.getId())
-                .studentFirstName(candidatureDto.getStudent().getFirstName())
-                .studentLastName(candidatureDto.getStudent().getLastName())
-                .status(candidatureDto.getStatus())
-                .build();
+  @Test
+  void acceptCandidature_notFound_returnsNotFound() throws Exception {
+    EmployeurDto me = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    when(userAppService.getMe(anyString())).thenReturn(me);
+    when(candidatureService.getCandidatureById(999L))
+        .thenThrow(new RuntimeException("Candidature not found"));
 
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(internshipOfferService.getOffer(100L)).thenReturn(offer);
-        when(candidatureService.getCandidaturesByOffer(100L)).thenReturn(List.of(candidatureEmployeurDto));
+    mockMvc
+        .perform(post("/employeur/candidatures/999/accept").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound());
+  }
 
-        mockMvc.perform(get("/employeur/offers/100/candidatures")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].studentFirstName").value("Alice"))
-                .andExpect(jsonPath("$[0].studentLastName").value("Martin"));
-    }
+  @Test
+  void getCandidaturesForOffer_asEmployeur_returnsList() throws Exception {
+    EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    InternshipOfferDto offer =
+        InternshipOfferDto.builder().id(100L).employeurDto(employeurDto).build();
+    CandidatureDto candidatureDto = createCandidatureDto(50L, 1L, "Alice", "Martin");
 
-    @Test
-    void getAllMyCandidatures_asEmployeur_returnsList() throws Exception {
-        EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
-        CandidatureDto cand1 = createCandidatureDto(50L, 1L, "Alice", "Martin");
-        CandidatureDto cand2 = createCandidatureDto(51L, 1L, "Bob", "Dupont");
+    CandidatureEmployeurDto candidatureEmployeurDto =
+        CandidatureEmployeurDto.builder()
+            .id(candidatureDto.getId())
+            .studentFirstName(candidatureDto.getStudent().getFirstName())
+            .studentLastName(candidatureDto.getStudent().getLastName())
+            .status(candidatureDto.getStatus())
+            .build();
 
-        CandidatureEmployeurDto candDto1 = CandidatureEmployeurDto.builder()
-                .id(cand1.getId())
-                .studentFirstName(cand1.getStudent().getFirstName())
-                .studentLastName(cand1.getStudent().getLastName())
-                .status(cand1.getStatus())
-                .build();
+    when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+    when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+    when(candidatureService.getCandidaturesByOffer(100L))
+        .thenReturn(List.of(candidatureEmployeurDto));
 
-        CandidatureEmployeurDto candDto2 = CandidatureEmployeurDto.builder()
-                .id(cand2.getId())
-                .studentFirstName(cand2.getStudent().getFirstName())
-                .studentLastName(cand2.getStudent().getLastName())
-                .status(cand2.getStatus())
-                .build();
+    mockMvc
+        .perform(get("/employeur/offers/100/candidatures").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].studentFirstName").value("Alice"))
+        .andExpect(jsonPath("$[0].studentLastName").value("Martin"));
+  }
 
-        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(candidatureService.getCandidaturesByEmployeur(1L)).thenReturn(List.of(candDto1, candDto2));
+  @Test
+  void getAllMyCandidatures_asEmployeur_returnsList() throws Exception {
+    EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
+    CandidatureDto cand1 = createCandidatureDto(50L, 1L, "Alice", "Martin");
+    CandidatureDto cand2 = createCandidatureDto(51L, 1L, "Bob", "Dupont");
 
-        mockMvc.perform(get("/employeur/candidatures")
-                        .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(50))
-                .andExpect(jsonPath("$[1].id").value(51));
-    }
+    CandidatureEmployeurDto candDto1 =
+        CandidatureEmployeurDto.builder()
+            .id(cand1.getId())
+            .studentFirstName(cand1.getStudent().getFirstName())
+            .studentLastName(cand1.getStudent().getLastName())
+            .status(cand1.getStatus())
+            .build();
+
+    CandidatureEmployeurDto candDto2 =
+        CandidatureEmployeurDto.builder()
+            .id(cand2.getId())
+            .studentFirstName(cand2.getStudent().getFirstName())
+            .studentLastName(cand2.getStudent().getLastName())
+            .status(cand2.getStatus())
+            .build();
+
+    when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+    when(candidatureService.getCandidaturesByEmployeur(1L)).thenReturn(List.of(candDto1, candDto2));
+
+    mockMvc
+        .perform(get("/employeur/candidatures").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(50))
+        .andExpect(jsonPath("$[1].id").value(51));
+  }
 }

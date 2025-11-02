@@ -10,33 +10,37 @@ import java.util.List;
 
 public interface InternshipOfferRepository extends JpaRepository<InternshipOffer, Long> {
 
-    @Query("""
+  @Query(
+      """
         select o from InternshipOffer o
         where o.employeur.id = :employeurId
         order by o.startDate desc
     """)
-    List<InternshipOffer> findOffersByEmployeurId(@Param("employeurId") Long employeurId);
+  List<InternshipOffer> findOffersByEmployeurId(@Param("employeurId") Long employeurId);
 
-    @Query("""
+  @Query(
+      """
         select o from InternshipOffer o
         join fetch o.employeur e
         where o.status = :status
         order by o.startDate desc
     """)
-    List<InternshipOffer> findByStatusWithEmployeur(@Param("status") InternshipOffer.Status status);
+  List<InternshipOffer> findByStatusWithEmployeur(@Param("status") InternshipOffer.Status status);
 
-    @Query("""
+  @Query(
+      """
         select o from InternshipOffer o
         where o.status = :status
         order by o.startDate desc
     """)
-    List<InternshipOffer> findByStatusOrderByStartDateDesc(InternshipOffer.Status status);
+  List<InternshipOffer> findByStatusOrderByStartDateDesc(InternshipOffer.Status status);
 
-    @Query("""
+  @Query(
+      """
         select o from InternshipOffer o
         where o.status = 'PUBLISHED'
         and o.employeur.field = :program
         order by o.startDate desc
     """)
-    List<InternshipOffer> findPublishedByProgram(@Param("program") String program);
+  List<InternshipOffer> findPublishedByProgram(@Param("program") String program);
 }

@@ -15,44 +15,44 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeurService {
 
-    private final EmployeurRepository employeurRepository;
-    private final PasswordEncoder passwordEncoder;
+  private final EmployeurRepository employeurRepository;
+  private final PasswordEncoder passwordEncoder;
 
-    @Transactional
-    public EmployeurDto createEmployeur(
-            String firstName,
-            String lastName,
-            String email,
-            String rawPassword,
-            String companyName,
-            String field
-    ) {
-        if (employeurRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Cet email est déjà utilisé");
-        }
-
-        Employeur employeur = Employeur.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .password(passwordEncoder.encode(rawPassword))
-                .companyName(companyName)
-                .field(field)
-                .build();
-
-        Employeur savedEmployeur = employeurRepository.save(employeur);
-        return EmployeurDto.create(savedEmployeur);
+  @Transactional
+  public EmployeurDto createEmployeur(
+      String firstName,
+      String lastName,
+      String email,
+      String rawPassword,
+      String companyName,
+      String field) {
+    if (employeurRepository.existsByEmail(email)) {
+      throw new IllegalArgumentException("Cet email est déjà utilisé");
     }
 
-    @Transactional
-    public EmployeurDto getEmployeurById(Long id){
-        if (id == null){
-            throw new IllegalArgumentException();
-        }
-        Optional<Employeur> emp = employeurRepository.findById(id);
-        if (emp.isEmpty()){
-            throw new UserNotFoundException();
-        }
-        return EmployeurDto.create(emp.get());
+    Employeur employeur =
+        Employeur.builder()
+            .firstName(firstName)
+            .lastName(lastName)
+            .email(email)
+            .password(passwordEncoder.encode(rawPassword))
+            .companyName(companyName)
+            .field(field)
+            .build();
+
+    Employeur savedEmployeur = employeurRepository.save(employeur);
+    return EmployeurDto.create(savedEmployeur);
+  }
+
+  @Transactional
+  public EmployeurDto getEmployeurById(Long id) {
+    if (id == null) {
+      throw new IllegalArgumentException();
     }
+    Optional<Employeur> emp = employeurRepository.findById(id);
+    if (emp.isEmpty()) {
+      throw new UserNotFoundException();
+    }
+    return EmployeurDto.create(emp.get());
+  }
 }

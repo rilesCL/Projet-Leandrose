@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ManagerRepository extends JpaRepository<Gestionnaire, Long> {
 
-    Optional<Gestionnaire> findFirstByFirstNameAndLastName(String firstName, String lastName);
+  Optional<Gestionnaire> findFirstByFirstNameAndLastName(String firstName, String lastName);
 }

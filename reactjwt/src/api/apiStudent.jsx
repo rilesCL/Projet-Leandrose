@@ -177,7 +177,6 @@ export async function acceptCandidatureByStudent(candidatureId, token = null) {
     }
 }
 
-
 export async function rejectCandidatureByStudent(candidatureId, token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/applications/${candidatureId}/reject`, {
@@ -208,5 +207,33 @@ export async function previewStudentCv(token = null) {
     } catch (error) {
         throw new Error(error.message || "Erreur lors du chargement du CV");
     }
+}
 
+export async function getCurrentStudent(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/user/me`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération des informations');
+    }
+}
+
+export async function updateStudentInfo(program, token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/update-info`, {
+            method: 'PUT',
+            headers: getAuthHeaders(token),
+            body: JSON.stringify({ program })
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la mise à jour des informations');
+    }
 }

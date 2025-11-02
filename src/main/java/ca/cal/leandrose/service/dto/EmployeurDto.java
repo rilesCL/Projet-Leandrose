@@ -9,33 +9,40 @@ import java.util.Map;
 
 @Data
 public class EmployeurDto extends UserDTO {
-    private String companyName;
-    private String field;
-    private Map<String, String> error;
+  private String companyName;
+  private String field;
+  private Map<String, String> error;
 
-    @Builder
-    public EmployeurDto(Long id, String firstName, String lastname, String email, String password, Role role, String companyName, String field) {
-        super(id, firstName, lastname, email, role);
-        this.companyName = companyName;
-        this.field = field;
-    }
+  @Builder
+  public EmployeurDto(
+      Long id,
+      String firstName,
+      String lastname,
+      String email,
+      String password,
+      Role role,
+      String companyName,
+      String field) {
+    super(id, firstName, lastname, email, role);
+    this.companyName = companyName;
+    this.field = field;
+  }
 
-    public EmployeurDto() {}
+  public EmployeurDto() {}
 
-    public static EmployeurDto create(Employeur employeur) {
-        return EmployeurDto.builder()
-                .id(employeur.getId())
-                .firstName(employeur.getFirstName())
-                .lastname(employeur.getLastName())
-                .email(employeur.getEmail())
-                .role(employeur.getRole())
-                .companyName(employeur.getCompanyName())
-                .field(employeur.getField())
-                .build();
-    }
+  public static EmployeurDto create(Employeur employeur) {
+    return EmployeurDto.builder()
+        .id(employeur.getId())
+        .firstName(employeur.getFirstName())
+        .lastname(employeur.getLastName())
+        .email(employeur.getEmail())
+        .role(employeur.getRole())
+        .companyName(employeur.getCompanyName())
+        .field(employeur.getField())
+        .build();
+  }
 
-    public static EmployeurDto empty() {
-        return new EmployeurDto();
-    }
-
+  public static EmployeurDto empty() {
+    return new EmployeurDto();
+  }
 }

@@ -13,20 +13,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConvocationDto {
-    private Long id;
-    private Long candidatureId;
-    private LocalDateTime convocationDate;
-    private String location;
-    private String message;
+  private Long id;
+  private Long candidatureId;
+  private LocalDateTime convocationDate;
+  private String location;
+  private String message;
 
-    public static ConvocationDto create(Convocation convocation) {
-        return ConvocationDto.builder()
-                .id(convocation.getId())
-                .candidatureId(convocation.getCandidature() != null ? convocation.getCandidature().getId() : null)
-                .convocationDate(convocation.getConvocationDate())
-                .location(convocation.getLocation())
-                .message(convocation.getPersonnalMessage())
-                .build();
-    }
-
+  public static ConvocationDto create(Convocation convocation) {
+    return ConvocationDto.builder()
+        .id(convocation.getId())
+        .candidatureId(
+            convocation.getCandidature() != null ? convocation.getCandidature().getId() : null)
+        .convocationDate(convocation.getConvocationDate())
+        .location(convocation.getLocation())
+        .message(convocation.getPersonnalMessage())
+        .build();
+  }
 }

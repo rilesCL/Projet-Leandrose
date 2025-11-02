@@ -3,18 +3,17 @@ package ca.cal.leandrose.security.exception;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-public abstract class APIException extends RuntimeException{
-	@Getter
-	protected final HttpStatus status;
-	protected final String message;
+public abstract class APIException extends RuntimeException {
+  @Getter protected final HttpStatus status;
+  protected final String message;
 
-	public APIException(HttpStatus status, String message){
-		this.status = status;
-		this.message = message;
-	}
+  public APIException(HttpStatus status, String message) {
+    this.status = status;
+    this.message = message;
+  }
 
-	@Override
-	public String getMessage(){
-		return message;
-	}
+  @Override
+  public String getMessage() {
+    return message;
+  }
 }

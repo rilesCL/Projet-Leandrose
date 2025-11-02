@@ -19,83 +19,82 @@ import static org.mockito.Mockito.*;
 
 class StudentServiceTest {
 
-    @Mock
-    private StudentRepository studentRepository;
+  @Mock private StudentRepository studentRepository;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+  @Mock private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
-    private StudentService studentService;
+  @InjectMocks private StudentService studentService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
 
-    @Test
-    void testCreateStudent() {
-        String rawPassword = "password123";
-        String encodedPassword = "encodedPass";
+  @Test
+  void testCreateStudent() {
+    String rawPassword = "password123";
+    String encodedPassword = "encodedPass";
 
-        when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
+    when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
 
-        Student savedStudent = Student.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@student.com")
-                .password(encodedPassword)
-                .studentNumber("STU001")
-                .program("Computer Science")
-                .build();
+    Student savedStudent =
+        Student.builder()
+            .id(1L)
+            .firstName("John")
+            .lastName("Doe")
+            .email("john.doe@student.com")
+            .password(encodedPassword)
+            .studentNumber("STU001")
+            .program("Computer Science")
+            .build();
 
-        when(studentRepository.save(any(Student.class))).thenReturn(savedStudent);
+    when(studentRepository.save(any(Student.class))).thenReturn(savedStudent);
 
-        StudentDto dto = studentService.createStudent(
-                "John", "Doe", "john.doe@student.com", rawPassword, "STU001", "Computer Science"
-        );
+    StudentDto dto =
+        studentService.createStudent(
+            "John", "Doe", "john.doe@student.com", rawPassword, "STU001", "Computer Science");
 
-        assertNotNull(dto);
-        assertEquals(1L, dto.getId());
-        assertEquals("John", dto.getFirstName());
-        assertEquals("Doe", dto.getLastName());
-        assertEquals("john.doe@student.com", dto.getEmail());
-        assertEquals("STU001", dto.getStudentNumber());
-        assertEquals("Computer Science", dto.getProgram());
+    assertNotNull(dto);
+    assertEquals(1L, dto.getId());
+    assertEquals("John", dto.getFirstName());
+    assertEquals("Doe", dto.getLastName());
+    assertEquals("john.doe@student.com", dto.getEmail());
+    assertEquals("STU001", dto.getStudentNumber());
+    assertEquals("Computer Science", dto.getProgram());
 
-        verify(passwordEncoder).encode(rawPassword);
+    verify(passwordEncoder).encode(rawPassword);
 
-        ArgumentCaptor<Student> captor = ArgumentCaptor.forClass(Student.class);
-        verify(studentRepository).save(captor.capture());
-        assertEquals(encodedPassword, captor.getValue().getPassword());
-    }
+    ArgumentCaptor<Student> captor = ArgumentCaptor.forClass(Student.class);
+    verify(studentRepository).save(captor.capture());
+    assertEquals(encodedPassword, captor.getValue().getPassword());
+  }
 
-    @Test
-    void testGetStudentByIdFound() {
-        Student student = Student.builder()
-                .id(2L)
-                .firstName("Alice")
-                .lastName("Smith")
-                .email("alice.smith@student.com")
-                .password("pass")
-                .studentNumber("STU002")
-                .program("Mathematics")
-                .build();
+  @Test
+  void testGetStudentByIdFound() {
+    Student student =
+        Student.builder()
+            .id(2L)
+            .firstName("Alice")
+            .lastName("Smith")
+            .email("alice.smith@student.com")
+            .password("pass")
+            .studentNumber("STU002")
+            .program("Mathematics")
+            .build();
 
-        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+    when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
 
-        StudentDto dto = studentService.getStudentById(2L);
+    StudentDto dto = studentService.getStudentById(2L);
 
-        assertNotNull(dto);
-        assertEquals(2L, dto.getId());
-        assertEquals("Alice", dto.getFirstName());
-    }
+    assertNotNull(dto);
+    assertEquals(2L, dto.getId());
+    assertEquals("Alice", dto.getFirstName());
+  }
 
-    @Test
-    void testGetStudentByIdNotFound() {
-        when(studentRepository.findById(99L)).thenReturn(Optional.empty());
+  @Test
+  void testGetStudentByIdNotFound() {
+    when(studentRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> studentService.getStudentById(99L));
-    }
+    assertThrows(UserNotFoundException.class, () -> studentService.getStudentById(99L));
+  }
 }

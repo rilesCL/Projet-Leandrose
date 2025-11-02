@@ -14,14 +14,22 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Gestionnaire extends UserApp {
-	@Column(unique = true, nullable = false)
-	private String phoneNumber;
+  @Column(unique = true, nullable = false)
+  private String phoneNumber;
 
-	@Builder
-	public Gestionnaire(
-	Long id, String firstName, String lastName, String email, String password,
-        String phoneNumber){
-		super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.GESTIONNAIRE).build());
-		this.phoneNumber = phoneNumber;
-	}
+  @Builder
+  public Gestionnaire(
+      Long id,
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      String phoneNumber) {
+    super(
+        id,
+        firstName,
+        lastName,
+        Credentials.builder().email(email).password(password).role(Role.GESTIONNAIRE).build());
+    this.phoneNumber = phoneNumber;
+  }
 }

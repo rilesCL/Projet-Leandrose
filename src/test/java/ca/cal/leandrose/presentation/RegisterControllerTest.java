@@ -28,177 +28,190 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 class RegisterControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private EmployeurService employeurService;
+  @MockitoBean private EmployeurService employeurService;
 
-    @MockitoBean
-    private StudentService studentService;
+  @MockitoBean private StudentService studentService;
 
-    @MockitoBean
-    private GestionnaireService gestionnaireService;
+  @MockitoBean private GestionnaireService gestionnaireService;
 
-    @Test
-    @DisplayName("POST /api/register/employeur returns 201 and employer details on success")
-    void testRegisterEmployeurSuccess() throws Exception {
-        // Arrange
-        RegisterEmployeur request = new RegisterEmployeur();
-        request.setFirstName("John");
-        request.setLastName("Doe");
-        request.setEmail("john.doe@example.com");
-        request.setPassword("password123");
-        request.setCompanyName("TechCorp");
-        request.setField("IT");
+  @Test
+  @DisplayName("POST /api/register/employeur returns 201 and employer details on success")
+  void testRegisterEmployeurSuccess() throws Exception {
+    // Arrange
+    RegisterEmployeur request = new RegisterEmployeur();
+    request.setFirstName("John");
+    request.setLastName("Doe");
+    request.setEmail("john.doe@example.com");
+    request.setPassword("password123");
+    request.setCompanyName("TechCorp");
+    request.setField("IT");
 
-        EmployeurDto dto = new EmployeurDto();
-        dto.setId(1L);
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        dto.setEmail("john.doe@example.com");
-        dto.setCompanyName("TechCorp");
-        dto.setField("IT");
+    EmployeurDto dto = new EmployeurDto();
+    dto.setId(1L);
+    dto.setFirstName("John");
+    dto.setLastName("Doe");
+    dto.setEmail("john.doe@example.com");
+    dto.setCompanyName("TechCorp");
+    dto.setField("IT");
 
-        when(employeurService.createEmployeur(
-                anyString(), anyString(), anyString(), anyString(), anyString(), anyString()
-        )).thenReturn(dto);
+    when(employeurService.createEmployeur(
+            anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
+        .thenReturn(dto);
 
-        // Act + Assert
-        mockMvc.perform(post("/api/register/employeur")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.email").value("john.doe@example.com"));
+    // Act + Assert
+    mockMvc
+        .perform(
+            post("/api/register/employeur")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.firstName").value("John"))
+        .andExpect(jsonPath("$.email").value("john.doe@example.com"));
 
-        verify(employeurService, times(1))
-                .createEmployeur("John", "Doe", "john.doe@example.com", "password123", "TechCorp", "IT");
-    }
+    verify(employeurService, times(1))
+        .createEmployeur("John", "Doe", "john.doe@example.com", "password123", "TechCorp", "IT");
+  }
 
-    @Test
-    @DisplayName("POST /api/register/employeur returns 400 for invalid input")
-    void testRegisterEmployeurInvalidInput() throws Exception {
-        // Arrange
-        RegisterEmployeur request = new RegisterEmployeur();
-        request.setFirstName("");
-        request.setLastName("Doe");
-        request.setEmail("invalid-email");
-        request.setPassword("pass");
-        request.setCompanyName("TechCorp");
-        request.setField("IT");
+  @Test
+  @DisplayName("POST /api/register/employeur returns 400 for invalid input")
+  void testRegisterEmployeurInvalidInput() throws Exception {
+    // Arrange
+    RegisterEmployeur request = new RegisterEmployeur();
+    request.setFirstName("");
+    request.setLastName("Doe");
+    request.setEmail("invalid-email");
+    request.setPassword("pass");
+    request.setCompanyName("TechCorp");
+    request.setField("IT");
 
-        // Act + Assert
-        mockMvc.perform(post("/api/register/employeur")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+    // Act + Assert
+    mockMvc
+        .perform(
+            post("/api/register/employeur")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest());
 
-        verifyNoInteractions(employeurService);
-    }
+    verifyNoInteractions(employeurService);
+  }
 
-    @Test
-    @DisplayName("POST /api/register/student returns 201 and student details on success")
-    void testRegisterStudentSuccess() throws Exception {
-        // Arrange
-        RegisterStudent request = new RegisterStudent();
-        request.setFirstName("Marie");
-        request.setLastName("Dupont");
-        request.setEmail("marie.dupont@student.com");
-        request.setPassword("Password123!");
-        request.setStudentNumber("STU12345");
-        request.setProgram("Informatique");
+  @Test
+  @DisplayName("POST /api/register/student returns 201 and student details on success")
+  void testRegisterStudentSuccess() throws Exception {
+    // Arrange
+    RegisterStudent request = new RegisterStudent();
+    request.setFirstName("Marie");
+    request.setLastName("Dupont");
+    request.setEmail("marie.dupont@student.com");
+    request.setPassword("Password123!");
+    request.setStudentNumber("STU12345");
+    request.setProgram("Informatique");
 
-        StudentDto dto = new StudentDto();
-        dto.setId(1L);
-        dto.setFirstName("Marie");
-        dto.setLastName("Dupont");
-        dto.setEmail("marie.dupont@student.com");
-        dto.setStudentNumber("STU12345");
-        dto.setProgram("Informatique");
+    StudentDto dto = new StudentDto();
+    dto.setId(1L);
+    dto.setFirstName("Marie");
+    dto.setLastName("Dupont");
+    dto.setEmail("marie.dupont@student.com");
+    dto.setStudentNumber("STU12345");
+    dto.setProgram("Informatique");
 
-        when(studentService.createStudent(
-                anyString(), anyString(), anyString(), anyString(), anyString(), anyString()
-        )).thenReturn(dto);
+    when(studentService.createStudent(
+            anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
+        .thenReturn(dto);
 
-        // Act + Assert
-        mockMvc.perform(post("/api/register/student")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.firstName").value("Marie"))
-                .andExpect(jsonPath("$.email").value("marie.dupont@student.com"))
-                .andExpect(jsonPath("$.studentNumber").value("STU12345"));
+    // Act + Assert
+    mockMvc
+        .perform(
+            post("/api/register/student")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.firstName").value("Marie"))
+        .andExpect(jsonPath("$.email").value("marie.dupont@student.com"))
+        .andExpect(jsonPath("$.studentNumber").value("STU12345"));
 
-        verify(studentService, times(1))
-                .createStudent("Marie", "Dupont", "marie.dupont@student.com", "Password123!", "STU12345", "Informatique");
-    }
+    verify(studentService, times(1))
+        .createStudent(
+            "Marie",
+            "Dupont",
+            "marie.dupont@student.com",
+            "Password123!",
+            "STU12345",
+            "Informatique");
+  }
 
-    @Test
-    @DisplayName("POST /api/register/student returns 400 for invalid input")
-    void testRegisterStudentInvalidInput() throws Exception {
-        // Arrange
-        RegisterStudent request = new RegisterStudent();
-        request.setFirstName("");
-        request.setLastName("Dupont");
-        request.setEmail("invalid-email");
-        request.setPassword("weak");
-        request.setStudentNumber("STU123");
-        request.setProgram("");
+  @Test
+  @DisplayName("POST /api/register/student returns 400 for invalid input")
+  void testRegisterStudentInvalidInput() throws Exception {
+    // Arrange
+    RegisterStudent request = new RegisterStudent();
+    request.setFirstName("");
+    request.setLastName("Dupont");
+    request.setEmail("invalid-email");
+    request.setPassword("weak");
+    request.setStudentNumber("STU123");
+    request.setProgram("");
 
-        // Act + Assert
-        mockMvc.perform(post("/api/register/student")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+    // Act + Assert
+    mockMvc
+        .perform(
+            post("/api/register/student")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest());
 
-        verifyNoInteractions(studentService);
-    }
+    verifyNoInteractions(studentService);
+  }
 
-    @Test
-    @DisplayName("POST /api/register/employeur returns 400 when email is null")
-    void testRegisterEmployeurNullEmail() throws Exception {
-        // Arrange
-        RegisterEmployeur request = new RegisterEmployeur();
-        request.setFirstName("John");
-        request.setLastName("Doe");
-        request.setEmail(null);
-        request.setPassword("password123");
-        request.setCompanyName("TechCorp");
-        request.setField("IT");
+  @Test
+  @DisplayName("POST /api/register/employeur returns 400 when email is null")
+  void testRegisterEmployeurNullEmail() throws Exception {
+    // Arrange
+    RegisterEmployeur request = new RegisterEmployeur();
+    request.setFirstName("John");
+    request.setLastName("Doe");
+    request.setEmail(null);
+    request.setPassword("password123");
+    request.setCompanyName("TechCorp");
+    request.setField("IT");
 
-        // Act + Assert
-        mockMvc.perform(post("/api/register/employeur")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+    // Act + Assert
+    mockMvc
+        .perform(
+            post("/api/register/employeur")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest());
 
-        verifyNoInteractions(employeurService);
-    }
+    verifyNoInteractions(employeurService);
+  }
 
-    @Test
-    @DisplayName("POST /api/register/student returns 400 when required fields are null")
-    void testRegisterStudentNullFields() throws Exception {
-        // Arrange
-        RegisterStudent request = new RegisterStudent();
-        request.setFirstName(null);
-        request.setLastName("Dupont");
-        request.setEmail(null);
-        request.setPassword("Password123!");
-        request.setStudentNumber(null);
-        request.setProgram("Informatique");
+  @Test
+  @DisplayName("POST /api/register/student returns 400 when required fields are null")
+  void testRegisterStudentNullFields() throws Exception {
+    // Arrange
+    RegisterStudent request = new RegisterStudent();
+    request.setFirstName(null);
+    request.setLastName("Dupont");
+    request.setEmail(null);
+    request.setPassword("Password123!");
+    request.setStudentNumber(null);
+    request.setProgram("Informatique");
 
-        // Act + Assert
-        mockMvc.perform(post("/api/register/student")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+    // Act + Assert
+    mockMvc
+        .perform(
+            post("/api/register/student")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest());
 
-        verifyNoInteractions(studentService);
-    }
+    verifyNoInteractions(studentService);
+  }
 }

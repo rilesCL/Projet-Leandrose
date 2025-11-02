@@ -1,5 +1,11 @@
 {
   "appName": "LeandrOSE",
+  "terms": {
+    "term": "Session",
+    "FALL": "Automne",
+    "WINTER": "Hiver",
+    "SUMMER": "Été"
+  },
   "previewPdf": {
     "preview": "Aperçu",
     "next": "Suivant",
@@ -9,6 +15,7 @@
     "error": "Impossible d'afficher le document"
   },
   "program": {
+    "description": "Programme d'études",
     "computer_science": "Informatique",
     "software_engineering": "Génie logiciel",
     "information_technology": "Technologies de l'information",

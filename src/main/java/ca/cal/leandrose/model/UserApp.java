@@ -15,31 +15,30 @@ import java.util.Collection;
 @Getter
 @Setter
 @ToString
-public abstract class UserApp  {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String firstName;
+public abstract class UserApp {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String lastName;
+  private String firstName;
 
-    @Embedded
-    private Credentials credentials;
+  private String lastName;
 
-    public String getEmail(){
-        return credentials.getEmail();
-    }
+  @Embedded private Credentials credentials;
 
-    public String getPassword(){
-        return credentials.getPassword();
-    }
+  public String getEmail() {
+    return credentials.getEmail();
+  }
 
-    public Role getRole(){
-        return credentials.getRole();
-    }
+  public String getPassword() {
+    return credentials.getPassword();
+  }
 
+  public Role getRole() {
+    return credentials.getRole();
+  }
 
-    public Collection<? extends GrantedAuthority> getAuthorities(){
-        return credentials.getAuthorities();
-    }
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return credentials.getAuthorities();
+  }
 }

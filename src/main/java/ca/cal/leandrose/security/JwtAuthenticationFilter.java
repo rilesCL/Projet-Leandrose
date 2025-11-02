@@ -17,44 +17,41 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtTokenProvider tokenProvider;
-    private final UserAppRepository userRepository;
+  private final JwtTokenProvider tokenProvider;
+  private final UserAppRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UserAppRepository userRepository) {
-        this.tokenProvider = tokenProvider;
-        this.userRepository = userRepository;
+  public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UserAppRepository userRepository) {
+    this.tokenProvider = tokenProvider;
+    this.userRepository = userRepository;
+  }
+
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+    String token = getJWTFromRequest(request);
+    if (StringUtils.hasText(token)) {
+      token = token.startsWith("Bearer") ? token.substring(7) : token;
+      try {
+        tokenProvider.validateToken(token);
+        String email = tokenProvider.getEmailFromJWT(token);
+        System.out.println("emailFromToken:'" + email + "' length=" + email.length());
+        Optional<UserApp> util = userRepository.findUserAppByEmail(email);
+        System.out.println(util);
+        UserApp user =
+            userRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
+        UsernamePasswordAuthenticationToken authenticationToken =
+            new UsernamePasswordAuthenticationToken(user.getEmail(), null, user.getAuthorities());
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+      } catch (Exception e) {
+        logger.error("Could not set user authentication in security context", e);
+      }
     }
+    filterChain.doFilter(request, response);
+  }
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-        String token = getJWTFromRequest(request);
-        if (StringUtils.hasText(token)) {
-        	token = token.startsWith("Bearer") ? token.substring(7) : token;
-            try {
-                tokenProvider.validateToken(token);
-                String email = tokenProvider.getEmailFromJWT(token);
-                System.out.println("emailFromToken:'" + email + "' length=" + email.length());
-                Optional<UserApp> util = userRepository.findUserAppByEmail(email);
-                System.out.println(util);
-                UserApp user = userRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        user.getEmail(), null, user.getAuthorities()
-                );
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            } catch (Exception e) {
-                logger.error("Could not set user authentication in security context", e);
-            }
-        }
-        filterChain.doFilter(request, response);
-    }
-
-    private String getJWTFromRequest(HttpServletRequest request) {
-        return request.getHeader("Authorization");
-    }
-
+  private String getJWTFromRequest(HttpServletRequest request) {
+    return request.getHeader("Authorization");
+  }
 }

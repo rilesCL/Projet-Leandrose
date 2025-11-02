@@ -14,5 +14,5 @@ management:
     version: '@project.version@'
 
 spring:
-   profiles:
-     active: dev
+  profiles:
+    active: dev

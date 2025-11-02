@@ -15,43 +15,41 @@ import java.time.LocalDateTime;
 @Builder
 public class Candidature {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Student student;
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private Student student;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private  InternshipOffer internshipOffer;
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private InternshipOffer internshipOffer;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Cv cv;
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private Cv cv;
 
-    @OneToOne(mappedBy = "candidature", cascade = CascadeType.ALL, optional = true)
-    private Convocation convocation;
+  @OneToOne(mappedBy = "candidature", cascade = CascadeType.ALL, optional = true)
+  private Convocation convocation;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Status status;
 
-    @Column(nullable = false)
-    private LocalDateTime applicationDate;
+  @Column(nullable = false)
+  private LocalDateTime applicationDate;
 
-    public Long getEmployeurId() {
-        return internshipOffer.getEmployeurId();
-    }
+  public Long getEmployeurId() {
+    return internshipOffer.getEmployeurId();
+  }
 
-
-    public enum Status {
-        PENDING,
-        ACCEPTED,
-        ACCEPTEDBYEMPLOYEUR,
-        CONVENED,
-        REJECTED
-    }
-
+  public enum Status {
+    PENDING,
+    ACCEPTED,
+    ACCEPTEDBYEMPLOYEUR,
+    CONVENED,
+    REJECTED
+  }
 }
