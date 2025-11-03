@@ -2,6 +2,7 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.SchoolTerm;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
@@ -20,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import static ca.cal.leandrose.service.mapper.InternshipOfferMapper.toDto;
@@ -119,16 +121,23 @@ public class InternshipOfferService {
   }
 
   public List<InternshipOfferDto> getPublishedOffersForStudents(String program, String schoolTerm) {
-    SchoolTerm term = parseSchoolTerm(schoolTerm);
+      if (Arrays.stream(Program.values())
+              .anyMatch(p -> p.getTranslationKey().equals(program))) {
+          SchoolTerm term = parseSchoolTerm(schoolTerm);
 
-    return internshipOfferRepository.findPublishedByProgram(program).stream()
-        .filter(
-            offer ->
-                offer.getSchoolTerm() != null
-                    && offer.getSchoolTerm().getSeason() == term.getSeason()
-                    && offer.getSchoolTerm().getYear() == term.getYear())
-        .map(InternshipOfferMapper::toDto)
-        .toList();
+          return internshipOfferRepository.findPublishedByProgram(program).stream()
+                  .filter(
+                          offer ->
+                                  offer.getSchoolTerm() != null
+                                          && offer.getSchoolTerm().getSeason() == term.getSeason()
+                                          && offer.getSchoolTerm().getYear() == term.getYear())
+                  .map(InternshipOfferMapper::toDto)
+                  .toList();
+      }
+      else {
+            throw new IllegalArgumentException("Invalid program: " + program);
+      }
+
   }
 
   private SchoolTerm parseSchoolTerm(String termString) {

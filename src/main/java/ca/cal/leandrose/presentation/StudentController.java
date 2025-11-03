@@ -153,7 +153,6 @@ public class StudentController {
     }
 
     StudentDto student = studentService.getStudentById(me.getId());
-    System.out.println(student.isExpired());
 
     List<InternshipOfferDto> offers =
         internshipOfferService.getPublishedOffersForStudents(
