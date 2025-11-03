@@ -236,6 +236,15 @@
       "ententes": "Internship Agreements",
       "cv": "My CV",
       "applications": "My Applications"
+    },
+    "reregistration": {
+      "title": "Re-registration Required",
+      "message": "Your registration session has expired. Please re-register for the new session.",
+      "program": "Program",
+      "selectProgram": "Select a program",
+      "confirm": "Re-register Now",
+      "continueLater": "Consult the dashboard without re-registering",
+      "updating": "Updating..."
     }
   },
 
@@ -636,7 +645,11 @@
     "startDate": "Start date",
     "duration": "Duration",
     "actions": "Actions",
-    "viewDetails": "View details"
+    "viewDetails": "View details",
+    "reregistrationRequired": "Re-registration Required",
+    "sessionExpired": "Your registration session has expired.",
+    "reregisterToSeeOffers": "Please re-register to view offers for the new session.",
+    "reregisterNow": "Re-register Now"
   },
   "employerCandidatures": {
     "navLink": "My applications",

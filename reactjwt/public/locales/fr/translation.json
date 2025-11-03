@@ -237,6 +237,15 @@
       "ententes": "Ententes de stage",
       "cv": "Mon CV",
       "applications": "Mes candidatures"
+    },
+    "reregistration": {
+      "title": "Réinscription requise",
+      "message": "Votre session d'inscription est expirée. Veuillez vous réinscrire pour la nouvelle session.",
+      "program": "Programme",
+      "selectProgram": "Sélectionnez un programme",
+      "confirm": "Me réinscrire maintenant",
+      "continueLater": "Consulter le tableau de bord sans réinscription",
+      "updating": "Mise à jour..."
     }
 },
   "programsList": {
@@ -637,7 +646,11 @@
     "startDate": "Date de début",
     "duration": "Durée",
     "actions": "Actions",
-    "viewDetails": "Voir détails"
+    "viewDetails": "Voir détails",
+    "reregistrationRequired": "Réinscription requise",
+    "sessionExpired": "Votre session d'inscription est expirée.",
+    "reregisterToSeeOffers": "Veuillez vous réinscrire pour voir les offres de la nouvelle session.",
+    "reregisterNow": "Me réinscrire maintenant"
   },
   "employerCandidatures": {
     "navLink": "Mes candidatures",

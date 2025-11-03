@@ -20,7 +20,6 @@ export default function DashBoardStudent() {
     const [selectedProgram, setSelectedProgram] = useState("");
     const [isUpdating, setIsUpdating] = useState(false);
 
-    // ✅ Helper: safely get program label (handles string or object)
     const getProgramLabel = (program, tFn) => {
         if (!program) return "";
         if (typeof program === "string") return tFn(program);
@@ -74,7 +73,6 @@ export default function DashBoardStudent() {
 
                     if (data.expired) {
                         setShowReregistrationModal(true);
-                        // ✅ Use translationKey if program is object
                         setSelectedProgram(
                             typeof data.program === "object" ? data.program.translationKey : data.program || ""
                         );
@@ -179,8 +177,8 @@ export default function DashBoardStudent() {
                                     {t("dashboardStudent.reregistration.selectProgram")}
                                 </option>
                                 {programs.map((prog) => (
-                                    <option key={prog} value={prog}>
-                                        {prog}
+                                    <option key={prog.code} value={prog.translationKey}>
+                                        {t(prog.translationKey)}
                                     </option>
                                 ))}
                             </select>
