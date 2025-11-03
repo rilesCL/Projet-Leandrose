@@ -105,7 +105,7 @@ class InternshipOfferServiceTest {
     // Act
     InternshipOfferDto result =
         internshipOfferService.createOfferDto(
-            "Stage en Java", LocalDate.now(), 12, "123 rue Tech", 1000f, employeurDto, new SchoolTerm(SchoolTerm.Season.WINTER,2026),pdfFile);
+            "Stage en Java", LocalDate.now(), 12, "123 rue Tech", 1000f, employeurDto,pdfFile);
 
     // Assert
     assertThat(result).isNotNull();
@@ -135,7 +135,7 @@ class InternshipOfferServiceTest {
                     10,
                     "456 rue Cloud",
                     500f,
-                    employeurDto, new SchoolTerm(SchoolTerm.Season.WINTER,2026),
+                    employeurDto,
                     invalidPdf))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("PDF invalide");

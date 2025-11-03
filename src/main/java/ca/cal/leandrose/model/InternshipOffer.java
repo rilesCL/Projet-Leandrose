@@ -74,4 +74,7 @@ public class InternshipOffer {
         ? employeur.getCredentials().getEmail()
         : null;
   }
+  public String getTerm(){
+      return (schoolTerm != null) ? schoolTerm.getTermAsString() : null;
+  }
 }

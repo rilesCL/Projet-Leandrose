@@ -43,7 +43,6 @@ public class InternshipOfferService {
       String address,
       Float remuneration,
       EmployeurDto employeur,
-      SchoolTerm schoolTerm,
       MultipartFile pdfFile)
       throws IOException {
 
@@ -84,7 +83,7 @@ public class InternshipOfferService {
             .address(address)
             .remuneration(remuneration != null ? remuneration : 0f)
             .employeur(employeurEntity)
-            .schoolTerm(schoolTerm)
+            .schoolTerm(SchoolTerm.getNextTerm())
             .pdfPath(filePath.toString())
             .status(InternshipOffer.Status.PENDING_VALIDATION)
             .build();
@@ -157,4 +156,5 @@ public class InternshipOfferService {
 
     return new SchoolTerm(season, year);
   }
+
 }

@@ -100,7 +100,6 @@ public class LeandrOseApplication {
                 "123 Rue Principale, Montréal, QC",
                 25.00f,
                 employeurConvocation,
-                new SchoolTerm(SchoolTerm.Season.WINTER, 2026),
                 offerFile);
         InternshipOfferDto offerApproved = gestionnaireService.approveOffer(offerDto.getId());
 
@@ -230,7 +229,6 @@ public class LeandrOseApplication {
                 "456 Boulevard Tech, Montréal, QC",
                 28.50f,
                 employeurEntente,
-                new SchoolTerm(SchoolTerm.Season.WINTER, 2026),
                 offerFileEntente);
         InternshipOfferDto offerApprovedEntente =
             gestionnaireService.approveOffer(offerDtoEntente.getId());
@@ -290,7 +288,6 @@ public class LeandrOseApplication {
                 "789 Avenue Innovation, Montréal, QC",
                 26.00f,
                 employeurEntente,
-                new SchoolTerm(SchoolTerm.Season.WINTER, 2026),
                 offerFileEntente2);
         InternshipOfferDto offerApprovedEntente2 =
             gestionnaireService.approveOffer(offerDtoEntente2.getId());

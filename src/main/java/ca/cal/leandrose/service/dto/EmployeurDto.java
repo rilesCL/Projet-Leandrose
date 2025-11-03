@@ -19,7 +19,6 @@ public class EmployeurDto extends UserDTO {
       String firstName,
       String lastname,
       String email,
-      String password,
       Role role,
       String companyName,
       String field) {

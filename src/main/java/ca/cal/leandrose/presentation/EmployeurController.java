@@ -82,7 +82,6 @@ public class EmployeurController {
             offerRequest.getAddress(),
             offerRequest.getRemuneration(),
             employeurDto,
-            new SchoolTerm(SchoolTerm.Season.WINTER, 2026),
             pdfFile);
 
     return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(offerDto);

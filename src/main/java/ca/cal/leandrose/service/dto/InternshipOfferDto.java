@@ -22,6 +22,7 @@ public class InternshipOfferDto {
   private Long employeurId;
   private String companyName;
   private String pdfPath;
+  private String schoolTerm;
   private String errorMessage;
   private LocalDate validationDate;
   private EmployeurDto employeurDto;
@@ -36,7 +37,9 @@ public class InternshipOfferDto {
       Float remuneration,
       String status,
       EmployeurDto employeurDto,
-      String pdfPath) {
+      String pdfPath,
+      String schoolTerm
+      ) {
     this.id = id;
     this.description = description;
     this.startDate = startDate;
@@ -46,6 +49,7 @@ public class InternshipOfferDto {
     this.status = status;
     this.employeurDto = employeurDto;
     this.pdfPath = pdfPath;
+    this.schoolTerm = schoolTerm;
     this.rejectionComment = null;
   }
 
