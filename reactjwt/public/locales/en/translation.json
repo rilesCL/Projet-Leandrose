@@ -258,6 +258,8 @@
     "company": "Company",
     "internship": "Internship",
     "period": "Period",
+    "professor": "Professor",
+    "noProfessor": "Not assigned",
     "status": "Status",
     "createdOn": "Created on",
     "actions": "Actions",

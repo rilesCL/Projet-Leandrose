@@ -485,7 +485,7 @@ public class LeandrOseApplication {
               "✗ ERREUR: L'entente n'est pas VALIDEE. Statut actuel: "
                   + ententeValidee.getStatut());
         }
-        
+
 
       } catch (Exception e) {
         System.err.println("Erreur générale non prévue: " + e.getMessage());

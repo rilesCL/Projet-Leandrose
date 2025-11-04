@@ -356,6 +356,8 @@
     "company": "Entreprise",
     "internship": "Stage",
     "period": "Période",
+    "professor": "Professeur",
+    "noProfessor": "Non assigné",
     "status": "Statut",
     "createdOn": "Créée le",
     "actions": "Actions",

@@ -254,16 +254,22 @@ export default function GestionnaireListeEntentes() {
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {toast.show && (
-                    <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
-                        toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                    }`}>
-                        <span>{toast.message}</span>
-                        <button
-                            onClick={() => setToast({ show: false, message: '', type: '' })}
-                            className="text-white hover:text-gray-100 transition-colors ml-2"
-                        >
-                            <FaTimes className="text-lg" />
-                        </button>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 max-w-md ${
+                            toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                        }`}>
+                            <span className="flex-1">{toast.message}</span>
+                            <button
+                                onClick={() => setToast({ show: false, message: '', type: '' })}
+                                className={`p-1 rounded transition-colors ${
+                                    toast.type === 'success' 
+                                        ? 'bg-green-500 hover:bg-green-600' 
+                                        : 'bg-red-500 hover:bg-red-600'
+                                }`}
+                            >
+                                <FaTimes className="text-lg text-white" />
+                            </button>
+                        </div>
                     </div>
                 )}
 
