@@ -33,18 +33,18 @@ public class EvaluationStagiaire {
     @ManyToOne
     @JoinColumn(name = "internship_id")
     private InternshipOffer internshipOffer;
+//
+//    @Column(columnDefinition = "TEXT")
+//    private String evaluationTemplate;
+//
+//    @Column(columnDefinition = "TEXT")
+//    private String evaluationResponses;
 
-    @Column(columnDefinition = "TEXT")
-    private String evaluationTemplate;
+    private String pdfFilePath;
 
-    @Column(columnDefinition = "TEXT")
-    private String evaluationResponses;
 
-//    @OneToMany(mappedBy = "evaluation", cascade=CascadeType.ALL, orphanRemoval = true)
-//    private List<EvaluationQuestion> questions;
-
-    @Column(length = 2000)
-    private String generalComment;
+//    @Column(length = 2000)
+//    private String generalComment;
 
     private boolean submitted;
 

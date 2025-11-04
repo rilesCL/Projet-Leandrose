@@ -8,8 +8,7 @@ public record EvaluationStagiaireDto(
         Long studentId,
         Long employeurId,
         Long internshipOfferId,
-        EvaluationTemplateDto template,
-        EvaluationResponsesDto responses,
+        String pdfFilePath,
         boolean submitted
 ) {
 }

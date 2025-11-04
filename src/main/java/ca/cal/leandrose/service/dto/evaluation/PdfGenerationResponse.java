@@ -1,7 +1,7 @@
 package ca.cal.leandrose.service.dto.evaluation;
 
-
-public record EvaluationResponsesDto(
-        Long evaluationId,
+public record PdfGenerationResponse(
+        String pdfpath,
         String message
-) {}
+) {
+}

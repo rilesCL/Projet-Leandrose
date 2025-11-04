@@ -2,6 +2,7 @@ package ca.cal.leandrose.presentation;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
+import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class EmployeurController {
     private final CandidatureService candidatureService;
     private final ConvocationService convocationService;
     private final EntenteStageService ententeStageService;
+    private final EvaluationStagiaireService evaluationStagiaireService;
 
     @GetMapping("/offers")
     public ResponseEntity<List<InternshipOfferDto>> getMyOffers(HttpServletRequest request) {
@@ -415,4 +417,120 @@ public class EmployeurController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    @PostMapping("/evaluation")
+    public ResponseEntity<?> createEvaluation(
+            HttpServletRequest request,
+            @RequestBody CreateEvaluationRequest createRequest){
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if(me.getRole().name().equals("EMPLOYEUR")){
+            return ResponseEntity.status(403).build();
+        }
+
+        try{
+            EvaluationStagiaireDto evaluationStagiaireDto = evaluationStagiaireService.createEvaluation(
+                    me.getId(), createRequest.studentId(), createRequest.internshipOfferId()
+            );
+            return ResponseEntity.ok(new EvaluationResponsesDto(evaluationStagiaireDto.id(),
+                    "Évaluation crée avec succes"));
+
+        } catch(Exception e){
+            return ResponseEntity.badRequest().body(new EvaluationResponsesDto(null, e.getMessage()));
+        }
+
+    }
+
+    @PostMapping("/evaluations/{evaluationId}/generate-pdf")
+    public ResponseEntity<?> generateEvaluationPdf(
+            HttpServletRequest request,
+            @PathVariable Long evaluationId,
+            @RequestBody EvaluationFormData formData) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
+            if (!evaluation.employeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).body(new PdfGenerationResponse(null, "Accès non autorisé"));
+            }
+
+            EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdf(evaluationId, formData);
+            return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new PdfGenerationResponse(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/evaluations/{evaluationId}/pdf")
+    public ResponseEntity<?> getEvaluationPdf(
+            HttpServletRequest request,
+            @PathVariable Long evaluationId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            // Verify the employer owns this evaluation
+            EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
+            if (!evaluation.employeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
+
+            byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"evaluation_" + evaluationId + ".pdf\"")
+                    .body(pdfBytes);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/evaluations")
+    public ResponseEntity<?> getMyEvaluations(HttpServletRequest request) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            List<EvaluationStagiaireDto> evaluations = evaluationStagiaireService.getEvaluationsByEmployeur(me.getId());
+            return ResponseEntity.ok(evaluations);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors de la récupération des évaluations");
+        }
+    }
+    @GetMapping("/evaluations/{evaluationId}")
+    public ResponseEntity<?> getEvaluation(
+            HttpServletRequest request,
+            @PathVariable Long evaluationId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
+
+            if (!evaluation.employeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).body("Accès non autorisé");
+            }
+
+            return ResponseEntity.ok(evaluation);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
