@@ -19,86 +19,87 @@ import java.util.Map;
 @NoArgsConstructor
 public class EntenteStageDto {
 
-    private Long id;
-    private Long candidatureId;
+  private Long id;
+  private Long candidatureId;
 
-    private StudentDto student;
-    private InternshipOfferDto internshipOffer;
+  private StudentDto student;
+  private InternshipOfferDto internshipOffer;
 
-    private String missionsObjectifs;
-    private EntenteStage.StatutEntente statut;
+  private String missionsObjectifs;
+  private EntenteStage.StatutEntente statut;
 
-    private LocalDate dateDebut;
-    private int duree;
-    private String lieu;
-    private Float remuneration;
+  private LocalDate dateDebut;
+  private int duree;
+  private String lieu;
+  private Float remuneration;
 
-    private LocalDateTime dateCreation;
-    private LocalDateTime dateModification;
-    private String contactEntreprise;
+  private LocalDateTime dateCreation;
+  private LocalDateTime dateModification;
+  private String contactEntreprise;
 
-    // ✅ AJOUT: Le chemin du PDF
-    private String cheminDocumentPDF;
+  private String cheminDocumentPDF;
 
-    private LocalDateTime dateSignatureEtudiant;
-    private LocalDateTime dateSignatureEmployeur;
-    private LocalDateTime dateSignatureGestionnaire;
+  private LocalDateTime dateSignatureEtudiant;
+  private LocalDateTime dateSignatureEmployeur;
+  private LocalDateTime dateSignatureGestionnaire;
 
-    private Map<String, String> error;
-    private boolean employeurASigner;
+  private Map<String, String> error;
+  private boolean employeurASigner;
 
-    public static EntenteStageDto withError(Map<String, String> error) {
-        EntenteStageDto dto = new EntenteStageDto();
-        dto.setError(error);
-        return dto;
-    }
+  public static EntenteStageDto withError(Map<String, String> error) {
+    EntenteStageDto dto = new EntenteStageDto();
+    dto.setError(error);
+    return dto;
+  }
 
-    public static EntenteStageDto fromEntity(EntenteStage entente) {
-        if (entente == null) return null;
+  public static EntenteStageDto fromEntity(EntenteStage entente) {
+    if (entente == null) return null;
 
-        Candidature candidature = entente.getCandidature();
-        Student student = candidature.getStudent();
-        InternshipOffer offer = candidature.getInternshipOffer();
+    Candidature candidature = entente.getCandidature();
+    Student student = candidature.getStudent();
+    InternshipOffer offer = candidature.getInternshipOffer();
 
-        return EntenteStageDto.builder()
-                .id(entente.getId())
-                .candidatureId(candidature.getId())
-                .student(StudentDto.create(student))
-                .internshipOffer(InternshipOfferDto.builder()
-                        .id(offer.getId())
-                        .description(offer.getDescription())
-                        .startDate(offer.getStartDate())
-                        .durationInWeeks(offer.getDurationInWeeks())
-                        .address(offer.getAddress())
-                        .remuneration(offer.getRemuneration())
-                        .status(offer.getStatus().name())
-                        .employeurId(offer.getEmployeur() != null ? offer.getEmployeur().getId() : null)
-                        .companyName(offer.getCompanyName())
-                        .pdfPath(offer.getPdfPath())
-                        .validationDate(offer.getValidationDate())
-                        .rejectionComment(offer.getRejectionComment())
-                        .employeurDto(offer.getEmployeur() != null ? EmployeurDto.create(offer.getEmployeur()) : null)
-                        .build())
-                .missionsObjectifs(entente.getMissionsObjectifs())
-                .statut(entente.getStatut())
-                .dateDebut(offer.getStartDate())
-                .duree(offer.getDurationInWeeks())
+    return EntenteStageDto.builder()
+        .id(entente.getId())
+        .candidatureId(candidature.getId())
+        .student(StudentDto.create(student))
+        .internshipOffer(
+            InternshipOfferDto.builder()
+                .id(offer.getId())
+                .description(offer.getDescription())
+                .startDate(offer.getStartDate())
+                .durationInWeeks(offer.getDurationInWeeks())
+                .address(offer.getAddress())
                 .remuneration(offer.getRemuneration())
-                .lieu(offer.getAddress())
-                .contactEntreprise(offer.getEmployeurEmail())
-                .dateCreation(entente.getDateCreation())
-                .dateModification(entente.getDateModification())
-                // ✅ AJOUT CRITIQUE: Mapper le chemin du PDF
-                .cheminDocumentPDF(entente.getCheminDocumentPDF())
-                .dateSignatureEtudiant(entente.getDateSignatureEtudiant())
-                .dateSignatureEmployeur(entente.getDateSignatureEmployeur())
-                .dateSignatureGestionnaire(entente.getDateSignatureGestionnaire())
-                .employeurASigner(entente.getDateSignatureEmployeur() != null)
-                .build();
-    }
-    public static EntenteStageDto withErrorMessage(String message) {
-        EntenteStageDto dto = new EntenteStageDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+                .status(offer.getStatus().name())
+                .employeurId(offer.getEmployeur() != null ? offer.getEmployeur().getId() : null)
+                .companyName(offer.getCompanyName())
+                .pdfPath(offer.getPdfPath())
+                .validationDate(offer.getValidationDate())
+                .rejectionComment(offer.getRejectionComment())
+                .employeurDto(
+                    offer.getEmployeur() != null ? EmployeurDto.create(offer.getEmployeur()) : null)
+                .build())
+        .missionsObjectifs(entente.getMissionsObjectifs())
+        .statut(entente.getStatut())
+        .dateDebut(offer.getStartDate())
+        .duree(offer.getDurationInWeeks())
+        .remuneration(offer.getRemuneration())
+        .lieu(offer.getAddress())
+        .contactEntreprise(offer.getEmployeurEmail())
+        .dateCreation(entente.getDateCreation())
+        .dateModification(entente.getDateModification())
+        .cheminDocumentPDF(entente.getCheminDocumentPDF())
+        .dateSignatureEtudiant(entente.getDateSignatureEtudiant())
+        .dateSignatureEmployeur(entente.getDateSignatureEmployeur())
+        .dateSignatureGestionnaire(entente.getDateSignatureGestionnaire())
+        .employeurASigner(entente.getDateSignatureEmployeur() != null)
+        .build();
+  }
+
+  public static EntenteStageDto withErrorMessage(String message) {
+    EntenteStageDto dto = new EntenteStageDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }

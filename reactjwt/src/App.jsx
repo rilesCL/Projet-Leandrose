@@ -47,12 +47,13 @@ function App() {
 
 
                 {/* Student Routes */}
+                {/* Student Routes */}
                 <Route path="dashboard/student" element={<DashBoardStudent />} />
                 <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />
                 <Route path="dashboard/student/offers" element={<StudentInternshipOffersList />} />
                 <Route path="dashboard/student/offers/:offerId" element={<OfferDetailPage />} />
                 <Route path="dashboard/student/applications" element={<ApplicationsPage />} />
-
+                <Route path="dashboard/student/ententes/:id/signer" element={<SignerEntentePage/>}/>
                 {/* Gestionnaire Routes */}
                 <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
                     <Route path="cv" element={<PendingCvPage />} />
@@ -60,6 +61,7 @@ function App() {
                 </Route>
                 <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
                 <Route path="dashboard/gestionnaire/ententes" element={<EntentesStagePage/>} />
+                <Route path="dashboard/gestionnaire/ententes/:id/signer" element={<SignerEntentePage/>}/>
                 <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
                 <Route path="/dashboard/gestionnaire/ententes/create" element={<CreateEntenteForm />} />
 

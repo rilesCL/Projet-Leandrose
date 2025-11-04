@@ -3,7 +3,7 @@ import { getPublishedOffers } from "../../api/apiStudent.jsx";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-export default function StudentInternshipOffersList() {
+export default function StudentInternshipOffersList({ studentInfo, onReregisterClick }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -11,21 +11,73 @@ export default function StudentInternshipOffersList() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const getProgramLabel = (program) => {
+        if (!program) return "";
+        if (typeof program === "string") return t(program);
+        if (typeof program === "object") {
+            return t(program.translationKey || "") || program.code || "";
+        }
+        return "";
+    };
+
+    const translateSchoolTerm = (termString) => {
+        if (!termString || typeof termString !== 'string') return '';
+        const parts = termString.trim().split(/\s+/);
+        const seasonKey = parts.shift().toUpperCase();
+        const rest = parts.join(' ');
+        const translationKey = `terms.${seasonKey}`;
+        const translated = t(translationKey);
+        const seasonLabel = (translated === translationKey)
+            ? (seasonKey.charAt(0).toUpperCase() + seasonKey.slice(1).toLowerCase())
+            : translated;
+        return rest ? `${seasonLabel} ${rest}` : seasonLabel;
+    };
+
     useEffect(() => {
         async function fetchOffers() {
-            setLoading(true); setError(null);
+            setLoading(true);
+            setError(null);
             try {
                 const data = await getPublishedOffers();
                 setOffers(Array.isArray(data) ? data : []);
             } catch (err) {
                 console.error(err);
                 setError(t("StudentInternshipOffersList.errorText"));
-            } finally { setLoading(false); }
+            } finally {
+                setLoading(false);
+            }
         }
         fetchOffers();
     }, [t]);
 
     const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('fr-FR') : t("StudentInternshipOffersList.startDate");
+
+    if (studentInfo?.expired) {
+        return (
+            <div className="bg-white shadow rounded-lg p-8 text-center">
+                <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
+                    <span className="text-amber-600 text-3xl">⚠️</span>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {t("StudentInternshipOffersList.reregistrationRequired") || "Réinscription requise"}
+                </h3>
+                <p className="text-gray-700 mb-2">
+                    {t("StudentInternshipOffersList.sessionExpired") ||
+                        "Votre session d'inscription est expirée."}
+                </p>
+                <p className="text-gray-600 mb-6">
+                    {t("StudentInternshipOffersList.reregisterToSeeOffers") ||
+                        "Veuillez vous réinscrire pour voir les offres de la nouvelle session."}
+                </p>
+                <button
+                    onClick={onReregisterClick}
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-lg shadow-indigo-500/50"
+                >
+                    {t("StudentInternshipOffersList.reregisterNow") || "Me réinscrire maintenant"}
+                </button>
+            </div>
+        );
+    }
 
     if (loading) return (
         <div className="bg-white shadow rounded-lg p-8 text-center">

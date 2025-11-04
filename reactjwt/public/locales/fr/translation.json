@@ -1,5 +1,11 @@
 {
   "appName": "LeandrOSE",
+  "terms": {
+    "term": "Session",
+    "FALL": "Automne",
+    "WINTER": "Hiver",
+    "SUMMER": "Été"
+  },
   "previewPdf": {
     "preview": "Aperçu",
     "next": "Suivant",
@@ -9,6 +15,7 @@
     "error": "Impossible d'afficher le document"
   },
   "program": {
+    "description": "Programme d'études",
     "computer_science": "Informatique",
     "software_engineering": "Génie logiciel",
     "information_technology": "Technologies de l'information",
@@ -201,6 +208,7 @@
   },
   "dashboardEmployeur": {
     "logout": "Se déconnecter",
+    "ententes": "Ententes de stage",
     "welcome": "Bienvenue",
     "description": "Ceci est votre tableau de bord employeur. Vous pouvez gérer vos offres de stage et consulter les candidatures.",
     "navigation": {
@@ -216,6 +224,7 @@
       "cv": "CVs en attente",
       "pendingOffers": "Offres en attente",
       "offers": "Toutes les offres",
+      "applications-accepted": "Candidatures acceptées",
       "ententes": "Ententes"
     }
   },
@@ -225,10 +234,20 @@
     "description": "Ceci est votre tableau de bord étudiant. Vous pouvez gérer vos CVs et bientôt consulter les offres de stage.",
     "tabs": {
       "offers": "Offres",
+      "ententes": "Ententes de stage",
       "cv": "Mon CV",
       "applications": "Mes candidatures"
+    },
+    "reregistration": {
+      "title": "Réinscription requise",
+      "message": "Votre session d'inscription est expirée. Veuillez vous réinscrire pour la nouvelle session.",
+      "program": "Programme",
+      "selectProgram": "Sélectionnez un programme",
+      "confirm": "Me réinscrire maintenant",
+      "continueLater": "Consulter le tableau de bord sans réinscription",
+      "updating": "Mise à jour..."
     }
-  },
+},
   "programsList": {
     "title": "Programmes Existants",
     "description": "Consultez tous les programmes académiques actuellement enregistrés dans le système.",
@@ -324,6 +343,43 @@
       "pdfFormat": "Le fichier doit être un PDF.",
       "pdfSize": "Le PDF dépasse la taille maximale de 5MB.",
       "serverError": "Erreur lors de l'enregistrement."
+    }
+  },
+
+  "studentEntentes": {
+    "loading": "Chargement des ententes...",
+    "error": "Erreur lors du chargement des ententes",
+    "title": "Mes ententes de stage",
+    "subtitle": "Consultez et signez vos ententes de stage",
+    "noEntentes": "Aucune entente de stage",
+    "noEntentesDescription": "Vous n'avez aucune entente de stage pour le moment.",
+    "company": "Entreprise",
+    "internship": "Stage",
+    "period": "Période",
+    "status": "Statut",
+    "createdOn": "Créée le",
+    "actions": "Actions",
+    "viewPdf": "Voir le PDF",
+    "sign": "Signer",
+    "signatureStatus": "État des signatures",
+    "employer": "Employeur",
+    "student": "Étudiant",
+    "manager": "Gestionnaire",
+    "signedOn": "Signé le",
+    "awaitingSignature": "En attente de signature",
+    "close": "Fermer",
+    "pdfNotFound": "Le PDF de l'entente n'a pas été trouvé",
+    "accessDenied": "Vous n'êtes pas autorisé à voir cette entente",
+    "pdfLoadError": "Erreur lors du chargement du PDF",
+    "pdfViewError": "Impossible d'afficher le PDF de l'entente. Veuillez réessayer.",
+    "statusValidated": "Validée",
+    "statusAwaitingOthers": "En attente des autres signatures",
+    "statusAwaitingYours": "En attente de votre signature",
+    "statusDraft": "Brouillon",
+    "stats": {
+      "total": "Total des ententes",
+      "awaitingSignature": "En attente de signature",
+      "validated": "Ententes validées"
     }
   },
   "studentCvList": {
@@ -590,7 +646,11 @@
     "startDate": "Date de début",
     "duration": "Durée",
     "actions": "Actions",
-    "viewDetails": "Voir détails"
+    "viewDetails": "Voir détails",
+    "reregistrationRequired": "Réinscription requise",
+    "sessionExpired": "Votre session d'inscription est expirée.",
+    "reregisterToSeeOffers": "Veuillez vous réinscrire pour voir les offres de la nouvelle session.",
+    "reregisterNow": "Me réinscrire maintenant"
   },
   "employerCandidatures": {
     "navLink": "Mes candidatures",
@@ -769,7 +829,7 @@
     "errors": {
       "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
       "incorrectedPassword": "Mot de passe incorrect. Veuillez rééssayer",
-      "accessForbidden": "Accès refusé. Seuls les employeurs peuvent signer les ententes",
+      "accessForbidden": "Accès refusé. Seuls les acteurs concernés peuvent signer l'entente",
       "notFound": "Entente non trouvée",
       "unexpectedError": "Une erreur est survenue lors de la signature."
     },
@@ -779,7 +839,13 @@
     "placeholder": "Votre mot de passe",
     "loading": "Signature en cours",
     "button": "Signer l'entente",
-    "back": "Annuler et retourner au tableau de bord."
+    "back": "Annuler et retourner au tableau de bord.",
+    "connect_as": "Connecté en tant que:",
+    "role": {
+      "EMPLOYEUR": "Employeur",
+      "STUDENT": "Étudiant",
+      "GESTIONNAIRE": "Gestionnaire"
+    }
   },
   "stageDetails": {
     "errors": {
@@ -795,7 +861,7 @@
     "sign_date": "Signé le",
     "attente_signature": "En attente de signature",
     "loading": "Chargement des détails...",
-    "back": "Retour aux ententes",
+    "back": "Retour",
     "title": "Détails de l'entente de stage",
     "description": "Informations complètes sur l'entente de stage",
     "sign_agreement": "Signer l'entente",

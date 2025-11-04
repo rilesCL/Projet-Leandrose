@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface UserAppRepository extends JpaRepository<UserApp, Long> {
 
-    @Query("""
+  @Query(
+      """
         select u from UserApp u where trim(lower(u.credentials.email)) = lower(trim(:email))
     """)
-    Optional<UserApp> findUserAppByEmail(@Param("email") String email);
-
+  Optional<UserApp> findUserAppByEmail(@Param("email") String email);
 }

@@ -313,7 +313,6 @@ export default function StudentApplicationsList() {
             {showRejectModal && selectedCandidatureForReject && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={closeRejectModal}>
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full relative" onClick={(e) => e.stopPropagation()}>
-                        {/* Header */}
                         <div className="bg-red-50 rounded-t-lg px-6 py-4 border-b border-red-100">
                             <div className="flex items-center gap-3">
                                 <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
@@ -329,7 +328,6 @@ export default function StudentApplicationsList() {
                             </div>
                         </div>
 
-                        {/* Body */}
                         <div className="px-6 py-4">
                             <p className="text-gray-700 mb-4">
                                 {t("studentApplicationsList.rejectModal.message")}

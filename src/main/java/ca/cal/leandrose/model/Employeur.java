@@ -15,14 +15,24 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Employeur extends UserApp {
-    private String companyName;
-    private String field;
-    @Builder
-    public Employeur(
-            Long id, String firstName, String lastName, String email, String password,
-            String companyName, String field){
-        super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.EMPLOYEUR).build());
-        this.companyName = companyName;
-        this.field = field;
-    }
+  private String companyName;
+  private String field;
+
+  @Builder
+  public Employeur(
+      Long id,
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      String companyName,
+      String field) {
+    super(
+        id,
+        firstName,
+        lastName,
+        Credentials.builder().email(email).password(password).role(Role.EMPLOYEUR).build());
+    this.companyName = companyName;
+    this.field = field;
+  }
 }

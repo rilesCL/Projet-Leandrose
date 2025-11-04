@@ -17,16 +17,15 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* RESPONSIVE FIXES - ADD THESE */
 * {
     box-sizing: border-box;
-    margin: 0;  /* ADD THIS */
-    padding: 0; /* ADD THIS */
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;  /* Make sure this is here */
-    padding: 0; /* ADD THIS */
+    margin: 0;
+    padding: 0;
     width: 100%;
     min-width: 320px;
     min-height: 100vh;
@@ -36,11 +35,11 @@ body {
 #root {
     width: 100%;
     min-height: 100vh;
-    margin: 0;  /* ADD THIS */
-    padding: 0; /* ADD THIS */
+    margin: 0;
+    padding: 0;
 }
 
-/* Make tables scrollable on mobile */
+
 table {
     display: block;
     overflow-x: auto;
@@ -55,7 +54,6 @@ table {
     }
 }
 
-/* Make modals responsive */
 @media (max-width: 640px) {
     .fixed > div[class*="max-w"] {
         max-width: 95vw !important;
@@ -68,7 +66,6 @@ table {
     }
 }
 
-/* END RESPONSIVE FIXES */
 
 a {
     font-weight: 500;

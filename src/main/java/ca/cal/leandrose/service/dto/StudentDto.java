@@ -8,25 +8,40 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class StudentDto extends UserDTO{
-    private String studentNumber;
-    private String program;
-    private Map<String,String> error;
+public class StudentDto extends UserDTO {
+  private String studentNumber;
+  private String program;
+  private String internshipTerm;
+  private Map<String, String> error;
+  private boolean isExpired;
 
-    @Builder
-    public StudentDto(Long id, String firstName, String lastName, String email, Role role, String studentNumber, String program) {
-        super(id, firstName, lastName, email, role);
-        this.studentNumber = studentNumber;
-        this.program = program;
-    }
+  @Builder
+  public StudentDto(
+      Long id,
+      String firstName,
+      String lastName,
+      String email,
+      Role role,
+      String studentNumber,
+      String program,
+      String internshipTerm,
+      boolean isExpired) {
+    super(id, firstName, lastName, email, role);
+    this.studentNumber = studentNumber;
+    this.program = program;
+    this.internshipTerm = internshipTerm;
+    this.isExpired = isExpired;
+  }
 
-    public StudentDto(){}
+  public StudentDto() {}
 
-    public StudentDto(String error){
-        this.error = Map.of("error", error);
-    }
+  public StudentDto(String error) {
+    this.error = Map.of("error", error);
+  }
 
-    public static StudentDto create(Student student){
+  public static StudentDto create(Student student) {
+    boolean isExpired = student.getInternshipTerm().isBeforeNextTerm();
+
     return StudentDto.builder()
         .id(student.getId())
         .firstName(student.getFirstName())
@@ -35,14 +50,16 @@ public class StudentDto extends UserDTO{
         .role(student.getRole())
         .studentNumber(student.getStudentNumber())
         .program(student.getProgram())
+        .internshipTerm(student.getTermAsString())
+        .isExpired(isExpired)
         .build();
-    }
+  }
 
-    public static StudentDto empty() {
-        return new StudentDto();
-    }
+  public static StudentDto empty() {
+    return new StudentDto();
+  }
 
-    public String getName() {
-        return this.getFirstName() + this.getLastName();
-    }
+  public String getName() {
+    return this.getFirstName() + this.getLastName();
+  }
 }

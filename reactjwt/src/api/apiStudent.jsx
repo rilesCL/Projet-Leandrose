@@ -163,10 +163,6 @@ export async function previewOfferPdfStudent(offerId, token = null) {
     }
 }
 
-/**
- * L'étudiant accepte une candidature qui a été acceptée par l'employeur
- * Transition: ACCEPTEDBYEMPLOYEUR → ACCEPTED
- */
 export async function acceptCandidatureByStudent(candidatureId, token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/applications/${candidatureId}/accept`, {
@@ -181,10 +177,6 @@ export async function acceptCandidatureByStudent(candidatureId, token = null) {
     }
 }
 
-/**
- * L'étudiant refuse une candidature qui a été acceptée par l'employeur
- * Transition: ACCEPTEDBYEMPLOYEUR -> REJECTED
- */
 export async function rejectCandidatureByStudent(candidatureId, token = null) {
     try {
         const response = await fetch(`${API_BASE}/student/applications/${candidatureId}/reject`, {
@@ -214,5 +206,34 @@ export async function previewStudentCv(token = null) {
         return await response.blob();
     } catch (error) {
         throw new Error(error.message || "Erreur lors du chargement du CV");
+    }
+}
+
+export async function getCurrentStudent(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/user/me`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération des informations');
+    }
+}
+
+export async function updateStudentInfo(program, token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/update-info`, {
+            method: 'PUT',
+            headers: getAuthHeaders(token),
+            body: JSON.stringify({ program })
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la mise à jour des informations');
     }
 }

@@ -134,66 +134,72 @@ public class GestionnaireServiceTest {
   }
 
   @Test
-  void getOneRejectedOffer(){
-      InternshipOffer rejected = new InternshipOffer();
-      rejected.setId(2L);
-      rejected.setStatus(InternshipOffer.Status.REJECTED);
+  void getOneRejectedOffer() {
+    InternshipOffer rejected = new InternshipOffer();
+    rejected.setId(2L);
+    rejected.setStatus(InternshipOffer.Status.REJECTED);
 
-      when(internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED))
-              .thenReturn(List.of(rejected));
+    when(internshipOfferRepository.findByStatusOrderByStartDateDesc(
+            InternshipOffer.Status.REJECTED))
+        .thenReturn(List.of(rejected));
 
-      List<InternshipOfferDto>list_rejected_offers = gestionnaireService.getRejectedoffers();
+    List<InternshipOfferDto> list_rejected_offers = gestionnaireService.getRejectedoffers();
 
-      assertEquals(1, list_rejected_offers.size());
-  }
-  @Test
-  void getMultiplesRejectedOffers(){
-      List<InternshipOffer> rejectedOffers = new ArrayList<>();
-
-      for (long i = 0; i<= 5; i++){
-          InternshipOffer offer = new InternshipOffer();
-          offer.setId(i);
-          offer.setStatus(InternshipOffer.Status.REJECTED);
-          rejectedOffers.add(offer);
-      }
-
-      when(internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.REJECTED))
-              .thenReturn(rejectedOffers);
-      List<InternshipOfferDto> list_rejected_offers = gestionnaireService.getRejectedoffers();
-
-      assertEquals(rejectedOffers.size(), list_rejected_offers.size());
-      assertTrue(list_rejected_offers.stream().allMatch(o -> "REJECTED".equals(o.getStatus())));
+    assertEquals(1, list_rejected_offers.size());
   }
 
   @Test
-  void getOneApprovedOffer(){
-      InternshipOffer accepted = new InternshipOffer();
-      accepted.setId(2L);
-      accepted.setStatus(InternshipOffer.Status.PUBLISHED);
+  void getMultiplesRejectedOffers() {
+    List<InternshipOffer> rejectedOffers = new ArrayList<>();
 
-      when(internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED))
-              .thenReturn(List.of(accepted));
-
-      List<InternshipOfferDto>list_approved_offers = gestionnaireService.getApprovedOffers();
-
-      assertEquals(1, list_approved_offers.size());
-  }
-    @Test
-    void getMutlipleApprovedOffers(){
-        List<InternshipOffer> acceptedOffers = new ArrayList<>();
-
-        for (long i = 0; i<= 5; i++){
-            InternshipOffer offer = new InternshipOffer();
-            offer.setId(i);
-            offer.setStatus(InternshipOffer.Status.PUBLISHED);
-            acceptedOffers.add(offer);
-        }
-
-        when(internshipOfferRepository.findByStatusOrderByStartDateDesc(InternshipOffer.Status.PUBLISHED))
-                .thenReturn(acceptedOffers);
-        List<InternshipOfferDto> list_approved_offers = gestionnaireService.getApprovedOffers();
-
-        assertEquals(acceptedOffers.size(), list_approved_offers.size());
-        assertTrue(list_approved_offers.stream().allMatch(o -> "PUBLISHED".equals(o.getStatus())));
+    for (long i = 0; i <= 5; i++) {
+      InternshipOffer offer = new InternshipOffer();
+      offer.setId(i);
+      offer.setStatus(InternshipOffer.Status.REJECTED);
+      rejectedOffers.add(offer);
     }
+
+    when(internshipOfferRepository.findByStatusOrderByStartDateDesc(
+            InternshipOffer.Status.REJECTED))
+        .thenReturn(rejectedOffers);
+    List<InternshipOfferDto> list_rejected_offers = gestionnaireService.getRejectedoffers();
+
+    assertEquals(rejectedOffers.size(), list_rejected_offers.size());
+    assertTrue(list_rejected_offers.stream().allMatch(o -> "REJECTED".equals(o.getStatus())));
+  }
+
+  @Test
+  void getOneApprovedOffer() {
+    InternshipOffer accepted = new InternshipOffer();
+    accepted.setId(2L);
+    accepted.setStatus(InternshipOffer.Status.PUBLISHED);
+
+    when(internshipOfferRepository.findByStatusOrderByStartDateDesc(
+            InternshipOffer.Status.PUBLISHED))
+        .thenReturn(List.of(accepted));
+
+    List<InternshipOfferDto> list_approved_offers = gestionnaireService.getApprovedOffers();
+
+    assertEquals(1, list_approved_offers.size());
+  }
+
+  @Test
+  void getMutlipleApprovedOffers() {
+    List<InternshipOffer> acceptedOffers = new ArrayList<>();
+
+    for (long i = 0; i <= 5; i++) {
+      InternshipOffer offer = new InternshipOffer();
+      offer.setId(i);
+      offer.setStatus(InternshipOffer.Status.PUBLISHED);
+      acceptedOffers.add(offer);
+    }
+
+    when(internshipOfferRepository.findByStatusOrderByStartDateDesc(
+            InternshipOffer.Status.PUBLISHED))
+        .thenReturn(acceptedOffers);
+    List<InternshipOfferDto> list_approved_offers = gestionnaireService.getApprovedOffers();
+
+    assertEquals(acceptedOffers.size(), list_approved_offers.size());
+    assertTrue(list_approved_offers.stream().allMatch(o -> "PUBLISHED".equals(o.getStatus())));
+  }
 }

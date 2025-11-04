@@ -11,55 +11,56 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Service
 @RequiredArgsConstructor
 public class ConvocationService {
-    private final ConvocationRepository convocationRepository;
-    private final CandidatureRepository candidatureRepository;
+  private final ConvocationRepository convocationRepository;
+  private final CandidatureRepository candidatureRepository;
 
-    public void addConvocation(Long candidatureId, LocalDateTime convocationDate, String location, String message) {
-        Candidature candidature = candidatureRepository.findById(candidatureId)
-                .orElseThrow(() -> new RuntimeException("Candidature non trouvée"));
+  public void addConvocation(
+      Long candidatureId, LocalDateTime convocationDate, String location, String message) {
+    Candidature candidature =
+        candidatureRepository
+            .findById(candidatureId)
+            .orElseThrow(() -> new RuntimeException("Candidature non trouvée"));
 
-        if (convocationDate == null) {
-            throw new IllegalArgumentException("La date de convocation ne peut pas être nulle");
-        }
-
-        if (convocationDate.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("La date de convocation ne peut pas être dans le passé");
-        }
-
-        if (location == null || location.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le lieu ne peut pas être vide");
-        }
-
-        if (candidature.getStatus() == Candidature.Status.CONVENED) {
-            throw new IllegalStateException("Cette candidature a déjà une convocation");
-        }
-
-        String finalMessage = (message == null || message.trim().isEmpty())
-                ? "Vous êtes convoqué(e) pour un entretien."
-                : message;
-
-        candidature.setStatus(Candidature.Status.CONVENED);
-        candidatureRepository.save(candidature);
-
-        Convocation convocation = new Convocation(candidature, convocationDate, location, finalMessage);
-        convocationRepository.save(convocation);
+    if (convocationDate == null) {
+      throw new IllegalArgumentException("La date de convocation ne peut pas être nulle");
     }
 
-    public List<ConvocationDto> getAllConvocationsByInterShipOfferId(Long internshipOfferId) {
-        return convocationRepository.findByCandidature_InternshipOffer_Id(internshipOfferId)
-                .stream()
-                .map(ConvocationDto::create)
-                .toList();
+    if (convocationDate.isBefore(LocalDateTime.now())) {
+      throw new IllegalArgumentException("La date de convocation ne peut pas être dans le passé");
     }
 
-    public List<ConvocationDto> getConvocationsByStudentId(Long studentId) {
-        return convocationRepository.findByCandidature_Student_Id(studentId)
-                .stream()
-                .map(ConvocationDto::create)
-                .toList();
+    if (location == null || location.trim().isEmpty()) {
+      throw new IllegalArgumentException("Le lieu ne peut pas être vide");
     }
+
+    if (candidature.getStatus() == Candidature.Status.CONVENED) {
+      throw new IllegalStateException("Cette candidature a déjà une convocation");
+    }
+
+    String finalMessage =
+        (message == null || message.trim().isEmpty())
+            ? "Vous êtes convoqué(e) pour un entretien."
+            : message;
+
+    candidature.setStatus(Candidature.Status.CONVENED);
+    candidatureRepository.save(candidature);
+
+    Convocation convocation = new Convocation(candidature, convocationDate, location, finalMessage);
+    convocationRepository.save(convocation);
+  }
+
+  public List<ConvocationDto> getAllConvocationsByInterShipOfferId(Long internshipOfferId) {
+    return convocationRepository.findByCandidature_InternshipOffer_Id(internshipOfferId).stream()
+        .map(ConvocationDto::create)
+        .toList();
+  }
+
+  public List<ConvocationDto> getConvocationsByStudentId(Long studentId) {
+    return convocationRepository.findByCandidature_Student_Id(studentId).stream()
+        .map(ConvocationDto::create)
+        .toList();
+  }
 }

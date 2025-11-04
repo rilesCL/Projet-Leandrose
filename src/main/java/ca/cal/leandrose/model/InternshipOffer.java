@@ -11,67 +11,67 @@ import java.time.LocalDate;
 @Builder
 public class InternshipOffer {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
+  @Column(nullable = false, length = 50)
+  private String description;
 
-    @Column(nullable = false, length = 50)
-    private String description;
+  @Column(nullable = false)
+  private LocalDate startDate;
 
-    @Column(nullable = false)
-    private LocalDate startDate;
+  @Column(nullable = false)
+  private int durationInWeeks;
 
-    @Column(nullable = false)
-    private int durationInWeeks;
+  @ManyToOne private Gestionnaire validatedBy;
 
-    @ManyToOne
-    private Gestionnaire validatedBy;
+  @Column private LocalDate validationDate;
 
-    @Column
-    private LocalDate validationDate;
+  @Column(nullable = false)
+  private String address;
 
-    @Column(nullable = false)
-    private String address;
+  @Column private Float remuneration;
 
-    @Column
-    private Float remuneration;
+  @ManyToOne private Employeur employeur;
 
-    @ManyToOne
-    private Employeur employeur;
+  private String pdfPath;
 
-    private String pdfPath;
+  @Embedded private SchoolTerm schoolTerm;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Status status;
 
-    @Column
-    private String rejectionComment;
+  @Column private String rejectionComment;
 
-    public enum Status {
-        PENDING_VALIDATION, PUBLISHED, ASSIGNED, ARCHIVED, REJECTED
-    }
+  public enum Status {
+    PENDING_VALIDATION,
+    PUBLISHED,
+    ASSIGNED,
+    ARCHIVED,
+    REJECTED
+  }
 
-    public Long getEmployeurId() {
-        return employeur != null ? employeur.getId() : null;
-    }
+  public Long getEmployeurId() {
+    return employeur != null ? employeur.getId() : null;
+  }
 
-    public String getCompanyName() {
-        return employeur != null ? employeur.getCompanyName() : null;
-    }
+  public String getCompanyName() {
+    return employeur != null ? employeur.getCompanyName() : null;
+  }
 
-    public String getEmployeurFirstName() {
-        return employeur != null ? employeur.getFirstName() : null;
-    }
+  public String getEmployeurFirstName() {
+    return employeur != null ? employeur.getFirstName() : null;
+  }
 
-    public String getEmployeurLastName() {
-        return employeur != null ? employeur.getLastName() : null;
-    }
+  public String getEmployeurLastName() {
+    return employeur != null ? employeur.getLastName() : null;
+  }
 
-    public String getEmployeurEmail() {
-        return employeur != null && employeur.getCredentials() != null
-                ? employeur.getCredentials().getEmail()
-                : null;
-    }
+  public String getEmployeurEmail() {
+    return employeur != null && employeur.getCredentials() != null
+        ? employeur.getCredentials().getEmail()
+        : null;
+  }
 }

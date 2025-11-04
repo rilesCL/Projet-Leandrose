@@ -7,6 +7,7 @@ import PendingOffersPage from "./PendingOffersPage.jsx";
 import OffersPage from "./OffersPage.jsx";
 import EntentesStagePage from "./EntentesStagePage.jsx";
 import LanguageSelector from "../LanguageSelector.jsx";
+import GestionnaireListeEntentes from "./GestionnaireListeEntentes.jsx";
 
 export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function DashBoardGestionnaire() {
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(window.location.search);
         const raw = (params.get('tab') || params.get('section') || 'cv').toLowerCase();
-        if (["cv", "offers", "pending", "ententes"].includes(raw)) return raw;
+        if (["cv", "offers", "pending","applications-accepted", "ententes"].includes(raw)) return raw;
         return 'cv';
     });
 
@@ -100,6 +101,7 @@ export default function DashBoardGestionnaire() {
                             <Btn target="cv">{t("dashboardGestionnaire.tabs.cv")}</Btn>
                             <Btn target="pending">{t("dashboardGestionnaire.tabs.pendingOffers")}</Btn>
                             <Btn target="offers">{t("dashboardGestionnaire.tabs.offers")}</Btn>
+                            <Btn target="applications-accepted">{t("dashboardGestionnaire.tabs.applications-accepted")}</Btn>
                             <Btn target="ententes">{t("dashboardGestionnaire.tabs.ententes")}</Btn>
                         </div>
                     </div>
@@ -122,9 +124,14 @@ export default function DashBoardGestionnaire() {
                         </div>
                     )}
 
-                    {section === 'ententes' && (
+                    {section === 'applications-accepted' && (
                         <div className="transition-opacity duration-300 ease-in-out">
                             <EntentesStagePage />
+                        </div>
+                    )}
+                    {section === 'ententes' && (
+                        <div className="transition-opacity duration-300 ease-in-out">
+                            <GestionnaireListeEntentes />
                         </div>
                     )}
                 </div>

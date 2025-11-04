@@ -16,9 +16,15 @@ export default function SignerEntentePage() {
     useEffect(() => {
         const loadCurrentUser = async () => {
             const token = sessionStorage.getItem("accessToken");
+            if (!token) {
+                console.log("❌ No token found in sessionStorage");
+                navigate("/login");
+                return;
+            }
 
             try {
                 const userData = await getCurrentUser(token);
+                console.log("👤 User data:", userData);
                 setUserInfo(userData);
 
                 if (userData.email) {
@@ -26,11 +32,13 @@ export default function SignerEntentePage() {
                 }
             } catch (error) {
                 setError(t("signerEntente.errors.sessionExpired"));
+                console.error("❌ Error loading user:", error);
+                setError("Session expirée. Veuillez vous reconnecter.");
             }
         };
 
         loadCurrentUser();
-    }, []);
+    }, [navigate]);
 
     const handleSign = async (e) => {
         e.preventDefault();
@@ -44,7 +52,7 @@ export default function SignerEntentePage() {
                 throw new Error("Impossible de trouver votre email. Veuillez vous reconnecter.");
             }
 
-
+            console.log("🔐 Verifying password for:", email);
             const loginData = await verifyPassword(email, password);
 
             if (!loginData.accessToken) {
@@ -52,19 +60,30 @@ export default function SignerEntentePage() {
             }
 
             const newToken = loginData.accessToken;
+            console.log("✅ New token received");
 
-            await getCurrentUser(newToken);
+            const verifiedUser = await getCurrentUser(newToken);
+            console.log("✅ User verified:", verifiedUser);
 
             sessionStorage.setItem('accessToken', newToken);
 
-
-            await signAgreement(id, newToken);
+            console.log(`📝 Signing as ${verifiedUser.role} for entente ${id}`);
+            await signAgreement(id, newToken, verifiedUser.role);
 
             setSuccess(t("signerEntente.success"));
             setPassword("");
 
             setTimeout(() => {
-                navigate("/dashboard/employeur");
+                if (verifiedUser.role === "EMPLOYEUR") {
+                    navigate("/dashboard/employeur/ententes");
+                } else if (verifiedUser.role === "STUDENT") {
+                    navigate("/dashboard/student?tab=ententes");
+                } else if (verifiedUser.role === "GESTIONNAIRE") {
+                    navigate("/dashboard/gestionnaire?tab=ententes");
+                }
+                else {
+                    navigate("/dashboard");
+                }
             }, 2000);
 
         } catch (error) {
@@ -84,12 +103,33 @@ export default function SignerEntentePage() {
         }
     };
 
+    const getDashboardPath = () => {
+        if (userInfo?.role === "EMPLOYEUR") {
+            return "/dashboard/employeur/ententes";
+        } else if (userInfo?.role === "STUDENT") {
+            return "/dashboard/student?tab=ententes";
+        } else if (userInfo?.role === "GESTIONNAIRE") {
+            return "/dashboard/gestionnaire?tab=ententes";
+        }
+        return "/dashboard";
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
             <div className="max-w-md w-full bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
                     {t("signerEntente.title")}
                 </h2>
+
+                {userInfo && (
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                        <p className="text-sm text-blue-700 text-center">
+                            {t("signerEntente.connect_as")} <strong>{userInfo.firstName} {userInfo.lastName}</strong>
+                            <br />
+                            <span className="text-xs">{t("signerEntente.role." + userInfo.role)}</span>
+                        </p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSign}>
                     <div className="mb-4">
@@ -145,7 +185,7 @@ export default function SignerEntentePage() {
                 <div className="mt-4 text-center">
                     <button
                         type="button"
-                        onClick={() => navigate("/dashboard/employeur")}
+                        onClick={() => navigate(getDashboardPath())}
                         className="text-sm text-gray-600 hover:text-gray-800 underline"
                         disabled={loading}
                     >

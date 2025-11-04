@@ -1,5 +1,11 @@
 {
   "appName": "LeandrOSE",
+  "terms": {
+    "term": "Term",
+    "FALL": "Fall",
+    "WINTER": "Winter",
+    "SUMMER": "Summer"
+  },
   "previewPdf": {
     "preview": "Preview",
     "next": "Next",
@@ -9,6 +15,7 @@
     "error": "Unable to preview de document"
   },
   "program": {
+    "description": "Academic Program",
     "computer_science": "Computer Science",
     "software_engineering": "Software Engineering",
     "information_technology": "Information Technology",
@@ -199,7 +206,8 @@
     }
   },
   "dashboardEmployeur": {
-    "logout": "Logout",
+    "logout": "Log out",
+    "ententes": "Agreements",
     "welcome": "Welcome",
     "description": "This is your employer dashboard. You can manage your internship offers and view applications.",
     "navigation": {
@@ -208,24 +216,72 @@
     "stage": "Internship Agreement"
   },
   "dashboardGestionnaire": {
-    "logout": "Logout",
+    "logout": "Log out",
     "welcome": "Welcome",
     "description": "This is your manager dashboard. You can manage CVs, validate offers, and create agreements.",
     "tabs": {
       "cv": "Pending CVs",
       "pendingOffers": "Pending Offers",
       "offers": "All Offers",
+      "applications-accepted": "Accepted applications",
       "ententes": "Agreements"
     }
   },
   "dashboardStudent": {
-    "logout": "Logout",
+    "logout": "Log out",
     "welcome": "Welcome",
     "description": "This is your student dashboard. You can manage your CVs and soon view internship offers.",
     "tabs": {
       "offers": "Offers",
+      "ententes": "Internship Agreements",
       "cv": "My CV",
       "applications": "My Applications"
+    },
+    "reregistration": {
+      "title": "Re-registration Required",
+      "message": "Your registration session has expired. Please re-register for the new session.",
+      "program": "Program",
+      "selectProgram": "Select a program",
+      "confirm": "Re-register Now",
+      "continueLater": "Consult the dashboard without re-registering",
+      "updating": "Updating..."
+    }
+  },
+
+  "studentEntentes": {
+    "loading": "Loading agreements...",
+    "error": "Error loading agreements",
+    "title": "My Internship Agreements",
+    "subtitle": "View and sign your internship agreements",
+    "noEntentes": "No internship agreement",
+    "noEntentesDescription": "You don't have any internship agreements at the moment.",
+    "company": "Company",
+    "internship": "Internship",
+    "period": "Period",
+    "status": "Status",
+    "createdOn": "Created on",
+    "actions": "Actions",
+    "viewPdf": "View PDF",
+    "sign": "Sign",
+    "signatureStatus": "Signature Status",
+    "employer": "Employer",
+    "student": "Student",
+    "manager": "Manager",
+    "signedOn": "Signed on",
+    "awaitingSignature": "Awaiting signature",
+    "close": "Close",
+    "pdfNotFound": "The agreement PDF was not found",
+    "accessDenied": "You are not authorized to view this agreement",
+    "pdfLoadError": "Error loading the PDF",
+    "pdfViewError": "Unable to display the agreement PDF. Please try again.",
+    "statusValidated": "Validated",
+    "statusAwaitingOthers": "Awaiting other signatures",
+    "statusAwaitingYours": "Awaiting your signature",
+    "statusDraft": "Draft",
+    "stats": {
+      "total": "Total agreements",
+      "awaitingSignature": "Awaiting signature",
+      "validated": "Validated agreements"
     }
   },
   "programsList": {
@@ -589,7 +645,11 @@
     "startDate": "Start date",
     "duration": "Duration",
     "actions": "Actions",
-    "viewDetails": "View details"
+    "viewDetails": "View details",
+    "reregistrationRequired": "Re-registration Required",
+    "sessionExpired": "Your registration session has expired.",
+    "reregisterToSeeOffers": "Please re-register to view offers for the new session.",
+    "reregisterNow": "Re-register Now"
   },
   "employerCandidatures": {
     "navLink": "My applications",
@@ -729,8 +789,8 @@
     "status": {
       "title": "status",
       "validation": "Validated",
-      "waiting_other_signatures": "In waiting for others signatures",
-      "waiting_your_signature": "In waiting for your signature",
+      "waiting_other_signatures": "Waiting for others signatures",
+      "waiting_your_signature": "Waiting for your signature",
       "draft": "Draft"
     },
     "errors": {
@@ -757,7 +817,7 @@
       "stage_signatures": "State of Signatures",
       "employer": "Employer",
       "sign_the": "Sign the",
-      "waiting_signature": "In waiting for signature",
+      "waiting_signature": "Waiting for signature",
       "student": "Student",
       "manager": "Manager",
       "close": "Close"
@@ -767,7 +827,7 @@
     "errors": {
       "sessionExpired": "Session expired. Please log in again.",
       "incorrectedPassword": "Password incorrect. Please try again",
-      "accessForbidden": "Access refused. Only employers can signed the agreement.",
+      "accessForbidden": "Access refused. Only the concerned actors can signe the agreement.",
       "notFound": "agreement not found",
       "unexpectedError": "An error occurred while signing."
     },
@@ -777,7 +837,13 @@
     "placeholder": "Your password",
     "loading": "Signature in progress",
     "button": "Sign the agreement",
-    "back": "Cancel and return to the dashboard."
+    "back": "Cancel and return to the dashboard.",
+    "connect_as": "Connect as:",
+    "role": {
+      "EMPLOYEUR": "Employer",
+      "STUDENT": "Student",
+      "GESTIONNAIRE": "Manager"
+    }
   },
   "stageDetails": {
     "errors": {
@@ -791,7 +857,7 @@
       "internship_missions_notDefined": "No mission or objectif defined"
     },
     "sign_date": "Sign the",
-    "attente_signature": "In waiting for signature",
+    "attente_signature": "Waiting for signature",
     "loading": "Loading details...",
     "back": "Back to the agreements",
     "title": "Details of the internship agreement",

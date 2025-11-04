@@ -103,8 +103,6 @@ export default function DashBoardEmployeur() {
                     </p>
 
                     <InternshipOffersList />
-
-
                 </div>
             </main>
         </div>

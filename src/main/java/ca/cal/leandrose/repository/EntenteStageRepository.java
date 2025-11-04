@@ -7,6 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EntenteStageRepository extends JpaRepository<EntenteStage, Long> {
 
-    boolean existsByCandidatureId(Long candidatureId);
-
+  boolean existsByCandidatureId(Long candidatureId);
 }

@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
-import { FaEye, FaSignature, FaSort, FaSortUp, FaSortDown, FaFileAlt } from "react-icons/fa";
+import {
+    FaEye,
+    FaSignature,
+    FaSort,
+    FaSortUp,
+    FaSortDown,
+    FaFileAlt,
+    FaTimes,
+    FaClock,
+    FaUser,
+    FaCheck
+} from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
 export default function EmployeurListeStages() {
     const [ententes, setEntentes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortField, setSortField] = useState("dateCreation");
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation();
     const [sortDirection, setSortDirection] = useState("desc");
     const [pdfToPreview, setPdfToPreview] = useState(null);
     const [toast, setToast] = useState({ show: false, message: '', type: '' });
@@ -19,9 +30,6 @@ export default function EmployeurListeStages() {
 
     const showToast = (message, type = 'error') => {
         setToast({ show: true, message, type });
-        setTimeout(() => {
-            setToast({ show: false, message: '', type: '' });
-        }, 5000);
     };
 
     const fetchAgreements = async () => {
@@ -242,7 +250,6 @@ export default function EmployeurListeStages() {
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Toast Notification - COULEUR DU X CORRIGÉE */}
                 {toast.show && (
                     <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
                         toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
@@ -257,13 +264,12 @@ export default function EmployeurListeStages() {
                     </div>
                 )}
 
-                {/* Modal des signatures */}
                 {signatureModal.show && signatureModal.entente && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">
-                                    {t("ententeStage.model.stages_signatures")}
+                                    {t("ententeStage.model.stage_signatures")}
                                 </h3>
                                 <button
                                     onClick={() => setSignatureModal({ show: false, entente: null })}
@@ -278,7 +284,6 @@ export default function EmployeurListeStages() {
                                     const signatures = getSignatureStatus(signatureModal.entente);
                                     return (
                                         <>
-                                            {/* Employeur */}
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                                                 <div className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.employeur.signed ? (
@@ -303,7 +308,6 @@ export default function EmployeurListeStages() {
                                                 </div>
                                             </div>
 
-                                            {/* Étudiant */}
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                                                 <div className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.etudiant.signed ? (
@@ -328,7 +332,6 @@ export default function EmployeurListeStages() {
                                                 </div>
                                             </div>
 
-                                            {/* Gestionnaire */}
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                                                 <div className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.gestionnaire.signed ? (
@@ -369,7 +372,6 @@ export default function EmployeurListeStages() {
                     </div>
                 )}
 
-                {/* Header */}
                 <div className="mb-8">
                     <div className="flex justify-between items-center">
                         <div>
@@ -387,7 +389,6 @@ export default function EmployeurListeStages() {
                     </div>
                 </div>
 
-                {/* Agreements Table */}
                 {sortedEntentes.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-8 text-center">
                         <div className="max-w-md mx-auto">
@@ -481,7 +482,6 @@ export default function EmployeurListeStages() {
                                                     <FaEye className="text-sm" />
                                                     <span>{t("ententeStage.actions.look")}</span>
                                                 </button>
-                                                {/*</Link>*/}
                                                 {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasEmployerSigned(entente) && (
                                                     <Link
                                                         to={`/dashboard/employeur/ententes/${entente.id}/signer`}
@@ -535,7 +535,6 @@ export default function EmployeurListeStages() {
                         </div>
                     </div>
                 )}
-            {/* PDF Viewer Modal */}
             {pdfToPreview && (
                 <PdfViewer
                     file={pdfToPreview}

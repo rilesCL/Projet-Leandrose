@@ -14,44 +14,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RegisterEmployeurTest {
 
-    private static Validator validator;
+  private static Validator validator;
 
-    @BeforeAll
-    static void setupValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
+  @BeforeAll
+  static void setupValidator() {
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
+  }
 
-    @Test
-    @DisplayName("Valid RegisterEmployeur passes validation")
-    void testValidRegisterEmployeur() {
-        RegisterEmployeur req = new RegisterEmployeur();
-        req.setFirstName("John");
-        req.setLastName("Doe");
-        req.setEmail("john.doe@example.com");
-        req.setPassword("Password123");
-        req.setCompanyName("TechCorp");
-        req.setField("IT");
+  @Test
+  @DisplayName("Valid RegisterEmployeur passes validation")
+  void testValidRegisterEmployeur() {
+    RegisterEmployeur req = new RegisterEmployeur();
+    req.setFirstName("John");
+    req.setLastName("Doe");
+    req.setEmail("john.doe@example.com");
+    req.setPassword("Password123");
+    req.setCompanyName("TechCorp");
+    req.setField("IT");
 
-        Set<ConstraintViolation<RegisterEmployeur>> violations = validator.validate(req);
+    Set<ConstraintViolation<RegisterEmployeur>> violations = validator.validate(req);
 
-        assertThat(violations).isEmpty();
-    }
+    assertThat(violations).isEmpty();
+  }
 
-    @Test
-    @DisplayName("Invalid RegisterEmployeur fails validation")
-    void testInvalidRegisterEmployeur() {
-        RegisterEmployeur req = new RegisterEmployeur();
-        req.setFirstName("");
-        req.setLastName("");
-        req.setEmail("not-an-email");
-        req.setPassword("123");
-        req.setCompanyName("");
-        req.setField("");
+  @Test
+  @DisplayName("Invalid RegisterEmployeur fails validation")
+  void testInvalidRegisterEmployeur() {
+    RegisterEmployeur req = new RegisterEmployeur();
+    req.setFirstName("");
+    req.setLastName("");
+    req.setEmail("not-an-email");
+    req.setPassword("123");
+    req.setCompanyName("");
+    req.setField("");
 
-        Set<ConstraintViolation<RegisterEmployeur>> violations = validator.validate(req);
+    Set<ConstraintViolation<RegisterEmployeur>> violations = validator.validate(req);
 
-        assertThat(violations).isNotEmpty();
-        assertThat(violations).hasSizeGreaterThanOrEqualTo(5);
-    }
+    assertThat(violations).isNotEmpty();
+    assertThat(violations).hasSizeGreaterThanOrEqualTo(5);
+  }
 }

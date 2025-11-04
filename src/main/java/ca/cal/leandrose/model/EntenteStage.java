@@ -17,58 +17,64 @@ import java.time.LocalDateTime;
 @Builder
 public class EntenteStage {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Candidature candidature;
+  @ManyToOne
+  @JoinColumn(nullable = false)
+  private Candidature candidature;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String missionsObjectifs;
+  @Column(columnDefinition = "TEXT", nullable = false)
+  private String missionsObjectifs;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatutEntente statut;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private StatutEntente statut;
 
-    @Column(nullable = false)
-    private LocalDateTime dateCreation;
+  @Column(nullable = false)
+  private LocalDateTime dateCreation;
 
-    private LocalDateTime dateModification;
+  private LocalDateTime dateModification;
 
-    private String cheminDocumentPDF;
+  private String cheminDocumentPDF;
 
-    private LocalDateTime dateSignatureEtudiant;
-    private LocalDateTime dateSignatureEmployeur;
-    private LocalDateTime dateSignatureGestionnaire;
+  private LocalDateTime dateSignatureEtudiant;
+  private LocalDateTime dateSignatureEmployeur;
+  private LocalDateTime dateSignatureGestionnaire;
 
-    public enum StatutEntente {
-        BROUILLON,
-        EN_ATTENTE_SIGNATURE,
-        VALIDEE
-    }
-    public InternshipOffer getOffer(){
-        return candidature.getInternshipOffer();
-    }
-    public Employeur getEmployeur(){
-        return getOffer().getEmployeur();
-    }
-    public Student getStudent(){
-        return candidature.getStudent();
-    }
-    public float getRemuneration(){
-        Float remuneration = getOffer().getRemuneration();
-        return remuneration != null ? remuneration : 0f;
-    }
-    public String getAddress(){
-        return getOffer().getAddress();
-    }
-    public int getDurationInWeeks(){
-        return getOffer().getDurationInWeeks();
-    }
-    public LocalDate getStartDate(){
-        return getOffer().getStartDate();
-    }
+  public enum StatutEntente {
+    BROUILLON,
+    EN_ATTENTE_SIGNATURE,
+    VALIDEE
+  }
 
+  public InternshipOffer getOffer() {
+    return candidature.getInternshipOffer();
+  }
+
+  public Employeur getEmployeur() {
+    return getOffer().getEmployeur();
+  }
+
+  public Student getStudent() {
+    return candidature.getStudent();
+  }
+
+  public float getRemuneration() {
+    Float remuneration = getOffer().getRemuneration();
+    return remuneration != null ? remuneration : 0f;
+  }
+
+  public String getAddress() {
+    return getOffer().getAddress();
+  }
+
+  public int getDurationInWeeks() {
+    return getOffer().getDurationInWeeks();
+  }
+
+  public LocalDate getStartDate() {
+    return getOffer().getStartDate();
+  }
 }
