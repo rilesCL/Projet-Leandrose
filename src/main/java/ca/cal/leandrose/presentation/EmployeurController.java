@@ -445,7 +445,8 @@ public class EmployeurController {
     public ResponseEntity<?> generateEvaluationPdf(
             HttpServletRequest request,
             @PathVariable Long evaluationId,
-            @RequestBody EvaluationFormData formData) {
+            @RequestBody EvaluationFormData formData,
+            @RequestHeader(value= "Accept-Language", defaultValue = "fr") String language) {
 
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 
@@ -459,7 +460,9 @@ public class EmployeurController {
                 return ResponseEntity.status(403).body(new PdfGenerationResponse(null, "Accès non autorisé"));
             }
 
-            EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdf(evaluationId, formData);
+            String lang = language.startsWith("en") ? "en" : "fr";
+
+            EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdf(evaluationId, formData, lang);
             return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new PdfGenerationResponse(null, e.getMessage()));

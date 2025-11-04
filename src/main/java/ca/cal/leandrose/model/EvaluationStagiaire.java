@@ -33,19 +33,8 @@ public class EvaluationStagiaire {
     @ManyToOne
     @JoinColumn(name = "internship_id")
     private InternshipOffer internshipOffer;
-//
-//    @Column(columnDefinition = "TEXT")
-//    private String evaluationTemplate;
-//
-//    @Column(columnDefinition = "TEXT")
-//    private String evaluationResponses;
 
     private String pdfFilePath;
-
-
-//    @Column(length = 2000)
-//    private String generalComment;
-
     private boolean submitted;
 
 }

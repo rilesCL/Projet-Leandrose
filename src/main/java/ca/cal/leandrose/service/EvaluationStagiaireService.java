@@ -51,11 +51,11 @@ public class EvaluationStagiaireService {
         return mapToDto(evaluationStagiaire);
     }
 
-    public EvaluationStagiaireDto generateEvaluationPdf(Long evaluationId, EvaluationFormData formData){
+    public EvaluationStagiaireDto generateEvaluationPdf(Long evaluationId, EvaluationFormData formData, String langage){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 
-        String pdfPath = pdfGeneratorService.genererEvaluationPdf(evaluation, formData);
+        String pdfPath = pdfGeneratorService.genererEvaluationPdf(evaluation, formData, langage);
         evaluation.setPdfFilePath(pdfPath);
         evaluation.setSubmitted(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
