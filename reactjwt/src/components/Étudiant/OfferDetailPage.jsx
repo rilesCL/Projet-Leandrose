@@ -19,6 +19,21 @@ export default function OfferDetailPage() {
     const [alreadyApplied, setAlreadyApplied] = useState(false);
     const [previewPdfFile, setPreviewPdfFile] = useState(null);
 
+
+    const translateSchoolTerm = (termString, tFn) => {
+        if (!termString || typeof termString !== 'string') return '';
+        const parts = termString.trim().split(/\s+/);
+        const seasonKey = parts.shift().toUpperCase();
+        const rest = parts.join(' ');
+        const translationKey = `terms.${seasonKey}`;
+        const translated = tFn ? tFn(translationKey) : translationKey;
+        const seasonLabel = (translated === translationKey)
+            ? (seasonKey.charAt(0).toUpperCase() + seasonKey.slice(1).toLowerCase())
+            : translated;
+        return rest ? `${seasonLabel} ${rest}` : seasonLabel;
+    };
+
+
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
@@ -27,6 +42,7 @@ export default function OfferDetailPage() {
             try {
                 const offerData = await getOfferDetails(offerId);
                 setOffer(offerData);
+                console.log(offerData);
 
                 const cvData = await getStudentCv();
                 setCv(cvData);
@@ -111,6 +127,7 @@ export default function OfferDetailPage() {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="bg-white shadow rounded-lg mb-6">
+                {/* Header avec titre et bouton retour */}
                 <div className="px-6 py-4 border-b border-gray-200">
                     <button
                         onClick={() => navigate("/dashboard/student")}
@@ -121,49 +138,70 @@ export default function OfferDetailPage() {
                     <h1 className="text-2xl font-bold text-gray-900">{offer.description}</h1>
                     <p className="text-gray-600 mt-1">{offer.companyName}</p>
                 </div>
-                <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+
+                {/* Contenu des détails */}
+                <div className="px-6 py-4">
+                    {/* Lieu en pleine largeur en haut */}
+                    <div className="mb-4">
                         <h3 className="text-sm font-medium text-gray-500">
                             {t("OfferDetailPage.location")}
                         </h3>
                         <p className="mt-1 text-gray-900">{offer.address}</p>
                     </div>
-                    <div>
-                        <h3 className="text-sm font-medium text-gray-500">
-                            {t("OfferDetailPage.startDate")}
-                        </h3>
-                        <p className="mt-1 text-gray-900">{formatDate(offer.startDate)}</p>
-                    </div>
-                    <div>
-                        <h3 className="text-sm font-medium text-gray-500">
-                            {t("OfferDetailPage.duration")}
-                        </h3>
-                        <p className="mt-1 text-gray-900">
-                            {offer.durationInWeeks}{" "}
-                            {t("OfferDetailPage.week", { count: offer.durationInWeeks })}
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="text-sm font-medium text-gray-500">
-                            {t("OfferDetailPage.remuneration")}
-                        </h3>
-                        <p className="mt-1 text-gray-900">
-                            {offer.remuneration
-                                ? `${offer.remuneration} $ / ${t("OfferDetailPage.hour")}`
-                                : t("OfferDetailPage.noRemuneration")}
-                        </p>
+
+                    {/* Autres champs en grille 2x2 */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">
+                                {t("OfferDetailPage.startDate")}
+                            </h3>
+                            <p className="mt-1 text-gray-900">{formatDate(offer.startDate)}</p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">
+                                {t("OfferDetailPage.duration")}
+                            </h3>
+                            <p className="mt-1 text-gray-900">
+                                {offer.durationInWeeks}{" "}
+                                {t("OfferDetailPage.week", { count: offer.durationInWeeks })}
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">
+                                {t("terms.term")}
+                            </h3>
+                            <p className="mt-1 text-gray-900">
+                                {translateSchoolTerm(offer.schoolTerm, t) || "Non spécifié"}
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">
+                                {t("OfferDetailPage.remuneration")}
+                            </h3>
+                            <p className="mt-1 text-gray-900">
+                                {offer.remuneration
+                                    ? `${offer.remuneration} $ / ${t("OfferDetailPage.hour")}`
+                                    : t("OfferDetailPage.noRemuneration")}
+                            </p>
+                        </div>
                     </div>
                 </div>
+
+                {/* Contact employeur */}
                 <div className="px-6 py-4 bg-gray-50">
                     <h3 className="text-sm font-medium text-gray-500 mb-2">
                         {t("OfferDetailPage.employerContact")}
                     </h3>
                     <p className="text-gray-900">
-                        {offer.employeurFirstName} {offer.employeurLastName}
+                        {offer.employeurDto.firstName} {offer.employeurDto.lastName}
                     </p>
-                    <p className="text-gray-600">{offer.employeurEmail}</p>
+                    <p className="text-gray-600">{offer.employeurDto.email}</p>
                 </div>
 
+                {/* Bouton preview PDF */}
                 <div className="px-6 py-4 border-t border-gray-200">
                     <button
                         onClick={handlePreviewPdf}
