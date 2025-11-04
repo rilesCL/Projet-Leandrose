@@ -828,5 +828,52 @@
       "waiting_signatures": "In waiting for signatures",
       "draft": "Draft"
     }
+  },
+  "evaluation": {
+    "title": "Intern Evaluation Form",
+    "studentInfo": "Student Information",
+    "companyInfo": "Company Information",
+    "studentName": "Student Name",
+    "program": "Program",
+    "company": "Company",
+    "internship": "Internship Position",
+    "evaluationDate": "Evaluation Date",
+    "instructions": "Please check the behaviors observed in the intern and provide comments if applicable.",
+    "observed": "Observed",
+    "commentsPlaceholder": "Add comments...",
+    "generalComments": "General Comments",
+    "generalCommentsPlaceholder": "Overall evaluation comments...",
+    "preview": "Preview PDF",
+    "generatePdf": "Generate & Download PDF",
+    "generating": "Generating PDF...",
+    "pdfGenerated": "PDF generated and downloaded successfully!",
+    "pdfGenerationError": "Error generating PDF",
+    "previewError": "Error previewing PDF",
+    "loading": "Loading evaluation form...",
+    "initializationError": "Error initializing evaluation form",
+
+    "productivity": {
+      "title": "PRODUCTIVITY",
+      "description": "Ability to optimize work performance",
+      "q1": "Plan and organize work effectively",
+      "q2": "Quickly understand work instructions",
+      "q3": "Maintain a steady work pace",
+      "q4": "Establish priorities",
+      "q5": "Meet deadlines"
+    },
+    "quality": {
+      "title": "WORK QUALITY",
+      "description": "Ability to produce careful and precise work",
+      "q1": "Demonstrate rigor in work",
+      "q2": "Respect company quality standards",
+      "q3": "Work autonomously in verifying own work"
+    }
+  },
+  "rating": {
+    "NON_APPLICABLE": "N/A",
+    "EXCELLENT": "Excellent",
+    "TRES_BIEN": "Very Good",
+    "SATISFAISANT": "Satisfactory",
+    "A_AMELIORER": "Needs Improvement"
   }
 }

@@ -418,15 +418,17 @@ public class EmployeurController {
         }
     }
 
-    @PostMapping("/evaluation")
+    @PostMapping("/evaluations")
     public ResponseEntity<?> createEvaluation(
             HttpServletRequest request,
             @RequestBody CreateEvaluationRequest createRequest){
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 
-        if(me.getRole().name().equals("EMPLOYEUR")){
+        if(!me.getRole().name().equals("EMPLOYEUR")){
             return ResponseEntity.status(403).build();
         }
+
+        System.out.println("Received request - studentId: " + createRequest.studentId() + ", offerId: " + createRequest.internshipOfferId());
 
         try{
             EvaluationStagiaireDto evaluationStagiaireDto = evaluationStagiaireService.createEvaluation(
@@ -481,7 +483,6 @@ public class EmployeurController {
         }
 
         try {
-            // Verify the employer owns this evaluation
             EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
             if (!evaluation.employeurId().equals(me.getId())) {
                 return ResponseEntity.status(403).build();
@@ -512,7 +513,7 @@ public class EmployeurController {
             return ResponseEntity.status(500).body("Erreur lors de la récupération des évaluations");
         }
     }
-    @GetMapping("/evaluations/{evaluationId}")
+    @GetMapping("/evaluation/{evaluationId}")
     public ResponseEntity<?> getEvaluation(
             HttpServletRequest request,
             @PathVariable Long evaluationId) {
@@ -535,5 +536,4 @@ public class EmployeurController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }

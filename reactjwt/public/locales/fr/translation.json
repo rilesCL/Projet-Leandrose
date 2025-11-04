@@ -830,5 +830,52 @@
       "waiting_signatures": "En attente de signatures",
       "draft": "Brouillon"
     }
+  },
+  "evaluation": {
+    "title": "Fiche d'Évaluation du Stagiaire",
+    "studentInfo": "Informations de l'Étudiant",
+    "companyInfo": "Informations de l'Entreprise",
+    "studentName": "Nom de l'étudiant",
+    "program": "Programme",
+    "company": "Entreprise",
+    "internship": "Poste de stage",
+    "evaluationDate": "Date d'évaluation",
+    "instructions": "Veuillez cocher les comportements observés chez le stagiaire et formuler des commentaires s'il y a lieu.",
+    "observed": "Observé",
+    "commentsPlaceholder": "Ajouter des commentaires...",
+    "generalComments": "Commentaires Généraux",
+    "generalCommentsPlaceholder": "Commentaires d'évaluation généraux...",
+    "preview": "Aperçu PDF",
+    "generatePdf": "Générer & Télécharger PDF",
+    "generating": "Génération du PDF...",
+    "pdfGenerated": "PDF généré et téléchargé avec succès!",
+    "pdfGenerationError": "Erreur lors de la génération du PDF",
+    "previewError": "Erreur lors de l'aperçu du PDF",
+    "loading": "Chargement du formulaire d'évaluation...",
+    "initializationError": "Erreur lors de l'initialisation du formulaire d'évaluation",
+
+    "productivity": {
+      "title": "PRODUCTIVITÉ",
+      "description": "Capacité d'optimiser son rendement au travail",
+      "q1": "Planifier et organiser son travail de façon efficace",
+      "q2": "Comprendre rapidement les directives relatives à son travail",
+      "q3": "Maintenir un rythme de travail soutenu",
+      "q4": "Établir ses priorités",
+      "q5": "Respecter ses échéanciers"
+    },
+    "quality": {
+      "title": "QUALITÉ DU TRAVAIL",
+      "description": "Capacité de produire un travail soigné et précis",
+      "q1": "Démontrer de la rigueur dans son travail",
+      "q2": "Respecter les normes de qualité de l'entreprise",
+      "q3": "Faire preuve d'autonomie dans la vérification de son travail"
+    }
+  },
+  "rating": {
+    "NON_APPLICABLE": "N/A",
+    "EXCELLENT": "Excellent",
+    "TRES_BIEN": "Très bien",
+    "SATISFAISANT": "Satisfaisant",
+    "A_AMELIORER": "À améliorer"
   }
 }
