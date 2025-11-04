@@ -14,7 +14,12 @@ import {
     FaUser
 } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
-import {fetchAgreements, previewEntentePdf} from "../../api/apiGestionnaire.jsx";
+import {
+    fetchAgreements,
+    previewEntentePdf,
+    getAllProfs,
+    attribuerProf
+} from "../../api/apiGestionnaire.jsx";
 
 export default function GestionnaireListeEntentes() {
     const [ententes, setEntentes] = useState([]);
@@ -25,6 +30,11 @@ export default function GestionnaireListeEntentes() {
     const [pdfToPreview, setPdfToPreview] = useState(null);
     const [toast, setToast] = useState({ show: false, message: '', type: '' });
     const [signatureModal, setSignatureModal] = useState({ show: false, entente: null });
+    const [profModal, setProfModal] = useState({ show: false, entente: null });
+    const [profs, setProfs] = useState([]);
+    const [selectedProf, setSelectedProf] = useState(null);
+    const [loadingProfs, setLoadingProfs] = useState(false);
+    const [attributing, setAttributing] = useState(false);
 
     useEffect(() => {
         fetchAgreements(setEntentes, setLoading, showToast, t);
@@ -32,6 +42,47 @@ export default function GestionnaireListeEntentes() {
 
     const showToast = (message, type = 'error') => {
         setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ show: false, message: '', type: '' });
+        }, 5000);
+    };
+
+    const handleOpenProfModal = async (entente) => {
+        setProfModal({ show: true, entente });
+        setSelectedProf(null);
+        setLoadingProfs(true);
+        try {
+            console.log("Chargement des professeurs...");
+            const profsData = await getAllProfs();
+            console.log("Professeurs chargés:", profsData);
+            setProfs(Array.isArray(profsData) ? profsData : []);
+        } catch (error) {
+            console.error("Erreur détaillée lors du chargement des professeurs:", error);
+            const errorMessage = error.message || error.toString();
+            showToast(`${t("ententeStage.errors.loading_profs")}: ${errorMessage}`);
+            setProfModal({ show: false, entente: null });
+        } finally {
+            setLoadingProfs(false);
+        }
+    };
+
+    const handleAttribuerProf = async () => {
+        if (!selectedProf || !profModal.entente) return;
+
+        setAttributing(true);
+        try {
+            await attribuerProf(profModal.entente.id, selectedProf);
+            showToast(t("ententeStage.prof_attributed") || "Professeur attribué avec succès", 'success');
+            setProfModal({ show: false, entente: null });
+            setSelectedProf(null);
+            // Recharger les ententes
+            await fetchAgreements(setEntentes, () => {}, showToast, t);
+        } catch (error) {
+            console.error("Erreur lors de l'attribution du professeur:", error);
+            showToast(error.message || t("ententeStage.errors.attributing_prof") || "Erreur lors de l'attribution du professeur");
+        } finally {
+            setAttributing(false);
+        }
     };
 
     const handleViewPdf = async (ententeId) => {
@@ -204,12 +255,12 @@ export default function GestionnaireListeEntentes() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {toast.show && (
                     <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
-                        toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+                        toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
                     }`}>
                         <span>{toast.message}</span>
                         <button
                             onClick={() => setToast({ show: false, message: '', type: '' })}
-                            className="text-white hover:text-gray-200 transition-colors"
+                            className="text-white hover:text-gray-100 transition-colors ml-2"
                         >
                             <FaTimes className="text-lg" />
                         </button>
@@ -318,6 +369,95 @@ export default function GestionnaireListeEntentes() {
                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                 >
                                     {t("ententeStage.model.close")}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {profModal.show && profModal.entente && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    {t("ententeStage.model.assign_prof_title") || "Attribuer un professeur"}
+                                </h3>
+                                <button
+                                    onClick={() => setProfModal({ show: false, entente: null })}
+                                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <FaTimes className="text-xl" />
+                                </button>
+                            </div>
+
+                            <div className="mb-4">
+                                <p className="text-sm text-gray-600">
+                                    {t("ententeStage.model.assign_prof_description") || "Sélectionnez un professeur pour"} {profModal.entente.student?.firstName} {profModal.entente.student?.lastName}
+                                </p>
+                            </div>
+
+                            {loadingProfs ? (
+                                <div className="flex justify-center py-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                </div>
+                            ) : (
+                                <div className="space-y-2 max-h-96 overflow-y-auto">
+                                    {profs.length === 0 ? (
+                                        <p className="text-sm text-gray-500 text-center py-4">
+                                            {t("ententeStage.model.no_profs") || "Aucun professeur disponible"}
+                                        </p>
+                                    ) : (
+                                        profs.map((prof) => (
+                                            <div
+                                                key={prof.id}
+                                                onClick={() => setSelectedProf(prof.id)}
+                                                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                                                    selectedProf === prof.id
+                                                        ? 'border-indigo-600 bg-indigo-50'
+                                                        : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                <div className="flex items-center space-x-3">
+                                                    <FaUser className={`${selectedProf === prof.id ? 'text-indigo-600' : 'text-gray-400'}`} />
+                                                    <div>
+                                                        <div className="font-medium text-gray-900">
+                                                            {prof.firstName} {prof.lastName}
+                                                        </div>
+                                                        {prof.department && (
+                                                            <div className="text-xs text-gray-500">
+                                                                {prof.department}
+                                                            </div>
+                                                        )}
+                                                        {prof.employeeNumber && (
+                                                            <div className="text-xs text-gray-500">
+                                                                {t("ententeStage.model.employee_number") || "N°"}: {prof.employeeNumber}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            )}
+
+                            <div className="mt-6 flex justify-end space-x-3">
+                                <button
+                                    onClick={() => setProfModal({ show: false, entente: null })}
+                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                                    disabled={attributing}
+                                >
+                                    {t("ententeStage.model.cancel") || "Annuler"}
+                                </button>
+                                <button
+                                    onClick={handleAttribuerProf}
+                                    disabled={!selectedProf || attributing}
+                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                                >
+                                    {attributing && (
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                    )}
+                                    <span>{t("ententeStage.model.assign") || "Attribuer"}</span>
                                 </button>
                             </div>
                         </div>
@@ -436,6 +576,15 @@ export default function GestionnaireListeEntentes() {
                                                         <FaSignature className="text-sm" />
                                                         <span>{t("ententeStage.actions.sign")}</span>
                                                     </Link>
+                                                )}
+                                                {entente.statut === 'VALIDEE' && !entente.prof && (
+                                                    <button
+                                                        onClick={() => handleOpenProfModal(entente)}
+                                                        className="text-purple-600 hover:text-purple-900 flex items-center space-x-1"
+                                                    >
+                                                        <FaUser className="text-sm" />
+                                                        <span>{t("ententeStage.actions.assign_prof") || "Attribuer Prof"}</span>
+                                                    </button>
                                                 )}
                                             </div>
                                         </td>

@@ -800,14 +800,18 @@
       "pdf_unauthorized": "You are not allowed to see this agreement",
       "pdf_loading_agreements": "Error loading PDF",
       "pdf_viewing": "Error viewing PDF:",
-      "pdf_unable_view": "Unable to view the PDF of the agreement. Try again."
+      "pdf_unable_view": "Unable to view the PDF of the agreement. Try again.",
+      "loading_profs": "Error loading professors",
+      "attributing_prof": "Error assigning professor"
     },
     "created_at": "Created at",
     "actions": {
       "title": "Actions",
       "look": "Look",
-      "sign": "Sign"
+      "sign": "Sign",
+      "assign_prof": "Assign Prof"
     },
+    "prof_attributed": "Professor assigned successfully",
     "stats": {
       "totalEntentes": "Total Internships",
       "waitingSignature": "Waiting for signatures",
@@ -820,7 +824,13 @@
       "waiting_signature": "Waiting for signature",
       "student": "Student",
       "manager": "Manager",
-      "close": "Close"
+      "close": "Close",
+      "assign_prof_title": "Assign a Professor",
+      "assign_prof_description": "Select a professor for",
+      "no_profs": "No professors available",
+      "employee_number": "No.",
+      "cancel": "Cancel",
+      "assign": "Assign"
     }
   },
   "signerEntente": {

@@ -25,6 +25,14 @@ public class EntenteStage {
   @JoinColumn(nullable = false)
   private Candidature candidature;
 
+  @ManyToOne
+  @JoinColumn
+  private Prof prof;
+
+  @ManyToOne
+  @JoinColumn
+  private Gestionnaire gestionnaire;
+
   @Column(columnDefinition = "TEXT", nullable = false)
   private String missionsObjectifs;
 

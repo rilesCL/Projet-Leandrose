@@ -18,6 +18,7 @@ public class UserAppService {
   private final StudentRepository studentRepository;
   private final EmployeurRepository employeurRepository;
   private final GestionnaireRepository gestionnaireRepository;
+  private final ProfRepository profRepository;
 
   public UserDTO getMe(String token) {
     token = token.startsWith("Bearer") ? token.substring(7) : token;
@@ -28,6 +29,7 @@ public class UserAppService {
       case EMPLOYEUR -> getEmployeurDto(user.getId());
       case GESTIONNAIRE -> getGestionnaireDto(user.getId());
       case STUDENT -> getStudentDto(user.getId());
+      case PROF -> getProfDto(user.getId());
     };
   }
 
@@ -50,5 +52,12 @@ public class UserAppService {
     return employeurOptional.isPresent()
         ? EmployeurDto.create(employeurOptional.get())
         : EmployeurDto.empty();
+  }
+
+  private ProfDto getProfDto(Long id) {
+    final Optional<Prof> profOptional = profRepository.findById(id);
+    return profOptional.isPresent()
+        ? ProfDto.create(profOptional.get())
+        : ProfDto.empty();
   }
 }
