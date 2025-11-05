@@ -177,6 +177,13 @@ const EvaluationForm = () => {
         }));
     };
 
+    const handleFieldChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
     // Generate and download PDF, then redirect
     const handleGeneratePdf = async () => {
         setSubmitting(true);
@@ -373,18 +380,7 @@ const EvaluationForm = () => {
                                         </p>
 
                                         <div className="flex items-center gap-4 flex-shrink-0">
-                                            {/* Checkbox */}
-                                            <label className="flex items-center gap-2 text-sm text-gray-600 whitespace-nowrap">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={formData.categories[categoryKey]?.[questionIndex]?.checked || false}
-                                                    onChange={(e) =>
-                                                        handleQuestionChange(categoryKey, questionIndex, 'checked', e.target.checked)
-                                                    }
-                                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                                />
-                                                {t('evaluation.observed')}
-                                            </label>
+
 
                                             {/* Rating Select */}
                                             <select
