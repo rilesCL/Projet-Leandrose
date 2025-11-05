@@ -97,8 +97,6 @@ class EvaluationStagiaireServiceTest {
         when(evaluationStagiaireRepository.save(any(EvaluationStagiaire.class)))
                 .thenReturn(evaluationStagiaire);
 
-
-
         // When
         EvaluationStagiaireDto result = evaluationStagiaireService.createEvaluation(1L, 2L, 3L);
 

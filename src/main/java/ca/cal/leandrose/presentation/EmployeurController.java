@@ -410,8 +410,6 @@ public class EmployeurController {
       return ResponseEntity.status(500).build();
     }
   }
-
-
     @PostMapping("/evaluations")
     public ResponseEntity<?> createEvaluation(
             HttpServletRequest request,
@@ -480,10 +478,8 @@ public class EmployeurController {
             @PathVariable Long evaluationId) {
 
         String authHeader = request.getHeader("Authorization");
-        System.out.println("DEBUG: Auth header: " + (authHeader != null ? authHeader.substring(0, Math.min(20, authHeader.length())) + "..." : "null"));
 
         UserDTO me = userService.getMe(authHeader);
-        System.out.println("DEBUG: User from token - ID: " + me.getId() + ", Role: " + me.getRole());
 
 
         if (!me.getRole().name().equals("EMPLOYEUR")) {
@@ -491,10 +487,7 @@ public class EmployeurController {
         }
 
         try {
-            System.out.println("DEBUG: Looking for evaluation ID: " + evaluationId);
             EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
-            System.out.println("DEBUG: Reading PDF from: " + evaluation.pdfFilePath());
-            System.out.println("DEBUG: Found evaluation - ID: " + evaluation.id() + ", Employer ID: " + evaluation.employeurId());
             if (!evaluation.employeurId().equals(me.getId())) {
                 return ResponseEntity.status(403).build();
             }
