@@ -784,4 +784,37 @@ class EntenteStageServiceTest {
           ententeStageService.telechargerPDF(1L);
         });
   }
+    @Test
+    void getEtudiantsPourProf_BasicMappingAndFilters() {
+
+        Prof prof = Prof.builder().id(1L).firstName("Marie").lastName("Beauchamp").email("prof@test.com").password("x").build();
+        entente.setProf(prof);
+
+        when(ententeRepository.findAllByProf_Id(1L)).thenReturn(List.of(entente));
+
+        var list = ententeStageService.getEtudiantsPourProf(
+                1L, null, null, null, null, null, "name", true
+        );
+
+        assertEquals(1, list.size());
+        var item = list.get(0);
+        assertEquals(entente.getId(), item.getEntenteId());
+        assertEquals(student.getId(), item.getStudentId());
+        assertEquals(student.getFirstName(), item.getStudentFirstName());
+        assertEquals(student.getLastName(), item.getStudentLastName());
+        assertEquals("TechCorp", item.getCompanyName());
+        assertEquals("Stage développement", item.getOfferTitle());
+
+        var list2 = ententeStageService.getEtudiantsPourProf(
+                1L, "Joh", null, null, null, null, "name", true
+        );
+        assertEquals(1, list2.size());
+
+        var list3 = ententeStageService.getEtudiantsPourProf(
+                1L, "ZZZ", null, null, null, null, "name", true
+        );
+        assertEquals(0, list3.size());
+
+        verify(ententeRepository, times(3)).findAllByProf_Id(1L);
+    }
 }
