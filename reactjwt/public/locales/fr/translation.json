@@ -356,6 +356,8 @@
     "company": "Entreprise",
     "internship": "Stage",
     "period": "Période",
+    "professor": "Professeur",
+    "noProfessor": "Non assigné",
     "status": "Statut",
     "createdOn": "Créée le",
     "actions": "Actions",
@@ -802,14 +804,18 @@
       "pdf_unauthorized": "Vous ne pouvez pas voir cette entente",
       "pdf_loading_agreements": "Erreur de chargement du PDF",
       "pdf_viewing": "Erreur lors de l'affichage du PDF :",
-      "pdf_unable_view": "Impossible de visualiser le PDF de l'accord. Veuillez réessayer."
+      "pdf_unable_view": "Impossible de visualiser le PDF de l'accord. Veuillez réessayer.",
+      "loading_profs": "Erreur lors du chargement des professeurs",
+      "attributing_prof": "Erreur lors de l'attribution du professeur"
     },
     "created_at": "Crée le",
     "actions": {
       "title": "Actions",
       "look": "Voir",
-      "sign": "Signer"
+      "sign": "Signer",
+      "assign_prof": "Attribuer Prof"
     },
+    "prof_attributed": "Professeur attribué avec succès",
     "stats": {
       "totalEntentes": "Total des ententes",
       "waitingSignature": "En attente de signature",
@@ -822,7 +828,13 @@
       "waiting_signature": "En attente de signature",
       "student": "Étudiant",
       "manager": "Gestionnaire",
-      "close": "Fermer"
+      "close": "Fermer",
+      "assign_prof_title": "Attribuer un professeur",
+      "assign_prof_description": "Sélectionnez un professeur pour",
+      "no_profs": "Aucun professeur disponible",
+      "employee_number": "N°",
+      "cancel": "Annuler",
+      "assign": "Attribuer"
     }
   },
   "signerEntente": {

@@ -24,6 +24,8 @@ public class EntenteStageDto {
 
   private StudentDto student;
   private InternshipOfferDto internshipOffer;
+  private ProfDto prof;
+  private GestionnaireDto gestionnaire;
 
   private String missionsObjectifs;
   private EntenteStage.StatutEntente statut;
@@ -80,6 +82,11 @@ public class EntenteStageDto {
                 .employeurDto(
                     offer.getEmployeur() != null ? EmployeurDto.create(offer.getEmployeur()) : null)
                 .build())
+        .prof(entente.getProf() != null ? ProfDto.create(entente.getProf()) : null)
+        .gestionnaire(
+            entente.getGestionnaire() != null
+                ? GestionnaireDto.create(entente.getGestionnaire())
+                : null)
         .missionsObjectifs(entente.getMissionsObjectifs())
         .statut(entente.getStatut())
         .dateDebut(offer.getStartDate())

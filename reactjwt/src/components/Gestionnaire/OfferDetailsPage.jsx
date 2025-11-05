@@ -33,6 +33,8 @@ export default function OfferDetailsPage() {
                 setError(t("pendingOffers.errors.serverError") + err);
             } finally {
                 setLoading(false);
+                console.log(offer)
+
             }
         }
         loadOffer();
@@ -117,6 +119,8 @@ export default function OfferDetailsPage() {
                     </button>
                 </div>
             </div>
+
+
 
             {selectedPdfUrl && (
                 <PdfViewer

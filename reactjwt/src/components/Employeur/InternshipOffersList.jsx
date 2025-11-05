@@ -19,6 +19,19 @@ export default function InternshipOffersList() {
     const [showPdfModal, setShowPdfModal] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
 
+    const translateSchoolTerm = (termString) => {
+        if (!termString || typeof termString !== 'string') return '';
+        const parts = termString.trim().split(/\s+/);
+        const seasonKey = parts.shift().toUpperCase();
+        const rest = parts.join(' ');
+        const translationKey = `terms.${seasonKey}`;
+        const translated = t(translationKey);
+        const seasonLabel = (translated === translationKey)
+            ? (seasonKey.charAt(0).toUpperCase() + seasonKey.slice(1).toLowerCase())
+            : translated;
+        return rest ? `${seasonLabel} ${rest}` : seasonLabel;
+    };
+
     useEffect(() => {
         async function fetchOffers() {
             setLoading(true);
@@ -216,6 +229,9 @@ export default function InternshipOffersList() {
                                 {t("internshipOffersList.table.duration")}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {t("terms.term")}
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {t("internshipOffersList.table.status")}
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -260,6 +276,9 @@ export default function InternshipOffersList() {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {translateSchoolTerm(offer.schoolTerm) || "N/A"}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {getStatusLabel(offer.status)}

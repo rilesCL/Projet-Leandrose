@@ -20,6 +20,9 @@ export default function StudentEntentesListe() {
 
     const showToast = (message, type = 'error') => {
         setToast({ show: true, message, type });
+        setTimeout(() => {
+            setToast({ show: false, message: '', type: '' });
+        }, 5000);
     };
 
     const fetchAgreements = async () => {
@@ -247,16 +250,22 @@ export default function StudentEntentesListe() {
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {toast.show && (
-                    <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
-                        toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-                    }`}>
-                        <span>{toast.message}</span>
-                        <button
-                            onClick={() => setToast({ show: false, message: '', type: '' })}
-                            className="text-white hover:text-gray-200 transition-colors"
-                        >
-                            <FaTimes className="text-lg" />
-                        </button>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 max-w-md ${
+                            toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                        }`}>
+                            <span className="flex-1">{toast.message}</span>
+                            <button
+                                onClick={() => setToast({ show: false, message: '', type: '' })}
+                                className={`p-1 rounded transition-colors ${
+                                    toast.type === 'success' 
+                                        ? 'bg-green-500 hover:bg-green-600' 
+                                        : 'bg-red-500 hover:bg-red-600'
+                                }`}
+                            >
+                                <FaTimes className="text-lg text-white" />
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -408,6 +417,9 @@ export default function StudentEntentesListe() {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {t("studentEntentes.period")}
                                     </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {t("studentEntentes.professor")}
+                                    </th>
                                     <th
                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                         onClick={() => handleSort("statut")}
@@ -448,6 +460,27 @@ export default function StudentEntentesListe() {
                                             <div className="text-sm text-gray-900">
                                                 {formatDate(entente.dateDebut)} - {formatDate(calculateDateFin(entente.dateDebut, entente.duree))}
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {entente.prof ? (
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-indigo-600" />
+                                                    <div>
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {entente.prof.firstName} {entente.prof.lastName}
+                                                        </div>
+                                                        {entente.prof.department && (
+                                                            <div className="text-xs text-gray-500">
+                                                                {entente.prof.department}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <span className="text-sm text-gray-400 italic">
+                                                    {t("studentEntentes.noProfessor")}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {getStatusBadge(entente)}

@@ -32,6 +32,7 @@ public class GestionnaireController {
   private final CvService cvService;
   private final EntenteStageService ententeStageService;
   private final UserAppService userAppService;
+  private final ProfService profService;
 
   @PostMapping("/cv/{cvId}/approve")
   public ResponseEntity<CvDto> approveCv(@PathVariable Long cvId) {
@@ -222,7 +223,8 @@ public class GestionnaireController {
     }
 
     try {
-      EntenteStageDto result = ententeStageService.signerParGestionnaire(ententeId);
+      EntenteStageDto result =
+          ententeStageService.signerParGestionnaire(ententeId, me.getId());
       return ResponseEntity.ok(result);
     } catch (jakarta.persistence.EntityNotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -234,6 +236,40 @@ public class GestionnaireController {
               ? HttpStatus.CONFLICT
               : HttpStatus.BAD_REQUEST;
       return ResponseEntity.status(status).body(EntenteStageDto.withErrorMessage(e.getMessage()));
+    }
+  }
+
+  @GetMapping("/profs")
+  public ResponseEntity<List<ProfDto>> getAllProfs() {
+    try {
+      List<ProfDto> profs = profService.getAllProfs();
+      System.out.println("✓ Récupération de " + profs.size() + " professeurs");
+      return ResponseEntity.ok(profs);
+    } catch (Exception e) {
+      System.err.println("✗ Erreur lors de la récupération des professeurs: " + e.getMessage());
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+    }
+  }
+
+  @PostMapping("/ententes/{ententeId}/attribuer-prof")
+  public ResponseEntity<EntenteStageDto> attribuerProf(
+      @PathVariable Long ententeId, @RequestBody Map<String, Long> request) {
+    try {
+      Long profId = request.get("profId");
+      if (profId == null) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(EntenteStageDto.withErrorMessage("L'id du professeur est requis"));
+      }
+
+      EntenteStageDto result = ententeStageService.attribuerProf(ententeId, profId);
+      return ResponseEntity.ok(result);
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(EntenteStageDto.withErrorMessage(e.getMessage()));
+    } catch (IllegalArgumentException | IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(EntenteStageDto.withErrorMessage(e.getMessage()));
     }
   }
 

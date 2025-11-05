@@ -22,6 +22,8 @@ public class EntenteStageService {
   private final EntenteStageRepository ententeRepository;
   private final CandidatureRepository candidatureRepository;
   private final PDFGeneratorService pdfGeneratorService;
+  private final ProfRepository profRepository;
+  private final GestionnaireRepository gestionnaireRepository;
 
   public List<CandidatureDto> getCandidaturesAcceptees() {
     List<Candidature> candidatures =
@@ -274,12 +276,23 @@ public class EntenteStageService {
   }
 
   @Transactional
-  public EntenteStageDto signerParGestionnaire(Long ententeId) {
+  public EntenteStageDto signerParGestionnaire(Long ententeId, Long gestionnaireId) {
+    if (ententeId == null || ententeId <= 0) {
+      throw new IllegalArgumentException("L'id de l'entente doit être valide");
+    }
+    if (gestionnaireId == null || gestionnaireId <= 0) {
+      throw new IllegalArgumentException("L'id du gestionnaire doit être valide");
+    }
 
     EntenteStage entente =
         ententeRepository
             .findById(ententeId)
             .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
+
+    Gestionnaire gestionnaire =
+        gestionnaireRepository
+            .findById(gestionnaireId)
+            .orElseThrow(() -> new EntityNotFoundException("Gestionnaire non trouvé"));
 
     if (entente.getStatut() != EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE) {
       throw new IllegalStateException("L'entente doit être en attente de signature.");
@@ -289,6 +302,7 @@ public class EntenteStageService {
       throw new IllegalStateException("Le gestionnaire a déjà signé cette entente.");
     }
 
+    entente.setGestionnaire(gestionnaire);
     entente.setDateSignatureGestionnaire(LocalDateTime.now());
     entente.setDateModification(LocalDateTime.now());
 
@@ -329,5 +343,43 @@ public class EntenteStageService {
             })
         .map(EntenteStageDto::fromEntity)
         .collect(Collectors.toList());
+  }
+
+  @Transactional
+  public EntenteStageDto attribuerProf(Long ententeId, Long profId) {
+    if (ententeId == null || ententeId <= 0) {
+      throw new IllegalArgumentException("L'id de l'entente doit être valide");
+    }
+    if (profId == null || profId <= 0) {
+      throw new IllegalArgumentException("L'id du professeur doit être valide");
+    }
+
+    EntenteStage entente =
+        ententeRepository
+            .findById(ententeId)
+            .orElseThrow(() -> new EntityNotFoundException("Entente non trouvée"));
+
+    if (entente.getStatut() != EntenteStage.StatutEntente.VALIDEE) {
+      throw new IllegalStateException(
+          "Impossible d'attribuer un professeur. L'entente doit être validée (toutes les signatures présentes)");
+    }
+
+    if (entente.getDateSignatureEtudiant() == null
+        || entente.getDateSignatureEmployeur() == null
+        || entente.getDateSignatureGestionnaire() == null) {
+      throw new IllegalStateException(
+          "Impossible d'attribuer un professeur. Toutes les signatures doivent être présentes");
+    }
+
+    Prof prof =
+        profRepository
+            .findById(profId)
+            .orElseThrow(() -> new EntityNotFoundException("Professeur non trouvé"));
+
+    entente.setProf(prof);
+    entente.setDateModification(LocalDateTime.now());
+
+    EntenteStage saved = ententeRepository.save(entente);
+    return EntenteStageDto.fromEntity(saved);
   }
 }

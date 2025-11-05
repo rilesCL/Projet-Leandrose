@@ -128,6 +128,7 @@ export default function StudentInternshipOffersList({ studentInfo, onReregisterC
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("ApplicationsPage.company")}</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentInternshipOffersList.place")}</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentInternshipOffersList.startDate")}</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("terms.term")}</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentInternshipOffersList.duration")}</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("StudentInternshipOffersList.actions")}</th>
                     </tr>
@@ -151,6 +152,7 @@ export default function StudentInternshipOffersList({ studentInfo, onReregisterC
                             <td className="px-6 py-4 text-sm text-gray-900">{offer.companyName || "N/A"}</td>
                             <td className="px-6 py-4 text-sm text-gray-900">{offer.address || t("StudentInternshipOffersList.place")}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(offer.startDate)}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{translateSchoolTerm(offer.schoolTerm) || "N/A"}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{offer.durationInWeeks} semaine{offer.durationInWeeks > 1 ? 's' : ''}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button onClick={() => navigate(`/dashboard/student/offers/${offer.id}`)} className="text-indigo-600 hover:text-indigo-900">{t("StudentInternshipOffersList.viewDetails")}</button>

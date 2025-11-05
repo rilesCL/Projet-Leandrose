@@ -87,4 +87,10 @@ public class SchoolTerm {
   public int hashCode() {
     return java.util.Objects.hash(season, year);
   }
+
+  public String getTermAsString() {
+    return (getSeason() != null)? getSeason().toString() + " " + getYear():null;
+  }
 }
+
+

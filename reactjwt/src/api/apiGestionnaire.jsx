@@ -166,3 +166,19 @@ export async function previewEntentePdf(ententeId) {
     const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
     return await handleBlobResponse(res);
 }
+
+export async function getAllProfs() {
+    const url = `${API_BASE}/profs`;
+    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    return await handleJsonResponse(res);
+}
+
+export async function attribuerProf(ententeId, profId) {
+    const url = `${API_BASE}/ententes/${ententeId}/attribuer-prof`;
+    const res = await fetch(url, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ profId }),
+    });
+    return await handleJsonResponse(res);
+}
