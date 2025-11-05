@@ -454,8 +454,6 @@ public class EmployeurController {
 
         try {
             EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
-            System.out.println("Me id" + me.getId());
-            System.out.println("Evaluation id : " + evaluation.employeurId());
             if (!evaluation.employeurId().equals(me.getId())) {
                 return ResponseEntity.status(403).body("Accès non autorisé");
             }

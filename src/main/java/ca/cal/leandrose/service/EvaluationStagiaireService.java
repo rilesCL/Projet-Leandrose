@@ -84,15 +84,45 @@ public class EvaluationStagiaireService {
     public EvaluationStagiaireDto generateEvaluationPdf(Long evaluationId, EvaluationFormData formData, String langage){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
-        System.out.println("DEBUG: Starting PDF generation for evaluation: " + evaluationId);
 
-        String pdfPath = pdfGeneratorService.genererEvaluationPdf(evaluation, formData, langage);
+        Prof professeur = getProfesseurFromEntenteStage(evaluation);
+        String pdfPath = pdfGeneratorService.genererEvaluationPdf(evaluation, formData, langage,
+                professeur.getFirstName(), professeur.getLastName());
         evaluation.setPdfFilePath(pdfPath);
         evaluation.setSubmitted(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
         return mapToDto(savedEvaluation);
     }
 
+    private Prof getProfesseurFromEntenteStage(EvaluationStagiaire evaluation){
+        Optional<EntenteStage> ententeStage = ententeStageRepository
+                .findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(
+                        evaluation.getStudent().getId(),
+                        evaluation.getInternshipOffer().getId()
+                );
+
+        if (ententeStage.isEmpty()) {
+            throw new RuntimeException("No entente stage found for student " +
+                    evaluation.getStudent().getId() + " and offer " +
+                    evaluation.getInternshipOffer().getId());
+        }
+
+        Prof professor = ententeStage.get().getProf();
+        System.out.println("Donne : " + professor);
+        if (professor == null) {
+            return getDefaultProfessor();
+        }
+        return professor;
+    }
+
+    private Prof getDefaultProfessor() {
+        return Prof.builder()
+                .firstName("Patrice")
+                .lastName("Brodeur")
+                .employeeNumber("DEFAULT001")
+                .department("Stage")
+                .build();
+    }
 
     public byte[] getEvaluationPdf(Long evaluationId){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
@@ -118,9 +148,6 @@ public class EvaluationStagiaireService {
     }
 
     private EvaluationStagiaireDto mapToDto(EvaluationStagiaire evaluation){
-        System.out.println(evaluation);
-        System.out.println("DEBUG: Employer ID: " + evaluation.getEmployeur().getId());
-        System.out.println("DEBUG: Student ID: " + evaluation.getStudent().getId());
         return new EvaluationStagiaireDto(
                 evaluation.getId(),
                 evaluation.getDateEvaluation(),

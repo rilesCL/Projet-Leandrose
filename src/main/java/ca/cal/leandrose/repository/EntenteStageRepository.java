@@ -16,6 +16,9 @@ public interface EntenteStageRepository extends JpaRepository<EntenteStage, Long
 
     Optional<EntenteStage> findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
             Long studentId, Long internshipOfferId, EntenteStage.StatutEntente statut);
+    Optional<EntenteStage>findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(
+            Long studentId, Long internshipId
+    );
 
     List<EntenteStage> findByCandidature_InternshipOffer_Employeur_IdAndStatut(
             Long employeurId, EntenteStage.StatutEntente statut);

@@ -25,14 +25,14 @@ export default function EvaluationsList() {
                         const existingCheck = await checkExistingEvaluation(agreement.studentId, agreement.offerId);
                         statusMap[`${agreement.studentId}-${agreement.offerId}`] = existingCheck;
                     } catch (error) {
-                        console.error(`Error checking evaluation for student ${agreement.studentId}:`, error);
+                        console.error(t("evaluationList.errors.checking_evaluation") + `${agreement.studentId}`, error)
                         statusMap[`${agreement.studentId}-${agreement.offerId}`] = { exists: false };
                     }
                 }
                 setEvaluationStatus(statusMap);
 
             } catch (error) {
-                console.error('Error fetching eligible agreements:', error);
+                console.error(t("evaluationList.errors.fetching_evaluations"), error);
             } finally {
                 setLoading(false);
             }
@@ -42,7 +42,6 @@ export default function EvaluationsList() {
 
     const handleViewPdf = async (studentId, offerId) => {
         try {
-            // Find the evaluation ID from the status
             const statusKey = `${studentId}-${offerId}`;
             const status = evaluationStatus[statusKey];
 
@@ -52,8 +51,8 @@ export default function EvaluationsList() {
                 setShowPdfViewer(true);
             }
         } catch (error) {
-            console.error('Error loading PDF:', error);
-            alert('Error loading PDF: ' + (error?.response?.data?.message || error?.message));
+            console.error(t("evaluationList.errors.pdf_loading"), error);
+            alert(t("evaluationList.errors.pdf_loading") + (error?.response?.data?.message || error?.message));
         }
     };
 
@@ -144,54 +143,3 @@ export default function EvaluationsList() {
         </div>
     );
 }
-
-// import React, { useState, useEffect } from 'react';
-// import { Link } from 'react-router-dom';
-// import { getEligibleEvaluations } from '../../api/apiEmployeur';
-//
-// export default function EvaluationsList() {
-//     const [eligibleAgreements, setEligibleAgreements] = useState([]);
-//     const [loading, setLoading] = useState(true);
-//
-//     useEffect(() => {
-//         const fetchEligibleAgreements = async () => {
-//             try {
-//                 const agreements = await getEligibleEvaluations();
-//                 setEligibleAgreements(agreements);
-//             } catch (error) {
-//                 console.error('Error fetching eligible agreements:', error);
-//             } finally {
-//                 setLoading(false);
-//             }
-//         };
-//         fetchEligibleAgreements();
-//     }, []);
-//
-//     if (loading) return <div>Loading...</div>;
-//
-//     return (
-//         <div className="max-w-4xl mx-auto">
-//             <h1 className="text-2xl font-bold mb-6">Evaluations Available</h1>
-//             {eligibleAgreements.length === 0 ? (
-//                 <p>No evaluations available at this time.</p>
-//             ) : (
-//                 <div className="space-y-4">
-//                     {eligibleAgreements.map(agreement => (
-//                         <div key={agreement.id} className="border rounded-lg p-4">
-//                             <h3 className="font-semibold">
-//                                 {agreement.studentFirstName} {agreement.studentLastName}
-//                             </h3>
-//                             <p>{agreement.internshipDescription}</p>
-//                             <Link
-//                                 to={`/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`}
-//                                 className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
-//                             >
-//                                 Create Evaluation
-//                             </Link>
-//                         </div>
-//                     ))}
-//                 </div>
-//             )}
-//         </div>
-//     );
-// }

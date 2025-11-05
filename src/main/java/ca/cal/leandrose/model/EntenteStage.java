@@ -26,7 +26,7 @@ public class EntenteStage {
   private Candidature candidature;
 
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(name = "prof_id")
   private Prof prof;
 
   @ManyToOne

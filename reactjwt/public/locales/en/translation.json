@@ -913,9 +913,19 @@
     "create_evaluation": "Create Evaluation",
     "submitted": "Submitted",
     "draft_created": "Draft Created",
-    "evaluation": "Evaluation"
+    "evaluation": "Evaluation",
+    "errors": {
+      "checking_evaluation": "Error checking assessment for the student:",
+      "fetching_evaluations": "Error retrieving eligible agreements",
+      "pdf_loading": "Error loading PDF"
+    }
   },
   "evaluation": {
+    "errors": {
+      "missing_studentId_Or_offerId": "Missing student ID or offer number",
+      "evaluation_exists": "An evaluation already exists for this intern. You will be redirected to the list of evaluations.",
+      "evaluationId_received": "No evaluation ID was received from the server."
+    },
     "title": "Intern Evaluation Form",
     "studentInfo": "Student Information",
     "companyInfo": "Company Information",

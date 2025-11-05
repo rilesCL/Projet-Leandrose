@@ -915,9 +915,19 @@
     "create_evaluation": "Créer évaluation",
     "submitted": "Soumettre",
     "draft_created": "Brouillon créé",
-    "evaluation": "Évaluation"
+    "evaluation": "Évaluation",
+    "errors": {
+      "checking_evaluation": "Évaluation de la vérification des erreurs pour l'étudiant: ",
+      "fetching_evaluations": "Erreur lors de la récupération des accords éligibles",
+      "pdf_loading": "Erreur lors du chargement du PDF"
+    }
   },
   "evaluation": {
+    "errors": {
+      "missing_studentId_Or_offerId": "Carte d'étudiant ou numéro d'offre manquant",
+      "evaluation_exists": "Une évaluation existe déjà pour ce stagiaire. Vous allez être redirigé vers la liste des évaluations.",
+      "evaluationId_received": "Aucun identifiant d'évaluation n'a été reçu du serveur."
+    },
     "title": "Fiche d'Évaluation du Stagiaire",
     "studentInfo": "Informations de l'Étudiant",
     "companyInfo": "Informations de l'Entreprise",

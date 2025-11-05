@@ -92,29 +92,22 @@ const EvaluationForm = () => {
                 setLoading(true);
                 setError(null);
 
-                console.log('Initializing form with:', { studentId, offerId });
 
                 if (!studentId || !offerId) {
-                    throw new Error('Missing student ID or offer ID');
+                    throw new Error(t("evaluation.errors.missing_studentId_Or_offerId"));
                 }
 
                 // First, check if an evaluation already exists
-                console.log('Checking for existing evaluation...');
                 const existingCheck = await checkExistingEvaluation(studentId, offerId);
-                console.log('Existing evaluation check:', existingCheck);
 
                 if (existingCheck.exists) {
-                    // Evaluation already exists - redirect to evaluations list
-                    console.log('Evaluation already exists, redirecting...');
-                    alert('Une évaluation existe déjà pour ce stagiaire. Vous allez être redirigé vers la liste des évaluations.');
+                    alert(t('evaluation.errors.evaluation_exists'));
                     navigate('/dashboard/employeur/evaluations');
                     return;
                 }
 
                 // Get evaluation info (student + internship data)
-                console.log('Fetching evaluation info...');
                 const evaluationInfo = await getEvaluationInfo(studentId, offerId);
-                console.log('Evaluation info:', evaluationInfo);
 
                 setStudent({
                     firstName: evaluationInfo.studentInfo.firstName,
@@ -127,7 +120,6 @@ const EvaluationForm = () => {
                 });
 
                 // Initialize empty form data
-                console.log('Initializing form data...');
                 const initialFormData = {
                     categories: {},
                     generalComment: ''
@@ -142,10 +134,8 @@ const EvaluationForm = () => {
                 });
 
                 setFormData(initialFormData);
-                console.log('Form initialization completed successfully');
 
             } catch (error) {
-                console.error('Error initializing form:', error);
                 const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.initializationError');
                 setError(errorMessage);
             } finally {
@@ -188,38 +178,23 @@ const EvaluationForm = () => {
     const handleGeneratePdf = async () => {
         setSubmitting(true);
         try {
-            console.log('Starting PDF generation process...');
 
-            // 1. Create evaluation and get evaluationId
-            console.log('Step 1: Creating evaluation...');
             const createResponse = await createEvaluation(studentId, offerId);
-            console.log('Create evaluation response:', createResponse);
 
             const evalId = createResponse.evaluationId || createResponse.id || createResponse;
-            console.log('Evaluation ID:', evalId);
 
             if (!evalId) {
-                throw new Error('No evaluation ID received from server');
+                throw new Error('evaluation.errors.evaluationId_received');
             }
 
             setEvaluationId(evalId);
 
-            // Small delay to ensure evaluation is saved
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            // 2. Generate PDF using evaluationId
-            console.log('Step 2: Generating PDF for evaluation:', evalId);
-            console.log('Form data:', formData);
-
             const generateResponse = await generateEvaluationPdfWithId(evalId, formData);
-            console.log('PDF generation response:', generateResponse);
 
-            // 3. Download using evaluationId
-            console.log('Step 3: Downloading PDF for evaluation:', evalId);
             const pdfBlob = await previewEvaluationPdf(evalId);
-            console.log('PDF blob received, size:', pdfBlob.size);
 
-            // Create download
             const url = window.URL.createObjectURL(pdfBlob);
             const link = document.createElement('a');
             link.href = url;

@@ -231,7 +231,8 @@ public class PDFGeneratorService {
     footer.setSpacingBefore(30f);
     document.add(footer);
   }
-    public String genererEvaluationPdf(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language){
+    public String genererEvaluationPdf(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language,
+                                       String profFirstName, String profLastName){
         try{
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
 
@@ -250,7 +251,7 @@ public class PDFGeneratorService {
             addStudentAndCompanyTitle(document, evaluationStagiaire, language);
             addEvaluationContent(document, formData, language);
             addGeneralComments(document, formData, language);
-            addTraineeEvaluationPage(document, formData, language);
+            addTraineeEvaluationPage(document, formData, language, profFirstName, profLastName);
             addFooterEvaluation(document, language);
 
             document.close();
@@ -585,7 +586,7 @@ public class PDFGeneratorService {
         );
         return translations.getOrDefault(key, key);
     }
-    private void addTraineeEvaluationPage(Document document, EvaluationFormData formData, String language) throws DocumentException {
+    private void addTraineeEvaluationPage(Document document, EvaluationFormData formData, String language, String profFirstName, String profLastName) throws DocumentException {
         document.newPage();
 
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
@@ -755,7 +756,19 @@ public class PDFGeneratorService {
         returnTitle.setSpacingAfter(5f);
         document.add(returnTitle);
 
-        Paragraph address = new Paragraph("Patrice Brodeur\nCégep André-Laurendeau\n1111, rue Lapierre\nLASALLE (Québec)\nH8N 2J4", normalFont);
+//        Paragraph address = new Paragraph("Patrice Brodeur\nCégep André-Laurendeau\n1111, rue Lapierre\nLASALLE (Québec)\nH8N 2J4", normalFont);
+//        address.setSpacingAfter(5f);
+//        document.add(address);
+
+        // Use the provided professor name or fallback to default
+        String professorName = (profFirstName != null && profLastName != null)
+                ? profFirstName + " " + profLastName
+                : "Patrice Brodeur"; // Fallback default
+
+        Paragraph address = new Paragraph(
+                professorName + "\nCégep André-Laurendeau\n1111, rue Lapierre\nLASALLE (Québec)\nH8N 2J4",
+                normalFont
+        );
         address.setSpacingAfter(5f);
         document.add(address);
 

@@ -33,6 +33,10 @@ public class EvaluationStagiaire {
     @JoinColumn(name = "internship_id")
     private InternshipOffer internshipOffer;
 
+    @ManyToOne
+    @JoinColumn(name = "entente_stage_id")
+    private EntenteStage ententeStage;
+
     private String pdfFilePath;
     private boolean submitted;
 
