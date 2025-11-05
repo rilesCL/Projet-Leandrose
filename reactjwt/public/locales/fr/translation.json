@@ -898,9 +898,12 @@
     }
   },
   "evaluationList": {
-    "title": "Évaluations disponibles",
+    "title": "Liste des évaluations",
     "no_evaluations": "Aucune évaluation n'est disponible pour le moment.",
-    "create_evaluation": "Créer évaluation"
+    "create_evaluation": "Créer évaluation",
+    "submitted": "Soumettre",
+    "draft_created": "Brouillon créé",
+    "evaluation": "Évaluation"
   },
   "evaluation": {
     "title": "Fiche d'Évaluation du Stagiaire",
@@ -969,6 +972,23 @@
       "mostly_agree": "Plûtot en accord",
       "mostly_disagree": "Plûtot en désaccord",
       "totally_disagree": "Totalement en désaccord"
+    },
+    "globalAssessment": {
+      "title": "Appréciation globale du stagiaire",
+      "option0": "Les habiletés démontréss dépassent de beaucoup les attentes",
+      "option1": "Les habiletés démontrées dépassent les attentes",
+      "option2": "Les habiletés démontrées répondent pleinement aux attentes",
+      "option3": "Les habiletés démontrées répondent partiellement aux attentes",
+      "option4": "Les habiletés démontrées ne répondent pas aux attentes",
+      "specify": "PRÉCISEZ VOTRE APPRÉCIATION",
+      "discussed": "Cette évaluation a été discutée avec le stagiaire",
+      "yes": "oui",
+      "no": "non",
+      "supervision_hours": "Veuillez indiquer le nombre d’heures réel par semaine d’encadrement accordé au stagiaire",
+      "welcome_nextInternship": "L’ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE",
+      "welcome_maybe": "Peut-être",
+      "technical_training": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?"
+
     }
   }
 }

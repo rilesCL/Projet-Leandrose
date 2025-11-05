@@ -896,9 +896,12 @@
     }
   },
   "evaluationList": {
-    "title": "Evaluation Available",
+    "title": "List of Evaluations",
     "no_evaluations": "No evaluations available at this time.",
-    "create_evaluation": "Create Evaluation"
+    "create_evaluation": "Create Evaluation",
+    "submitted": "Submitted",
+    "draft_created": "Draft Created",
+    "evaluation": "Evaluation"
   },
   "evaluation": {
     "title": "Intern Evaluation Form",
@@ -967,6 +970,22 @@
       "mostly_agree": "Mostly agree",
       "mostly_disagree": "Mostly disagree",
       "totally_disagree": "Totally disagree"
+    },
+    "globalAssessment": {
+      "title": "Overall assessment of the intern",
+      "option0": "The skills demonstrated far exceeded expectations",
+      "option1": "The skills demonstrated exceeded expectations",
+      "option2": "The skills demonstrated fully meet expectations",
+      "option3": "The skills demonstrated partially meet expectations",
+      "option4": "The skills demonstrated does not meet expectations",
+      "specify": "SPECIFY YOUR RATING",
+      "discussed": "This evaluation was discussed with the intern:",
+      "yes": "yes",
+      "no": "no",
+      "supervision_hours": "Please indicate the actual number of weekly hours of supervision granted to the intern.",
+      "welcome_nextInternship": "THE COMPANY WOULD LIKE TO HOST THIS STUDENT FOR THEIR NEXT INTERNSHIP:",
+      "welcome_maybe": "maybe",
+      "technical_training": "Was the intern's technical training sufficient to fulfill the internship mandate?"
     }
   }
 }

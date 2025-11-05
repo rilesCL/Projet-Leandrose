@@ -250,6 +250,7 @@ public class PDFGeneratorService {
             addStudentAndCompanyTitle(document, evaluationStagiaire, language);
             addEvaluationContent(document, formData, language);
             addGeneralComments(document, formData, language);
+            addTraineeEvaluationPage(document, formData, language);
             addFooterEvaluation(document, language);
 
             document.close();
@@ -583,6 +584,210 @@ public class PDFGeneratorService {
                 "evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:"
         );
         return translations.getOrDefault(key, key);
+    }
+    private void addTraineeEvaluationPage(Document document, EvaluationFormData formData, String language) throws DocumentException {
+        document.newPage();
+
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, BaseColor.BLACK);
+        Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+        Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 8, BaseColor.BLACK);
+
+        // Title
+        String titleText = "en".equals(language)
+                ? "OVERALL ASSESSMENT OF THE TRAINEE"
+                : "APPRÉCIATION GLOBALE DU STAGIAIRE";
+        Paragraph title = new Paragraph(titleText, titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        title.setSpacingAfter(20f);
+        document.add(title);
+
+        // Evaluation options
+        List<String> evaluationOptions = "en".equals(language)
+                ? List.of(
+                "The skills demonstrated far exceed expectations",
+                "The skills demonstrated exceed expectations",
+                "The skills demonstrated fully meet expectations",
+                "The skills demonstrated partially meet expectations",
+                "The skills demonstrated do not meet expectations"
+        )
+                : List.of(
+                "Les habiletés démontrées dépassent de beaucoup les attentes",
+                "Les habiletés démontrées dépassent les attentes",
+                "Les habiletés démontrées répondent pleinement aux attentes",
+                "Les habiletés démontrées répondent partiellement aux attentes",
+                "Les habiletés démontrées ne répondent pas aux attentes"
+        );
+
+        // Add evaluation options with checkboxes
+        for (int i = 0; i < evaluationOptions.size(); i++) {
+            String option = evaluationOptions.get(i);
+            String checkbox = (formData.globalAssessment() != null && formData.globalAssessment() == i) ? "☑" : "☐";
+
+            Paragraph optionPara = new Paragraph();
+            optionPara.add(new Chunk(checkbox + " " + option, normalFont));
+            optionPara.setSpacingAfter(5f);
+            document.add(optionPara);
+        }
+
+        // Precise your appreciation section
+        document.add(Chunk.NEWLINE);
+        String appreciationText = "en".equals(language)
+                ? "SPECIFY YOUR ASSESSMENT:"
+                : "PRÉCISEZ VOTRE APPRÉCIATION:";
+        Paragraph appreciationTitle = new Paragraph(appreciationText, sectionFont);
+        appreciationTitle.setSpacingAfter(10f);
+        document.add(appreciationTitle);
+
+        // Add appreciation text if provided
+        if (formData.globalAppreciation() != null && !formData.globalAppreciation().trim().isEmpty()) {
+            Paragraph appreciation = new Paragraph(formData.globalAppreciation(), normalFont);
+            appreciation.setSpacingAfter(15f);
+            document.add(appreciation);
+        } else {
+            // Add empty space for writing
+            Paragraph emptySpace = new Paragraph(" ", normalFont);
+            emptySpace.setSpacingAfter(15f);
+            document.add(emptySpace);
+        }
+
+        // Evaluation discussion
+        String discussionText = "en".equals(language)
+                ? "This evaluation was discussed with the trainee:    Yes  □    No  □"
+                : "Cette évaluation a été discutée avec le stagiaire :    Oui  □    Non  □";
+
+        Paragraph discussion = new Paragraph(discussionText, normalFont);
+        discussion.setSpacingAfter(10f);
+        document.add(discussion);
+
+        // Check the appropriate box if data is provided
+        if (formData.discussedWithTrainee() != null) {
+            String checkMark = "✓";
+            float checkPosition = formData.discussedWithTrainee() ? 280f : 330f; // Adjust positions as needed
+
+            // This is a simplified approach - you might need to use PdfPTable for better positioning
+            Paragraph checkPara = new Paragraph();
+            checkPara.add(new Chunk(" ".repeat(30) + checkMark, boldFont)); // Adjust spacing
+            document.add(checkPara);
+        }
+
+        // Supervision hours
+        document.add(Chunk.NEWLINE);
+        String hoursText = "en".equals(language)
+                ? "Please indicate the actual number of supervision hours per week granted to the trainee:"
+                : "Veuillez indiquer le nombre d'heures réel par semaine d'encadrement accordé au stagiaire :";
+
+        Paragraph hours = new Paragraph(hoursText, normalFont);
+        hours.setSpacingAfter(10f);
+        document.add(hours);
+
+        // Add supervision hours if provided
+        if (formData.supervisionHours() != null) {
+            Paragraph hoursValue = new Paragraph(formData.supervisionHours().toString(), boldFont);
+            document.add(hoursValue);
+        }
+
+        document.add(Chunk.NEWLINE);
+
+        // Next internship question
+        String nextInternshipText = "en".equals(language)
+                ? "WOULD THE COMPANY LIKE TO WELCOME THIS STUDENT FOR THEIR NEXT INTERNSHIP:"
+                : "L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE :";
+
+        Paragraph nextInternship = new Paragraph(nextInternshipText, sectionFont);
+        nextInternship.setSpacingAfter(10f);
+        document.add(nextInternship);
+
+        // Next internship options
+        String internshipOptions = "en".equals(language)
+                ? "Yes  □    No  □    Maybe  □"
+                : "Oui  □    Non  □    Peut-être  □";
+
+        Paragraph options = new Paragraph(internshipOptions, normalFont);
+        options.setSpacingAfter(10f);
+        document.add(options);
+
+        // Check the appropriate box
+        if (formData.welcomeNextInternship() != null) {
+            String checkMark = "✓";
+            int position;
+            switch (formData.welcomeNextInternship()) {
+                case "YES" -> position = 0;
+                case "NO" -> position = 1;
+                case "MAYBE" -> position = 2;
+                default -> position = -1;
+            }
+
+            if (position != -1) {
+                // Simplified positioning - adjust as needed
+                String spaces = " ".repeat(5 + (position * 10));
+                Paragraph checkPara = new Paragraph(spaces + checkMark, boldFont);
+                document.add(checkPara);
+            }
+        }
+
+        // Technical training question
+        document.add(Chunk.NEWLINE);
+        String trainingText = "en".equals(language)
+                ? "Was the trainee's technical training sufficient to accomplish the internship mandate?"
+                : "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?";
+
+        Paragraph trainingQuestion = new Paragraph(trainingText, normalFont);
+        trainingQuestion.setSpacingAfter(10f);
+        document.add(trainingQuestion);
+
+        // Signature section
+        document.add(Chunk.NEWLINE);
+        String nameText = "en".equals(language) ? "Name: _____" : "Nom : _____";
+        String functionText = "en".equals(language) ? "Function: _____" : "Fonction : _____";
+
+        Paragraph name = new Paragraph(nameText + "   " + functionText, normalFont);
+        name.setSpacingAfter(10f);
+        document.add(name);
+
+        String signatureText = "en".equals(language) ? "Signature: _____" : "Signature : _____";
+        String dateText = "en".equals(language) ? "Date: _____" : "Date : _____";
+
+        Paragraph signature = new Paragraph(signatureText + "   " + dateText, normalFont);
+        signature.setSpacingAfter(20f);
+        document.add(signature);
+
+        // Return instructions
+        String returnText = "en".equals(language)
+                ? "Please return this form to:"
+                : "Veuillez retourner ce formulaire à :";
+
+        Paragraph returnTitle = new Paragraph(returnText, sectionFont);
+        returnTitle.setSpacingAfter(5f);
+        document.add(returnTitle);
+
+        Paragraph address = new Paragraph("Patrice Brodeur\nCégep André-Laurendeau\n1111, rue Lapierre\nLASALLE (Québec)\nH8N 2J4", normalFont);
+        address.setSpacingAfter(5f);
+        document.add(address);
+
+        String faxText = "en".equals(language)
+                ? "Fax number: (514) 364-7130"
+                : "Numéro de télécopieur : (514) 364-7130";
+
+        Paragraph fax = new Paragraph(faxText, normalFont);
+        fax.setSpacingAfter(15f);
+        document.add(fax);
+
+        // Thank you message
+        String thankYouText = "en".equals(language)
+                ? "We thank you for your support!"
+                : "Nous vous remercions de votre appui !";
+
+        Paragraph thankYou = new Paragraph(thankYouText, boldFont);
+        thankYou.setAlignment(Element.ALIGN_CENTER);
+        thankYou.setSpacingAfter(10f);
+        document.add(thankYou);
+
+        // Footer
+        Paragraph footer = new Paragraph("Collège André-Laurendeau\nALTERNANCE TRAVAIL-ÉTUDES\n2010-09-21", smallFont);
+        footer.setAlignment(Element.ALIGN_CENTER);
+        document.add(footer);
     }
 
     private void addInfoRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {

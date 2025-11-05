@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getEligibleEvaluations, checkExistingEvaluation, previewEvaluationPdf } from '../../api/apiEmployeur';
 import PdfViewer from '../PdfViewer.jsx';
 
@@ -8,7 +9,8 @@ export default function EvaluationsList() {
     const [loading, setLoading] = useState(true);
     const [showPdfViewer, setShowPdfViewer] = useState(false);
     const [currentPdfBlob, setCurrentPdfBlob] = useState(null);
-    const [evaluationStatus, setEvaluationStatus] = useState({}); // Track evaluation status per agreement
+    const [evaluationStatus, setEvaluationStatus] = useState({});
+    const {t} = useTranslation()
 
     useEffect(() => {
         const fetchEligibleAgreements = async () => {
@@ -68,11 +70,11 @@ export default function EvaluationsList() {
 
     return (
         <div className="max-w-4xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-6">Evaluations</h1>
+            <h1 className="text-2xl font-bold mb-6">{t("evaluationList.title")}</h1>
 
             {eligibleAgreements.length === 0 ? (
                 <div className="text-center py-8">
-                    <p className="text-gray-500">No evaluations available at this time.</p>
+                    <p className="text-gray-500">{t("evaluationList.no_evaluations")}</p>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -89,7 +91,7 @@ export default function EvaluationsList() {
                                         <h3 className="text-lg font-semibold text-gray-900">
                                             {agreement.studentFirstName} {agreement.studentLastName}
                                         </h3>
-                                        <p className="text-gray-600 mt-1">{agreement.studentProgram}</p>
+                                        <p className="text-gray-600 mt-1">{t(agreement.studentProgram)}</p>
                                         <p className="text-gray-700 mt-2">{agreement.internshipDescription}</p>
                                         <p className="text-sm text-gray-500 mt-1">{agreement.companyName}</p>
 
@@ -99,7 +101,8 @@ export default function EvaluationsList() {
                                                     <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                                     </svg>
-                                                    <span>Evaluation {evaluation.submitted ? 'Submitted' : 'Draft Created'} - {new Date(evaluation.dateEvaluation).toLocaleDateString()}</span>
+                                                    <span>{t("evaluationList.evaluation")} {evaluation.submitted ? t('evaluationList.submitted')
+                                                        : t('evaluationList.draft_created')} - {new Date(evaluation.dateEvaluation).toLocaleDateString()}</span>
                                                 </div>
                                             </div>
                                         )}
@@ -120,7 +123,7 @@ export default function EvaluationsList() {
                                                 to={`/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`}
                                                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm"
                                             >
-                                                Create Evaluation
+                                                {t("evaluationList.create_evaluation")}
                                             </Link>
                                         )}
                                     </div>

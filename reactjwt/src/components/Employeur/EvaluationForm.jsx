@@ -25,7 +25,13 @@ const EvaluationForm = () => {
 
     const [formData, setFormData] = useState({
         categories: {},
-        generalComment: ''
+        generalComment: '',
+        globalAssessment: null,
+        globalAppreciation: '',
+        discussedWithTrainee: null,
+        supervisionHours: '',
+        welcomeNextInternship: '',
+        technicalTrainingSufficient: null
     });
 
     // Evaluation categories and questions structure
@@ -424,6 +430,144 @@ const EvaluationForm = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         rows={4}
                     />
+                </div>
+
+                {/* NEW: Global Assessment Section */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                        {t('evaluation.globalAssessment.title')}
+                    </h2>
+
+                    {/* Global Assessment Options */}
+                    <div className="space-y-3 mb-6">
+                        {[0, 1, 2, 3, 4].map((index) => (
+                            <label key={index} className="flex items-start space-x-3 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="globalAssessment"
+                                    value={index}
+                                    checked={formData.globalAssessment === index}
+                                    onChange={(e) => handleFieldChange('globalAssessment', parseInt(e.target.value))}
+                                    className="mt-1 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-gray-700 text-sm">
+                  {t(`evaluation.globalAssessment.option${index}`)}
+                </span>
+                            </label>
+                        ))}
+                    </div>
+
+                    {/* Global Appreciation */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('evaluation.globalAssessment.specify')}
+                        </label>
+                        <textarea
+                            value={formData.globalAppreciation}
+                            onChange={(e) => handleFieldChange('globalAppreciation', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows={3}
+                        />
+                    </div>
+
+                    {/* Discussion with Trainee */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('evaluation.globalAssessment.discussed')}
+                        </label>
+                        <div className="flex space-x-6">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="discussedWithTrainee"
+                                    value="true"
+                                    checked={formData.discussedWithTrainee === true}
+                                    onChange={(e) => handleFieldChange('discussedWithTrainee', true)}
+                                    className="text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-gray-700">{t('evaluation.globalAssessment.yes')}</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="discussedWithTrainee"
+                                    value="false"
+                                    checked={formData.discussedWithTrainee === false}
+                                    onChange={(e) => handleFieldChange('discussedWithTrainee', false)}
+                                    className="text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* Supervision Hours */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('evaluation.globalAssessment.supervision_hours')}
+                        </label>
+                        <input
+                            type="number"
+                            value={formData.supervisionHours}
+                            onChange={(e) => handleFieldChange('supervisionHours', e.target.value)}
+                            className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            min="0"
+                            max="40"
+                        />
+                    </div>
+
+                    {/* Welcome Next Internship */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('evaluation.globalAssessment.welcome_nextInternship')}
+                        </label>
+                        <div className="flex space-x-6">
+                            {['YES', 'NO', t("welcome_maybe")].map((option) => (
+                                <label key={option} className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="welcomeNextInternship"
+                                        value={option}
+                                        checked={formData.welcomeNextInternship === option}
+                                        onChange={(e) => handleFieldChange('welcomeNextInternship', e.target.value)}
+                                        className="text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="text-gray-700">{t(`evaluation.globalAssessment.${option.toLowerCase()}`)}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Technical Training Sufficient */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {t('evaluation.globalAssessment.technical_training')}
+                        </label>
+                        <div className="flex space-x-6">
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="technicalTrainingSufficient"
+                                    value="true"
+                                    checked={formData.technicalTrainingSufficient === true}
+                                    onChange={(e) => handleFieldChange('technicalTrainingSufficient', true)}
+                                    className="text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-gray-700">{t('evaluation.globalAssessment.yes')}</span>
+                            </label>
+                            <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="technicalTrainingSufficient"
+                                    value="false"
+                                    checked={formData.technicalTrainingSufficient === false}
+                                    onChange={(e) => handleFieldChange('technicalTrainingSufficient', false)}
+                                    className="text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Action Buttons */}

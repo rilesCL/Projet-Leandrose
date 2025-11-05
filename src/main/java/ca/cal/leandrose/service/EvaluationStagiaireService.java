@@ -96,11 +96,7 @@ public class EvaluationStagiaireService {
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
         return mapToDto(savedEvaluation);
     }
-    public EvaluationStagiaireDto createAndGenerateEvaluationPdf(Long employeurId, Long studentId, Long internshipId,
-                                                                 EvaluationFormData formData, String language) {
-        EvaluationStagiaireDto evaluationDto = createEvaluation(employeurId, studentId, internshipId);
-        return generateEvaluationPdf(evaluationDto.id(), formData, language);
-    }
+
 
     public byte[] getEvaluationPdf(Long evaluationId){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
