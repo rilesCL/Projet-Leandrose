@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createEvaluation, generateEvaluationPdf, previewEvaluationPdf, getEvaluationInfo } from '../../api/apiEmployeur';
+import {
+    createEvaluation,
+    generateEvaluationPdf,
+    previewEvaluationPdf,
+    getEvaluationInfo,
+    generateEvaluationPdfWithId
+} from '../../api/apiEmployeur';
 
 const EvaluationForm = () => {
     const { t } = useTranslation();
@@ -15,7 +21,6 @@ const EvaluationForm = () => {
     const [internship, setInternship] = useState(null);
     const [error, setError] = useState(null);
 
-    // Form state
     const [formData, setFormData] = useState({
         categories: {},
         generalComment: ''
@@ -154,26 +159,39 @@ const EvaluationForm = () => {
     const handleGeneratePdf = async () => {
         setSubmitting(true);
         try {
-            console.log('Creating evaluation and generating PDF...');
+            console.log('Starting PDF generation process...');
 
-            // First create the evaluation
-            const evaluationResponse = await createEvaluation(studentId, offerId);
-            console.log('Evaluation created:', evaluationResponse);
+            // 1. Create evaluation and get evaluationId
+            console.log('Step 1: Creating evaluation...');
+            const createResponse = await createEvaluation(studentId, offerId);
+            console.log('Create evaluation response:', createResponse);
 
-            // Extract evaluation ID from response
-            const evalId = evaluationResponse.evaluationId || evaluationResponse.id || evaluationResponse;
+            const evalId = createResponse.evaluationId || createResponse.id || createResponse;
+            console.log('Evaluation ID:', evalId);
+
             if (!evalId) {
                 throw new Error('No evaluation ID received from server');
             }
+
+            // Store the evaluationId in state
             setEvaluationId(evalId);
 
-            // Then generate the PDF with the form data
-            console.log('Generating PDF for evaluation:', evalId);
-            await generateEvaluationPdf(evalId, formData);
+            // Small delay to ensure evaluation is saved
+            await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Download the generated PDF
-            console.log('Downloading PDF...');
+            // 2. Generate PDF using evaluationId
+            console.log('Step 2: Generating PDF for evaluation:', evalId);
+            console.log('Form data:', formData);
+
+            const generateResponse = await generateEvaluationPdfWithId(evalId, formData);
+            console.log('PDF generation response:', generateResponse);
+
+            // 3. Download using evaluationId
+            console.log('Step 3: Downloading PDF for evaluation:', evalId);
             const pdfBlob = await previewEvaluationPdf(evalId);
+            console.log('PDF blob received, size:', pdfBlob.size);
+
+            // Create download
             const url = window.URL.createObjectURL(pdfBlob);
             const link = document.createElement('a');
             link.href = url;
@@ -187,12 +205,46 @@ const EvaluationForm = () => {
             navigate('/employer/evaluations');
 
         } catch (error) {
-            console.error('Error generating PDF:', error);
+            console.error('Error in PDF generation process:', error);
             const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.pdfGenerationError');
             alert(`${t('evaluation.pdfGenerationError')}: ${errorMessage}`);
         } finally {
             setSubmitting(false);
         }
+
+        // setSubmitting(true);
+        // try {
+        //     console.log('Creating evaluation and generating PDF in one call...');
+        //
+        //     // Single API call that creates evaluation and generates PDF
+        //     const pdfResponse = await generateEvaluationPdf(studentId, offerId, formData);
+        //     console.log('PDF generation response:', pdfResponse);
+        //     const evaluationId = pdfResponse.evaluationId;
+        //
+        //     // Download the generated PDF using the student info we already have
+        //     console.log('Downloading PDF...');
+        //     console.log(evaluationId)
+        //     const pdfBlob = await previewEvaluationPdf(evaluationId); // You might need to adjust this
+        //
+        //     const url = window.URL.createObjectURL(pdfBlob);
+        //     const link = document.createElement('a');
+        //     link.href = url;
+        //     link.download = `evaluation_${student?.firstName}_${student?.lastName}.pdf`;
+        //     document.body.appendChild(link);
+        //     link.click();
+        //     document.body.removeChild(link);
+        //     window.URL.revokeObjectURL(url);
+        //
+        //     alert(t('evaluation.pdfGenerated'));
+        //     navigate('/employer/evaluations');
+        //
+        // } catch (error) {
+        //     console.error('Error generating PDF:', error);
+        //     const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.pdfGenerationError');
+        //     alert(`${t('evaluation.pdfGenerationError')}: ${errorMessage}`);
+        // } finally {
+        //     setSubmitting(false);
+        // }
     };
 
     // Preview PDF without saving (this will create a temporary evaluation)
@@ -220,7 +272,6 @@ const EvaluationForm = () => {
         }
     };
 
-    // ... rest of the component (loading, error, and JSX) remains the same
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-64 py-12">

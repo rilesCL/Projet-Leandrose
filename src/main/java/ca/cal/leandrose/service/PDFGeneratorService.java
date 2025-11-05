@@ -432,10 +432,35 @@ public class PDFGeneratorService {
                             List.of(
                                     "Demonstrate rigor in work",
                                     "Respect company quality standards",
-                                    "Work autonomously in verifying own work"
+                                    "Work autonomously in verifying own work",
+                                    "Seek opportunities for improvement",
+                                    "To conduct a thorough analysis of the problems encountered"
+                            )
+                    ),
+                    "relationships", new CategoryData(
+                            "QUALITY OF INTERPERSONAL RELATIONSHIP",
+                            "ability to establish harmonious interactions in the workplace",
+                            List.of(
+                                    "easily establish connections with people",
+                                    "actively contribute to teamwork",
+                                    "adapt easily to the company culture",
+                                    "accept constructive criticism",
+                                    "be respectful toward people",
+                                    "demonstrate active listening by trying to understand the other person's point of view"
+                            )
+                    ),
+                    "skills", new CategoryData(
+                            "PERSONNAL SKILLS",
+                            "ability to demonstrate mature and responsable attitudes or behaviors",
+                            List.of(
+                                    "demonstrate interest and motivation at work",
+                                    "express ideas clearly",
+                                    "show initiative",
+                                    "work safely",
+                                    "demonstrate a good sense of responsability requiring minimal supervision",
+                                    "to be punctual and dilligent at work"
                             )
                     )
-                    // Add more categories...
             );
         } else {
             return Map.of(
@@ -458,8 +483,31 @@ public class PDFGeneratorService {
                                     "Respecter les normes de qualité de l'entreprise",
                                     "Faire preuve d'autonomie dans la vérification de son travail"
                             )
+                    ),
+                    "relationship", new CategoryData(
+                            "QUALITÉS DES RELATIONS INTERPERSONNELLES",
+                            "Capacité d’établir des interrelations harmonieuses dans son milieu de travail",
+                            List.of(
+                                    "établir facilement des contacts avec les gens",
+                                    "contribuer activement au travail d’équipe",
+                                    "s’adapter facilement à la culture de l’entreprise",
+                                    "accepter les critiques constructives",
+                                    "être respectueux envers les gens",
+                                    "faire preuve d’écoute active en essayant de comprendre le point de vue de l’autre"
+                            )
+                    ),
+                    "skills", new CategoryData(
+                            "HABILETÉS PERSONNELLES",
+                            "Capacité de faire preuve d’attitudes ou de comportements matures et responsables",
+                            List.of(
+                                    "démontrer de l’intérêt et de la motivation au travail",
+                                    "exprimer clairement ses idées",
+                                    "faire preuve d’initiative",
+                                    "travailler de façon sécuritaire",
+                                    "démontrer un bon sens des responsabilités ne requérant qu’un minimum de supervision",
+                                    "être ponctuel et assidu à son travail"
+                            )
                     )
-                    // Add more categories...
             );
         }
     }

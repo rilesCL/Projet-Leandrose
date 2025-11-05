@@ -58,7 +58,7 @@ public class SecurityConfiguration {
                     .requestMatchers(POST, "/employeur/**")
                     .hasAuthority("EMPLOYEUR")
                         .requestMatchers(POST, "/employeur/evaluations").hasAuthority("EMPLOYEUR")
-                        .requestMatchers(POST, "/employeur/evaluations/*/generate-pdf").hasAuthority("EMPLOYEUR")
+                        .requestMatchers(POST, "/employeur/evaluations/generate-pdf").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/employeur/evaluations").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/employeur/evaluations/*").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/employeur/evaluations/*/pdf").hasAuthority("EMPLOYEUR")

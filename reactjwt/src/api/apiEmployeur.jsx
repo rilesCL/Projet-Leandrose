@@ -103,14 +103,18 @@ export async function createEvaluation (studentId, offerId, token = null) {
     return responseData
 }
 
-export async function generateEvaluationPdf (evaluationId, formData, token = null)  {
-    const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/generate-pdf`, {
+export async function generateEvaluationPdf (studentId, offerId, formData, token = null)  {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/generate-pdf`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             ...authHeaders(token)
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+            studentId: studentId,
+            internshipOfferId: offerId,
+            formData: formData
+        })
     })
     return await res.json()
 }
@@ -134,21 +138,6 @@ export async function previewEvaluationPdf (evaluationId, formData = null, token
         return await res.blob();
     }
 }
-export async function getStudentInfo  (studentId, token = null)  {
-    const res = await handleFetch(`${API_BASE}/user/${studentId}`, {
-        headers: authHeaders(token)
-    });
-    return await res.json();
-};
-
-export async function getInternshipInfo (offerId, token = null)  {
-    const res = await handleFetch(`${API_BASE}/student/offers/${offerId}`, {
-        headers: authHeaders(token)
-    });
-    const json = await res.json();
-    console.log("JSON", json)
-    return json
-}
 export async function getEligibleEvaluations(token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/eligible`, {
         headers: authHeaders(token)
@@ -158,6 +147,18 @@ export async function getEligibleEvaluations(token = null) {
 export async function getEvaluationInfo(studentId, offerId, token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/info?studentId=${studentId}&offerId=${offerId}`, {
         headers: authHeaders(token)
+    });
+    return await res.json();
+}
+
+export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/generate-pdf`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders(token)
+        },
+        body: JSON.stringify(formData)
     });
     return await res.json();
 }

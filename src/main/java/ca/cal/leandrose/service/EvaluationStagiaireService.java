@@ -88,12 +88,18 @@ public class EvaluationStagiaireService {
     public EvaluationStagiaireDto generateEvaluationPdf(Long evaluationId, EvaluationFormData formData, String langage){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
+        System.out.println("DEBUG: Starting PDF generation for evaluation: " + evaluationId);
 
         String pdfPath = pdfGeneratorService.genererEvaluationPdf(evaluation, formData, langage);
         evaluation.setPdfFilePath(pdfPath);
         evaluation.setSubmitted(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
         return mapToDto(savedEvaluation);
+    }
+    public EvaluationStagiaireDto createAndGenerateEvaluationPdf(Long employeurId, Long studentId, Long internshipId,
+                                                                 EvaluationFormData formData, String language) {
+        EvaluationStagiaireDto evaluationDto = createEvaluation(employeurId, studentId, internshipId);
+        return generateEvaluationPdf(evaluationDto.id(), formData, language);
     }
 
     public byte[] getEvaluationPdf(Long evaluationId){
@@ -120,6 +126,9 @@ public class EvaluationStagiaireService {
     }
 
     private EvaluationStagiaireDto mapToDto(EvaluationStagiaire evaluation){
+        System.out.println(evaluation);
+        System.out.println("DEBUG: Employer ID: " + evaluation.getEmployeur().getId());
+        System.out.println("DEBUG: Student ID: " + evaluation.getStudent().getId());
         return new EvaluationStagiaireDto(
                 evaluation.getId(),
                 evaluation.getDateEvaluation(),
