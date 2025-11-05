@@ -13,7 +13,7 @@ public interface EvaluationStagiaireRepository extends JpaRepository<EvaluationS
 
     List<EvaluationStagiaire> findByEmployeurId(Long employeurId);
     List<EvaluationStagiaire> findByStudentId(Long studentId);
-    Optional<EvaluationStagiaire> findByInternshipOfferIdAndStudentId(Long internshipOffer, Long studentId);
+    Optional<EvaluationStagiaire> findByStudentIdAndInternshipOfferId(Long studentId, Long internshipOfferId);
 
     boolean existsByInternshipOfferIdAndStudentId(Long internshipOfferId, Long studentId);
 

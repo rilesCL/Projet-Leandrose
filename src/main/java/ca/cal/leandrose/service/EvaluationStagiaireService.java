@@ -159,11 +159,20 @@ public class EvaluationStagiaireService {
                         employeurId, EntenteStage.StatutEntente.VALIDEE);
 
         return validatedAgreements.stream()
-                .map(this::mapToEligibleEvaluationDto)
+                .map(agreement -> {
+                    // Check if evaluation exists
+                    Optional<EvaluationStagiaire> existingEvaluation = evaluationStagiaireRepository
+                            .findByStudentIdAndInternshipOfferId(
+                                    agreement.getStudent().getId(),
+                                    agreement.getCandidature().getInternshipOffer().getId()
+                            );
+
+                    return mapToEligibleEvaluationDto(agreement, existingEvaluation.orElse(null));
+                })
                 .collect(Collectors.toList());
     }
 
-    private EligibleEvaluationDto mapToEligibleEvaluationDto(EntenteStage agreement) {
+    private EligibleEvaluationDto mapToEligibleEvaluationDto(EntenteStage agreement, EvaluationStagiaire evaluation) {
         Candidature candidature = agreement.getCandidature();
         Student student = candidature.getStudent();
         InternshipOffer offer = candidature.getInternshipOffer();
@@ -178,7 +187,18 @@ public class EvaluationStagiaireService {
                 offer.getDescription(),
                 offer.getCompanyName(),
                 offer.getStartDate(),
-                offer.getStartDate().plusWeeks(offer.getDurationInWeeks())
+                offer.getStartDate().plusWeeks(offer.getDurationInWeeks()),
+                evaluation != null,  // hasEvaluation
+                evaluation != null ? evaluation.getId() : null,  // evaluationId
+                evaluation != null ? evaluation.isSubmitted() : false  // evaluationSubmitted
         );
+    }
+    public boolean evaluationExists(Long studentId, Long internshipOfferId) {
+        return evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipOfferId, studentId);
+    }
+
+    public Optional<EvaluationStagiaireDto> getExistingEvaluation(Long studentId, Long internshipOfferId) {
+        return evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(studentId, internshipOfferId)
+                .map(this::mapToDto);
     }
 }

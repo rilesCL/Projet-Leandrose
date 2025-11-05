@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
+import PdfViewer from '../PdfViewer.jsx';
 import {
     createEvaluation,
-    generateEvaluationPdf,
     previewEvaluationPdf,
     getEvaluationInfo,
-    generateEvaluationPdfWithId
+    generateEvaluationPdfWithId,
+    checkExistingEvaluation
 } from '../../api/apiEmployeur';
 
 const EvaluationForm = () => {
@@ -20,6 +21,7 @@ const EvaluationForm = () => {
     const [student, setStudent] = useState(null);
     const [internship, setInternship] = useState(null);
     const [error, setError] = useState(null);
+    const [submitted, setSubmitted] = useState(false); // New state for submission status
 
     const [formData, setFormData] = useState({
         categories: {},
@@ -77,6 +79,7 @@ const EvaluationForm = () => {
         }
     };
 
+
     useEffect(() => {
         const initializeForm = async () => {
             try {
@@ -85,9 +88,21 @@ const EvaluationForm = () => {
 
                 console.log('Initializing form with:', { studentId, offerId });
 
-                // Validate that we have the required IDs
                 if (!studentId || !offerId) {
                     throw new Error('Missing student ID or offer ID');
+                }
+
+                // First, check if an evaluation already exists
+                console.log('Checking for existing evaluation...');
+                const existingCheck = await checkExistingEvaluation(studentId, offerId);
+                console.log('Existing evaluation check:', existingCheck);
+
+                if (existingCheck.exists) {
+                    // Evaluation already exists - redirect to evaluations list
+                    console.log('Evaluation already exists, redirecting...');
+                    alert('Une évaluation existe déjà pour ce stagiaire. Vous allez être redirigé vers la liste des évaluations.');
+                    navigate('/dashboard/employeur/evaluations');
+                    return;
                 }
 
                 // Get evaluation info (student + internship data)
@@ -133,7 +148,7 @@ const EvaluationForm = () => {
         };
 
         initializeForm();
-    }, [studentId, offerId, t]);
+    }, [studentId, offerId, t, navigate]);
 
     // Handle question field changes
     const handleQuestionChange = (categoryKey, questionIndex, field, value) => {
@@ -148,6 +163,7 @@ const EvaluationForm = () => {
         }));
     };
 
+    // Handle general comment change
     const handleGeneralCommentChange = (comment) => {
         setFormData(prev => ({
             ...prev,
@@ -155,7 +171,7 @@ const EvaluationForm = () => {
         }));
     };
 
-    // Create evaluation and generate PDF
+    // Generate and download PDF, then redirect
     const handleGeneratePdf = async () => {
         setSubmitting(true);
         try {
@@ -173,7 +189,6 @@ const EvaluationForm = () => {
                 throw new Error('No evaluation ID received from server');
             }
 
-            // Store the evaluationId in state
             setEvaluationId(evalId);
 
             // Small delay to ensure evaluation is saved
@@ -201,8 +216,11 @@ const EvaluationForm = () => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
+            // Show success message and redirect
             alert(t('evaluation.pdfGenerated'));
-            navigate('/employer/evaluations');
+
+            // Redirect to evaluations list
+            navigate('/dashboard/employeur/evaluations');
 
         } catch (error) {
             console.error('Error in PDF generation process:', error);
@@ -210,65 +228,6 @@ const EvaluationForm = () => {
             alert(`${t('evaluation.pdfGenerationError')}: ${errorMessage}`);
         } finally {
             setSubmitting(false);
-        }
-
-        // setSubmitting(true);
-        // try {
-        //     console.log('Creating evaluation and generating PDF in one call...');
-        //
-        //     // Single API call that creates evaluation and generates PDF
-        //     const pdfResponse = await generateEvaluationPdf(studentId, offerId, formData);
-        //     console.log('PDF generation response:', pdfResponse);
-        //     const evaluationId = pdfResponse.evaluationId;
-        //
-        //     // Download the generated PDF using the student info we already have
-        //     console.log('Downloading PDF...');
-        //     console.log(evaluationId)
-        //     const pdfBlob = await previewEvaluationPdf(evaluationId); // You might need to adjust this
-        //
-        //     const url = window.URL.createObjectURL(pdfBlob);
-        //     const link = document.createElement('a');
-        //     link.href = url;
-        //     link.download = `evaluation_${student?.firstName}_${student?.lastName}.pdf`;
-        //     document.body.appendChild(link);
-        //     link.click();
-        //     document.body.removeChild(link);
-        //     window.URL.revokeObjectURL(url);
-        //
-        //     alert(t('evaluation.pdfGenerated'));
-        //     navigate('/employer/evaluations');
-        //
-        // } catch (error) {
-        //     console.error('Error generating PDF:', error);
-        //     const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.pdfGenerationError');
-        //     alert(`${t('evaluation.pdfGenerationError')}: ${errorMessage}`);
-        // } finally {
-        //     setSubmitting(false);
-        // }
-    };
-
-    // Preview PDF without saving (this will create a temporary evaluation)
-    const handlePreviewPdf = async () => {
-        try {
-            console.log('Creating temporary evaluation for preview...');
-
-            // Create a temporary evaluation for preview
-            const evaluationResponse = await createEvaluation(studentId, offerId);
-            const evalId = evaluationResponse.evaluationId || evaluationResponse.id || evaluationResponse;
-
-            if (!evalId) {
-                throw new Error('No evaluation ID received from server');
-            }
-
-            console.log('Previewing PDF for evaluation:', evalId);
-            const pdfBlob = await previewEvaluationPdf(evalId, formData);
-            const url = window.URL.createObjectURL(pdfBlob);
-            window.open(url, '_blank');
-
-        } catch (error) {
-            console.error('Error previewing PDF:', error);
-            const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.previewError');
-            alert(`${t('evaluation.previewError')}: ${errorMessage}`);
         }
     };
 
@@ -290,10 +249,10 @@ const EvaluationForm = () => {
                     </h2>
                     <p className="text-red-700 mb-4">{error}</p>
                     <button
-                        onClick={() => window.history.back()}
+                        onClick={() => navigate('/dashboard/employeur/evaluations')}
                         className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                     >
-                        Go Back
+                        Back to Evaluations List
                     </button>
                 </div>
             </div>
@@ -308,9 +267,24 @@ const EvaluationForm = () => {
                     {t('evaluation.title')}
                 </h1>
 
-                {/* Student and Company Information */}
+                {submitted && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-green-800">
+                                    {t('evaluation.submittedSuccess')}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm">
-                    {/* Student Information */}
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200">
                             {t('evaluation.studentInfo')}
@@ -333,7 +307,6 @@ const EvaluationForm = () => {
                         </div>
                     </div>
 
-                    {/* Company Information */}
                     <div>
                         <h3 className="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200">
                             {t('evaluation.companyInfo')}
@@ -440,7 +413,6 @@ const EvaluationForm = () => {
                     </div>
                 ))}
 
-                {/* General Comments Section */}
                 <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
                         {t('evaluation.generalComments')}
@@ -455,16 +427,7 @@ const EvaluationForm = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
-                    <button
-                        type="button"
-                        onClick={handlePreviewPdf}
-                        disabled={submitting}
-                        className="px-6 py-2.5 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                        {t('evaluation.preview')}
-                    </button>
-
+                <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
                     <button
                         type="button"
                         onClick={handleGeneratePdf}

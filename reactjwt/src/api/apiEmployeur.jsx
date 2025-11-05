@@ -162,6 +162,12 @@ export async function generateEvaluationPdfWithId(evaluationId, formData, token 
     });
     return await res.json();
 }
+export async function checkExistingEvaluation(studentId, offerId, token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
 
 
 

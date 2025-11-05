@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -609,5 +610,37 @@ public class EmployeurController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/evaluations/check-existing")
+    public ResponseEntity<?> checkExistingEvaluation(
+            HttpServletRequest request,
+            @RequestParam Long studentId,
+            @RequestParam Long offerId) {
 
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            Optional<EvaluationStagiaireDto> existingEvaluation = evaluationStagiaireService
+                    .getExistingEvaluation(studentId, offerId);
+
+            if (existingEvaluation.isPresent()) {
+                return ResponseEntity.ok().body(Map.of(
+                        "exists", true,
+                        "evaluation", existingEvaluation.get(),
+                        "message", "Une évaluation existe déjà"
+                ));
+            } else {
+                return ResponseEntity.ok().body(Map.of(
+                        "exists", false,
+                        "message", "Aucune évaluation existante"
+                ));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

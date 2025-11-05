@@ -332,19 +332,19 @@ public class PDFGeneratorService {
         document.add(instructions);
     }
 
-    private void addEvaluationContent(Document document, EvaluationFormData formData, String language) throws DocumentException{
+    private void addEvaluationContent(Document document, EvaluationFormData formData, String language) throws DocumentException {
         Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
         Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+        Font ratingFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.DARK_GRAY);
         Font commentFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.DARK_GRAY);
 
         Map<String, CategoryData> categories = getCategoriesByLanguage(language);
 
-
-        for (Map.Entry<String, CategoryData> category: categories.entrySet()){
+        for (Map.Entry<String, CategoryData> category : categories.entrySet()) {
             String categoryKey = category.getKey();
             CategoryData categoryData = category.getValue();
 
-
+            // Category title and description
             Paragraph categoryTitle = new Paragraph(categoryData.getTitle(), categoryFont);
             categoryTitle.setSpacingBefore(15f);
             categoryTitle.setSpacingAfter(5f);
@@ -356,17 +356,19 @@ public class PDFGeneratorService {
 
             List<String> questions = categoryData.getQuestions();
 
-            for(int i = 0; i < questions.size(); i++){
+            for (int i = 0; i < questions.size(); i++) {
                 String question = questions.get(i);
                 String questionKey = categoryKey + "_Q" + (i + 1);
 
-                PdfPTable questionTable = new PdfPTable(2);
+                // Create a table with 3 columns: checkbox, question, rating
+                PdfPTable questionTable = new PdfPTable(3);
                 questionTable.setWidthPercentage(100);
-                questionTable.setWidths(new float[]{1, 20});
+                questionTable.setWidths(new float[]{1, 15, 4}); // Adjust widths as needed
 
-                // Checkbox
+                // Checkbox column
                 PdfPCell checkboxCell = new PdfPCell();
                 checkboxCell.setBorder(Rectangle.NO_BORDER);
+                checkboxCell.setPadding(2f);
                 if (formData.categories().containsKey(categoryKey) &&
                         i < formData.categories().get(categoryKey).size() &&
                         Boolean.TRUE.equals(formData.categories().get(categoryKey).get(i).checked())) {
@@ -376,14 +378,32 @@ public class PDFGeneratorService {
                 }
                 questionTable.addCell(checkboxCell);
 
-
-
+                // Question text column
                 PdfPCell questionCell = new PdfPCell(new Phrase(question, questionFont));
                 questionCell.setBorder(Rectangle.NO_BORDER);
+                questionCell.setPadding(2f);
                 questionTable.addCell(questionCell);
+
+                // Rating column - Show the actual rating value
+                PdfPCell ratingCell = new PdfPCell();
+                ratingCell.setBorder(Rectangle.NO_BORDER);
+                ratingCell.setPadding(2f);
+
+                String ratingText = "";
+                if (formData.categories().containsKey(categoryKey) &&
+                        i < formData.categories().get(categoryKey).size()) {
+                    String rating = formData.categories().get(categoryKey).get(i).rating();
+                    ratingText = getRatingDisplayText(rating, language);
+                } else {
+                    ratingText = getRatingDisplayText("NON_APPLICABLE", language);
+                }
+
+                ratingCell.addElement(new Phrase(ratingText, ratingFont));
+                questionTable.addCell(ratingCell);
 
                 document.add(questionTable);
 
+                // Comments
                 if (formData.categories().containsKey(categoryKey) &&
                         i < formData.categories().get(categoryKey).size()) {
                     String comment = formData.categories().get(categoryKey).get(i).comment();
@@ -398,6 +418,29 @@ public class PDFGeneratorService {
             }
 
             document.add(Chunk.NEWLINE);
+        }
+    }
+
+    // Helper method to convert rating codes to display text
+    private String getRatingDisplayText(String rating, String language) {
+        if ("en".equals(language)) {
+            return switch (rating) {
+                case "EXCELLENT" -> "Totally Agree";
+                case "TRES_BIEN" -> "Mostly Agree";
+                case "SATISFAISANT" -> "Mostly Disagree";
+                case "A_AMELIORER" -> "Totally Disagree";
+                case "NON_APPLICABLE" -> "N/A";
+                default -> "N/A";
+            };
+        } else {
+            return switch (rating) {
+                case "EXCELLENT" -> "Totalement d'accord";
+                case "TRES_BIEN" -> "Plutôt d'accord";
+                case "SATISFAISANT" -> "Plutôt en désaccord";
+                case "A_AMELIORER" -> "Totalement en désaccord";
+                case "NON_APPLICABLE" -> "N/A";
+                default -> "N/A";
+            };
         }
     }
 

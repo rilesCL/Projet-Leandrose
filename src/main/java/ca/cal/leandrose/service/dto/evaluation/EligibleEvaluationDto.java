@@ -12,6 +12,9 @@ public record EligibleEvaluationDto(
         String internshipDescription,
         String companyName,
         LocalDate startDate,
-        LocalDate endDate
+        LocalDate endDate,
+        Boolean hasEvaluation,
+        Long evaluationId,
+        Boolean evaluationSubmitted
 ) {
 }
