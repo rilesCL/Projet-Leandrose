@@ -456,13 +456,12 @@ public class EmployeurController {
         }
 
         try {
-            // Verify the employer owns this evaluation
             EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
             System.out.println("Me id" + me.getId());
             System.out.println("Evaluation id : " + evaluation.employeurId());
-//            if (!evaluation.employeurId().equals(me.getId())) { //todo: Le id evaluation.employeurId() ne match pas avec me.getId()
-//                return ResponseEntity.status(403).body("Accès non autorisé");
-//            }
+            if (!evaluation.employeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).body("Accès non autorisé");
+            }
 
             String lang = language.startsWith("en") ? "en" : "fr";
             EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdf(evaluationId, formData, lang);
@@ -474,36 +473,6 @@ public class EmployeurController {
         }
     }
 
-//    @PostMapping("/evaluations/generate-pdf")
-//    public ResponseEntity<?> generateEvaluationPdf(
-//            HttpServletRequest request,
-//            @RequestBody GeneratePdfRequest generateRequest,
-////            @PathVariable Long evaluationId,
-////            @RequestBody EvaluationFormData formData,
-//            @RequestHeader(value= "Accept-Language", defaultValue = "fr") String language) {
-//
-//        System.out.println("allo tu m'entends");
-//        UserDTO me = userService.getMe(request.getHeader("Authorization"));
-//        System.out.println("ROle : " + me.getRole());
-//
-//        if (!me.getRole().name().equals("EMPLOYEUR")) {
-//            return ResponseEntity.status(403).build();
-//        }
-//
-//        try {
-//            String lang = language.startsWith("en") ? "en" : "fr";
-//            EvaluationStagiaireDto evaluation = evaluationStagiaireService.createAndGenerateEvaluationPdf(
-//                    me.getId(),
-//                    generateRequest.studentId(),
-//                    generateRequest.internshipOfferId(),
-//                    generateRequest.formData(),
-//                    lang
-//            );
-//            return ResponseEntity.ok(new PdfGenerationResponse(evaluation.id(), evaluation.pdfFilePath(), "PDF généré avec succès"));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(new PdfGenerationResponse(null,null, e.getMessage()));
-//        }
-//    }
 
     @GetMapping("/evaluations/{evaluationId}/pdf")
     public ResponseEntity<?> getEvaluationPdf(
@@ -526,9 +495,9 @@ public class EmployeurController {
             EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
             System.out.println("DEBUG: Reading PDF from: " + evaluation.pdfFilePath());
             System.out.println("DEBUG: Found evaluation - ID: " + evaluation.id() + ", Employer ID: " + evaluation.employeurId());
-//            if (evaluation.employeurId().equals(me.getId())) { //todo: Le id evaluation.employeurId() ne match pas avec me.getId()
-//                return ResponseEntity.status(403).build();
-//            }
+            if (!evaluation.employeurId().equals(me.getId())) {
+                return ResponseEntity.status(403).build();
+            }
 
             byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId);
             return ResponseEntity.ok()

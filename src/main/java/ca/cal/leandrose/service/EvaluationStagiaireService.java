@@ -50,25 +50,21 @@ public class EvaluationStagiaireService {
         return mapToDto(evaluationStagiaire);
     }
     public EvaluationInfoDto getEvaluationInfo(Long employeurId, Long studentId, Long internshipOfferId) {
-        // Check if evaluation is eligible
         boolean isEligible = isEvaluationEligible(employeurId, studentId, internshipOfferId);
 
         if (!isEligible) {
             throw new IllegalStateException("Evaluation not allowed - agreement not validated or not found");
         }
 
-        // Check if evaluation already exists
         if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipOfferId, studentId)) {
             throw new IllegalStateException("Une évaluation existe déjà pour ce stagiaire et ce stage");
         }
 
-        // Fetch related entities for info only
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
         InternshipOffer internship = internshipOfferRepository.findById(internshipOfferId)
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
 
-        // Return info without creating evaluation
         StudentInfoDto studentInfo = new StudentInfoDto(
                 student.getId(),
                 student.getFirstName(),
@@ -128,8 +124,8 @@ public class EvaluationStagiaireService {
         return new EvaluationStagiaireDto(
                 evaluation.getId(),
                 evaluation.getDateEvaluation(),
-                evaluation.getEmployeur().getId(),
                 evaluation.getStudent().getId(),
+                evaluation.getEmployeur().getId(),
                 evaluation.getInternshipOffer().getId(),
                 evaluation.getPdfFilePath(),
                 evaluation.isSubmitted()
@@ -149,14 +145,12 @@ public class EvaluationStagiaireService {
     }
 
     public List<EligibleEvaluationDto> getEligibleEvaluations(Long employeurId) {
-        // Find all validated agreements for this employer
         List<EntenteStage> validatedAgreements = ententeStageRepository
                 .findByCandidature_InternshipOffer_Employeur_IdAndStatut(
                         employeurId, EntenteStage.StatutEntente.VALIDEE);
 
         return validatedAgreements.stream()
                 .map(agreement -> {
-                    // Check if evaluation exists
                     Optional<EvaluationStagiaire> existingEvaluation = evaluationStagiaireRepository
                             .findByStudentIdAndInternshipOfferId(
                                     agreement.getStudent().getId(),
@@ -188,9 +182,6 @@ public class EvaluationStagiaireService {
                 evaluation != null ? evaluation.getId() : null,  // evaluationId
                 evaluation != null ? evaluation.isSubmitted() : false  // evaluationSubmitted
         );
-    }
-    public boolean evaluationExists(Long studentId, Long internshipOfferId) {
-        return evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipOfferId, studentId);
     }
 
     public Optional<EvaluationStagiaireDto> getExistingEvaluation(Long studentId, Long internshipOfferId) {
