@@ -68,12 +68,12 @@ export default function DashBoardEmployeur() {
 
                             </Link>
 
-                            <Link to="/dashboard/employeur/evaluation"
+                            <Link to={`/dashboard/employeur/evaluations`}
                                   className="flex items-center text-gray-600 hover:text-indigo-600 transition"
                             >
                                 <FaSignature className="mr-1"/>
                                 <span className="hidden sm:inline">
-                                    Evaluation
+                                    Evaluations
                                     {/*{t("dashboardEmployeur.stage")}*/}
                                 </span>
 

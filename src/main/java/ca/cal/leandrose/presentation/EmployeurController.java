@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -420,14 +421,19 @@ public class EmployeurController {
             return ResponseEntity.status(403).build();
         }
 
-        System.out.println("Received request - studentId: " + createRequest.studentId() + ", offerId: " + createRequest.internshipOfferId());
-
         try{
-            EvaluationStagiaireDto evaluationStagiaireDto = evaluationStagiaireService.createEvaluation(
+            boolean isEligible = evaluationStagiaireService.isEvaluationEligible(me.getId(),
+                    createRequest.studentId(), createRequest.internshipOfferId());
+
+            if (!isEligible){
+                return ResponseEntity.badRequest().body(
+                        new EvaluationResponsesDto(null, "Evaluation not allowed - agreement not validated or not found")
+                );
+            }
+            EvaluationStagiaireDto response = evaluationStagiaireService.createEvaluation(
                     me.getId(), createRequest.studentId(), createRequest.internshipOfferId()
             );
-            return ResponseEntity.ok(new EvaluationResponsesDto(evaluationStagiaireDto.id(),
-                    "Évaluation crée avec succes"));
+            return ResponseEntity.ok(response);
 
         } catch(Exception e){
             return ResponseEntity.badRequest().body(new EvaluationResponsesDto(null, e.getMessage()));
@@ -528,4 +534,37 @@ public class EmployeurController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/evaluations/eligible")
+    public ResponseEntity<List<EligibleEvaluationDto>> getEligibleEvaluations(HttpServletRequest request) {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        List<EligibleEvaluationDto> eligibleEvaluations = evaluationStagiaireService.getEligibleEvaluations(me.getId());
+        return ResponseEntity.ok(eligibleEvaluations);
+    }
+
+    @GetMapping("/evaluations/info")
+    public ResponseEntity<?> getEvaluationInfo(
+            HttpServletRequest request,
+            @RequestParam Long studentId,
+            @RequestParam Long offerId) {
+
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfo(
+                    me.getId(), studentId, offerId);
+            return ResponseEntity.ok(info);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

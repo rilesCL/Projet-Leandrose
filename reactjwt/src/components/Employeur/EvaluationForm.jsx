@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import { createEvaluation, generateEvaluationPdf, previewEvaluationPdf, getStudentInfo, getInternshipInfo } from "../../api/apiEmployeur.jsx";
+import { createEvaluation, generateEvaluationPdf, previewEvaluationPdf, getEvaluationInfo } from '../../api/apiEmployeur';
 
 const EvaluationForm = () => {
     const { t } = useTranslation();
@@ -13,6 +13,7 @@ const EvaluationForm = () => {
     const [evaluationId, setEvaluationId] = useState(null);
     const [student, setStudent] = useState(null);
     const [internship, setInternship] = useState(null);
+    const [error, setError] = useState(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -39,19 +40,12 @@ const EvaluationForm = () => {
             questions: [
                 t('evaluation.quality.q1'),
                 t('evaluation.quality.q2'),
-                t('evaluation.quality.q3')
+                t('evaluation.quality.q3'),
+                t('evaluation.quality.q4'),
+                t('evaluation.quality.q5')
             ]
         },
-        autonomy: {
-            title: t('evaluation.autonomy.title'),
-            description: t('evaluation.autonomy.description'),
-            questions: [
-                t('evaluation.autonomy.q1'),
-                t('evaluation.autonomy.q2'),
-                t('evaluation.autonomy.q3'),
-                t('evaluation.autonomy.q4')
-            ]
-        },
+
         relationships: {
             title: t('evaluation.relationships.title'),
             description: t('evaluation.relationships.description'),
@@ -59,39 +53,55 @@ const EvaluationForm = () => {
                 t('evaluation.relationships.q1'),
                 t('evaluation.relationships.q2'),
                 t('evaluation.relationships.q3'),
-                t('evaluation.relationships.q4')
+                t('evaluation.relationships.q4'),
+                t('evaluation.relationships.q5'),
+                t('evaluation.relationships.q6')
             ]
         },
-        professionalism: {
-            title: t('evaluation.professionalism.title'),
-            description: t('evaluation.professionalism.description'),
+        skills: {
+            title: t('evaluation.skills.title'),
+            description: t('evaluation.skills.description'),
             questions: [
-                t('evaluation.professionalism.q1'),
-                t('evaluation.professionalism.q2'),
-                t('evaluation.professionalism.q3'),
-                t('evaluation.professionalism.q4'),
-                t('evaluation.professionalism.q5')
+                t('evaluation.skills.q1'),
+                t('evaluation.skills.q2'),
+                t('evaluation.skills.q3'),
+                t('evaluation.skills.q4'),
+                t('evaluation.skills.q5'),
+                t('evaluation.skills.q6')
             ]
         }
     };
 
-    // Initialize evaluation on component mount
     useEffect(() => {
-        const initializeEvaluation = async () => {
+        const initializeForm = async () => {
             try {
                 setLoading(true);
+                setError(null);
 
-                const evaluationResponse = await createEvaluation(studentId, offerId);
-                setEvaluationId(evaluationResponse.evaluationId);
+                console.log('Initializing form with:', { studentId, offerId });
 
-                const [studentData, internshipData] = await Promise.all([
-                    getStudentInfo(studentId),
-                    getInternshipInfo(offerId)
-                ]);
+                // Validate that we have the required IDs
+                if (!studentId || !offerId) {
+                    throw new Error('Missing student ID or offer ID');
+                }
 
-                setStudent(studentData);
-                setInternship(internshipData);
+                // Get evaluation info (student + internship data)
+                console.log('Fetching evaluation info...');
+                const evaluationInfo = await getEvaluationInfo(studentId, offerId);
+                console.log('Evaluation info:', evaluationInfo);
 
+                setStudent({
+                    firstName: evaluationInfo.studentInfo.firstName,
+                    lastName: evaluationInfo.studentInfo.lastName,
+                    program: evaluationInfo.studentInfo.program
+                });
+                setInternship({
+                    description: evaluationInfo.internshipInfo.description,
+                    companyName: evaluationInfo.internshipInfo.companyName
+                });
+
+                // Initialize empty form data
+                console.log('Initializing form data...');
                 const initialFormData = {
                     categories: {},
                     generalComment: ''
@@ -106,16 +116,18 @@ const EvaluationForm = () => {
                 });
 
                 setFormData(initialFormData);
+                console.log('Form initialization completed successfully');
 
             } catch (error) {
-                console.error('Error initializing evaluation:', error);
-                alert(t('evaluation.initializationError'));
+                console.error('Error initializing form:', error);
+                const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.initializationError');
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
         };
 
-        initializeEvaluation();
+        initializeForm();
     }, [studentId, offerId, t]);
 
     // Handle question field changes
@@ -131,7 +143,6 @@ const EvaluationForm = () => {
         }));
     };
 
-    // Handle general comment change
     const handleGeneralCommentChange = (comment) => {
         setFormData(prev => ({
             ...prev,
@@ -139,16 +150,30 @@ const EvaluationForm = () => {
         }));
     };
 
-    // Generate and download PDF
+    // Create evaluation and generate PDF
     const handleGeneratePdf = async () => {
-        if (!evaluationId) return;
-
         setSubmitting(true);
         try {
-            await generateEvaluationPdf(evaluationId, formData);
+            console.log('Creating evaluation and generating PDF...');
+
+            // First create the evaluation
+            const evaluationResponse = await createEvaluation(studentId, offerId);
+            console.log('Evaluation created:', evaluationResponse);
+
+            // Extract evaluation ID from response
+            const evalId = evaluationResponse.evaluationId || evaluationResponse.id || evaluationResponse;
+            if (!evalId) {
+                throw new Error('No evaluation ID received from server');
+            }
+            setEvaluationId(evalId);
+
+            // Then generate the PDF with the form data
+            console.log('Generating PDF for evaluation:', evalId);
+            await generateEvaluationPdf(evalId, formData);
 
             // Download the generated PDF
-            const pdfBlob = await previewEvaluationPdf(evaluationId);
+            console.log('Downloading PDF...');
+            const pdfBlob = await previewEvaluationPdf(evalId);
             const url = window.URL.createObjectURL(pdfBlob);
             const link = document.createElement('a');
             link.href = url;
@@ -163,31 +188,63 @@ const EvaluationForm = () => {
 
         } catch (error) {
             console.error('Error generating PDF:', error);
-            alert(t('evaluation.pdfGenerationError'));
+            const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.pdfGenerationError');
+            alert(`${t('evaluation.pdfGenerationError')}: ${errorMessage}`);
         } finally {
             setSubmitting(false);
         }
     };
 
-    // Preview PDF without saving
+    // Preview PDF without saving (this will create a temporary evaluation)
     const handlePreviewPdf = async () => {
-        if (!evaluationId) return;
-
         try {
-            const pdfBlob = await previewEvaluationPdf(evaluationId, formData);
+            console.log('Creating temporary evaluation for preview...');
+
+            // Create a temporary evaluation for preview
+            const evaluationResponse = await createEvaluation(studentId, offerId);
+            const evalId = evaluationResponse.evaluationId || evaluationResponse.id || evaluationResponse;
+
+            if (!evalId) {
+                throw new Error('No evaluation ID received from server');
+            }
+
+            console.log('Previewing PDF for evaluation:', evalId);
+            const pdfBlob = await previewEvaluationPdf(evalId, formData);
             const url = window.URL.createObjectURL(pdfBlob);
             window.open(url, '_blank');
+
         } catch (error) {
             console.error('Error previewing PDF:', error);
-            alert(t('evaluation.previewError'));
+            const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.previewError');
+            alert(`${t('evaluation.previewError')}: ${errorMessage}`);
         }
     };
 
+    // ... rest of the component (loading, error, and JSX) remains the same
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-64 py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
                 <p className="text-gray-600">{t('evaluation.loading')}</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="max-w-4xl mx-auto px-4 py-8">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                    <h2 className="text-xl font-semibold text-red-800 mb-2">
+                        {t('evaluation.initializationError')}
+                    </h2>
+                    <p className="text-red-700 mb-4">{error}</p>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    >
+                        Go Back
+                    </button>
+                </div>
             </div>
         );
     }
@@ -220,7 +277,7 @@ const EvaluationForm = () => {
                                 <label className="block text-sm font-medium text-gray-600 mb-1">
                                     {t('evaluation.program')}
                                 </label>
-                                <p className="text-gray-900">{student?.program}</p>
+                                <p className="text-gray-900">{t(student?.program) || 'N/A'}</p>
                             </div>
                         </div>
                     </div>
@@ -235,13 +292,13 @@ const EvaluationForm = () => {
                                 <label className="block text-sm font-medium text-gray-600 mb-1">
                                     {t('evaluation.company')}
                                 </label>
-                                <p className="text-gray-900">{internship?.companyName}</p>
+                                <p className="text-gray-900">{internship?.companyName || 'N/A'}</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-600 mb-1">
                                     {t('evaluation.internship')}
                                 </label>
-                                <p className="text-gray-900">{internship?.description}</p>
+                                <p className="text-gray-900">{internship?.description || 'N/A'}</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -307,11 +364,11 @@ const EvaluationForm = () => {
                                                 }
                                                 className="px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
                                             >
-                                                <option value="NON_APPLICABLE">{t('rating.NON_APPLICABLE')}</option>
-                                                <option value="EXCELLENT">{t('rating.EXCELLENT')}</option>
-                                                <option value="TRES_BIEN">{t('rating.TRES_BIEN')}</option>
-                                                <option value="SATISFAISANT">{t('rating.SATISFAISANT')}</option>
-                                                <option value="A_AMELIORER">{t('rating.A_AMELIORER')}</option>
+                                                <option value="NON_APPLICABLE">{t('evaluation.rating.non_applicable')}</option>
+                                                <option value="EXCELLENT">{t('evaluation.rating.totally_agree')}</option>
+                                                <option value="TRES_BIEN">{t('evaluation.rating.mostly_agree')}</option>
+                                                <option value="SATISFAISANT">{t('evaluation.rating.mostly_disagree')}</option>
+                                                <option value="A_AMELIORER">{t('evaluation.rating.totally_disagree')}</option>
                                             </select>
                                         </div>
                                     </div>

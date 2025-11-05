@@ -895,6 +895,11 @@
       "draft": "Draft"
     }
   },
+  "evaluationList": {
+    "title": "Evaluation Available",
+    "no_evaluations": "No evaluations available at this time.",
+    "create_evaluation": "Create Evaluation"
+  },
   "evaluation": {
     "title": "Intern Evaluation Form",
     "studentInfo": "Student Information",
@@ -932,14 +937,36 @@
       "description": "Ability to produce careful and precise work",
       "q1": "Demonstrate rigor in work",
       "q2": "Respect company quality standards",
-      "q3": "Work autonomously in verifying own work"
+      "q3": "Work autonomously in verifying own work",
+      "q4": "Seek opportunities for improvement",
+      "q5" : "To conduct a thorough analysis of the problems encountered"
+    },
+    "relationships": {
+      "title": "quality of interpersonal relationship",
+      "description": "ability to establish harmonious interactions in the workplace",
+      "q1": "easily establish connections with people",
+      "q2": "actively contribute to teamwork",
+      "q3": "adapt easily to the company culture",
+      "q4": "accept constructive criticism",
+      "q5": "be respectful toward people",
+      "q6": "demonstrate active listening by trying to understand the other person's point of view"
+    },
+    "skills": {
+      "title": "PERSONNAL SKILLS",
+      "description": "ability to demonstrate mature and responsable attitudes or behaviors",
+      "q1": "demonstrate interest and motivation at work",
+      "q2": "express ideas clearly",
+      "q3": "show initiative",
+      "q4": "work safely",
+      "q5": "demonstrate a good sense of responsability requiring minimal supervision",
+      "q6": "to be punctual and dilligent at work"
+    },
+    "rating": {
+      "non_applicable": "N/A",
+      "totally_agree": "Totally agree",
+      "mostly_agree": "Mostly agree",
+      "mostly_disagree": "Mostly disagree",
+      "totally_disagree": "Totally disagree"
     }
-  },
-  "rating": {
-    "NON_APPLICABLE": "N/A",
-    "EXCELLENT": "Excellent",
-    "TRES_BIEN": "Very Good",
-    "SATISFAISANT": "Satisfactory",
-    "A_AMELIORER": "Needs Improvement"
   }
 }

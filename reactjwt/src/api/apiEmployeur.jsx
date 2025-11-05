@@ -85,7 +85,12 @@ export async function previewOfferPdf(offerId, token = null) {
 }
 
 export async function createEvaluation (studentId, offerId, token = null) {
-    const res = await handleFetch(`${API_BASE}/employeur/evaluations`, {
+    const url = `${API_BASE}/employeur/evaluations`;
+    console.log('Calling URL:', url);
+    console.log('With data:', { studentId, internshipOfferId: offerId });
+
+
+    const res = await handleFetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -140,8 +145,22 @@ export async function getInternshipInfo (offerId, token = null)  {
     const res = await handleFetch(`${API_BASE}/student/offers/${offerId}`, {
         headers: authHeaders(token)
     });
+    const json = await res.json();
+    console.log("JSON", json)
+    return json
+}
+export async function getEligibleEvaluations(token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/eligible`, {
+        headers: authHeaders(token)
+    });
     return await res.json();
-};
+}
+export async function getEvaluationInfo(studentId, offerId, token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/info?studentId=${studentId}&offerId=${offerId}`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
 
 
 

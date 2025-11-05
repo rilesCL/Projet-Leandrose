@@ -897,6 +897,11 @@
       "draft": "Brouillon"
     }
   },
+  "evaluationList": {
+    "title": "Évaluations disponibles",
+    "no_evaluations": "Aucune évaluation n'est disponible pour le moment.",
+    "create_evaluation": "Créer évaluation"
+  },
   "evaluation": {
     "title": "Fiche d'Évaluation du Stagiaire",
     "studentInfo": "Informations de l'Étudiant",
@@ -934,14 +939,36 @@
       "description": "Capacité de produire un travail soigné et précis",
       "q1": "Démontrer de la rigueur dans son travail",
       "q2": "Respecter les normes de qualité de l'entreprise",
-      "q3": "Faire preuve d'autonomie dans la vérification de son travail"
+      "q3": "Faire preuve d'autonomie dans la vérification de son travail",
+      "q4": "Rechercher des occasions de se perfectionner",
+      "q5" : "Faire une bonne analyse des problèmes rencontrés"
+    },
+    "relationships": {
+      "title": "QUALITÉS DES RELATIONS INTERPERSONNELLES",
+      "description": "Capacité d’établir des interrelations harmonieuses dans son milieu de travail",
+      "q1": "établir facilement des contacts avec les gens",
+      "q2": "contribuer activement au travail d’équipe",
+      "q3": "s’adapter facilement à la culture de l’entreprise",
+      "q4": "accepter les critiques constructives",
+      "q5": "être respectueux envers les gens",
+      "q6": "faire preuve d’écoute active en essayant de comprendre le point de vue de l’autre"
+    },
+    "skills": {
+      "title": "HABILETÉS PERSONNELLES",
+      "description": "Capacité de faire preuve d’attitudes ou de comportements matures et responsables",
+      "q1": "démontrer de l’intérêt et de la motivation au travail",
+      "q2": "exprimer clairement ses idées",
+      "q3": "faire preuve d’initiative",
+      "q4": "travailler de façon sécuritaire",
+      "q5": "démontrer un bon sens des responsabilités ne requérant qu’un minimum de supervision",
+      "q6": "être ponctuel et assidu à son travail"
+    },
+    "rating": {
+      "non_applicable": "N/A",
+      "totally_agree": "Totalement en accord",
+      "mostly_agree": "Plûtot en accord",
+      "mostly_disagree": "Plûtot en désaccord",
+      "totally_disagree": "Totalement en désaccord"
     }
-  },
-  "rating": {
-    "NON_APPLICABLE": "N/A",
-    "EXCELLENT": "Excellent",
-    "TRES_BIEN": "Très bien",
-    "SATISFAISANT": "Satisfaisant",
-    "A_AMELIORER": "À améliorer"
   }
 }
