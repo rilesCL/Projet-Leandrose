@@ -11,9 +11,6 @@ const Login = () => {
     const [warnings, setWarnings] = useState({ email: "", password: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [showForgotPassword, setShowForgotPassword] = useState(false);
-    const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
-
     const validateEmail = () => {
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
         return emailRegex.test(formData.email);
@@ -138,118 +135,6 @@ const Login = () => {
         }
     };
 
-    const handleForgotPassword = async (e) => {
-        e.preventDefault();
-        if (!forgotPasswordEmail.trim()) {
-            setWarnings({
-                ...warnings,
-                email: t("login.forgotPasswordModal.errors.emailRequired"),
-            });
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            const response = await fetch("http://localhost:8080/user/forgot-password", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: forgotPasswordEmail }),
-            });
-
-            if (response.ok) {
-                alert(t("login.forgotPasswordModal.success"));
-                setShowForgotPassword(false);
-                setForgotPasswordEmail("");
-                setWarnings({ email: "", password: "" });
-            } else {
-                setWarnings({
-                    ...warnings,
-                    email: t("login.forgotPasswordModal.errors.emailNotFound"),
-                });
-            }
-        } catch (error) {
-            setWarnings({
-                ...warnings,
-                email: t("login.forgotPasswordModal.errors.sendError"),
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    if (showForgotPassword) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="max-w-xl w-full">
-                    <header className="text-center mb-8">
-                        <h1 className="text-4xl font-bold text-indigo-600">{t("appName")}</h1>
-                    </header>
-
-                    <div className="bg-white rounded-lg shadow-lg p-8">
-                        <div className="flex justify-between items-center mb-3">
-                            <h2 className="text-3xl font-semibold text-gray-800">
-                                {t("login.forgotPasswordModal.title")}
-                            </h2>
-                            <LanguageSelector />
-                        </div>
-                        <p className="text-base text-gray-500 mb-8">
-                            {t("login.forgotPasswordModal.subtitle")}
-                        </p>
-
-                        <form onSubmit={handleForgotPassword}>
-                            <div className="mb-6">
-                                <label
-                                    htmlFor="forgotEmail"
-                                    className="block text-base font-medium text-gray-700 mb-2"
-                                >
-                                    {t("login.forgotPasswordModal.email")}
-                                </label>
-                                <input
-                                    id="forgotEmail"
-                                    type="email"
-                                    value={forgotPasswordEmail}
-                                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                                    className={`mt-1 block w-full rounded-md shadow-sm border ${
-                                        warnings.email ? "border-red-500" : "border-gray-300"
-                                    } focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
-                                    placeholder={t("login.placeholders.email")}
-                                />
-                                {warnings.email && (
-                                    <div className="mt-2 text-sm text-red-600">{warnings.email}</div>
-                                )}
-                            </div>
-
-                            <div className="flex gap-3">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className={`flex-1 px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${
-                                        isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"
-                                    }`}
-                                >
-                                    {isSubmitting
-                                        ? t("login.forgotPasswordModal.submitting")
-                                        : t("login.forgotPasswordModal.submit")}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowForgotPassword(false);
-                                        setWarnings({ email: "", password: "" });
-                                        setForgotPasswordEmail("");
-                                    }}
-                                    className="px-6 py-3 border border-gray-300 text-base font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
-                                >
-                                    {t("login.forgotPasswordModal.back")}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="max-w-xl w-full">
@@ -347,17 +232,6 @@ const Login = () => {
                                     {t("login.signUp")}
                                 </button>
                             </div>
-
-                            <button
-                                type="button"
-                                className="text-sm text-indigo-600 hover:underline"
-                                onClick={() => {
-                                    setShowForgotPassword(true);
-                                    setWarnings({ email: "", password: "" });
-                                }}
-                            >
-                                {t("login.forgotPassword")}
-                            </button>
                         </div>
                     </form>
                 </div>
