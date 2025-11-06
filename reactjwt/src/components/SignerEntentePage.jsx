@@ -73,19 +73,6 @@ export default function SignerEntentePage() {
             setSuccess(t("signerEntente.success"));
             setPassword("");
 
-            setTimeout(() => {
-                if (verifiedUser.role === "EMPLOYEUR") {
-                    navigate("/dashboard/employeur/ententes");
-                } else if (verifiedUser.role === "STUDENT") {
-                    navigate("/dashboard/student?tab=ententes");
-                } else if (verifiedUser.role === "GESTIONNAIRE") {
-                    navigate("/dashboard/gestionnaire?tab=ententes");
-                }
-                else {
-                    navigate("/dashboard");
-                }
-            }, 2000);
-
         } catch (error) {
             if (error.status === 401) {
                 setError(t("signerEntente.errors.incorrectedPassword"));

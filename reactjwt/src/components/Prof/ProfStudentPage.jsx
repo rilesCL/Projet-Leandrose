@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa";
 import { fetchProfStudents } from "../../api/apiProf.jsx";
-
 
 const STATUS_LABELS = {
     // stage
@@ -25,36 +26,39 @@ function prettifyStatus(value) {
 function badgeClass(value) {
     switch (value) {
         case "A_FAIRE":
-            return "bg-yellow-500/20 text-yellow-300 border border-yellow-500/40";
+            return "bg-yellow-100 text-yellow-800 border border-yellow-300";
         case "EN_COURS":
         case "EN_COURS_EVAL":
-            return "bg-blue-500/20 text-blue-300 border border-blue-500/40";
+            return "bg-blue-100 text-blue-800 border border-blue-300";
         case "TERMINE":
         case "TERMINEE":
-            return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+            return "bg-emerald-100 text-emerald-800 border border-emerald-300";
         default:
-            return "bg-slate-500/20 text-slate-300 border border-slate-500/40";
+            return "bg-gray-100 text-gray-800 border border-gray-300";
     }
 }
 
 export default function ProfStudentsPage() {
+    const navigate = useNavigate();
     const [profId, setProfId] = useState(null);
-
+    const [userName, setUserName] = useState("");
     const [name, setName] = useState("");
     const [company, setCompany] = useState("");
     const [dateFrom, setDateFrom] = useState("");
     const [dateTo, setDateTo] = useState("");
     const [evaluationStatus, setEvaluationStatus] = useState("");
-
-
-    const [sortBy, setSortBy] = useState("name"); // name|date|company
+    const [sortBy, setSortBy] = useState("name");
     const [asc, setAsc] = useState(true);
-
-
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
     const [firstLoadDone, setFirstLoadDone] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
+
+    const handleLogout = () => {
+        sessionStorage.clear();
+        localStorage.clear();
+        navigate("/login", { replace: true });
+    };
 
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");
@@ -78,8 +82,9 @@ export default function ProfStudentsPage() {
                     throw new Error("Accès refusé : rôle PROF requis.");
                 }
                 setProfId(me.id);
+                setUserName(me.firstName || "");
             } catch (e) {
-                setErrorMsg(e.message || "Erreur d’authentification.");
+                setErrorMsg(e.message || "Erreur d'authentification.");
             } finally {
                 setLoading(false);
             }
@@ -113,8 +118,7 @@ export default function ProfStudentsPage() {
         if (profId && !firstLoadDone) {
             doSearch();
         }
-
-    }, [profId]);
+    }, [profId, firstLoadDone]);
 
     const resetFilters = () => {
         setName("");
@@ -139,152 +143,199 @@ export default function ProfStudentsPage() {
     const sortedIcon = useMemo(() => (asc ? "▲" : "▼"), [asc]);
 
     return (
-        <div className="min-h-screen bg-neutral-900 text-gray-100 p-6">
-            <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl font-bold mb-6">Mes étudiants</h1>
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            <header className="bg-white shadow">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center">
+                            <span className="text-xl font-bold text-indigo-600">
+                                LeandrOSE
+                            </span>
+                        </div>
 
-                {/* Filtres */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
-                    <input
-                        type="text"
-                        placeholder="Nom de l’étudiant"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="px-3 py-2 rounded bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Entreprise"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                        className="px-3 py-2 rounded bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <input
-                        type="date"
-                        placeholder="De"
-                        value={dateFrom}
-                        onChange={(e) => setDateFrom(e.target.value)}
-                        className="px-3 py-2 rounded bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <input
-                        type="date"
-                        placeholder="À"
-                        value={dateTo}
-                        onChange={(e) => setDateTo(e.target.value)}
-                        className="px-3 py-2 rounded bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <select
-                        value={evaluationStatus}
-                        onChange={(e) => setEvaluationStatus(e.target.value)}
-                        className="px-3 py-2 rounded bg-neutral-800 border border-neutral-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="">Statut évaluation</option>
-                        <option value="A_FAIRE">À faire</option>
-                        <option value="EN_COURS">En cours</option>
-                        <option value="TERMINEE">Terminée</option>
-                    </select>
-                </div>
-
-                <div className="flex gap-3 mb-6">
-                    <button
-                        onClick={doSearch}
-                        disabled={loading || !profId}
-                        className={`px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50`}
-                    >
-                        Rechercher
-                    </button>
-                    <button
-                        onClick={resetFilters}
-                        className="px-4 py-2 rounded bg-neutral-700 hover:bg-neutral-600"
-                    >
-                        Réinitialiser
-                    </button>
-                </div>
-
-                {/* Messages */}
-                {errorMsg && (
-                    <div className="mb-4 p-3 border border-red-500/40 bg-red-500/10 text-red-200 rounded">
-                        {errorMsg}
-                    </div>
-                )}
-
-                {/* Tableau */}
-                <div className="overflow-x-auto rounded border border-neutral-800">
-                    <table className="min-w-full text-sm">
-                        <thead className="bg-neutral-800/60 text-gray-300">
-                        <tr>
-                            <th
-                                className="text-left px-4 py-3 whitespace-nowrap cursor-pointer select-none"
-                                onClick={onClickSortStudent}
-                                title="Trier par nom"
+                        <nav
+                            className="flex items-center space-x-4"
+                            aria-label="Navigation principale"
+                        >
+                            <span className="text-gray-700">
+                                Bienvenue, {userName}
+                            </span>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center text-gray-600 hover:text-red-600 transition"
                             >
-                                Étudiant <span className="inline-block text-indigo-400">{sortBy === "name" ? sortedIcon : ""}</span>
-                            </th>
-                            <th className="text-left px-4 py-3">Entreprise</th>
-                            <th className="text-left px-4 py-3">Début / Fin</th>
-                            <th className="text-left px-4 py-3">Statut stage</th>
-                            <th className="text-left px-4 py-3">Statut évaluation</th>
-                        </tr>
-                        </thead>
+                                <FaSignOutAlt className="mr-1" />
+                                <span className="hidden sm:inline">
+                                    Déconnexion
+                                </span>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </header>
 
-                        <tbody>
-                        {loading && (
-                            <tr>
-                                <td className="px-4 py-6 text-center text-gray-400" colSpan={5}>
-                                    Chargement…
-                                </td>
-                            </tr>
-                        )}
+            <div className="py-10">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-6">Mes étudiants</h1>
 
-                        {!loading && rows.length === 0 && (
-                            <tr>
-                                <td className="px-4 py-6 text-center text-gray-400" colSpan={5}>
-                                    Aucun étudiant à afficher.
-                                </td>
-                            </tr>
-                        )}
+                    {/* Filtres */}
+                    <div className="bg-white rounded-lg shadow p-6 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
+                            <input
+                                type="text"
+                                placeholder="Nom de l'étudiant"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Entreprise"
+                                value={company}
+                                onChange={(e) => setCompany(e.target.value)}
+                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                            <input
+                                type="date"
+                                placeholder="De"
+                                value={dateFrom}
+                                onChange={(e) => setDateFrom(e.target.value)}
+                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                            <input
+                                type="date"
+                                placeholder="À"
+                                value={dateTo}
+                                onChange={(e) => setDateTo(e.target.value)}
+                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            />
+                            <select
+                                value={evaluationStatus}
+                                onChange={(e) => setEvaluationStatus(e.target.value)}
+                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            >
+                                <option value="">Statut évaluation</option>
+                                <option value="A_FAIRE">À faire</option>
+                                <option value="EN_COURS">En cours</option>
+                                <option value="TERMINEE">Terminée</option>
+                            </select>
+                        </div>
 
-                        {!loading &&
-                            rows.map((it) => (
-                                <tr
-                                    key={it.ententeId}
-                                    className="border-t border-neutral-800 hover:bg-neutral-800/40"
-                                >
-                                    <td className="px-4 py-3">
-                                        <div className="font-semibold uppercase tracking-wide">
-                                            {`${it.studentLastName ?? ""} ${it.studentFirstName ?? ""}`.trim()}
-                                        </div>
-                                        <div className="text-xs text-gray-400">{it.offerTitle}</div>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        {it.companyName || <span className="text-gray-500">—</span>}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="text-sm">
-                                            {it.startDate || "—"}{" "}
-                                            {it.endDate ? (
-                                                <span className="text-gray-400">→ {it.endDate}</span>
-                                            ) : null}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded text-xs ${badgeClass(it.stageStatus)}`}>
-                        {prettifyStatus(it.stageStatus)}
-                      </span>
-                                    </td>
-                                    <td className="px-4 py-3">
-                      <span
-                          className={`px-2 py-1 rounded text-xs ${badgeClass(
-                              it.evaluationStatus
-                          )}`}
-                      >
-                        {prettifyStatus(it.evaluationStatus)}
-                      </span>
-                                    </td>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={doSearch}
+                                disabled={loading || !profId}
+                                className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            >
+                                Rechercher
+                            </button>
+                            <button
+                                onClick={resetFilters}
+                                className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
+                            >
+                                Réinitialiser
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Messages */}
+                    {errorMsg && (
+                        <div className="mb-6 p-4 border border-red-300 bg-red-50 text-red-800 rounded-lg">
+                            {errorMsg}
+                        </div>
+                    )}
+
+                    {/* Tableau */}
+                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full text-sm">
+                                <thead className="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th
+                                        className="text-left px-6 py-3 text-gray-700 font-semibold whitespace-nowrap cursor-pointer select-none hover:bg-gray-100 transition"
+                                        onClick={onClickSortStudent}
+                                        title="Trier par nom"
+                                    >
+                                        Étudiant{" "}
+                                        <span className="inline-block text-indigo-600">
+                                                {sortBy === "name" ? sortedIcon : ""}
+                                            </span>
+                                    </th>
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+                                        Entreprise
+                                    </th>
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+                                        Début / Fin
+                                    </th>
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+                                        Statut stage
+                                    </th>
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+                                        Statut évaluation
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                </thead>
+
+                                <tbody className="divide-y divide-gray-200">
+                                {loading && (
+                                    <tr>
+                                        <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
+                                            Chargement…
+                                        </td>
+                                    </tr>
+                                )}
+
+                                {!loading && rows.length === 0 && (
+                                    <tr>
+                                        <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
+                                            Aucun étudiant à afficher.
+                                        </td>
+                                    </tr>
+                                )}
+
+                                {!loading &&
+                                    rows.map((it) => (
+                                        <tr
+                                            key={it.ententeId}
+                                            className="hover:bg-gray-50 transition"
+                                        >
+                                            <td className="px-6 py-4">
+                                                <div className="font-semibold text-gray-900">
+                                                    {`${it.studentLastName ?? ""} ${it.studentFirstName ?? ""}`.trim()}
+                                                </div>
+                                                <div className="text-xs text-gray-500">{it.offerTitle}</div>
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-700">
+                                                {it.companyName || <span className="text-gray-400">—</span>}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-700">
+                                                    {it.startDate || "—"}{" "}
+                                                    {it.endDate ? (
+                                                        <span className="text-gray-500">→ {it.endDate}</span>
+                                                    ) : null}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.stageStatus)}`}>
+                                                        {prettifyStatus(it.stageStatus)}
+                                                    </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                    <span
+                                                        className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(
+                                                            it.evaluationStatus
+                                                        )}`}
+                                                    >
+                                                        {prettifyStatus(it.evaluationStatus)}
+                                                    </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

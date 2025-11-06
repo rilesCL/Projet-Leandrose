@@ -849,7 +849,7 @@
     "placeholder": "Your password",
     "loading": "Signature in progress",
     "button": "Sign the agreement",
-    "back": "Cancel and return to the dashboard.",
+    "back": "Return to the dashboard.",
     "connect_as": "Connect as:",
     "role": {
       "EMPLOYEUR": "Employer",
