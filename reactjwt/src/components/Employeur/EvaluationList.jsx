@@ -84,7 +84,15 @@ export default function EvaluationsList() {
                         const evaluation = status?.evaluation;
 
                         return (
+
                             <div key={agreement.id} className="border border-gray-200 rounded-lg p-6 shadow-sm">
+                                <Link
+                                    to="/dashboard/employeur"
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
+                                >
+                                    ← {t("ententeStage.back")}
+                                </Link>
+
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1">
                                         <h3 className="text-lg font-semibold text-gray-900">
