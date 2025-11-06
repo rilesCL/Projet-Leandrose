@@ -7,49 +7,36 @@ const Login = () => {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
 
-    const [formData, setFormData] = useState({
-        email: '',
-        password: ''
-    });
-
-    const [warnings, setWarnings] = useState({
-        email: '',
-        password: ''
-    });
-
+    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [warnings, setWarnings] = useState({ email: "", password: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
-
-    const validateUser = () => {
-        let isValid = true;
-        let updatedWarnings = { ...warnings };
-
-        if (!validateEmail()) {
-            updatedWarnings.email = t("login.errors.emailInvalid");
-            isValid = false;
-        } else {
-            updatedWarnings.email = "";
-        }
-
-        if (!validatePassword()) {
-            updatedWarnings.password = t("login.errors.passwordRequired");
-            isValid = false;
-        } else {
-            updatedWarnings.password = "";
-        }
-
-        setWarnings(updatedWarnings);
-        return isValid;
-    };
 
     const validateEmail = () => {
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
         return emailRegex.test(formData.email);
     };
 
-    const validatePassword = () => {
-        return formData.password.length > 0;
+    const validatePassword = () => formData.password.length > 0;
+
+    const validateUser = () => {
+        let isValid = true;
+        const w = { ...warnings };
+
+        if (!validateEmail()) {
+            w.email = t("login.errors.emailInvalid");
+            isValid = false;
+        } else w.email = "";
+
+        if (!validatePassword()) {
+            w.password = t("login.errors.passwordRequired");
+            isValid = false;
+        } else w.password = "";
+
+        setWarnings(w);
+        return isValid;
     };
 
     const handleChanges = (e) => {
@@ -68,8 +55,7 @@ const Login = () => {
     const fetchLogin = async () => {
         setIsSubmitting(true);
         try {
-            console.log("FormData:", formData);
-            const response = await fetch('http://localhost:8080/user/login', {
+            const response = await fetch("http://localhost:8080/user/login", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -77,7 +63,7 @@ const Login = () => {
                 },
                 body: JSON.stringify({
                     email: formData.email.toLowerCase(),
-                    password: formData.password
+                    password: formData.password,
                 }),
             });
 
@@ -86,7 +72,7 @@ const Login = () => {
                     case 401:
                         setWarnings({
                             email: t("login.errors.invalidCredentials"),
-                            password: t("login.errors.invalidCredentials")
+                            password: t("login.errors.invalidCredentials"),
                         });
                         break;
                     case 404:
@@ -99,29 +85,21 @@ const Login = () => {
             }
 
             const data = await response.json();
-            console.log("Login response:", data);
 
-            sessionStorage.setItem('accessToken', data.accessToken);
-            sessionStorage.setItem('tokenType', data.tokenType || 'BEARER');
+            sessionStorage.setItem("accessToken", data.accessToken);
+            sessionStorage.setItem("tokenType", data.tokenType || "BEARER");
 
             await fetchUserInfo(data.accessToken);
-
         } catch (error) {
-            console.error("Login error:", error);
-            setWarnings({
-                email: t("login.errors.serverError"),
-                password: ""
-            });
+            setWarnings({ email: t("login.errors.serverError"), password: "" });
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const fetchUserInfo = async (token) => {
-        console.log("Token envoyé:", token);
-
         try {
-            const response = await fetch('http://localhost:8080/user/me', {
+            const response = await fetch("http://localhost:8080/user/me", {
                 method: "GET",
                 headers: {
                     Accept: "application/json",
@@ -129,32 +107,33 @@ const Login = () => {
                 },
             });
 
-            console.log("Response status:", response.status);
-
             if (response.ok) {
                 const userData = await response.json();
-                console.log("User data:", userData);
-                sessionStorage.setItem('email', userData.email);
+
+                sessionStorage.setItem("email", userData.email);
+                if (userData.id) sessionStorage.setItem("userId", userData.id);
+                if (userData.role) sessionStorage.setItem("role", userData.role);
 
                 switch (userData.role) {
-                    case 'STUDENT':
+                    case "STUDENT":
                         navigate("/dashboard/student");
                         break;
-                    case 'EMPLOYEUR':
+                    case "EMPLOYEUR":
                         navigate("/dashboard/employeur");
                         break;
-                    case 'GESTIONNAIRE':
+                    case "GESTIONNAIRE":
                         navigate("/dashboard/gestionnaire");
+                        break;
+                    case "PROF":
+                        navigate("/prof/etudiants");
                         break;
                     default:
                         navigate("/dashboard");
                 }
             } else {
-                console.error("Failed to fetch user info, status:", response.status);
                 navigate("/dashboard");
             }
         } catch (error) {
-            console.error("User info error:", error);
             navigate("/dashboard");
         }
     };
@@ -162,16 +141,19 @@ const Login = () => {
     const handleForgotPassword = async (e) => {
         e.preventDefault();
         if (!forgotPasswordEmail.trim()) {
-            setWarnings({ ...warnings, email: t("login.forgotPasswordModal.errors.emailRequired") });
+            setWarnings({
+                ...warnings,
+                email: t("login.forgotPasswordModal.errors.emailRequired"),
+            });
             return;
         }
 
         setIsSubmitting(true);
         try {
-            const response = await fetch('http://localhost:8080/user/forgot-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: forgotPasswordEmail })
+            const response = await fetch("http://localhost:8080/user/forgot-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: forgotPasswordEmail }),
             });
 
             if (response.ok) {
@@ -180,10 +162,16 @@ const Login = () => {
                 setForgotPasswordEmail("");
                 setWarnings({ email: "", password: "" });
             } else {
-                setWarnings({ ...warnings, email: t("login.forgotPasswordModal.errors.emailNotFound") });
+                setWarnings({
+                    ...warnings,
+                    email: t("login.forgotPasswordModal.errors.emailNotFound"),
+                });
             }
         } catch (error) {
-            setWarnings({ ...warnings, email: t("login.forgotPasswordModal.errors.sendError") });
+            setWarnings({
+                ...warnings,
+                email: t("login.forgotPasswordModal.errors.sendError"),
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -199,14 +187,21 @@ const Login = () => {
 
                     <div className="bg-white rounded-lg shadow-lg p-8">
                         <div className="flex justify-between items-center mb-3">
-                            <h2 className="text-3xl font-semibold text-gray-800">{t("login.forgotPasswordModal.title")}</h2>
+                            <h2 className="text-3xl font-semibold text-gray-800">
+                                {t("login.forgotPasswordModal.title")}
+                            </h2>
                             <LanguageSelector />
                         </div>
-                        <p className="text-base text-gray-500 mb-8">{t("login.forgotPasswordModal.subtitle")}</p>
+                        <p className="text-base text-gray-500 mb-8">
+                            {t("login.forgotPasswordModal.subtitle")}
+                        </p>
 
                         <form onSubmit={handleForgotPassword}>
                             <div className="mb-6">
-                                <label htmlFor="forgotEmail" className="block text-base font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="forgotEmail"
+                                    className="block text-base font-medium text-gray-700 mb-2"
+                                >
                                     {t("login.forgotPasswordModal.email")}
                                 </label>
                                 <input
@@ -214,19 +209,27 @@ const Login = () => {
                                     type="email"
                                     value={forgotPasswordEmail}
                                     onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${
+                                        warnings.email ? "border-red-500" : "border-gray-300"
+                                    } focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
                                     placeholder={t("login.placeholders.email")}
                                 />
-                                {warnings.email && <div className="mt-2 text-sm text-red-600">{warnings.email}</div>}
+                                {warnings.email && (
+                                    <div className="mt-2 text-sm text-red-600">{warnings.email}</div>
+                                )}
                             </div>
 
                             <div className="flex gap-3">
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className={`flex-1 px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                    className={`flex-1 px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${
+                                        isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"
+                                    }`}
                                 >
-                                    {isSubmitting ? t("login.forgotPasswordModal.submitting") : t("login.forgotPasswordModal.submit")}
+                                    {isSubmitting
+                                        ? t("login.forgotPasswordModal.submitting")
+                                        : t("login.forgotPasswordModal.submit")}
                                 </button>
                                 <button
                                     type="button"
@@ -273,7 +276,10 @@ const Login = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="space-y-6">
                             <div>
-                                <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="email"
+                                    className="block text-base font-medium text-gray-700 mb-2"
+                                >
                                     {t("login.email")}
                                 </label>
                                 <input
@@ -282,15 +288,22 @@ const Login = () => {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChanges}
-                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.email ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${
+                                        warnings.email ? "border-red-500" : "border-gray-300"
+                                    } focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
                                     placeholder={t("login.placeholders.email")}
                                     required
                                 />
-                                {warnings.email && <div className="mt-2 text-sm text-red-600">{warnings.email}</div>}
+                                {warnings.email && (
+                                    <div className="mt-2 text-sm text-red-600">{warnings.email}</div>
+                                )}
                             </div>
 
                             <div>
-                                <label htmlFor="password" className="block text-base font-medium text-gray-700 mb-2">
+                                <label
+                                    htmlFor="password"
+                                    className="block text-base font-medium text-gray-700 mb-2"
+                                >
                                     {t("login.password")}
                                 </label>
                                 <input
@@ -299,11 +312,15 @@ const Login = () => {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChanges}
-                                    className={`mt-1 block w-full rounded-md shadow-sm border ${warnings.password ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
+                                    className={`mt-1 block w-full rounded-md shadow-sm border ${
+                                        warnings.password ? "border-red-500" : "border-gray-300"
+                                    } focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 text-base`}
                                     placeholder={t("login.placeholders.password")}
                                     required
                                 />
-                                {warnings.password && <div className="mt-2 text-sm text-red-600">{warnings.password}</div>}
+                                {warnings.password && (
+                                    <div className="mt-2 text-sm text-red-600">{warnings.password}</div>
+                                )}
                             </div>
                         </div>
 
@@ -311,7 +328,9 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className={`w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"}`}
+                                className={`w-full px-6 py-3 border border-transparent text-base font-medium rounded-md text-white ${
+                                    isSubmitting ? "bg-indigo-300" : "bg-indigo-600 hover:bg-indigo-700"
+                                }`}
                             >
                                 {isSubmitting ? t("login.submitting") : t("login.submit")}
                             </button>
@@ -328,6 +347,17 @@ const Login = () => {
                                     {t("login.signUp")}
                                 </button>
                             </div>
+
+                            <button
+                                type="button"
+                                className="text-sm text-indigo-600 hover:underline"
+                                onClick={() => {
+                                    setShowForgotPassword(true);
+                                    setWarnings({ email: "", password: "" });
+                                }}
+                            >
+                                {t("login.forgotPassword")}
+                            </button>
                         </div>
                     </form>
                 </div>

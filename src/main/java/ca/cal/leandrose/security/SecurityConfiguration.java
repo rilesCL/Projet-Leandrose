@@ -89,6 +89,7 @@ public class SecurityConfiguration {
                     .hasAuthority("EMPLOYEUR")
                     .requestMatchers("/gestionnaire/**")
                     .hasAuthority("GESTIONNAIRE")
+                        .requestMatchers(GET, "/prof/**").hasAnyAuthority("PROF", "GESTIONNAIRE")
                     .requestMatchers("/user/me")
                     .permitAll()
                     .anyRequest()
