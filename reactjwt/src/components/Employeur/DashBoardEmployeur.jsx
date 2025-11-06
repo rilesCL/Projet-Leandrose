@@ -67,6 +67,17 @@ export default function DashBoardEmployeur() {
                                 </span>
 
                             </Link>
+
+                            <Link to={`/dashboard/employeur/evaluations`}
+                                  className="flex items-center text-gray-600 hover:text-indigo-600 transition"
+                            >
+                                <FaSignature className="mr-1"/>
+                                <span className="hidden sm:inline">
+                                    Evaluations
+                                    {/*{t("dashboardEmployeur.stage")}*/}
+                                </span>
+
+                            </Link>
                             <LanguageSelector />
                             <button
                                 onClick={handleLogout}

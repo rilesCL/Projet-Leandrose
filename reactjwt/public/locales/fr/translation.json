@@ -908,5 +908,109 @@
       "waiting_signatures": "En attente de signatures",
       "draft": "Brouillon"
     }
+  },
+  "evaluationList": {
+    "title": "Liste des évaluations",
+    "no_evaluations": "Aucune évaluation n'est disponible pour le moment.",
+    "create_evaluation": "Créer évaluation",
+    "submitted": "Soumettre",
+    "draft_created": "Brouillon créé",
+    "evaluation": "Évaluation",
+    "errors": {
+      "checking_evaluation": "Évaluation de la vérification des erreurs pour l'étudiant: ",
+      "fetching_evaluations": "Erreur lors de la récupération des accords éligibles",
+      "pdf_loading": "Erreur lors du chargement du PDF"
+    }
+  },
+  "evaluation": {
+    "errors": {
+      "missing_studentId_Or_offerId": "Carte d'étudiant ou numéro d'offre manquant",
+      "evaluation_exists": "Une évaluation existe déjà pour ce stagiaire. Vous allez être redirigé vers la liste des évaluations.",
+      "evaluationId_received": "Aucun identifiant d'évaluation n'a été reçu du serveur."
+    },
+    "title": "Fiche d'Évaluation du Stagiaire",
+    "studentInfo": "Informations de l'Étudiant",
+    "companyInfo": "Informations de l'Entreprise",
+    "studentName": "Nom de l'étudiant",
+    "program": "Programme",
+    "company": "Entreprise",
+    "internship": "Poste de stage",
+    "evaluationDate": "Date d'évaluation",
+    "instructions": "Veuillez cocher les comportements observés chez le stagiaire et formuler des commentaires s'il y a lieu.",
+    "observed": "Observé",
+    "commentsPlaceholder": "Ajouter des commentaires...",
+    "generalComments": "Commentaires Généraux",
+    "generalCommentsPlaceholder": "Commentaires d'évaluation généraux...",
+    "preview": "Aperçu PDF",
+    "generatePdf": "Générer & Télécharger PDF",
+    "generating": "Génération du PDF...",
+    "pdfGenerated": "PDF généré et téléchargé avec succès!",
+    "pdfGenerationError": "Erreur lors de la génération du PDF",
+    "previewError": "Erreur lors de l'aperçu du PDF",
+    "loading": "Chargement du formulaire d'évaluation...",
+    "initializationError": "Erreur lors de l'initialisation du formulaire d'évaluation",
+
+    "productivity": {
+      "title": "PRODUCTIVITÉ",
+      "description": "Capacité d'optimiser son rendement au travail",
+      "q1": "Planifier et organiser son travail de façon efficace",
+      "q2": "Comprendre rapidement les directives relatives à son travail",
+      "q3": "Maintenir un rythme de travail soutenu",
+      "q4": "Établir ses priorités",
+      "q5": "Respecter ses échéanciers"
+    },
+    "quality": {
+      "title": "QUALITÉ DU TRAVAIL",
+      "description": "Capacité de produire un travail soigné et précis",
+      "q1": "Démontrer de la rigueur dans son travail",
+      "q2": "Respecter les normes de qualité de l'entreprise",
+      "q3": "Faire preuve d'autonomie dans la vérification de son travail",
+      "q4": "Rechercher des occasions de se perfectionner",
+      "q5" : "Faire une bonne analyse des problèmes rencontrés"
+    },
+    "relationships": {
+      "title": "QUALITÉS DES RELATIONS INTERPERSONNELLES",
+      "description": "Capacité d’établir des interrelations harmonieuses dans son milieu de travail",
+      "q1": "établir facilement des contacts avec les gens",
+      "q2": "contribuer activement au travail d’équipe",
+      "q3": "s’adapter facilement à la culture de l’entreprise",
+      "q4": "accepter les critiques constructives",
+      "q5": "être respectueux envers les gens",
+      "q6": "faire preuve d’écoute active en essayant de comprendre le point de vue de l’autre"
+    },
+    "skills": {
+      "title": "HABILETÉS PERSONNELLES",
+      "description": "Capacité de faire preuve d’attitudes ou de comportements matures et responsables",
+      "q1": "démontrer de l’intérêt et de la motivation au travail",
+      "q2": "exprimer clairement ses idées",
+      "q3": "faire preuve d’initiative",
+      "q4": "travailler de façon sécuritaire",
+      "q5": "démontrer un bon sens des responsabilités ne requérant qu’un minimum de supervision",
+      "q6": "être ponctuel et assidu à son travail"
+    },
+    "rating": {
+      "non_applicable": "N/A",
+      "totally_agree": "Totalement en accord",
+      "mostly_agree": "Plûtot en accord",
+      "mostly_disagree": "Plûtot en désaccord",
+      "totally_disagree": "Totalement en désaccord"
+    },
+    "globalAssessment": {
+      "title": "Appréciation globale du stagiaire",
+      "option0": "Les habiletés démontréss dépassent de beaucoup les attentes",
+      "option1": "Les habiletés démontrées dépassent les attentes",
+      "option2": "Les habiletés démontrées répondent pleinement aux attentes",
+      "option3": "Les habiletés démontrées répondent partiellement aux attentes",
+      "option4": "Les habiletés démontrées ne répondent pas aux attentes",
+      "specify": "PRÉCISEZ VOTRE APPRÉCIATION",
+      "discussed": "Cette évaluation a été discutée avec le stagiaire",
+      "yes": "oui",
+      "no": "non",
+      "supervision_hours": "Veuillez indiquer le nombre d’heures réel par semaine d’encadrement accordé au stagiaire",
+      "welcome_nextInternship": "L’ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE",
+      "welcome_maybe": "Peut-être",
+      "technical_training": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?"
+
+    }
   }
 }

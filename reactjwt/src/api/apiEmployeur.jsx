@@ -84,4 +84,91 @@ export async function previewOfferPdf(offerId, token = null) {
     return await res.blob();
 }
 
+export async function createEvaluation (studentId, offerId, token = null) {
+    const url = `${API_BASE}/employeur/evaluations`;
+    console.log('Calling URL:', url);
+    console.log('With data:', { studentId, internshipOfferId: offerId });
+
+
+    const res = await handleFetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders(token)
+        },
+        body: JSON.stringify({studentId, internshipOfferId: offerId})
+    });
+    const responseData = await res.json()
+    console.log("Create evaluation Response", responseData)
+    return responseData
+}
+
+export async function generateEvaluationPdf (studentId, offerId, formData, token = null)  {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/generate-pdf`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders(token)
+        },
+        body: JSON.stringify({
+            studentId: studentId,
+            internshipOfferId: offerId,
+            formData: formData
+        })
+    })
+    return await res.json()
+}
+
+export async function previewEvaluationPdf (evaluationId, formData = null, token = null) {
+    if (formData) {
+        // Preview with current form data (not saved)
+        const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/preview-pdf`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeaders(token)
+            },
+            body: JSON.stringify(formData)
+        });
+        return await res.blob();
+    } else {
+        const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/pdf`, {
+            headers: authHeaders(token)
+        });
+        return await res.blob();
+    }
+}
+export async function getEligibleEvaluations(token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/eligible`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
+export async function getEvaluationInfo(studentId, offerId, token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/info?studentId=${studentId}&offerId=${offerId}`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
+
+export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/generate-pdf`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders(token)
+        },
+        body: JSON.stringify(formData)
+    });
+    return await res.json();
+}
+export async function checkExistingEvaluation(studentId, offerId, token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
+
+
+
 

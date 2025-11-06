@@ -906,5 +906,108 @@
       "waiting_signatures": "In waiting for signatures",
       "draft": "Draft"
     }
+  },
+  "evaluationList": {
+    "title": "List of Evaluations",
+    "no_evaluations": "No evaluations available at this time.",
+    "create_evaluation": "Create Evaluation",
+    "submitted": "Submitted",
+    "draft_created": "Draft Created",
+    "evaluation": "Evaluation",
+    "errors": {
+      "checking_evaluation": "Error checking assessment for the student:",
+      "fetching_evaluations": "Error retrieving eligible agreements",
+      "pdf_loading": "Error loading PDF"
+    }
+  },
+  "evaluation": {
+    "errors": {
+      "missing_studentId_Or_offerId": "Missing student ID or offer number",
+      "evaluation_exists": "An evaluation already exists for this intern. You will be redirected to the list of evaluations.",
+      "evaluationId_received": "No evaluation ID was received from the server."
+    },
+    "title": "Intern Evaluation Form",
+    "studentInfo": "Student Information",
+    "companyInfo": "Company Information",
+    "studentName": "Student Name",
+    "program": "Program",
+    "company": "Company",
+    "internship": "Internship Position",
+    "evaluationDate": "Evaluation Date",
+    "instructions": "Please check the behaviors observed in the intern and provide comments if applicable.",
+    "observed": "Observed",
+    "commentsPlaceholder": "Add comments...",
+    "generalComments": "General Comments",
+    "generalCommentsPlaceholder": "Overall evaluation comments...",
+    "preview": "Preview PDF",
+    "generatePdf": "Generate & Download PDF",
+    "generating": "Generating PDF...",
+    "pdfGenerated": "PDF generated and downloaded successfully!",
+    "pdfGenerationError": "Error generating PDF",
+    "previewError": "Error previewing PDF",
+    "loading": "Loading evaluation form...",
+    "initializationError": "Error initializing evaluation form",
+
+    "productivity": {
+      "title": "PRODUCTIVITY",
+      "description": "Ability to optimize work performance",
+      "q1": "Plan and organize work effectively",
+      "q2": "Quickly understand work instructions",
+      "q3": "Maintain a steady work pace",
+      "q4": "Establish priorities",
+      "q5": "Meet deadlines"
+    },
+    "quality": {
+      "title": "WORK QUALITY",
+      "description": "Ability to produce careful and precise work",
+      "q1": "Demonstrate rigor in work",
+      "q2": "Respect company quality standards",
+      "q3": "Work autonomously in verifying own work",
+      "q4": "Seek opportunities for improvement",
+      "q5" : "To conduct a thorough analysis of the problems encountered"
+    },
+    "relationships": {
+      "title": "QUALITY OF INTERPERSONAL RELATIONSHIP",
+      "description": "ability to establish harmonious interactions in the workplace",
+      "q1": "easily establish connections with people",
+      "q2": "actively contribute to teamwork",
+      "q3": "adapt easily to the company culture",
+      "q4": "accept constructive criticism",
+      "q5": "be respectful toward people",
+      "q6": "demonstrate active listening by trying to understand the other person's point of view"
+    },
+    "skills": {
+      "title": "PERSONNAL SKILLS",
+      "description": "ability to demonstrate mature and responsable attitudes or behaviors",
+      "q1": "demonstrate interest and motivation at work",
+      "q2": "express ideas clearly",
+      "q3": "show initiative",
+      "q4": "work safely",
+      "q5": "demonstrate a good sense of responsability requiring minimal supervision",
+      "q6": "to be punctual and dilligent at work"
+    },
+    "rating": {
+      "non_applicable": "N/A",
+      "totally_agree": "Totally agree",
+      "mostly_agree": "Mostly agree",
+      "mostly_disagree": "Mostly disagree",
+      "totally_disagree": "Totally disagree"
+    },
+    "globalAssessment": {
+      "title": "Overall assessment of the intern",
+      "option0": "The skills demonstrated far exceeded expectations",
+      "option1": "The skills demonstrated exceeded expectations",
+      "option2": "The skills demonstrated fully meet expectations",
+      "option3": "The skills demonstrated partially meet expectations",
+      "option4": "The skills demonstrated does not meet expectations",
+      "specify": "SPECIFY YOUR RATING",
+      "discussed": "This evaluation was discussed with the intern:",
+      "yes": "yes",
+      "no": "no",
+      "supervision_hours": "Please indicate the actual number of weekly hours of supervision granted to the intern.",
+      "welcome_nextInternship": "THE COMPANY WOULD LIKE TO HOST THIS STUDENT FOR THEIR NEXT INTERNSHIP:",
+      "welcome_maybe": "maybe",
+      "technical_training": "Was the intern's technical training sufficient to fulfill the internship mandate?"
+    }
   }
 }
