@@ -27,5 +27,8 @@ Points SMART:
 
 - Simulation de la présentation la veille de la démo avec un membre de l'équipe
 
-- Assignation d'une nouvelle tâche au plus tard 48h après la complétion de la dernière 
+- Assignation d'une nouvelle tâche au plus tard 48h après la complétion de la dernière
+
+- Attribution d'au moins un backend, un frontend et deux code reviews/plans de démo par étudiant
+
 
