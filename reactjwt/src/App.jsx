@@ -22,6 +22,7 @@ import EntentesStagePage from "./components/Gestionnaire/EntentesStagePage.jsx";
 import CreateEntenteForm from "./components/Gestionnaire/CreateEntenteForm.jsx";
 import EmployeurListeStages from "./components/Employeur/EmployeurListeStages.jsx";
 import SignerEntentePage from "./components/SignerEntentePage.jsx";
+import ProfStudentPage from "./components/Prof/ProfStudentPage.jsx";
 
 function App() {
     const router = createBrowserRouter(
@@ -62,6 +63,8 @@ function App() {
                 <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
                 <Route path="/dashboard/gestionnaire/ententes/create" element={<CreateEntenteForm />} />
 
+
+                <Route path="/prof/etudiants" element={<ProfStudentPage />} />
 
                 {/* Fallback Dashboard Route */}
                 <Route path="dashboard" element={<h1>DashBoard</h1>} />
