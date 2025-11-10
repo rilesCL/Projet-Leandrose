@@ -516,6 +516,9 @@ export default function GestionnaireListeEntentes() {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {t("ententeStage.period")}
                                     </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {t("studentEntentes.professor")}
+                                    </th>
                                     <th
                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                         onClick={() => handleSort("statut")}
@@ -558,6 +561,27 @@ export default function GestionnaireListeEntentes() {
                                             <div className="text-sm text-gray-900">
                                                 {formatDate(entente.dateDebut)} - {formatDate(calculateDateFin(entente.dateDebut, entente.duree))}
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {entente.prof ? (
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-indigo-600" />
+                                                    <div>
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {entente.prof.firstName} {entente.prof.lastName}
+                                                        </div>
+                                                        {entente.prof.department && (
+                                                            <div className="text-xs text-gray-500">
+                                                                {entente.prof.department}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <span className="text-sm text-gray-400 italic">
+                                                    {t("studentEntentes.noProfessor")}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {getStatusBadge(entente)}
