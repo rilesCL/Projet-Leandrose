@@ -913,9 +913,10 @@
     "title": "Liste des évaluations",
     "no_evaluations": "Aucune évaluation n'est disponible pour le moment.",
     "create_evaluation": "Créer évaluation",
-    "submitted": "Soumettre",
+    "submitted": "Soumise",
     "draft_created": "Brouillon créé",
     "evaluation": "Évaluation",
+    "view_pdf": "Voir le PDF",
     "errors": {
       "checking_evaluation": "Évaluation de la vérification des erreurs pour l'étudiant: ",
       "fetching_evaluations": "Erreur lors de la récupération des accords éligibles",
@@ -949,6 +950,8 @@
     "previewError": "Erreur lors de l'aperçu du PDF",
     "loading": "Chargement du formulaire d'évaluation...",
     "initializationError": "Erreur lors de l'initialisation du formulaire d'évaluation",
+    "submittedSuccess": "Évaluation soumise avec succès!",
+    "backToEvaluationsList": "Retour à la liste des évaluations",
 
     "productivity": {
       "title": "PRODUCTIVITÉ",
@@ -1004,11 +1007,12 @@
       "option4": "Les habiletés démontrées ne répondent pas aux attentes",
       "specify": "PRÉCISEZ VOTRE APPRÉCIATION",
       "discussed": "Cette évaluation a été discutée avec le stagiaire",
-      "yes": "oui",
-      "no": "non",
-      "supervision_hours": "Veuillez indiquer le nombre d’heures réel par semaine d’encadrement accordé au stagiaire",
-      "welcome_nextInternship": "L’ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE",
+      "yes": "Oui",
+      "no": "Non",
+      "maybe": "Peut-être",
       "welcome_maybe": "Peut-être",
+      "supervision_hours": "Veuillez indiquer le nombre d'heures réel par semaine d'encadrement accordé au stagiaire",
+      "welcome_nextInternship": "L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE",
       "technical_training": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?"
 
     }

@@ -914,6 +914,7 @@
     "submitted": "Submitted",
     "draft_created": "Draft Created",
     "evaluation": "Evaluation",
+    "view_pdf": "View PDF",
     "errors": {
       "checking_evaluation": "Error checking assessment for the student:",
       "fetching_evaluations": "Error retrieving eligible agreements",
@@ -947,6 +948,8 @@
     "previewError": "Error previewing PDF",
     "loading": "Loading evaluation form...",
     "initializationError": "Error initializing evaluation form",
+    "submittedSuccess": "Evaluation submitted successfully!",
+    "backToEvaluationsList": "Back to Evaluations List",
 
     "productivity": {
       "title": "PRODUCTIVITY",
@@ -1002,11 +1005,12 @@
       "option4": "The skills demonstrated does not meet expectations",
       "specify": "SPECIFY YOUR RATING",
       "discussed": "This evaluation was discussed with the intern:",
-      "yes": "yes",
-      "no": "no",
+      "yes": "Yes",
+      "no": "No",
+      "maybe": "Maybe",
+      "welcome_maybe": "Maybe",
       "supervision_hours": "Please indicate the actual number of weekly hours of supervision granted to the intern.",
       "welcome_nextInternship": "THE COMPANY WOULD LIKE TO HOST THIS STUDENT FOR THEIR NEXT INTERNSHIP:",
-      "welcome_maybe": "maybe",
       "technical_training": "Was the intern's technical training sufficient to fulfill the internship mandate?"
     }
   }

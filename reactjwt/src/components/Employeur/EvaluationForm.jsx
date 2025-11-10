@@ -129,7 +129,7 @@ const EvaluationForm = () => {
                     initialFormData.categories[categoryKey] = evaluationTemplate[categoryKey].questions.map(() => ({
                         checked: false,
                         comment: '',
-                        rating: 'NON_APPLICABLE'
+                        rating: null
                     }));
                 });
 
@@ -240,7 +240,7 @@ const EvaluationForm = () => {
                         onClick={() => navigate('/dashboard/employeur/evaluations')}
                         className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                     >
-                        Back to Evaluations List
+                        {t('evaluation.backToEvaluationsList')}
                     </button>
                 </div>
             </div>
@@ -251,6 +251,35 @@ const EvaluationForm = () => {
         <div className="max-w-6xl mx-auto px-4 py-8">
             {/* Header Section */}
             <div className="mb-8">
+                <div className="mb-4">
+                    <button
+                        type="button"
+                        onClick={() => navigate('/dashboard/employeur/evaluations')}
+                        className="inline-flex items-center gap-2 rounded-md border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                    >
+                        <svg
+                            className="h-4 w-4"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M11.25 5L6.25 10L11.25 15"
+                                stroke="currentColor"
+                                strokeWidth="1.6"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                            <path
+                                d="M6.25 10H16.25"
+                                stroke="currentColor"
+                                strokeWidth="1.6"
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                        {t('evaluation.backToEvaluationsList')}
+                    </button>
+                </div>
                 <h1 className="text-3xl font-bold text-gray-900 text-center mb-6">
                     {t('evaluation.title')}
                 </h1>
@@ -345,33 +374,69 @@ const EvaluationForm = () => {
                         </div>
 
                         {/* Questions List */}
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {category.questions.map((question, questionIndex) => (
-                                <div key={questionIndex} className="border-b border-gray-100 pb-4 last:border-b-0">
-                                    {/* Question Row */}
-                                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-3">
-                                        <p className="text-gray-800 font-medium flex-1 leading-relaxed">
-                                            {question}
-                                        </p>
+                                <div key={questionIndex} className="border-b border-gray-100 pb-6 last:border-b-0">
+                                    {/* Question Text */}
+                                    <p className="text-gray-800 font-medium mb-3 leading-relaxed">
+                                        {question}
+                                    </p>
 
-                                        <div className="flex items-center gap-4 flex-shrink-0">
+                                    {/* Rating Radio Buttons */}
+                                    <div className="flex flex-wrap justify-center gap-3 mb-3">
+                                        {[
+                                            {
+                                                value: 'EXCELLENT',
+                                                label: t('evaluation.rating.totally_agree'),
+                                                baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
+                                                selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
+                                                inputRing: 'focus:ring-green-600 text-green-700'
+                                            },
+                                            {
+                                                value: 'TRES_BIEN',
+                                                label: t('evaluation.rating.mostly_agree'),
+                                                baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
+                                                selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
+                                                inputRing: 'focus:ring-green-500 text-green-600'
+                                            },
+                                            {
+                                                value: 'SATISFAISANT',
+                                                label: t('evaluation.rating.mostly_disagree'),
+                                                baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
+                                                selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
+                                                inputRing: 'focus:ring-orange-500 text-orange-600'
+                                            },
+                                            {
+                                                value: 'A_AMELIORER',
+                                                label: t('evaluation.rating.totally_disagree'),
+                                                baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
+                                                selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
+                                                inputRing: 'focus:ring-red-600 text-red-700'
+                                            }
+                                        ].map((option) => {
+                                            const isSelected = formData.categories[categoryKey]?.[questionIndex]?.rating === option.value;
 
-
-                                            {/* Rating Select */}
-                                            <select
-                                                value={formData.categories[categoryKey]?.[questionIndex]?.rating || 'NON_APPLICABLE'}
-                                                onChange={(e) =>
-                                                    handleQuestionChange(categoryKey, questionIndex, 'rating', e.target.value)
-                                                }
-                                                className="px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
-                                            >
-                                                <option value="NON_APPLICABLE">{t('evaluation.rating.non_applicable')}</option>
-                                                <option value="EXCELLENT">{t('evaluation.rating.totally_agree')}</option>
-                                                <option value="TRES_BIEN">{t('evaluation.rating.mostly_agree')}</option>
-                                                <option value="SATISFAISANT">{t('evaluation.rating.mostly_disagree')}</option>
-                                                <option value="A_AMELIORER">{t('evaluation.rating.totally_disagree')}</option>
-                                            </select>
-                                        </div>
+                                            return (
+                                                <label
+                                                    key={option.value}
+                                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
+                                                        isSelected ? option.selectedClasses : ''
+                                                    }`}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name={`rating-${categoryKey}-${questionIndex}`}
+                                                        value={option.value}
+                                                        checked={isSelected}
+                                                        onChange={(e) =>
+                                                            handleQuestionChange(categoryKey, questionIndex, 'rating', e.target.value)
+                                                        }
+                                                        className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                                    />
+                                                    <span className="text-sm font-medium">{option.label}</span>
+                                                </label>
+                                            );
+                                        })}
                                     </div>
 
                                     {/* Comment Textarea */}
@@ -493,7 +558,7 @@ const EvaluationForm = () => {
                             {t('evaluation.globalAssessment.welcome_nextInternship')}
                         </label>
                         <div className="flex space-x-6">
-                            {['YES', 'NO', t("welcome_maybe")].map((option) => (
+                            {['YES', 'NO', 'MAYBE'].map((option) => (
                                 <label key={option} className="flex items-center space-x-2 cursor-pointer">
                                     <input
                                         type="radio"
