@@ -924,10 +924,21 @@
     }
   },
   "evaluation": {
+    "questions": "Question(s)",
+    "validation": {
+      "missingRating": "Veuillez attribuer une note à chaque question.",
+      "globalAssessmentRequired": "Veuillez sélectionner une évaluation globale.",
+      "globalAppreciationRequired": "Veuillez saisir un commentaire d'appréciation globale.",
+      "discussedRequired": "Veuillez indiquer si l'évaluation a été discutée avec le stagiaire.",
+      "supervisionHoursRequired": "Veuillez entrer le nombre d'heures de supervision (valeur numérique requise).",
+      "welcomeNextInternshipRequired": "Veuillez indiquer si vous seriez prêt à accueillir un autre stagiaire.",
+      "technicalTrainingRequired": "Veuillez indiquer si la formation technique reçue par le stagiaire était suffisante."
+    },
     "errors": {
       "missing_studentId_Or_offerId": "Carte d'étudiant ou numéro d'offre manquant",
       "evaluation_exists": "Une évaluation existe déjà pour ce stagiaire. Vous allez être redirigé vers la liste des évaluations.",
-      "evaluationId_received": "Aucun identifiant d'évaluation n'a été reçu du serveur."
+      "evaluationId_received": "Aucun identifiant d'évaluation n'a été reçu du serveur.",
+      "submit": "Erreur lors de la soumission de l'évaluation. Veuillez réessayer plus tard."
     },
     "title": "Fiche d'Évaluation du Stagiaire",
     "studentInfo": "Informations de l'Étudiant",
@@ -1000,11 +1011,7 @@
     },
     "globalAssessment": {
       "title": "Appréciation globale du stagiaire",
-      "option0": "Les habiletés démontréss dépassent de beaucoup les attentes",
-      "option1": "Les habiletés démontrées dépassent les attentes",
-      "option2": "Les habiletés démontrées répondent pleinement aux attentes",
-      "option3": "Les habiletés démontrées répondent partiellement aux attentes",
-      "option4": "Les habiletés démontrées ne répondent pas aux attentes",
+      "question": "Les habiletés démontrées dépassent les attentes",
       "specify": "PRÉCISEZ VOTRE APPRÉCIATION",
       "discussed": "Cette évaluation a été discutée avec le stagiaire",
       "yes": "Oui",
@@ -1014,7 +1021,7 @@
       "supervision_hours": "Veuillez indiquer le nombre d'heures réel par semaine d'encadrement accordé au stagiaire",
       "welcome_nextInternship": "L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE",
       "technical_training": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?"
-
-    }
+    },
+    "submitEvaluation": "Soumettre l'évaluation"
   }
 }

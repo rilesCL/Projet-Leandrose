@@ -922,10 +922,21 @@
     }
   },
   "evaluation": {
+    "questions": "Question(s)",
+    "validation": {
+      "missingRating": "Please provide a rating for each question",
+      "globalAssessmentRequired": "Please select a global assessment rating",
+      "globalAppreciationRequired": "Please enter a global appreciation comment",
+      "discussedRequired": "Please indicate if this evaluation was discussed with the trainee",
+      "supervisionHoursRequired": "Please enter the number of supervision hours",
+      "welcomeNextInternshipRequired": "Please indicate if you would welcome another intern",
+      "technicalTrainingRequired": "Please indicate if the technical training was sufficient"
+    },
     "errors": {
       "missing_studentId_Or_offerId": "Missing student ID or offer number",
       "evaluation_exists": "An evaluation already exists for this intern. You will be redirected to the list of evaluations.",
-      "evaluationId_received": "No evaluation ID was received from the server."
+      "evaluationId_received": "No evaluation ID was received from the server.",
+      "submit": "Error submitting the evaluation. Please try again later."
     },
     "title": "Intern Evaluation Form",
     "studentInfo": "Student Information",
@@ -998,11 +1009,7 @@
     },
     "globalAssessment": {
       "title": "Overall assessment of the intern",
-      "option0": "The skills demonstrated far exceeded expectations",
-      "option1": "The skills demonstrated exceeded expectations",
-      "option2": "The skills demonstrated fully meet expectations",
-      "option3": "The skills demonstrated partially meet expectations",
-      "option4": "The skills demonstrated does not meet expectations",
+      "question": "The skills demonstrated exceeded expectations",
       "specify": "SPECIFY YOUR RATING",
       "discussed": "This evaluation was discussed with the intern:",
       "yes": "Yes",
@@ -1012,6 +1019,7 @@
       "supervision_hours": "Please indicate the actual number of weekly hours of supervision granted to the intern.",
       "welcome_nextInternship": "THE COMPANY WOULD LIKE TO HOST THIS STUDENT FOR THEIR NEXT INTERNSHIP:",
       "technical_training": "Was the intern's technical training sufficient to fulfill the internship mandate?"
-    }
+    },
+    "submitEvaluation": "Submit Evaluation"
   }
 }
