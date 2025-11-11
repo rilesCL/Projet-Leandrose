@@ -11,6 +11,7 @@
     "next": "Suivant",
     "previous": "Précédent",
     "close": "Fermer",
+    "download": "Télécharger le PDF",
     "loading": "Chargement du document...",
     "error": "Impossible d'afficher le document"
   },
