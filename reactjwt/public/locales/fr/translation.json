@@ -11,6 +11,7 @@
     "next": "Suivant",
     "previous": "Précédent",
     "close": "Fermer",
+    "download": "Télécharger le PDF",
     "loading": "Chargement du document...",
     "error": "Impossible d'afficher le document"
   },
@@ -911,6 +912,7 @@
   },
   "evaluationList": {
     "title": "Liste des évaluations",
+    "subtitle": "Consultez les ententes éligibles et accédez aux évaluations en brouillon ou soumises.",
     "no_evaluations": "Aucune évaluation n'est disponible pour le moment.",
     "create_evaluation": "Créer évaluation",
     "submitted": "Soumise",

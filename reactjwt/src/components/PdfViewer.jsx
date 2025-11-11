@@ -12,6 +12,7 @@ export default function PdfViewer({ file, onClose }) {
     const [scale, setScale] = useState(1);
     const [pageSize, setPageSize] = useState(null);
     const containerRef = useRef(null);
+    const [downloadUrl, setDownloadUrl] = useState(null);
 
     const onDocumentLoadSuccess = ({numPages}) => {
         setNumPages(numPages);
@@ -42,14 +43,55 @@ export default function PdfViewer({ file, onClose }) {
         return () => window.removeEventListener("resize", updateScale);
     }, [pageSize]);
 
+    useEffect(() => {
+        if (!file) {
+            setDownloadUrl(null);
+            return;
+        }
+
+        if (typeof file === "string") {
+            setDownloadUrl(file);
+            return;
+        }
+
+        try {
+            const url = URL.createObjectURL(file);
+            setDownloadUrl(url);
+            return () => {
+                URL.revokeObjectURL(url);
+            };
+        } catch (error) {
+            console.error("Unable to create object URL for download", error);
+            setDownloadUrl(null);
+        }
+    }, [file]);
+
     const nextPage = () => setPageNumber((prev) => Math.min(prev + 1, numPages));
     const prevPage = () => setPageNumber((prev) => Math.max(prev - 1, 1));
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden">
-                <div className="flex justify-between items-center px-4 py-1 border-b border-gray-200 flex-shrink-0">
-                    <h3 className="text-base font-medium text-gray-900">{t("previewPdf.preview")}</h3>
+                <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 flex-shrink-0 bg-gray-50">
+                    <div className="flex items-center gap-3">
+                        <h3 className="text-base font-semibold text-gray-900">{t("previewPdf.preview")}</h3>
+                        <a
+                            href={downloadUrl || undefined}
+                            download="document.pdf"
+                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium shadow-sm transition ${
+                                downloadUrl
+                                    ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            }`}
+                            onClick={(event) => {
+                                if (!downloadUrl) {
+                                    event.preventDefault();
+                                }
+                            }}
+                        >
+                            ⬇️ {t("previewPdf.download", "Download")}
+                        </a>
+                    </div>
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-gray-600 text-xl leading-none"
