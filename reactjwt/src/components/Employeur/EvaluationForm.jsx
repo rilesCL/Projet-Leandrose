@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {useParams, useNavigate, Link} from 'react-router-dom';
-import PdfViewer from '../PdfViewer.jsx';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     createEvaluation,
-    previewEvaluationPdf,
     getEvaluationInfo,
     generateEvaluationPdfWithId,
     checkExistingEvaluation
@@ -21,7 +19,8 @@ const EvaluationForm = () => {
     const [student, setStudent] = useState(null);
     const [internship, setInternship] = useState(null);
     const [error, setError] = useState(null);
-    const [submitted, setSubmitted] = useState(false); // New state for submission status
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [submitted, setSubmitted] = useState(false);
 
     const [formData, setFormData] = useState({
         categories: {},
@@ -34,7 +33,6 @@ const EvaluationForm = () => {
         technicalTrainingSufficient: null
     });
 
-    // Evaluation categories and questions structure
     const evaluationTemplate = {
         productivity: {
             title: t('evaluation.productivity.title'),
@@ -58,7 +56,6 @@ const EvaluationForm = () => {
                 t('evaluation.quality.q5')
             ]
         },
-
         relationships: {
             title: t('evaluation.relationships.title'),
             description: t('evaluation.relationships.description'),
@@ -85,6 +82,44 @@ const EvaluationForm = () => {
         }
     };
 
+    const validateForm = () => {
+        const newErrors = [];
+
+        for (const [categoryKey, questions] of Object.entries(formData.categories)) {
+            // Find all questions without rating
+            const missingIndexes = questions
+                .map((q, i) => (!q.rating ? i + 1 : null))
+                .filter(i => i !== null);
+
+            if (missingIndexes.length > 0) {
+                newErrors.push(
+                    `${t('evaluation.validation.missingRating')} - ${evaluationTemplate[categoryKey].title}, ${t('evaluation.questions')} ${missingIndexes.join(', ')}`
+                );
+            }
+        }
+
+        if (formData.globalAssessment === null)
+            newErrors.push(t('evaluation.validation.globalAssessmentRequired'));
+
+        if (!formData.globalAppreciation.trim())
+            newErrors.push(t('evaluation.validation.globalAppreciationRequired'));
+
+        if (formData.discussedWithTrainee === null)
+            newErrors.push(t('evaluation.validation.discussedRequired'));
+
+        if (formData.supervisionHours === '' || isNaN(formData.supervisionHours))
+            newErrors.push(t('evaluation.validation.supervisionHoursRequired'));
+
+        if (!formData.welcomeNextInternship)
+            newErrors.push(t('evaluation.validation.welcomeNextInternshipRequired'));
+
+        if (formData.technicalTrainingSufficient === null)
+            newErrors.push(t('evaluation.validation.technicalTrainingRequired'));
+
+        return newErrors;
+    };
+
+
 
     useEffect(() => {
         const initializeForm = async () => {
@@ -92,21 +127,20 @@ const EvaluationForm = () => {
                 setLoading(true);
                 setError(null);
 
-
                 if (!studentId || !offerId) {
                     throw new Error(t("evaluation.errors.missing_studentId_Or_offerId"));
                 }
 
-                // First, check if an evaluation already exists
                 const existingCheck = await checkExistingEvaluation(studentId, offerId);
 
                 if (existingCheck.exists) {
-                    alert(t('evaluation.errors.evaluation_exists'));
-                    navigate('/dashboard/employeur/evaluations');
+                    setError(t('evaluation.errors.evaluation_exists'));
+                    setTimeout(() => {
+                        navigate('/dashboard/employeur/evaluations');
+                    }, 3000);
                     return;
                 }
 
-                // Get evaluation info (student + internship data)
                 const evaluationInfo = await getEvaluationInfo(studentId, offerId);
 
                 setStudent({
@@ -119,10 +153,15 @@ const EvaluationForm = () => {
                     companyName: evaluationInfo.internshipInfo.companyName
                 });
 
-                // Initialize empty form data
                 const initialFormData = {
                     categories: {},
-                    generalComment: ''
+                    generalComment: '',
+                    globalAssessment: null,
+                    globalAppreciation: '',
+                    discussedWithTrainee: null,
+                    supervisionHours: '',
+                    welcomeNextInternship: '',
+                    technicalTrainingSufficient: null
                 };
 
                 Object.keys(evaluationTemplate).forEach(categoryKey => {
@@ -135,8 +174,8 @@ const EvaluationForm = () => {
 
                 setFormData(initialFormData);
 
-            } catch (error) {
-                const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.initializationError');
+            } catch (err) {
+                const errorMessage = err?.response?.data?.message || err?.message || t('evaluation.initializationError');
                 setError(errorMessage);
             } finally {
                 setLoading(false);
@@ -146,7 +185,6 @@ const EvaluationForm = () => {
         initializeForm();
     }, [studentId, offerId, t, navigate]);
 
-    // Handle question field changes
     const handleQuestionChange = (categoryKey, questionIndex, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -159,7 +197,6 @@ const EvaluationForm = () => {
         }));
     };
 
-    // Handle general comment change
     const handleGeneralCommentChange = (comment) => {
         setFormData(prev => ({
             ...prev,
@@ -174,50 +211,46 @@ const EvaluationForm = () => {
         }));
     };
 
-    // Generate and download PDF, then redirect
-    const handleGeneratePdf = async () => {
+    const handleSubmitEvaluation = async () => {
+        setError(null);
+        setSuccessMessage(null);
+
+        const validationErrors = validateForm();
+        if (validationErrors.length > 0) {
+            setError(validationErrors.join('\n'));
+            return;
+        }
+
         setSubmitting(true);
+
         try {
-
             const createResponse = await createEvaluation(studentId, offerId);
-
             const evalId = createResponse.evaluationId || createResponse.id || createResponse;
 
             if (!evalId) {
-                throw new Error('evaluation.errors.evaluationId_received');
+                throw new Error("Evaluation ID not received from server.");
             }
 
             setEvaluationId(evalId);
 
             await new Promise(resolve => setTimeout(resolve, 500));
 
-            const generateResponse = await generateEvaluationPdfWithId(evalId, formData);
+            await generateEvaluationPdfWithId(evalId, formData);
 
-            const pdfBlob = await previewEvaluationPdf(evalId);
+            setSubmitted(true);
+            setSuccessMessage("Evaluation submitted successfully!");
 
-            const url = window.URL.createObjectURL(pdfBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `evaluation_${student?.firstName}_${student?.lastName}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
 
-            // Show success message and redirect
-            alert(t('evaluation.pdfGenerated'));
-
-            // Redirect to evaluations list
-            navigate('/dashboard/employeur/evaluations');
-
-        } catch (error) {
-            console.error('Error in PDF generation process:', error);
-            const errorMessage = error?.response?.data?.message || error?.message || t('evaluation.pdfGenerationError');
-            alert(`${t('evaluation.pdfGenerationError')}: ${errorMessage}`);
+        } catch (err) {
+            console.error("Error in evaluation submission:", err);
+            const errorMessage =
+                err?.response?.data?.message || err?.message || "An error occurred while submitting the evaluation.";
+            setError(errorMessage);
         } finally {
             setSubmitting(false);
         }
     };
+
 
     if (loading) {
         return (
@@ -228,7 +261,7 @@ const EvaluationForm = () => {
         );
     }
 
-    if (error) {
+    if (error && !student) {
         return (
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6">
@@ -257,25 +290,10 @@ const EvaluationForm = () => {
                         onClick={() => navigate('/dashboard/employeur/evaluations')}
                         className="inline-flex items-center gap-2 rounded-md border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                     >
-                        <svg
-                            className="h-4 w-4"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M11.25 5L6.25 10L11.25 15"
-                                stroke="currentColor"
-                                strokeWidth="1.6"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            <path
-                                d="M6.25 10H16.25"
-                                stroke="currentColor"
-                                strokeWidth="1.6"
-                                strokeLinecap="round"
-                            />
+                        <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none">
+                            <line x1="11" y1="5" x2="6" y2="10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                            <line x1="6" y1="10" x2="11" y2="15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                            <line x1="6" y1="10" x2="16" y2="10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
                         </svg>
                         {t('evaluation.backToEvaluationsList')}
                     </button>
@@ -283,23 +301,6 @@ const EvaluationForm = () => {
                 <h1 className="text-3xl font-bold text-gray-900 text-center mb-6">
                     {t('evaluation.title')}
                 </h1>
-
-                {submitted && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                            <div className="ml-3">
-                                <p className="text-sm font-medium text-green-800">
-                                    {t('evaluation.submittedSuccess')}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm">
                     <div className="mb-6">
@@ -363,7 +364,6 @@ const EvaluationForm = () => {
             <div className="space-y-6">
                 {Object.entries(evaluationTemplate).map(([categoryKey, category]) => (
                     <div key={categoryKey} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                        {/* Category Header */}
                         <div className="mb-4">
                             <h2 className="text-xl font-semibold text-gray-900 mb-2">
                                 {category.title}
@@ -373,16 +373,13 @@ const EvaluationForm = () => {
                             </p>
                         </div>
 
-                        {/* Questions List */}
                         <div className="space-y-6">
                             {category.questions.map((question, questionIndex) => (
                                 <div key={questionIndex} className="border-b border-gray-100 pb-6 last:border-b-0">
-                                    {/* Question Text */}
                                     <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                                         {question}
                                     </p>
 
-                                    {/* Rating Radio Buttons */}
                                     <div className="flex flex-wrap justify-center gap-3 mb-3">
                                         {[
                                             {
@@ -439,7 +436,6 @@ const EvaluationForm = () => {
                                         })}
                                     </div>
 
-                                    {/* Comment Textarea */}
                                     <textarea
                                         placeholder={t('evaluation.commentsPlaceholder')}
                                         value={formData.categories[categoryKey]?.[questionIndex]?.comment || ''}
@@ -468,29 +464,70 @@ const EvaluationForm = () => {
                     />
                 </div>
 
-                {/* NEW: Global Assessment Section */}
+                {/* Global Assessment Section with Unified Radio Buttons */}
                 <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
                         {t('evaluation.globalAssessment.title')}
                     </h2>
 
-                    {/* Global Assessment Options */}
-                    <div className="space-y-3 mb-6">
-                        {[0, 1, 2, 3, 4].map((index) => (
-                            <label key={index} className="flex items-start space-x-3 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="globalAssessment"
-                                    value={index}
-                                    checked={formData.globalAssessment === index}
-                                    onChange={(e) => handleFieldChange('globalAssessment', parseInt(e.target.value))}
-                                    className="mt-1 text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700 text-sm">
-                  {t(`evaluation.globalAssessment.option${index}`)}
-                </span>
-                            </label>
-                        ))}
+                    {/* Global Assessment Options with Same Radio Button Style */}
+                    <div className="mb-6">
+                        <p className="text-gray-800 font-medium mb-3 leading-relaxed">
+                            {t('evaluation.globalAssessment.question')}
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                            {[
+                                {
+                                    value: 0,
+                                    label: t('evaluation.rating.totally_agree'),
+                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
+                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-green-600 text-green-700'
+                                },
+                                {
+                                    value: 1,
+                                    label: t('evaluation.rating.mostly_agree'),
+                                    baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
+                                    selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-green-500 text-green-600'
+                                },
+                                {
+                                    value: 3,
+                                    label: t('evaluation.rating.mostly_disagree'),
+                                    baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
+                                    selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-orange-500 text-orange-600'
+                                },
+                                {
+                                    value: 4,
+                                    label: t('evaluation.rating.totally_disagree'),
+                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
+                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-red-600 text-red-700'
+                                }
+                            ].map((option) => {
+                                const isSelected = formData.globalAssessment === option.value;
+
+                                return (
+                                    <label
+                                        key={option.value}
+                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
+                                            isSelected ? option.selectedClasses : ''
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="globalAssessment"
+                                            value={option.value}
+                                            checked={isSelected}
+                                            onChange={(e) => handleFieldChange('globalAssessment', parseInt(e.target.value))}
+                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                        />
+                                        <span className="text-sm font-medium">{option.label}</span>
+                                    </label>
+                                );
+                            })}
+                        </div>
                     </div>
 
                     {/* Global Appreciation */}
@@ -518,7 +555,7 @@ const EvaluationForm = () => {
                                     name="discussedWithTrainee"
                                     value="true"
                                     checked={formData.discussedWithTrainee === true}
-                                    onChange={(e) => handleFieldChange('discussedWithTrainee', true)}
+                                    onChange={() => handleFieldChange('discussedWithTrainee', true)}
                                     className="text-blue-600 focus:ring-blue-500"
                                 />
                                 <span className="text-gray-700">{t('evaluation.globalAssessment.yes')}</span>
@@ -529,7 +566,7 @@ const EvaluationForm = () => {
                                     name="discussedWithTrainee"
                                     value="false"
                                     checked={formData.discussedWithTrainee === false}
-                                    onChange={(e) => handleFieldChange('discussedWithTrainee', false)}
+                                    onChange={() => handleFieldChange('discussedWithTrainee', false)}
                                     className="text-blue-600 focus:ring-blue-500"
                                 />
                                 <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
@@ -586,7 +623,7 @@ const EvaluationForm = () => {
                                     name="technicalTrainingSufficient"
                                     value="true"
                                     checked={formData.technicalTrainingSufficient === true}
-                                    onChange={(e) => handleFieldChange('technicalTrainingSufficient', true)}
+                                    onChange={() => handleFieldChange('technicalTrainingSufficient', true)}
                                     className="text-blue-600 focus:ring-blue-500"
                                 />
                                 <span className="text-gray-700">{t('evaluation.globalAssessment.yes')}</span>
@@ -597,7 +634,7 @@ const EvaluationForm = () => {
                                     name="technicalTrainingSufficient"
                                     value="false"
                                     checked={formData.technicalTrainingSufficient === false}
-                                    onChange={(e) => handleFieldChange('technicalTrainingSufficient', false)}
+                                    onChange={() => handleFieldChange('technicalTrainingSufficient', false)}
                                     className="text-blue-600 focus:ring-blue-500"
                                 />
                                 <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
@@ -606,21 +643,79 @@ const EvaluationForm = () => {
                     </div>
                 </div>
 
+                {successMessage && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex items-center">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <circle cx="10" cy="10" r="8" />
+                                    <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <p className="text-sm font-medium text-green-800">
+                                    {successMessage}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {error && student && (
+                    <div className="bg-red-50 border border-red-300 rounded-xl p-4 shadow-sm">
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 mt-1">
+                                <svg className="h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                </svg>
+                            </div>
+
+                            <div className="ml-3 flex-1">
+                                <h3 className="text-sm font-semibold text-red-800 mb-1">
+                                    ⚠️ {t('evaluation.errors.submit') || 'Veuillez corriger les erreurs suivantes :'}
+                                </h3>
+                                <ul className="list-disc list-inside space-y-1 text-sm text-red-700">
+                                    {error.split('\n').map((msg, index) => (
+                                        <li key={index}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Close button */}
+                            <button
+                                onClick={() => setError(null)}
+                                className="ml-4 text-red-400 hover:text-red-600 transition-colors"
+                                aria-label="Fermer le message d’erreur"
+                            >
+                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
+                                    <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                    <line x1="15" y1="5" x2="5" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+
                 {/* Action Buttons */}
                 <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
                     <button
                         type="button"
-                        onClick={handleGeneratePdf}
-                        disabled={submitting}
+                        onClick={handleSubmitEvaluation}
+                        disabled={submitting || submitted}
                         className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         {submitting ? (
                             <span className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                {t('evaluation.generating')}
-              </span>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                {t('evaluation.submitting')}
+                            </span>
+                        ) : submitted ? (
+                            t('evaluation.submitted')
                         ) : (
-                            t('evaluation.generatePdf')
+                            t('evaluation.submitEvaluation')
                         )}
                     </button>
                 </div>
