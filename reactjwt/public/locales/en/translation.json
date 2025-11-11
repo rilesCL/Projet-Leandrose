@@ -924,6 +924,8 @@
     }
   },
   "evaluation": {
+    "submitting": "Submitting evaluation...",
+    "submitted": "Evaluation Submitted",
     "questions": "Question(s)",
     "validation": {
       "missingRating": "Please provide a rating for each question",

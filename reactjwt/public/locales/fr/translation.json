@@ -926,6 +926,8 @@
     }
   },
   "evaluation": {
+    "submitting": "Soumission de l'évaluation...",
+    "submitted": "Évaluation soumise",
     "questions": "Question(s)",
     "validation": {
       "missingRating": "Veuillez attribuer une note à chaque question.",

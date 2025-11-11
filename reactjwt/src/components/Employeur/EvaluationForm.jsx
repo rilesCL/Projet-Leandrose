@@ -1,3 +1,5 @@
+// Path: src/components/EvaluationForm.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -12,15 +14,18 @@ const EvaluationForm = () => {
     const { t } = useTranslation();
     const { studentId, offerId } = useParams();
     const navigate = useNavigate();
-
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [evaluationId, setEvaluationId] = useState(null);
     const [student, setStudent] = useState(null);
     const [internship, setInternship] = useState(null);
+    // `error` garde les erreurs d'initialisation / serveur (distinct de validation UI)
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
     const [submitted, setSubmitted] = useState(false);
+
+    // Nouveau state pour stocker les erreurs de validation par champ
+    const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState({
         categories: {},
@@ -82,57 +87,55 @@ const EvaluationForm = () => {
         }
     };
 
+    // validateForm retourne un objet d'erreurs structuré par champ.
     const validateForm = () => {
-        const newErrors = [];
+        const newErrors = {};
 
+        // validation des catégories/questions
         for (const [categoryKey, questions] of Object.entries(formData.categories)) {
-            // Find all questions without rating
-            const missingIndexes = questions
-                .map((q, i) => (!q.rating ? i + 1 : null))
-                .filter(i => i !== null);
-
-            if (missingIndexes.length > 0) {
-                newErrors.push(
-                    `${t('evaluation.validation.missingRating')} - ${evaluationTemplate[categoryKey].title}, ${t('evaluation.questions')} ${missingIndexes.join(', ')}`
-                );
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
+                if (!q.rating) {
+                    if (!newErrors.categories) newErrors.categories = {};
+                    if (!newErrors.categories[categoryKey]) newErrors.categories[categoryKey] = {};
+                    // message spécifique par question
+                    newErrors.categories[categoryKey][i] = `${t('evaluation.validation.missingRating')} - ${evaluationTemplate[categoryKey].title}, ${t('evaluation.questions')} ${i + 1}`;
+                }
             }
         }
 
-        if (formData.globalAssessment === null)
-            newErrors.push(t('evaluation.validation.globalAssessmentRequired'));
-
-        if (!formData.globalAppreciation.trim())
-            newErrors.push(t('evaluation.validation.globalAppreciationRequired'));
-
-        if (formData.discussedWithTrainee === null)
-            newErrors.push(t('evaluation.validation.discussedRequired'));
-
-        if (formData.supervisionHours === '' || isNaN(formData.supervisionHours))
-            newErrors.push(t('evaluation.validation.supervisionHoursRequired'));
-
-        if (!formData.welcomeNextInternship)
-            newErrors.push(t('evaluation.validation.welcomeNextInternshipRequired'));
-
-        if (formData.technicalTrainingSufficient === null)
-            newErrors.push(t('evaluation.validation.technicalTrainingRequired'));
+        // validations globales
+        if (formData.globalAssessment === null) {
+            newErrors.globalAssessment = t('evaluation.validation.globalAssessmentRequired');
+        }
+        if (!formData.globalAppreciation || !formData.globalAppreciation.trim()) {
+            newErrors.globalAppreciation = t('evaluation.validation.globalAppreciationRequired');
+        }
+        if (formData.discussedWithTrainee === null) {
+            newErrors.discussedWithTrainee = t('evaluation.validation.discussedRequired');
+        }
+        if (formData.supervisionHours === '' || isNaN(Number(formData.supervisionHours))) {
+            newErrors.supervisionHours = t('evaluation.validation.supervisionHoursRequired');
+        }
+        if (!formData.welcomeNextInternship) {
+            newErrors.welcomeNextInternship = t('evaluation.validation.welcomeNextInternshipRequired');
+        }
+        if (formData.technicalTrainingSufficient === null) {
+            newErrors.technicalTrainingSufficient = t('evaluation.validation.technicalTrainingRequired');
+        }
 
         return newErrors;
     };
-
-
 
     useEffect(() => {
         const initializeForm = async () => {
             try {
                 setLoading(true);
                 setError(null);
-
                 if (!studentId || !offerId) {
                     throw new Error(t("evaluation.errors.missing_studentId_Or_offerId"));
                 }
-
                 const existingCheck = await checkExistingEvaluation(studentId, offerId);
-
                 if (existingCheck.exists) {
                     setError(t('evaluation.errors.evaluation_exists'));
                     setTimeout(() => {
@@ -140,9 +143,7 @@ const EvaluationForm = () => {
                     }, 3000);
                     return;
                 }
-
                 const evaluationInfo = await getEvaluationInfo(studentId, offerId);
-
                 setStudent({
                     firstName: evaluationInfo.studentInfo.firstName,
                     lastName: evaluationInfo.studentInfo.lastName,
@@ -152,7 +153,6 @@ const EvaluationForm = () => {
                     description: evaluationInfo.internshipInfo.description,
                     companyName: evaluationInfo.internshipInfo.companyName
                 });
-
                 const initialFormData = {
                     categories: {},
                     generalComment: '',
@@ -163,7 +163,6 @@ const EvaluationForm = () => {
                     welcomeNextInternship: '',
                     technicalTrainingSufficient: null
                 };
-
                 Object.keys(evaluationTemplate).forEach(categoryKey => {
                     initialFormData.categories[categoryKey] = evaluationTemplate[categoryKey].questions.map(() => ({
                         checked: false,
@@ -171,9 +170,7 @@ const EvaluationForm = () => {
                         rating: null
                     }));
                 });
-
                 setFormData(initialFormData);
-
             } catch (err) {
                 const errorMessage = err?.response?.data?.message || err?.message || t('evaluation.initializationError');
                 setError(errorMessage);
@@ -181,10 +178,27 @@ const EvaluationForm = () => {
                 setLoading(false);
             }
         };
-
         initializeForm();
     }, [studentId, offerId, t, navigate]);
 
+    // Helper: enleve l'erreur spécifique d'une question de catégorie
+    const clearCategoryQuestionError = (categoryKey, questionIndex) => {
+        setErrors(prev => {
+            if (!prev?.categories || !prev.categories[categoryKey]) return prev;
+            const catCopy = { ...prev.categories[categoryKey] };
+            delete catCopy[questionIndex];
+            const categoriesCopy = { ...prev.categories, [categoryKey]: catCopy };
+            // cleanup si vide
+            if (Object.keys(catCopy).length === 0) delete categoriesCopy[categoryKey];
+            const newPrev = { ...prev, categories: categoriesCopy };
+            if (!newPrev.categories || Object.keys(newPrev.categories).length === 0) {
+                delete newPrev.categories;
+            }
+            return Object.keys(newPrev).length === 0 ? {} : newPrev;
+        });
+    };
+
+    // Handlers modifiés pour aussi nettoyer les erreurs liées au champ modifié
     const handleQuestionChange = (categoryKey, questionIndex, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -195,6 +209,11 @@ const EvaluationForm = () => {
                 )
             }
         }));
+
+        // si on modifie la note (rating), on efface l'erreur liée à cette question
+        if (field === 'rating') {
+            clearCategoryQuestionError(categoryKey, questionIndex);
+        }
     };
 
     const handleGeneralCommentChange = (comment) => {
@@ -202,45 +221,71 @@ const EvaluationForm = () => {
             ...prev,
             generalComment: comment
         }));
+        // pas de message de validation pour generalComment dans l'existant,
+        // si nécessaire on peut en ajouter et le nettoyer ici
     };
 
+    // Nettoie l'erreur liée au champ global (nom du field doit correspondre au key dans errors)
     const handleFieldChange = (field, value) => {
         setFormData(prev => ({
             ...prev,
             [field]: value
         }));
+        setErrors(prev => {
+            if (!prev) return prev;
+            const copy = { ...prev };
+            if (copy[field]) delete copy[field];
+            // cleanup si categories vide etc.
+            if (Object.keys(copy).length === 0) return {};
+            return copy;
+        });
+    };
+
+    const hasErrors = (obj) => {
+        if (!obj) return false;
+        // check top-level keys
+        for (const k of Object.keys(obj)) {
+            if (k === 'categories') {
+                if (Object.keys(obj.categories).length > 0) return true;
+            } else {
+                if (obj[k]) return true;
+            }
+        }
+        return false;
     };
 
     const handleSubmitEvaluation = async () => {
         setError(null);
         setSuccessMessage(null);
-
+        // validation -> otr object d'erreurs
         const validationErrors = validateForm();
-        if (validationErrors.length > 0) {
-            setError(validationErrors.join('\n'));
+        if (hasErrors(validationErrors)) {
+            setErrors(validationErrors);
+            // Scroll to first error pour meilleure UX (optionnel)
+            // trouver un élément d'erreur et scroller dessus
+            setTimeout(() => {
+                const el = document.querySelector('.validation-error');
+                if (el && typeof el.scrollIntoView === 'function') {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 50);
             return;
         }
 
+        // clear previous validation errors
+        setErrors({});
         setSubmitting(true);
-
         try {
             const createResponse = await createEvaluation(studentId, offerId);
             const evalId = createResponse.evaluationId || createResponse.id || createResponse;
-
             if (!evalId) {
                 throw new Error("Evaluation ID not received from server.");
             }
-
             setEvaluationId(evalId);
-
             await new Promise(resolve => setTimeout(resolve, 500));
-
             await generateEvaluationPdfWithId(evalId, formData);
-
             setSubmitted(true);
             setSuccessMessage("Evaluation submitted successfully!");
-
-
         } catch (err) {
             console.error("Error in evaluation submission:", err);
             const errorMessage =
@@ -250,7 +295,6 @@ const EvaluationForm = () => {
             setSubmitting(false);
         }
     };
-
 
     if (loading) {
         return (
@@ -301,7 +345,6 @@ const EvaluationForm = () => {
                 <h1 className="text-3xl font-bold text-gray-900 text-center mb-6">
                     {t('evaluation.title')}
                 </h1>
-
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 shadow-sm">
                     <div className="mb-6">
                         <h3 className="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200">
@@ -324,7 +367,6 @@ const EvaluationForm = () => {
                             </div>
                         </div>
                     </div>
-
                     <div>
                         <h3 className="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200">
                             {t('evaluation.companyInfo')}
@@ -372,81 +414,86 @@ const EvaluationForm = () => {
                                 {category.description}
                             </p>
                         </div>
-
                         <div className="space-y-6">
-                            {category.questions.map((question, questionIndex) => (
-                                <div key={questionIndex} className="border-b border-gray-100 pb-6 last:border-b-0">
-                                    <p className="text-gray-800 font-medium mb-3 leading-relaxed">
-                                        {question}
-                                    </p>
+                            {category.questions.map((question, questionIndex) => {
+                                const ratingError = errors?.categories?.[categoryKey]?.[questionIndex];
+                                return (
+                                    <div key={questionIndex} className="border-b border-gray-100 pb-6 last:border-b-0">
+                                        <p className="text-gray-800 font-medium mb-3 leading-relaxed">
+                                            {question}
+                                        </p>
+                                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                                            {[
+                                                {
+                                                    value: 'EXCELLENT',
+                                                    label: t('evaluation.rating.totally_agree'),
+                                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
+                                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
+                                                    inputRing: 'focus:ring-green-600 text-green-700'
+                                                },
+                                                {
+                                                    value: 'TRES_BIEN',
+                                                    label: t('evaluation.rating.mostly_agree'),
+                                                    baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
+                                                    selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
+                                                    inputRing: 'focus:ring-green-500 text-green-600'
+                                                },
+                                                {
+                                                    value: 'SATISFAISANT',
+                                                    label: t('evaluation.rating.mostly_disagree'),
+                                                    baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
+                                                    selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
+                                                    inputRing: 'focus:ring-orange-500 text-orange-600'
+                                                },
+                                                {
+                                                    value: 'A_AMELIORER',
+                                                    label: t('evaluation.rating.totally_disagree'),
+                                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
+                                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
+                                                    inputRing: 'focus:ring-red-600 text-red-700'
+                                                }
+                                            ].map((option) => {
+                                                const isSelected = formData.categories[categoryKey]?.[questionIndex]?.rating === option.value;
+                                                return (
+                                                    <label
+                                                        key={option.value}
+                                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
+                                                            isSelected ? option.selectedClasses : ''
+                                                        }`}
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name={`rating-${categoryKey}-${questionIndex}`}
+                                                            value={option.value}
+                                                            checked={isSelected}
+                                                            onChange={(e) =>
+                                                                handleQuestionChange(categoryKey, questionIndex, 'rating', e.target.value)
+                                                            }
+                                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                                        />
+                                                        <span className="text-sm font-medium">{option.label}</span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
 
-                                    <div className="flex flex-wrap justify-center gap-3 mb-3">
-                                        {[
-                                            {
-                                                value: 'EXCELLENT',
-                                                label: t('evaluation.rating.totally_agree'),
-                                                baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
-                                                selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
-                                                inputRing: 'focus:ring-green-600 text-green-700'
-                                            },
-                                            {
-                                                value: 'TRES_BIEN',
-                                                label: t('evaluation.rating.mostly_agree'),
-                                                baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
-                                                selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
-                                                inputRing: 'focus:ring-green-500 text-green-600'
-                                            },
-                                            {
-                                                value: 'SATISFAISANT',
-                                                label: t('evaluation.rating.mostly_disagree'),
-                                                baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
-                                                selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
-                                                inputRing: 'focus:ring-orange-500 text-orange-600'
-                                            },
-                                            {
-                                                value: 'A_AMELIORER',
-                                                label: t('evaluation.rating.totally_disagree'),
-                                                baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
-                                                selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
-                                                inputRing: 'focus:ring-red-600 text-red-700'
+                                        {/* Affichage de l'erreur de la note pour cette question */}
+                                        {ratingError && (
+                                            <p className="validation-error text-sm text-red-600 mb-2">{ratingError}</p>
+                                        )}
+
+                                        <textarea
+                                            placeholder={t('evaluation.commentsPlaceholder')}
+                                            value={formData.categories[categoryKey]?.[questionIndex]?.comment || ''}
+                                            onChange={(e) =>
+                                                handleQuestionChange(categoryKey, questionIndex, 'comment', e.target.value)
                                             }
-                                        ].map((option) => {
-                                            const isSelected = formData.categories[categoryKey]?.[questionIndex]?.rating === option.value;
-
-                                            return (
-                                                <label
-                                                    key={option.value}
-                                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
-                                                        isSelected ? option.selectedClasses : ''
-                                                    }`}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name={`rating-${categoryKey}-${questionIndex}`}
-                                                        value={option.value}
-                                                        checked={isSelected}
-                                                        onChange={(e) =>
-                                                            handleQuestionChange(categoryKey, questionIndex, 'rating', e.target.value)
-                                                        }
-                                                        className={`mr-2 focus:ring-2 ${option.inputRing}`}
-                                                    />
-                                                    <span className="text-sm font-medium">{option.label}</span>
-                                                </label>
-                                            );
-                                        })}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            rows={2}
+                                        />
                                     </div>
-
-                                    <textarea
-                                        placeholder={t('evaluation.commentsPlaceholder')}
-                                        value={formData.categories[categoryKey]?.[questionIndex]?.comment || ''}
-                                        onChange={(e) =>
-                                            handleQuestionChange(categoryKey, questionIndex, 'comment', e.target.value)
-                                        }
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        rows={2}
-                                    />
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 ))}
@@ -470,7 +517,7 @@ const EvaluationForm = () => {
                         {t('evaluation.globalAssessment.title')}
                     </h2>
 
-                    {/* Global Assessment Options with Same Radio Button Style */}
+                    {/* Global Assessment Options */}
                     <div className="mb-6">
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.question')}
@@ -507,7 +554,6 @@ const EvaluationForm = () => {
                                 }
                             ].map((option) => {
                                 const isSelected = formData.globalAssessment === option.value;
-
                                 return (
                                     <label
                                         key={option.value}
@@ -528,6 +574,11 @@ const EvaluationForm = () => {
                                 );
                             })}
                         </div>
+
+                        {/* Erreur pour globalAssessment */}
+                        {errors.globalAssessment && (
+                            <p className="validation-error text-sm text-red-600 mb-2">{errors.globalAssessment}</p>
+                        )}
                     </div>
 
                     {/* Global Appreciation */}
@@ -541,6 +592,9 @@ const EvaluationForm = () => {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             rows={3}
                         />
+                        {errors.globalAppreciation && (
+                            <p className="validation-error text-sm text-red-600 mt-1">{errors.globalAppreciation}</p>
+                        )}
                     </div>
 
                     {/* Discussion with Trainee */}
@@ -572,6 +626,9 @@ const EvaluationForm = () => {
                                 <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
                             </label>
                         </div>
+                        {errors.discussedWithTrainee && (
+                            <p className="validation-error text-sm text-red-600 mt-1">{errors.discussedWithTrainee}</p>
+                        )}
                     </div>
 
                     {/* Supervision Hours */}
@@ -587,6 +644,9 @@ const EvaluationForm = () => {
                             min="0"
                             max="40"
                         />
+                        {errors.supervisionHours && (
+                            <p className="validation-error text-sm text-red-600 mt-1">{errors.supervisionHours}</p>
+                        )}
                     </div>
 
                     {/* Welcome Next Internship */}
@@ -609,6 +669,9 @@ const EvaluationForm = () => {
                                 </label>
                             ))}
                         </div>
+                        {errors.welcomeNextInternship && (
+                            <p className="validation-error text-sm text-red-600 mt-1">{errors.welcomeNextInternship}</p>
+                        )}
                     </div>
 
                     {/* Technical Training Sufficient */}
@@ -640,8 +703,43 @@ const EvaluationForm = () => {
                                 <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
                             </label>
                         </div>
+                        {errors.technicalTrainingSufficient && (
+                            <p className="validation-error text-sm text-red-600 mt-1">{errors.technicalTrainingSufficient}</p>
+                        )}
                     </div>
                 </div>
+
+                {/* Server / submit error message (reste en bas pour les erreurs non-validation) */}
+                {error && student && (
+                    <div className="bg-red-50 border border-red-300 rounded-xl p-4 shadow-sm">
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 mt-1">
+                                <svg className="h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                </svg>
+                            </div>
+                            <div className="ml-3 flex-1">
+                                <h3 className="text-sm font-semibold text-red-800 mb-1">
+                                    ⚠️ {t('evaluation.errors.submit') || 'Une erreur est survenue :'}
+                                </h3>
+                                <p className="text-sm text-red-700">{error}</p>
+                            </div>
+                            {/* Close button */}
+                            <button
+                                onClick={() => setError(null)}
+                                className="ml-4 text-red-400 hover:text-red-600 transition-colors"
+                                aria-label="Fermer le message d’erreur"
+                            >
+                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
+                                    <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                    <line x1="15" y1="5" x2="5" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {successMessage && (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -660,44 +758,6 @@ const EvaluationForm = () => {
                         </div>
                     </div>
                 )}
-
-                {error && student && (
-                    <div className="bg-red-50 border border-red-300 rounded-xl p-4 shadow-sm">
-                        <div className="flex items-start">
-                            <div className="flex-shrink-0 mt-1">
-                                <svg className="h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="15" y1="9" x2="9" y2="15" />
-                                    <line x1="9" y1="9" x2="15" y2="15" />
-                                </svg>
-                            </div>
-
-                            <div className="ml-3 flex-1">
-                                <h3 className="text-sm font-semibold text-red-800 mb-1">
-                                    ⚠️ {t('evaluation.errors.submit') || 'Veuillez corriger les erreurs suivantes :'}
-                                </h3>
-                                <ul className="list-disc list-inside space-y-1 text-sm text-red-700">
-                                    {error.split('\n').map((msg, index) => (
-                                        <li key={index}>{msg}</li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            {/* Close button */}
-                            <button
-                                onClick={() => setError(null)}
-                                className="ml-4 text-red-400 hover:text-red-600 transition-colors"
-                                aria-label="Fermer le message d’erreur"
-                            >
-                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
-                                    <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                    <line x1="15" y1="5" x2="5" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                )}
-
 
                 {/* Action Buttons */}
                 <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
