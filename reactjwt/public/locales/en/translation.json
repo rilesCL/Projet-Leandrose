@@ -909,6 +909,7 @@
   },
   "evaluationList": {
     "title": "List of Evaluations",
+    "subtitle": "Review eligible agreements and jump into drafts or submitted evaluations.",
     "no_evaluations": "No evaluations available at this time.",
     "create_evaluation": "Create Evaluation",
     "submitted": "Submitted",
