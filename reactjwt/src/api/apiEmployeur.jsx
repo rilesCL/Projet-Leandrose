@@ -152,10 +152,12 @@ export async function getEvaluationInfo(studentId, offerId, token = null) {
 }
 
 export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
+    const currentLanguage = localStorage.getItem("i18nextLng")
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/generate-pdf`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "Accept-Language": currentLanguage,
             ...authHeaders(token)
         },
         body: JSON.stringify(formData)
