@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -504,5 +505,10 @@ public class EntenteStageService {
             );
         }
         return asc ? comp : comp.reversed();
+    }
+    public boolean isTeacherAssigned(Long studentId, Long offerId){
+        Optional<EntenteStage> ententeStage = ententeRepository.
+                findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(studentId, offerId);
+        return ententeStage.isPresent() && ententeStage.get().getProf() != null;
     }
 }

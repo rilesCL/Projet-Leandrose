@@ -922,8 +922,10 @@
     "errors": {
       "checking_evaluation": "Évaluation de la vérification des erreurs pour l'étudiant: ",
       "fetching_evaluations": "Erreur lors de la récupération des accords éligibles",
-      "pdf_loading": "Erreur lors du chargement du PDF"
-    }
+      "pdf_loading": "Erreur lors du chargement du PDF",
+      "no_teacher_assigned": "Aucun enseignant n'est assigné à ce stage."
+    },
+    "awaiting_teacher": "En attente d'un professeur."
   },
   "evaluation": {
     "submitting": "Soumission de l'évaluation...",

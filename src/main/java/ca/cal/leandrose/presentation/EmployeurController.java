@@ -1,6 +1,5 @@
 package ca.cal.leandrose.presentation;
 
-import ca.cal.leandrose.model.SchoolTerm;
 import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
@@ -18,9 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -601,5 +602,33 @@ public class EmployeurController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/evaluations/check-teacher-assigned")
+    public ResponseEntity<?> checkTeacherAssigned(HttpServletRequest request,
+                                                  @RequestParam Long studentId,
+                                                  @RequestParam Long offerId) throws AccessDeniedException{
+      getAuthenticatedEmployeur(request);
+
+      try{
+          boolean isTeacherAssigned = ententeStageService.isTeacherAssigned(studentId, offerId);
+          Map<String, Object> response = new HashMap<>();
+
+          response.put("teacherAssigned", isTeacherAssigned);
+          return ResponseEntity.ok(response);
+      } catch (Exception e) {
+          return ResponseEntity.badRequest().body(Map.of(
+                  "error", e.getMessage()
+          ));
+      }
+    }
+
+    private UserDTO getAuthenticatedEmployeur(HttpServletRequest request) throws AccessDeniedException {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if(!me.getRole().name().equals("EMPLOYEUR")){
+            throw new AccessDeniedException("Employer access required");
+        }
+        return me;
     }
 }

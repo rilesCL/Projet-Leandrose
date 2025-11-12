@@ -920,8 +920,10 @@
     "errors": {
       "checking_evaluation": "Error checking assessment for the student:",
       "fetching_evaluations": "Error retrieving eligible agreements",
-      "pdf_loading": "Error loading PDF"
-    }
+      "pdf_loading": "Error loading PDF",
+      "no_teacher_assigned": "No teacher has been assigned to this internship yet."
+    },
+    "awaiting_teacher": "In waiting for a teacher"
   },
   "evaluation": {
     "submitting": "Submitting evaluation...",

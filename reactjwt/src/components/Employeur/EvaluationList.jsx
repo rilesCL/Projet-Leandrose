@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getEligibleEvaluations, checkExistingEvaluation, previewEvaluationPdf } from '../../api/apiEmployeur';
+import { getEligibleEvaluations, checkExistingEvaluation, previewEvaluationPdf, checkTeacherAssigned } from '../../api/apiEmployeur';
 import PdfViewer from '../PdfViewer.jsx';
 
 export default function EvaluationsList() {
@@ -10,6 +10,7 @@ export default function EvaluationsList() {
     const [showPdfViewer, setShowPdfViewer] = useState(false);
     const [currentPdfBlob, setCurrentPdfBlob] = useState(null);
     const [evaluationStatus, setEvaluationStatus] = useState({});
+    const [teacherAssignmentStatus, setTeacherAssignmentStatus] = useState({})
     const {t} = useTranslation()
 
     useEffect(() => {
@@ -20,16 +21,22 @@ export default function EvaluationsList() {
 
                 // Check evaluation status for each agreement
                 const statusMap = {};
+                const teacherAssignmentMap = {}
                 for (const agreement of agreements) {
+                    const key = `${agreement.studentId}-${agreement.offerId}`
                     try {
                         const existingCheck = await checkExistingEvaluation(agreement.studentId, agreement.offerId);
-                        statusMap[`${agreement.studentId}-${agreement.offerId}`] = existingCheck;
+                        statusMap[key] = existingCheck;
+                        const teacherCheck = await checkTeacherAssigned(agreement.studentId, agreement.offerId)
+                        teacherAssignmentMap[key] = teacherCheck.teacherAssigned;
                     } catch (error) {
                         console.error(t("evaluationList.errors.checking_evaluation") + `${agreement.studentId}`, error)
-                        statusMap[`${agreement.studentId}-${agreement.offerId}`] = { exists: false };
+                        statusMap[key] = { exists: false };
+                        teacherAssignmentMap[key] = false;
                     }
                 }
                 setEvaluationStatus(statusMap);
+                setTeacherAssignmentStatus(teacherAssignmentMap)
 
             } catch (error) {
                 console.error(t("evaluationList.errors.fetching_evaluations"), error);
@@ -52,7 +59,6 @@ export default function EvaluationsList() {
             }
         } catch (error) {
             console.error(t("evaluationList.errors.pdf_loading"), error);
-            alert(t("evaluationList.errors.pdf_loading") + (error?.response?.data?.message || error?.message));
         }
     };
 
@@ -96,7 +102,9 @@ export default function EvaluationsList() {
                         const status = evaluationStatus[statusKey];
                         const hasEvaluation = status?.exists;
                         const evaluation = status?.evaluation;
-
+                        const isTeacherAssigned = teacherAssignmentStatus[statusKey]
+                        console.log("Status key: ", statusKey)
+                        console.log(isTeacherAssigned)
                         return (
 
                             <div
@@ -146,10 +154,18 @@ export default function EvaluationsList() {
                                             </button>
                                         ) : (
                                             <Link
-                                                to={`/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`}
-                                                className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium shadow-sm hover:bg-blue-700 transition"
+                                                to={isTeacherAssigned ? `/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`: '#'}
+                                                className={`inline-flex items-center justify-center px-4 py-2 rounded-md text-white text-sm font-medium shadow-sm transition ${
+                                                    isTeacherAssigned
+                                                        ? 'bg-blue-600 hover:bg-blue-700'
+                                                        : 'bg-gray-400 cursor-not-allowed'
+                                                }`}
+
                                             >
-                                                {t("evaluationList.create_evaluation")}
+                                                {isTeacherAssigned
+                                                    ? t("evaluationList.create_evaluation")
+                                                    : t("evaluationList.awaiting_teacher")
+                                                }
                                             </Link>
                                         )}
                                     </div>
