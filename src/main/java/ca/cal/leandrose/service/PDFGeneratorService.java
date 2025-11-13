@@ -3,6 +3,7 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.service.dto.evaluation.CategoryData;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
+import ca.cal.leandrose.service.dto.evaluation.QuestionResponse;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -197,9 +198,9 @@ public class PDFGeneratorService {
     // -----------------------------
     // Génération PDF d'évaluation (compact)
     // -----------------------------
-    public String genererEvaluationPdfParEmployeur(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language,
-                                                   String profFirstName, String profLastName,
-                                                   String nameCollege, String address, String fax_machine ) {
+    public String generatedEvaluationByEmployer(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language,
+                                                String profFirstName, String profLastName,
+                                                String nameCollege, String address, String fax_machine ) {
         try {
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
             if (!Files.exists(evaluationDir)) {
@@ -242,7 +243,7 @@ public class PDFGeneratorService {
         }
     }
 
-    public String genererEvaluationStageParProf(EvaluationStagiaire evaluationStagiaire, String language){
+    public String generatedEvaluationByTeacher(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language){
         try{
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
             if (!Files.exists(evaluationDir)) {
@@ -260,6 +261,8 @@ public class PDFGeneratorService {
 
             addHeaderEvaluationParProf(document, language);
             addEmployerSection(document, evaluationStagiaire, language);
+            addStudentSection(document, evaluationStagiaire, language);
+            addEvaluationSection(document, formData, language);
             document.close();
             this.pdfWriter = null;
             writer.close();
@@ -793,6 +796,73 @@ public class PDFGeneratorService {
             );
         }
     }
+    private Map<String, CategoryData> getEvaluationCategoriesTeacher(String language){
+        if ("en".equals(language)){
+            return Map.of(
+                    "tasks", new CategoryData(
+                            "TASKS & INTEGRATION",
+                            "",
+                            List.of(
+                                    "The tasks assigned to the intern are in accordance with " +
+                                            "the tasks announced in the internship agreement.",
+                                    "Reception measures facilitate the integration of the new intern.",
+                                    "The actual time spent supervising the intern is sufficient."
+                            )
+                    ),
+                    "environement", new CategoryData(
+                            "WORK ENVIRONEMENT",
+                            "",
+                            List.of(
+                                    "The work environment complies with hygiene and safety standards.",
+                                    "The work climate is pleasant."
+                            )
+                    ),
+                    "conditions", new CategoryData(
+                            "WORKING CONDITIONS",
+                            "",
+                            List.of(
+                                    "The internship location is accessible by public transport.",
+                                    "The salary offered is acceptable.",
+                                    "Communication with the supervisor supports the internship.",
+                                    "The equipment provided is adequate.",
+                                    "The workload is acceptable."
+                            )
+                    )
+            );
+        }
+        else {
+            return Map.of(
+                    "tasks", new CategoryData(
+                            "ÉVALUATION",
+                            "",
+                            List.of(
+                                    "Les tâches confiées au stagiaire sont conformes à l’entente de stage.",
+                                    "Des mesures d’accueil facilitent l’intégration du nouveau stagiaire.",
+                                    "Le temps réel consacré à l’encadrement du stagiaire est suffisant."
+                            )
+                    ),
+                    "environment", new CategoryData(
+                            "ENVIRONNEMENT DE TRAVAIL",
+                            "",
+                            List.of(
+                                    "L’environnement de travail respecte les normes d’hygiène et de sécurité.",
+                                    "Le climat de travail est agréable."
+                            )
+                    ),
+                    "conditions", new CategoryData(
+                            "CONDITIONS DE TRAVAIL",
+                            "",
+                            List.of(
+                                    "Le milieu de stage est accessible en transport en commun.",
+                                    "Le salaire offert est intéressant.",
+                                    "La communication avec le superviseur facilite le stage.",
+                                    "L’équipement fourni est adéquat.",
+                                    "Le volume de travail est acceptable."
+                            )
+                    )
+            );
+        }
+    }
 
     private void addHeaderEvaluation(Document document, String language, String name_college) throws DocumentException {
         Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.GRAY);
@@ -870,11 +940,148 @@ public class PDFGeneratorService {
         String address = evaluationStagiaire.getInternshipOffer().getAddress();
         String email = evaluationStagiaire.getEmployeur().getEmail();
 
-        addInfoRow(infoTable, getTranslation("compan", language), companyName, labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("company", language), companyName, labelFont, valueFont);
         addInfoRow(infoTable, getTranslation("contactPerson", language), contactName, labelFont, valueFont);
         addInfoRow(infoTable, getTranslation("address", language), address, labelFont, valueFont);
         addInfoRow(infoTable, getTranslation("email", language), email, labelFont, valueFont);
 
+    }
+    private void addStudentSection(Document document, EvaluationStagiaire evaluationStagiaire, String language) throws DocumentException{
+        Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+        Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+
+        String titleText = "en".equals(language)
+                ? "IDENTIFICATION OF THE INTERN"
+                : "IDENTIFICATION DU STAGIAIRE";
+        Paragraph sectionTitle = new Paragraph(titleText, sectionFont);
+        sectionTitle.setSpacingBefore(10f);
+        sectionTitle.setSpacingAfter(6f);
+        document.add(sectionTitle);
+
+        PdfPTable infoTable = new PdfPTable(2);
+        infoTable.setWidthPercentage(100);
+        infoTable.setWidths(new float[]{3f, 7f});
+        infoTable.setSpacingAfter(8f);
+
+        String studentName = evaluationStagiaire.getStudent().getFirstName()
+                + evaluationStagiaire.getStudent().getLastName();
+        String internshipDate = evaluationStagiaire.getInternshipOffer().getStartDate().toString();
+
+        addInfoRow(infoTable, getTranslation("studentName", language), studentName, labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("internshipDate", language), internshipDate, labelFont, valueFont);
+
+        String stageText;
+        if ("en".equals("language")){
+            stageText = "Internship (circle one):  1    2";
+        }
+        else{
+            stageText = "Stage (encercler):  1   2";
+        }
+        addInfoRow(infoTable, "" , stageText, labelFont, valueFont);
+
+    }
+    private void addEvaluationSection(Document document, EvaluationFormData formData, String language) throws DocumentException{
+        Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+        Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.ITALIC);
+
+        Map<String, CategoryData> categories = getEvaluationCategoriesTeacher(language);
+
+        for(Map.Entry<String, CategoryData> entry: categories.entrySet()){
+            String categoryKey = entry.getKey();
+            CategoryData cat = entry.getValue();
+            List<QuestionResponse> responses = formData.categories().get(entry.getKey());
+
+            document.add(new Paragraph(cat.getTitle(), categoryFont));
+            document.add(Chunk.NEWLINE);
+
+            PdfPTable table = new PdfPTable(6);
+            table.setWidthPercentage(100);
+            table.setWidths(new float[]{5f, 2f, 2f, 2f, 2f, 2f});
+
+            for(String header: getRatingLabels(language)){
+                PdfPCell cell = new PdfPCell(new Phrase(header, smallFont));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                table.addCell(cell);
+            }
+
+            for (int i = 0 ; i < cat.getQuestions().size(); i++){
+                String questionText = cat.getQuestions().get(i);
+                QuestionResponse response = responses != null && i < responses.size()
+                        ? responses.get(i): null;
+                table.addCell(new Phrase(questionText, questionFont));
+                String rating = response != null ? response.rating() : "";
+
+                for(String option: getRatingKeys(language)){
+                    String symbol = option.equals(rating) ? "☑" : "☐";
+                    PdfPCell cell = new PdfPCell(new Phrase(symbol, questionFont));
+                    cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    table.addCell(cell);
+                }
+            }
+            document.add(table);
+            document.add(Chunk.NEWLINE);
+
+            if(categoryKey.equals("tasks"))
+                addHoursTable(document, formData, language);
+
+            if(categoryKey.equals("conditions"))
+                addSalarySection(document, formData, language);
+        }
+    }
+
+    private void addHoursTable(Document document,
+                               EvaluationFormData formData, String language) throws DocumentException{
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
+        Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+
+        PdfPTable hoursTable = new PdfPTable(2);
+        hoursTable.setWidthPercentage(70);
+        hoursTable.setSpacingBefore(4f);
+        hoursTable.setSpacingAfter(10f);
+        hoursTable.setWidths(new float[]{4f, 3f});
+
+        String m1 = "en".equals(language) ? "First month hours": "Premier mois (heures)";
+        String m2 = "en".equals(language) ? "Second month hours": "Deuxième mois (heures)";
+        String m3 = "en".equals(language) ? "Third month hours": "Troisième mois (heures)";
+
+        hoursTable.addCell(new Phrase(m1, labelFont));
+        hoursTable.addCell(new Phrase(
+                formData.firstMonthsHours() == null ? "____________": formData.firstMonthsHours().toString(),
+                valueFont
+        ));
+        hoursTable.addCell(new Phrase(m2, labelFont));
+        hoursTable.addCell(new Phrase(
+                formData.secondMonthsHours() == null ? "____________": formData.secondMonthsHours().toString(),
+                valueFont
+        ));
+        hoursTable.addCell(new Phrase(m3, labelFont));
+        hoursTable.addCell(new Phrase(
+                formData.thirdMonthHours() == null ? "____________": formData.thirdMonthHours().toString(),
+                valueFont
+        ));
+        document.add(hoursTable);
+    }
+
+    private void addSalarySection(Document document, EvaluationFormData formData, String language) throws DocumentException{
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
+        Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+
+        PdfPTable salaryTable = new PdfPTable(2);
+        salaryTable.setWidthPercentage(50);
+        salaryTable.setSpacingBefore(4f);
+        salaryTable.setWidths(new float[]{2f, 3f});
+
+        String label = "en".equals(language) ? "To precise": "Précisez";
+        salaryTable.addCell(new Phrase(label, labelFont));
+        salaryTable.addCell(new Phrase(
+                formData.salaryHours() == null || formData.salaryHours().isBlank()
+                ? "_______/ h" : formData.salaryHours() + " $/h",
+                valueFont
+        ));
+        document.add(salaryTable);
     }
 
     private void addGeneralComments(Document document, EvaluationFormData formData, String language) throws DocumentException {
@@ -895,6 +1102,15 @@ public class PDFGeneratorService {
                 document.add(comments);
             }
         }
+    }
+    private List<String> getRatingLabels(String language) {
+        return "en".equals(language)
+                ? List.of("Strongly Agree", "Agree", "Disagree", "Strongly Disagree", "Impossible to say")
+                : List.of("Totalement en accord", "Plutôt en accord", "Plutôt en désaccord", "Totalement en désaccord", "Impossible de se prononcer");
+    }
+
+    private List<String> getRatingKeys(String language) {
+        return List.of("strong_agree", "agree", "disagree", "strong_disagree", "na");
     }
     private void addInfoRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {
         PdfPCell left = new PdfPCell(new Phrase(label == null ? "" : label, labelFont));
@@ -935,17 +1151,33 @@ public class PDFGeneratorService {
     }
 
     private String getTranslation(String key, String language) {
-        Map<String, String> translations = Map.of(
-                "studentName", "en".equals(language) ? "Student Name:" : "Nom de l'élève:",
-                "program", "en".equals(language) ? "Program:" : "Programme d'études:",
-                "company", "en".equals(language) ? "Company Name:" : "Nom de l'entreprise:",
-                "supervisor", "en".equals(language) ? "Supervisor:" : "Nom du superviseur:",
-                "position", "en".equals(language) ? "Position:" : "Fonction:",
-                "evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:",
-                "contactPerson", "en".equals(language) ? "Contact Person:": "Personne contact:",
-                "address", "en".equals(language) ? "Address:": "Adresse:",
-                "email", "en".equals(language) ? "Email:": "Courriel:"
+        Map<String, String> translations = Map.ofEntries(
+                Map.entry("studentName", "en".equals(language) ? "Student Name:" : "Nom de l'élève:"),
+                Map.entry("program", "en".equals(language) ? "Student Name:" : "Nom de l'élève:"),
+                Map.entry("company", "en".equals(language) ? "Company Name:" : "Nom de l'entreprise:"),
+                Map.entry("supervisor", "en".equals(language) ? "Supervisor:" : "Nom du superviseur:"),
+                Map.entry("position", "en".equals(language) ? "Position:" : "Fonction:"),
+                Map.entry("evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:"),
+                Map.entry("contactPerson", "en".equals(language) ? "Contact Person:": "Personne contact:"),
+                Map.entry("address", "en".equals(language) ? "Address:": "Adresse:"),
+                Map.entry("email", "en".equals(language) ? "Email:": "Courriel:"),
+                Map.entry("internName", "en".equals(language) ? "Name of the Intern": "Nom du stagiaire"),
+                Map.entry("internshipDate", "en".equals(language) ? "Internship Date": "Date du stage")
+
         );
+//        Map<String, String> translations = Map.of(
+//                "studentName", "en".equals(language) ? "Student Name:" : "Nom de l'élève:",
+//                "program", "en".equals(language) ? "Program:" : "Programme d'études:",
+//                "company", "en".equals(language) ? "Company Name:" : "Nom de l'entreprise:",
+//                "supervisor", "en".equals(language) ? "Supervisor:" : "Nom du superviseur:",
+//                "position", "en".equals(language) ? "Position:" : "Fonction:",
+//                "evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:",
+//                "contactPerson", "en".equals(language) ? "Contact Person:": "Personne contact:",
+//                "address", "en".equals(language) ? "Address:": "Adresse:",
+//                "email", "en".equals(language) ? "Email:": "Courriel:",
+//                "internName", "en".equals(language) ? "Name of the Intern": "Nom du stagiaire",
+//                "internshipDate", "en".equals(language) ? "Internship Date": "Date du stage"
+//        );
         return translations.getOrDefault(key, key);
     }
     private String translateProgram(String programKey, String language) {

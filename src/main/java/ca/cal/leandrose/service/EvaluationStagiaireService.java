@@ -81,14 +81,24 @@ public class EvaluationStagiaireService {
         return new EvaluationInfoDto(studentInfo, internshipInfo);
     }
 
-    public EvaluationStagiaireDto generateEvaluationPdf(Long evaluationId, EvaluationFormData formData, String langage){
+    public EvaluationStagiaireDto generateEvaluationPdfByEmployer(Long evaluationId, EvaluationFormData formData, String langage){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 
         Prof professeur = getProfesseurFromEntenteStage(evaluation);
-        String pdfPath = pdfGeneratorService.genererEvaluationPdfParEmployeur(evaluation, formData, langage,
+        String pdfPath = pdfGeneratorService.generatedEvaluationByEmployer(evaluation, formData, langage,
                 professeur.getFirstName(), professeur.getLastName(),
                 professeur.getNameCollege(), professeur.getAddress(), professeur.getFax_machine());
+        evaluation.setPdfFilePath(pdfPath);
+        evaluation.setSubmitted(true);
+        EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
+        return mapToDto(savedEvaluation);
+    }
+    public EvaluationStagiaireDto generateEvaluationByTeacher(Long evaluationId, EvaluationFormData formData, String langage){
+        EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
+                .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
+
+        String pdfPath = pdfGeneratorService.generatedEvaluationByTeacher(evaluation, formData, langage);
         evaluation.setPdfFilePath(pdfPath);
         evaluation.setSubmitted(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);

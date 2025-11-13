@@ -460,7 +460,7 @@ public class EmployeurController {
             }
 
             String lang = language.startsWith("en") ? "en" : "fr";
-            EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdf(evaluationId, formData, lang);
+            EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdfByEmployer(evaluationId, formData, lang);
 
             return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
 

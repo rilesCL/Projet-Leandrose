@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.BeanOverride;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -435,7 +434,7 @@ class EmployeurControllerTest {
     void generateEvaluationPdf_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
-        when(evaluationStagiaireService.generateEvaluationPdf(anyLong(), any(), anyString()))
+        when(evaluationStagiaireService.generateEvaluationPdfByEmployer(anyLong(), any(), anyString()))
                 .thenReturn(evaluationDto);
 
         mockMvc.perform(post("/employeur/evaluations/1/generate-pdf")
