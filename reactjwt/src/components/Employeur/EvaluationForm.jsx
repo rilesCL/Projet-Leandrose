@@ -221,11 +221,8 @@ const EvaluationForm = () => {
             ...prev,
             generalComment: comment
         }));
-        // pas de message de validation pour generalComment dans l'existant,
-        // si nécessaire on peut en ajouter et le nettoyer ici
     };
 
-    // Nettoie l'erreur liée au champ global (nom du field doit correspondre au key dans errors)
     const handleFieldChange = (field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -235,7 +232,6 @@ const EvaluationForm = () => {
             if (!prev) return prev;
             const copy = { ...prev };
             if (copy[field]) delete copy[field];
-            // cleanup si categories vide etc.
             if (Object.keys(copy).length === 0) return {};
             return copy;
         });
@@ -597,38 +593,53 @@ const EvaluationForm = () => {
                         )}
                     </div>
 
-                    {/* Discussion with Trainee */}
                     <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.discussed')}
-                        </label>
-                        <div className="flex space-x-6">
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="discussedWithTrainee"
-                                    value="true"
-                                    checked={formData.discussedWithTrainee === true}
-                                    onChange={() => handleFieldChange('discussedWithTrainee', true)}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">{t('evaluation.globalAssessment.yes')}</span>
-                            </label>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="discussedWithTrainee"
-                                    value="false"
-                                    checked={formData.discussedWithTrainee === false}
-                                    onChange={() => handleFieldChange('discussedWithTrainee', false)}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
-                            </label>
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                            {[
+                                {
+                                    value: true,
+                                    label: t('evaluation.globalAssessment.yes'),
+                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
+                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-green-600 text-green-700'
+                                },
+                                {
+                                    value: false,
+                                    label: t('evaluation.globalAssessment.no'),
+                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
+                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-red-600 text-red-700'
+                                },
+                            ].map((option) => {
+                                const isSelected = formData.discussedWithTrainee === option.value;
+                                return (
+                                    <label
+                                        key={option.value}
+                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
+                                            isSelected ? option.selectedClasses : ''
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="discussedWithTrainee"
+                                            value={option.value}
+                                            checked={isSelected}
+                                            onChange={(e) => handleFieldChange('discussedWithTrainee', option.value)}
+                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                        />
+                                        <span className="text-sm font-medium">{option.label}</span>
+                                    </label>
+                                );
+                            })}
                         </div>
-                        {errors.discussedWithTrainee && (
-                            <p className="validation-error text-sm text-red-600 mt-1">{errors.discussedWithTrainee}</p>
-                        )}
+
+                        {/* Erreur pour discussion avec stagiaire */}
+                            {errors.discussedWithTrainee && (
+                                <p className="validation-error text-sm text-red-600 mt-1">{errors.discussedWithTrainee}</p>
+                            )}
                     </div>
 
                     {/* Supervision Hours */}
@@ -651,58 +662,105 @@ const EvaluationForm = () => {
 
                     {/* Welcome Next Internship */}
                     <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.welcome_nextInternship')}
-                        </label>
-                        <div className="flex space-x-6">
-                            {['YES', 'NO', 'MAYBE'].map((option) => (
-                                <label key={option} className="flex items-center space-x-2 cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="welcomeNextInternship"
-                                        value={option}
-                                        checked={formData.welcomeNextInternship === option}
-                                        onChange={(e) => handleFieldChange('welcomeNextInternship', e.target.value)}
-                                        className="text-blue-600 focus:ring-blue-500"
-                                    />
-                                    <span className="text-gray-700">{t(`evaluation.globalAssessment.${option.toLowerCase()}`)}</span>
-                                </label>
-                            ))}
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                            {[
+                                {
+                                    value: 'YES',
+                                    label: t('evaluation.globalAssessment.yes'),
+                                    baseClasses: 'bg-blue-400 border-2 border-blue-600 text-blue-900 font-semibold hover:border-blue-700 hover:bg-blue-500/80',
+                                    selectedClasses: 'border-[3px] border-blue-800 ring-2 ring-blue-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-blue-600 text-blue-700'
+                                },
+                                {
+                                    value: 'NO',
+                                    label: t('evaluation.globalAssessment.no'),
+                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
+                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-red-600 text-red-700'
+                                },
+                                {
+                                    value: 'MAYBE',
+                                    label: t('evaluation.globalAssessment.maybe'),
+                                    baseClasses: 'bg-yellow-200 border-2 border-yellow-400 text-yellow-900 font-semibold hover:border-yellow-500 hover:bg-yellow-300/80',
+                                    selectedClasses: 'border-[3px] border-yellow-600 ring-2 ring-yellow-400 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-yellow-500 text-yellow-600'
+                                },
+                            ].map((option) => {
+                                const isSelected = formData.welcomeNextInternship === option.value;
+                                return (
+                                    <label
+                                        key={option.value}
+                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
+                                            isSelected ? option.selectedClasses : ''
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="welcomeNextInternship"
+                                            value={option.value}
+                                            checked={isSelected}
+                                            onChange={(e) => handleFieldChange('welcomeNextInternship', option.value)}
+                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                        />
+                                        <span className="text-sm font-medium">{option.label}</span>
+                                    </label>
+                                );
+                            })}
                         </div>
+
                         {errors.welcomeNextInternship && (
-                            <p className="validation-error text-sm text-red-600 mt-1">{errors.welcomeNextInternship}</p>
+                            <p className="validation-error text-sm text-red-600 mb-2">{errors.welcomeNextInternship}</p>
                         )}
                     </div>
 
                     {/* Technical Training Sufficient */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="mb-6">
+                        <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.technical_training')}
-                        </label>
-                        <div className="flex space-x-6">
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="technicalTrainingSufficient"
-                                    value="true"
-                                    checked={formData.technicalTrainingSufficient === true}
-                                    onChange={() => handleFieldChange('technicalTrainingSufficient', true)}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">{t('evaluation.globalAssessment.yes')}</span>
-                            </label>
-                            <label className="flex items-center space-x-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="technicalTrainingSufficient"
-                                    value="false"
-                                    checked={formData.technicalTrainingSufficient === false}
-                                    onChange={() => handleFieldChange('technicalTrainingSufficient', false)}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="text-gray-700">{t('evaluation.globalAssessment.no')}</span>
-                            </label>
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                            {[
+                                {
+                                    value: true,
+                                    label: t('evaluation.globalAssessment.yes'),
+                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
+                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-green-600 text-green-700'
+                                },
+                                {
+                                    value: false,
+                                    label: t('evaluation.globalAssessment.no'),
+                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
+                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
+                                    inputRing: 'focus:ring-red-600 text-red-700'
+                                },
+                            ].map((option) => {
+                                const isSelected = formData.technicalTrainingSufficient === option.value;
+                                return (
+                                    <label
+                                        key={option.value}
+                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
+                                            isSelected ? option.selectedClasses : ''
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="technicalTrainingSufficient"
+                                            value={option.value}
+                                            checked={isSelected}
+                                            onChange={(e) => handleFieldChange('technicalTrainingSufficient', option.value)}
+                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                        />
+                                        <span className="text-sm font-medium">{option.label}</span>
+                                    </label>
+                                );
+                            })}
                         </div>
+
+                        {/* Erreur pour discussion avec stagiaire */}
                         {errors.technicalTrainingSufficient && (
                             <p className="validation-error text-sm text-red-600 mt-1">{errors.technicalTrainingSufficient}</p>
                         )}
