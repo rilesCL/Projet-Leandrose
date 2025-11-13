@@ -197,9 +197,9 @@ public class PDFGeneratorService {
     // -----------------------------
     // Génération PDF d'évaluation (compact)
     // -----------------------------
-    public String genererEvaluationPdf(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language,
-                                       String profFirstName, String profLastName,
-                                       String nameCollege, String address, String fax_machine ) {
+    public String genererEvaluationPdfParEmployeur(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language,
+                                                   String profFirstName, String profLastName,
+                                                   String nameCollege, String address, String fax_machine ) {
         try {
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
             if (!Files.exists(evaluationDir)) {
@@ -239,6 +239,36 @@ public class PDFGeneratorService {
         } catch (Exception e) {
             log.error("Erreur lors de la génération du PDF d'évaluation {}", evaluationStagiaire.getId(), e);
             throw new RuntimeException("Erreur lors de la génération du PDF d'évaluation", e);
+        }
+    }
+
+    public String genererEvaluationStageParProf(EvaluationStagiaire evaluationStagiaire, String language){
+        try{
+            Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
+            if (!Files.exists(evaluationDir)) {
+                Files.createDirectories(evaluationDir);
+            }
+            String filename = "evaluation_" + evaluationStagiaire.getId() + "_" + UUID.randomUUID() + PDF_EXTENSION;
+            Path targetPath = evaluationDir.resolve(filename);
+
+            Document document = new Document(PageSize.A4, 40, 40, 36, 36);
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(targetPath.toFile()));
+
+            this.pdfWriter = writer;
+            document.open();
+
+
+            addHeaderEvaluationParProf(document, language);
+            addEmployerSection(document, evaluationStagiaire, language);
+            document.close();
+            this.pdfWriter = null;
+            writer.close();
+
+            log.info("PDF d'évaluation du prof généré avec succès : {}", targetPath);
+            return targetPath.toString();
+        }
+        catch(Exception e){
+            throw new RuntimeException("Erreur lors de la génération du PDF d’évaluation du milieu de stage", e);
         }
     }
 
@@ -776,6 +806,19 @@ public class PDFGeneratorService {
         document.add(new Chunk(line));
         document.add(Chunk.NEWLINE);
     }
+    private void  addHeaderEvaluationParProf(Document document, String language) throws DocumentException{
+        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, BaseColor.GRAY);
+        String headerText = "en".equals(language) ? "EVALUATION OF THE INTERNSHIP ENVIRONMENT": "ÉVALUATION DU MILIEU DE STAGE";
+        Paragraph header = new Paragraph(headerText, headerFont);
+        header.setAlignment(Element.ALIGN_CENTER);
+        header.setSpacingAfter(6);
+        document.add(header);
+
+        LineSeparator line = new LineSeparator();
+        line.setLineColor(BaseColor.LIGHT_GRAY);
+        document.add(new Chunk(line));
+        document.add(Chunk.NEWLINE);
+    }
 
     private void addTitleEvaluation(Document document, String language) throws DocumentException {
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, BaseColor.BLACK);
@@ -803,6 +846,36 @@ public class PDFGeneratorService {
         addInfoRow(infoTable, getTranslation("evaluationDate", language), evaluation.getDateEvaluation().format(DATE_FORMATTER), boldFont, normalFont);
         document.add(infoTable);
     }
+    private void addEmployerSection(Document document, EvaluationStagiaire evaluationStagiaire, String language) throws DocumentException{
+        Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+        Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+
+        String titleText = "en".equals(language)
+                ? "IDENTIFICATION OF THE COMPANY"
+                : "IDENTIFICATION DE L'ENTREPRISE";
+        Paragraph sectionTitle = new Paragraph(titleText, sectionFont);
+        sectionTitle.setSpacingBefore(10f);
+        sectionTitle.setSpacingAfter(6f);
+        document.add(sectionTitle);
+
+        PdfPTable infoTable = new PdfPTable(2);
+        infoTable.setWidthPercentage(100);
+        infoTable.setWidths(new float[]{3f, 7f});
+        infoTable.setSpacingAfter(8f);
+
+        String companyName = evaluationStagiaire.getEmployeur().getCompanyName();
+        String contactName = evaluationStagiaire.getEmployeur().getFirstName()
+                + evaluationStagiaire.getEmployeur().getLastName();
+        String address = evaluationStagiaire.getInternshipOffer().getAddress();
+        String email = evaluationStagiaire.getEmployeur().getEmail();
+
+        addInfoRow(infoTable, getTranslation("compan", language), companyName, labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("contactPerson", language), contactName, labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("address", language), address, labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("email", language), email, labelFont, valueFont);
+
+    }
 
     private void addGeneralComments(Document document, EvaluationFormData formData, String language) throws DocumentException {
         Object general = invokeGetter(formData, "generalComment", "getGeneralComment", "globalAppreciation", "getGlobalAppreciation");
@@ -823,17 +896,33 @@ public class PDFGeneratorService {
             }
         }
     }
-
     private void addInfoRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {
-        PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
-        labelCell.setBorder(Rectangle.NO_BORDER);
-        labelCell.setPadding(2f);
-        PdfPCell valueCell = new PdfPCell(new Phrase(value != null ? value : "", valueFont));
-        valueCell.setBorder(Rectangle.NO_BORDER);
-        valueCell.setPadding(2f);
-        table.addCell(labelCell);
-        table.addCell(valueCell);
+        PdfPCell left = new PdfPCell(new Phrase(label == null ? "" : label, labelFont));
+        left.setBorder(Rectangle.NO_BORDER);
+        left.setPadding(6f);
+        left.setVerticalAlignment(Element.ALIGN_MIDDLE);
+
+        PdfPCell right = new PdfPCell(new Phrase(value == null || value.isBlank() ? "-" : value, valueFont));
+        right.setBorder(Rectangle.NO_BORDER);
+        right.setPadding(6f);
+        right.setVerticalAlignment(Element.ALIGN_MIDDLE);
+
+        table.addCell(left);
+        table.addCell(right);
     }
+
+//    private void addInfoRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {
+//        PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
+//        labelCell.setBorder(Rectangle.NO_BORDER);
+//        labelCell.setPadding(2f);
+//        PdfPCell valueCell = new PdfPCell(new Phrase(value != null ? value : "", valueFont));
+//        valueCell.setBorder(Rectangle.NO_BORDER);
+//        valueCell.setPadding(2f);
+//        table.addCell(labelCell);
+//        table.addCell(valueCell);
+//    }
+
+
 
     private void addFooterEvaluation(Document document, String language) throws DocumentException {
         Font footerFont = FontFactory.getFont(FontFactory.HELVETICA, 8, BaseColor.GRAY);
@@ -849,10 +938,13 @@ public class PDFGeneratorService {
         Map<String, String> translations = Map.of(
                 "studentName", "en".equals(language) ? "Student Name:" : "Nom de l'élève:",
                 "program", "en".equals(language) ? "Program:" : "Programme d'études:",
-                "company", "en".equals(language) ? "Company:" : "Nom de l'entreprise:",
+                "company", "en".equals(language) ? "Company Name:" : "Nom de l'entreprise:",
                 "supervisor", "en".equals(language) ? "Supervisor:" : "Nom du superviseur:",
                 "position", "en".equals(language) ? "Position:" : "Fonction:",
-                "evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:"
+                "evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:",
+                "contactPerson", "en".equals(language) ? "Contact Person:": "Personne contact:",
+                "address", "en".equals(language) ? "Address:": "Adresse:",
+                "email", "en".equals(language) ? "Email:": "Courriel:"
         );
         return translations.getOrDefault(key, key);
     }

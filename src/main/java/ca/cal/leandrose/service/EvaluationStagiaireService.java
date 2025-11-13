@@ -86,7 +86,7 @@ public class EvaluationStagiaireService {
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 
         Prof professeur = getProfesseurFromEntenteStage(evaluation);
-        String pdfPath = pdfGeneratorService.genererEvaluationPdf(evaluation, formData, langage,
+        String pdfPath = pdfGeneratorService.genererEvaluationPdfParEmployeur(evaluation, formData, langage,
                 professeur.getFirstName(), professeur.getLastName(),
                 professeur.getNameCollege(), professeur.getAddress(), professeur.getFax_machine());
         evaluation.setPdfFilePath(pdfPath);
