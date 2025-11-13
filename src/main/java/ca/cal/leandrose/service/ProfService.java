@@ -26,6 +26,8 @@ public class ProfService {
       String email,
       String rawPassword,
       String employeeNumber,
+      String nomCollege,
+      String addresse,
       String department) {
     if (firstName == null || firstName.trim().isEmpty()) {
       throw new IllegalArgumentException("Le prénom est obligatoire");
@@ -57,6 +59,8 @@ public class ProfService {
             .email(email)
             .password(passwordEncoder.encode(rawPassword))
             .employeeNumber(employeeNumber)
+            .nomCollege(nomCollege)
+            .addresse(addresse)
             .department(department)
             .build();
 

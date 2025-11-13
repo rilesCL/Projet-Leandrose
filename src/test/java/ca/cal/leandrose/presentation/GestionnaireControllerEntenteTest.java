@@ -45,6 +45,7 @@ class GestionnaireControllerEntenteTest {
   @MockitoBean private CvService cvService;
 
   @MockitoBean private UserAppService userAppService;
+  @MockitoBean private ProfService profService;
 
   private EntenteStageDto ententeDto;
   private CandidatureDto candidatureDto;

@@ -341,6 +341,8 @@ public class LeandrOseApplication {
                 "marie-claude.beauchamp@college.ca",
                 "Password123!",
                 "PROF001",
+                "Collège Mainsonneuve",
+                "3800 R. Sherbrooke E, Montréal, QC H1X 2A2",
                 "Département d'informatique");
         System.out.println(
             "✓ Prof créé: "
@@ -358,6 +360,8 @@ public class LeandrOseApplication {
                 "jf.gagnon@college.ca",
                 "Password123!",
                 "PROF002",
+                "Collège Ahuntsic",
+                "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
                 "Département de génie logiciel");
         System.out.println(
             "✓ Prof créé: "

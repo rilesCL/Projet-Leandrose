@@ -11,6 +11,8 @@ import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationInfoDto;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationStagiaireDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -219,12 +221,16 @@ class EmployeurControllerTest {
     when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
     doNothing().when(convocationService).addConvocation(anyLong(), any(), anyString(), anyString());
 
+    ObjectMapper testObjectMapper = new ObjectMapper();
+    testObjectMapper.registerModule(new JavaTimeModule());
+    testObjectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
     mockMvc
         .perform(
             post("/employeur/candidatures/50/convocations")
                 .header("Authorization", "Bearer token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(testObjectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(content().string("Convocation créée avec succès"));
   }
