@@ -942,7 +942,8 @@
       "missing_studentId_Or_offerId": "Missing student ID or offer number",
       "evaluation_exists": "An evaluation already exists for this intern. You will be redirected to the list of evaluations.",
       "evaluationId_received": "No evaluation ID was received from the server.",
-      "submit": "Error submitting the evaluation. Please try again later."
+      "submit": "Error submitting the evaluation. Please try again later.",
+      "initializationError": "Error initializing evaluation form"
     },
     "title": "Intern Evaluation Form",
     "studentInfo": "Student Information",
@@ -964,7 +965,6 @@
     "pdfGenerationError": "Error generating PDF",
     "previewError": "Error previewing PDF",
     "loading": "Loading evaluation form...",
-    "initializationError": "Error initializing evaluation form",
     "submittedSuccess": "Evaluation submitted successfully!",
     "backToEvaluationsList": "Back to Evaluations List",
 

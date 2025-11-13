@@ -172,7 +172,7 @@ const EvaluationForm = () => {
                 });
                 setFormData(initialFormData);
             } catch (err) {
-                const errorMessage = err?.response?.data?.message || err?.message || t('evaluation.initializationError');
+                const errorMessage = err?.response?.data?.message || err?.message || t('evaluation.errors.initializationError');
                 setError(errorMessage);
             } finally {
                 setLoading(false);
@@ -275,17 +275,20 @@ const EvaluationForm = () => {
             const createResponse = await createEvaluation(studentId, offerId);
             const evalId = createResponse.evaluationId || createResponse.id || createResponse;
             if (!evalId) {
-                throw new Error("Evaluation ID not received from server.");
+                throw new Error(t("evaluation.errors.evaluationId_received"));
             }
             setEvaluationId(evalId);
             await new Promise(resolve => setTimeout(resolve, 500));
             await generateEvaluationPdfWithId(evalId, formData);
             setSubmitted(true);
-            setSuccessMessage("Evaluation submitted successfully!");
+            setSuccessMessage(t("evaluation.submittedSuccess"));
+            setTimeout(() => {
+                navigate("/dashboard/employeur/evaluations")
+            }, 2000)
         } catch (err) {
-            console.error("Error in evaluation submission:", err);
+            console.error(t("evaluation.errors.submit"), err);
             const errorMessage =
-                err?.response?.data?.message || err?.message || "An error occurred while submitting the evaluation.";
+                err?.response?.data?.message || err?.message || t("evaluation.errors.submit");
             setError(errorMessage);
         } finally {
             setSubmitting(false);
