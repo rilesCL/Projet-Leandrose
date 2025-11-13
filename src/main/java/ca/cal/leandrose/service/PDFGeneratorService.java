@@ -4,6 +4,7 @@ import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.service.dto.evaluation.CategoryData;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
 import ca.cal.leandrose.service.dto.evaluation.QuestionResponse;
+import ca.cal.leandrose.service.dto.evaluation.WorkShiftRange;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -263,6 +264,8 @@ public class PDFGeneratorService {
             addEmployerSection(document, evaluationStagiaire, language);
             addStudentSection(document, evaluationStagiaire, language);
             addEvaluationSection(document, formData, language);
+            addObservationsGeneralesSection(document, formData, language);
+            addTeacherSignature(document, language);
             document.close();
             this.pdfWriter = null;
             writer.close();
@@ -1030,6 +1033,207 @@ public class PDFGeneratorService {
             if(categoryKey.equals("conditions"))
                 addSalarySection(document, formData, language);
         }
+    }
+
+    private void addObservationsGeneralesSection(Document document, EvaluationFormData formData, String language)
+            throws DocumentException{
+        Font sectionTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+
+        Paragraph p = new Paragraph(
+                t("OBSERVATIONS GÉNÉRALES", "GENERAL OBSERVATIONS", language),
+                sectionTitle);
+
+        p.setSpacingBefore(10f);
+        p.setSpacingAfter(6f);
+        document.add(p);
+
+        PdfPTable table = new PdfPTable(new float[]{3f, 1f});
+        table.setWidthPercentage(100);
+        table.setSpacingBefore(5f);
+
+        PdfPTable block1 = new PdfPTable(2);
+        block1.setWidthPercentage(100);
+        block1.addCell(makeLabel(
+                "Ce milieu est à privilégier pour le :",
+                "This environmenet should be prioritized for :",
+                language,
+                labelFont
+        ));
+        block1.addCell(makeChoiceRow(
+                formData.preferredStage() != null && formData.preferredStage() ==1,
+                formData.preferredStage() != null && formData.preferredStage() ==2,
+                "premier stage", "first internship",
+                "deuxième stage", "second internship",
+                language,
+                labelFont
+
+                ));
+        table.addCell(makeContainerCell(block1));
+        table.addCell(new PdfPCell());
+
+        //Capacité
+        PdfPTable block2 = new PdfPTable(2);
+        block2.setWidthPercentage(100);
+        block2.addCell(makeLabel(
+                "Ce milieu est ouvert à accueillir",
+                "this envionment is able to welcome",
+                language,
+                labelFont
+        ));
+        PdfPTable capacityChoices = new PdfPTable(1);
+        capacityChoices.setWidthPercentage(100);
+
+        capacityChoices.addCell(makeCheckboxLine("un stagiaire", "one intern",
+                formData.capacity() == 1, language, labelFont));
+        capacityChoices.addCell(makeCheckboxLine("deux stagiaires", "two interns",
+                formData.capacity() == 2, language, labelFont));
+        capacityChoices.addCell(makeCheckboxLine("trois stagiaires", "three interns",
+                formData.capacity() == 3, language, labelFont));
+        capacityChoices.addCell(makeCheckboxLine("plus de trois", "more than three",
+                formData.capacity() == 4, language, labelFont));
+
+        block2.addCell(makeContainerCell(capacityChoices));
+        table.addCell(makeContainerCell(block2));
+        table.addCell(new PdfPCell());
+
+        //Prochain stage
+
+        table.addCell(makeLabel(
+                "Ce milieu désire accueillir le même stagiaire pour un prochain stage",
+                "This environment wishes to welcome the same intern for a future internship",
+                language,
+                labelFont
+        ));
+
+        PdfPTable yesNoTable = new PdfPTable(2);
+        yesNoTable.setWidthPercentage(100);
+        boolean same = formData.sameTraineeNextStage() != null && formData.sameTraineeNextStage();
+
+        yesNoTable.addCell(makeYesNoCell("OUI", "YES", same, language));
+        yesNoTable.addCell(makeYesNoCell("NON", "NO", !same, language));
+
+        table.addCell(makeContainerCell(yesNoTable));
+
+        //Shift variables
+        PdfPTable shifts = new PdfPTable(1);
+        shifts.setWidthPercentage(100);
+        shifts.addCell(makeLabel(
+                "Ce milieu offre des quarts de travail variables :",
+                "This environment offers variable work shifts:",
+                language,
+                labelFont
+        ));
+        for (int i = 0; i < 3; i++){
+            WorkShiftRange range =
+                    (formData.workShifts() != null && formData.workShifts().size() > i)
+                            ? formData.workShifts().get(i)
+                            : new WorkShiftRange("____", "____");
+            String lineFr = "De " + range.from() + "à " + range.to();
+            String lineEn = "From " + range.from() + "to " + range.to();
+
+            shifts.addCell(new Phrase(t(lineFr, lineEn, language), valueFont));
+        }
+        table.addCell(makeContainerCell(shifts));
+        table.addCell(new PdfPCell());
+        document.add(table);
+    }
+
+    private PdfPCell makeLabel(String fr, String en, String language, Font font){
+        PdfPCell cell = new PdfPCell(new Phrase(t(fr, en, language), font));
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setPadding(4f);
+        return cell;
+    }
+    private PdfPCell makeContainerCell(PdfPTable table){
+        PdfPCell cell = new PdfPCell(table);
+        cell.setBorder(Rectangle.BOX);
+        cell.setPadding(4f);
+        return cell;
+    }
+    private PdfPCell makeCheckboxLine(String fr, String en, boolean checked, String language, Font font){
+        String box = checked ? "[X] " : "[ ] ";
+        PdfPCell cell = new PdfPCell(new Phrase(box + t(fr, en, language), font));
+        cell.setBorder(Rectangle.NO_BORDER);
+        return cell;
+    }
+
+    private PdfPCell makeYesNoCell(String fr, String en, boolean checked, String language){
+        Phrase p = new Phrase(
+                t(fr, en, language) + " " + (checked ? "[X]" : "[ ]")
+        );
+        PdfPCell cell = new PdfPCell(p);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        return cell;
+    }
+    private PdfPCell makeChoiceRow(
+            boolean option1, boolean option2,
+            String fr1, String en1,
+            String fr2, String en2,
+            String language,
+            Font font
+    ){
+        PdfPTable table = new PdfPTable(2);
+        table.setWidthPercentage(100);
+        table.addCell(makeCheckboxLine(fr1, en1, option1, language, font));
+        table.addCell(makeCheckboxLine(fr2, en2, option2, language, font));
+
+        PdfPCell wrap = new PdfPCell(table);
+        wrap.setBorder(Rectangle.NO_BORDER);
+        return wrap;
+    }
+
+    private String t(String fr, String en, String language){
+        return "en".equals(language) ? en: fr;
+    }
+
+    private void addTeacherSignature(Document document, String language) throws DocumentException{
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+        Font boldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
+
+        LocalDate today = LocalDate.now();
+        String formattedDate = today.format(DATE_FORMATTER);
+
+        PdfPTable table = new PdfPTable(new float[]{2f, 2f});
+        table.setWidthPercentage(100);
+        table.setSpacingBefore(25f);
+
+        PdfPCell signatureCell = new PdfPCell();
+        signatureCell.setBorder(Rectangle.NO_BORDER);
+
+        Paragraph signatureLine = new Paragraph("____________________________________________________", labelFont);
+        signatureLine.setSpacingAfter(2F);
+
+        Paragraph signatureLabel = new Paragraph(
+                t(
+                        "Signature de l'enseignant responsable du stagiaire",
+                        "Signature of the teacher responsible for the intern",
+                        language
+                ),
+                boldFont
+        );
+        signatureLabel.setSpacingBefore(2f);
+        signatureCell.addElement(signatureLine);
+        signatureCell.addElement(signatureLabel);
+
+        PdfPCell dateCell = new PdfPCell();
+        dateCell.setBorder(Rectangle.NO_BORDER);
+
+        Paragraph dateLine = new Paragraph("____________________________________________________", labelFont);
+        dateLine.setSpacingAfter(2f);
+
+        Paragraph dateLabel = new Paragraph(
+                t("Date", "Date", language) + ":" + formattedDate,
+                boldFont
+        );
+        dateLabel.setSpacingBefore(2f);
+        dateCell.addElement(dateLine);
+        dateCell.addElement(dateLabel);
+
+        table.addCell(signatureCell);
+        table.addCell(dateCell);
+        document.add(table);
     }
 
     private void addHoursTable(Document document,

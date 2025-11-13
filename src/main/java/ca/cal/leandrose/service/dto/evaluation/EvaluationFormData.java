@@ -16,7 +16,11 @@ public record EvaluationFormData(
         Integer firstMonthsHours,
         Integer secondMonthsHours,
         Integer thirdMonthHours,
-        String salaryHours
+        String salaryHours,
 
+        Integer preferredStage,
+        Integer capacity,
+        Boolean sameTraineeNextStage,
+        List<WorkShiftRange> workShifts
 ) {
 }
