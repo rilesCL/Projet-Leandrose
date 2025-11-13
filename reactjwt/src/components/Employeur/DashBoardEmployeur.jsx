@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
 import InternshipOffersList from "./InternshipOffersList.jsx";
-import { useNavigate, Link } from "react-router-dom";
-import {FaSignature, FaSignOutAlt} from "react-icons/fa";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../LanguageSelector.jsx";
+import EmployeurListeStages from "./EmployeurListeStages.jsx";
+import EvaluationList from "./EvaluationList.jsx";
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t, i18n } = useTranslation();
     const [userName, setUserName] = useState("");
+
+    const [section, setSection] = useState(() => {
+        const params = new URLSearchParams(location.search);
+        const raw = (params.get('tab') || params.get('section') || 'offers').toLowerCase();
+        if (["offers", "ententes", "evaluations"].includes(raw)) return raw;
+        return 'offers';
+    });
 
     const handleLogout = () => {
         sessionStorage.clear();
@@ -43,6 +53,23 @@ export default function DashBoardEmployeur() {
         fetchUserInfo();
     }, [navigate]);
 
+    const Btn = ({ target, children }) => (
+        <button
+            onClick={() => setSection(target)}
+            className={`relative flex-1 min-w-[140px] px-6 py-3.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out ${
+                section === target
+                    ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-500/50 scale-105'
+                    : 'bg-white text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 hover:shadow-md shadow-sm border border-gray-200'
+            }`}
+        >
+            {children}
+            {section === target && (
+                <span
+                    className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-indigo-600 rounded-full"></span>
+            )}
+        </button>
+    );
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white shadow">
@@ -58,26 +85,6 @@ export default function DashBoardEmployeur() {
                             className="flex items-center space-x-4"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
-                            <Link to="/dashboard/employeur/ententes"
-                                  className="flex items-center text-gray-600 hover:text-indigo-600 transition"
-                            >
-                                <FaSignature className="mr-1"/>
-                                <span className="hidden sm:inline">
-                                    {t("dashboardEmployeur.stage")}
-                                </span>
-
-                            </Link>
-
-                            <Link to={`/dashboard/employeur/evaluations`}
-                                  className="flex items-center text-gray-600 hover:text-indigo-600 transition"
-                            >
-                                <FaSignature className="mr-1"/>
-                                <span className="hidden sm:inline">
-                                    Evaluations
-                                    {/*{t("dashboardEmployeur.stage")}*/}
-                                </span>
-
-                            </Link>
                             <LanguageSelector />
                             <button
                                 onClick={handleLogout}
@@ -102,7 +109,39 @@ export default function DashBoardEmployeur() {
                         {t("dashboardEmployeur.description")}
                     </p>
 
-                    <InternshipOffersList />
+                    {/* Tab Navigation */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-2.5 mb-6">
+                        <div className="flex flex-wrap gap-2">
+                            <Btn target="offers">
+                                {t("dashboardEmployeur.tabs.offers") || "Offres de stage"}
+                            </Btn>
+                            <Btn target="ententes">
+                                {t("dashboardEmployeur.tabs.ententes") || "Ententes"}
+                            </Btn>
+                            <Btn target="evaluations">
+                                {t("dashboardEmployeur.tabs.evaluations") || "Évaluations"}
+                            </Btn>
+                        </div>
+                    </div>
+
+                    {/* Content Sections */}
+                    {section === 'offers' && (
+                        <div className="space-y-8">
+                            <InternshipOffersList />
+                        </div>
+                    )}
+
+                    {section === 'ententes' && (
+                        <div className="space-y-8">
+                            <EmployeurListeStages />
+                        </div>
+                    )}
+
+                    {section === 'evaluations' && (
+                        <div className="space-y-8">
+                            <EvaluationList />
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

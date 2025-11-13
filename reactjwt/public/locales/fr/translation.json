@@ -215,7 +215,12 @@
     "navigation": {
       "mainNavigation": "Navigation principale"
     },
-    "stage": "Entente de stage"
+    "stage": "Entente de stage",
+    "tabs": {
+      "offers": "Offres de stage",
+      "ententes": "Ententes",
+      "evaluations": "Évaluations"
+    }
   },
   "dashboardGestionnaire": {
     "logout": "Se déconnecter",
