@@ -87,7 +87,8 @@ public class EvaluationStagiaireService {
 
         Prof professeur = getProfesseurFromEntenteStage(evaluation);
         String pdfPath = pdfGeneratorService.genererEvaluationPdf(evaluation, formData, langage,
-                professeur.getFirstName(), professeur.getLastName());
+                professeur.getFirstName(), professeur.getLastName(),
+                professeur.getNameCollege(), professeur.getAddress(), professeur.getFax_machine());
         evaluation.setPdfFilePath(pdfPath);
         evaluation.setSubmitted(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);

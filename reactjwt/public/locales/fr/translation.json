@@ -927,8 +927,10 @@
     "errors": {
       "checking_evaluation": "Évaluation de la vérification des erreurs pour l'étudiant: ",
       "fetching_evaluations": "Erreur lors de la récupération des accords éligibles",
-      "pdf_loading": "Erreur lors du chargement du PDF"
-    }
+      "pdf_loading": "Erreur lors du chargement du PDF",
+      "no_teacher_assigned": "Aucun enseignant n'est assigné à ce stage."
+    },
+    "awaiting_teacher": "En attente d'un professeur."
   },
   "evaluation": {
     "submitting": "Soumission de l'évaluation...",
@@ -947,7 +949,8 @@
       "missing_studentId_Or_offerId": "Carte d'étudiant ou numéro d'offre manquant",
       "evaluation_exists": "Une évaluation existe déjà pour ce stagiaire. Vous allez être redirigé vers la liste des évaluations.",
       "evaluationId_received": "Aucun identifiant d'évaluation n'a été reçu du serveur.",
-      "submit": "Erreur lors de la soumission de l'évaluation. Veuillez réessayer plus tard."
+      "submit": "Erreur lors de la soumission de l'évaluation. Veuillez réessayer plus tard.",
+      "initializationError": "Erreur lors de l'initialisation du formulaire d'évaluation"
     },
     "title": "Fiche d'Évaluation du Stagiaire",
     "studentInfo": "Informations de l'Étudiant",
@@ -969,7 +972,6 @@
     "pdfGenerationError": "Erreur lors de la génération du PDF",
     "previewError": "Erreur lors de l'aperçu du PDF",
     "loading": "Chargement du formulaire d'évaluation...",
-    "initializationError": "Erreur lors de l'initialisation du formulaire d'évaluation",
     "submittedSuccess": "Évaluation soumise avec succès!",
     "backToEvaluationsList": "Retour à la liste des évaluations",
 

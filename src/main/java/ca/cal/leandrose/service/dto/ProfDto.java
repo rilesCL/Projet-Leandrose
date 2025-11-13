@@ -10,6 +10,9 @@ import java.util.Map;
 @Data
 public class ProfDto extends UserDTO {
   private String employeeNumber;
+  private String nameCollege;
+  private String address;
+  private String fax_machine;
   private String department;
   private Map<String, String> error;
 
@@ -21,9 +24,15 @@ public class ProfDto extends UserDTO {
       String email,
       Role role,
       String employeeNumber,
+      String nameCollege,
+      String address,
+      String fax_machine,
       String department) {
     super(id, firstName, lastName, email, role);
     this.employeeNumber = employeeNumber;
+    this.nameCollege = nameCollege;
+    this.address = address;
+    this.fax_machine = fax_machine;
     this.department = department;
   }
 
@@ -41,6 +50,9 @@ public class ProfDto extends UserDTO {
         .email(prof.getEmail())
         .role(prof.getRole())
         .employeeNumber(prof.getEmployeeNumber())
+        .nameCollege(prof.getNameCollege())
+        .address(prof.getAddress())
+        .fax_machine(prof.getFax_machine())
         .department(prof.getDepartment())
         .build();
   }

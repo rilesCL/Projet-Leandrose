@@ -43,11 +43,14 @@ class ProfServiceTest {
     Prof savedProf =
         Prof.builder()
             .id(1L)
-            .firstName("Jean")
+           .firstName("Jean")
             .lastName("Dupont")
             .email("jean.dupont@college.ca")
             .password(encodedPassword)
             .employeeNumber("P12345")
+            .nameCollege("Collège Ahuntsic")
+            .address("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+            .fax_machine("(514) 364-7130")
             .department("Informatique")
             .build();
 
@@ -60,6 +63,9 @@ class ProfServiceTest {
             "jean.dupont@college.ca",
             rawPassword,
             "P12345",
+            "Collège Ahuntsic",
+             "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
+            "(514) 364-7130",
             "Informatique");
 
     assertNotNull(dto);
@@ -68,6 +74,9 @@ class ProfServiceTest {
     assertEquals("Dupont", dto.getLastName());
     assertEquals("jean.dupont@college.ca", dto.getEmail());
     assertEquals("P12345", dto.getEmployeeNumber());
+    assertEquals("Collège Ahuntsic", dto.getNameCollege());
+    assertEquals("9155 Rue St-Hubert, Montréal, QC H2M 1Y8", dto.getAddress());
+    assertEquals("(514) 364-7130", dto.getFax_machine());
     assertEquals("Informatique", dto.getDepartment());
 
     verify(profRepository, times(1)).save(any(Prof.class));
@@ -81,13 +90,16 @@ class ProfServiceTest {
         assertThrows(
             IllegalArgumentException.class,
             () ->
-                profService.createProf(
-                    "Jean",
-                    "Dupont",
-                    "jean.dupont@college.ca",
-                    "password123",
-                    "P12345",
-                    "Informatique"));
+                    profService.createProf(
+                            "Jean",
+                            "Dupont",
+                            "jean.dupont@college.ca",
+                            "password123",
+                            "P12345",
+                            "Collège Ahuntsic",
+                            "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
+                            "(514) 364-7130",
+                            "Informatique"));
 
     assertEquals("Cet email est déjà utilisé", exception.getMessage());
     verify(profRepository, never()).save(any(Prof.class));
@@ -102,13 +114,16 @@ class ProfServiceTest {
         assertThrows(
             IllegalArgumentException.class,
             () ->
-                profService.createProf(
-                    "Jean",
-                    "Dupont",
-                    "jean.dupont@college.ca",
-                    "password123",
-                    "P12345",
-                    "Informatique"));
+                    profService.createProf(
+                            "Jean",
+                            "Dupont",
+                            "jean.dupont@college.ca",
+                            "password123",
+                            "P12345",
+                            "Collège Ahuntsic",
+                            "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
+                            "(514) 364-7130",
+                            "Informatique"));
 
     assertEquals("Ce numéro d'employé est déjà utilisé", exception.getMessage());
     verify(profRepository, never()).save(any(Prof.class));
@@ -120,32 +135,38 @@ class ProfServiceTest {
         IllegalArgumentException.class,
         () ->
             profService.createProf(
-                null, "Dupont", "jean.dupont@college.ca", "password123", "P12345", "Informatique"));
+                null, "Dupont", "jean.dupont@college.ca", "password123",
+                    "P12345", "Collège Ahuntsic",
+                    " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130",  "Informatique"));
 
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            profService.createProf(
-                "Jean", null, "jean.dupont@college.ca", "password123", "P12345", "Informatique"));
-
+                profService.createProf(
+                        "Jean", null, "jean.dupont@college.ca", "password123",
+                        "P12345", "Collège Ahuntsic",
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130",  "Informatique"));
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            profService.createProf(
-                "Jean", "Dupont", null, "password123", "P12345", "Informatique"));
-
+                profService.createProf(
+                        "Jean", "Dupont", null, "password123",
+                        "P12345", "Collège Ahuntsic",
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130", "Informatique"));
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            profService.createProf(
-                "Jean", "Dupont", "jean.dupont@college.ca", null, "P12345", "Informatique"));
-
+                profService.createProf(
+                        "Jean", "Dupont", "jean.dupont@college.ca", null,
+                        "P12345", "Collège Ahuntsic",
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130", "Informatique"));
     assertThrows(
         IllegalArgumentException.class,
         () ->
-            profService.createProf(
-                "Jean", "Dupont", "jean.dupont@college.ca", "password123", null, "Informatique"));
-
+                profService.createProf(
+                        "Jean", "Dupont", "jean.dupont@college.ca", "password123",
+                        null, "Collège Ahuntsic",
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8",  "(514) 364-7130", "Informatique"));
     verify(profRepository, never()).save(any(Prof.class));
   }
 
@@ -153,14 +174,17 @@ class ProfServiceTest {
   void testGetProfById() {
     Prof prof =
         Prof.builder()
-            .id(1L)
-            .firstName("Jean")
-            .lastName("Dupont")
-            .email("jean.dupont@college.ca")
-            .password("encodedPass")
-            .employeeNumber("P12345")
-            .department("Informatique")
-            .build();
+                .id(1L)
+                .firstName("Jean")
+                .lastName("Dupont")
+                .email("jean.dupont@college.ca")
+                .password("encodedPass")
+                .employeeNumber("P12345")
+                .nameCollege("Collège Ahuntsic")
+                .address("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+                .fax_machine("(514) 364-7130")
+                .department("Informatique")
+                .build();
 
     when(profRepository.findById(1L)).thenReturn(Optional.of(prof));
 
@@ -191,14 +215,17 @@ class ProfServiceTest {
   void testGetAllProfs() {
     Prof prof1 =
         Prof.builder()
-            .id(1L)
-            .firstName("Jean")
-            .lastName("Dupont")
-            .email("jean.dupont@college.ca")
-            .password("encodedPass")
-            .employeeNumber("P12345")
-            .department("Informatique")
-            .build();
+                .id(1L)
+                .firstName("Jean")
+                .lastName("Dupont")
+                .email("jean.dupont@college.ca")
+                .password("encodedPass")
+                .employeeNumber("P12345")
+                .nameCollege("Collège Ahuntsic")
+                .address("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+                .fax_machine("(514) 364-7130")
+                .department("Informatique")
+                .build();
 
     Prof prof2 =
         Prof.builder()
@@ -208,6 +235,9 @@ class ProfServiceTest {
             .email("marie.martin@college.ca")
             .password("encodedPass")
             .employeeNumber("P54321")
+            .nameCollege("College de Mainsonneuve")
+            .address("3800 R. Sherbrooke E, Montréal, QC H1X 2A2")
+            .fax_machine("(514) 364-7130")
             .department("Mathématiques")
             .build();
 

@@ -201,7 +201,8 @@ public class PDFGeneratorService {
     // Génération PDF d'évaluation (compact)
     // -----------------------------
     public String genererEvaluationPdf(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language,
-                                       String profFirstName, String profLastName) {
+                                       String profFirstName, String profLastName,
+                                       String nameCollege, String address, String fax_machine ) {
         try {
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
             if (!Files.exists(evaluationDir)) {
@@ -228,7 +229,7 @@ public class PDFGeneratorService {
 
             // Force newPage pour la page finale d'appréciation globale
             document.newPage();
-            addTraineeEvaluationPage(document, formData, language, profFirstName, profLastName);
+            addTraineeEvaluationPage(document, formData, language, profFirstName, profLastName, nameCollege, address, fax_machine);
 
             addFooterEvaluation(document, language);
 
@@ -503,7 +504,9 @@ public class PDFGeneratorService {
     // -----------------------------
     // Page d'appréciation globale — réintègre les descriptions complètes (liste verticale)
     // -----------------------------
-    private void addTraineeEvaluationPage(Document document, EvaluationFormData formData, String language, String profFirstName, String profLastName) throws DocumentException {
+    private void addTraineeEvaluationPage(Document document, EvaluationFormData formData,
+                                          String language, String profFirstName, String profLastName,
+                                          String nameCollege, String address, String fax_machine) throws DocumentException {
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14, BaseColor.BLACK);
         Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
         Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
@@ -708,14 +711,11 @@ public class PDFGeneratorService {
         returnTitle.setSpacingAfter(4f);
         document.add(returnTitle);
 
-        String professorName = (profFirstName != null && profLastName != null) ? profFirstName + " " + profLastName : "Patrice Brodeur";
-        Paragraph addr = new Paragraph(professorName + " - Cégep André-Laurendeau - 1111, rue Lapierre - LASALLE (Québec) - H8N 2J4", normalFont);
+        String professorName = profFirstName + " " + profLastName;
+        String addressText = professorName + "\n" + nameCollege + "\n" + address + "\n" + fax_machine;
+        Paragraph addr = new Paragraph(addressText, normalFont);
         addr.setSpacingAfter(4f);
         document.add(addr);
-
-        Paragraph fax = new Paragraph("Fax: (514) 364-7130", smallFont);
-        fax.setSpacingAfter(6f);
-        document.add(fax);
     }
 
     // -----------------------------

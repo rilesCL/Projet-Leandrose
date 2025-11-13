@@ -150,12 +150,24 @@ export async function getEvaluationInfo(studentId, offerId, token = null) {
     });
     return await res.json();
 }
+export async function checkTeacherAssigned(studentId, offerId, token = null){
+    const res = await handleFetch(
+        `${API_BASE}/employeur/evaluations/check-teacher-assigned?studentId=${studentId}&offerId=${offerId}`, {
+            method: 'GET',
+            headers: {
+                ...authHeaders(token)
+            }
+        })
+    return await res.json();
+}
 
 export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
+    const currentLanguage = localStorage.getItem("i18nextLng")
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/generate-pdf`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "Accept-Language": currentLanguage,
             ...authHeaders(token)
         },
         body: JSON.stringify(formData)
