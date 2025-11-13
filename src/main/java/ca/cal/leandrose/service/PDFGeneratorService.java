@@ -1,9 +1,6 @@
 package ca.cal.leandrose.service;
 
-import ca.cal.leandrose.model.EntenteStage;
-import ca.cal.leandrose.model.Candidature;
-import ca.cal.leandrose.model.EvaluationStagiaire;
-import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.service.dto.evaluation.CategoryData;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
 import com.itextpdf.text.*;
@@ -217,7 +214,7 @@ public class PDFGeneratorService {
             this.pdfWriter = writer;
             document.open();
 
-            addHeaderEvaluation(document, language);
+            addHeaderEvaluation(document, language, nameCollege);
             addTitleEvaluation(document, language);
             addStudentAndCompanyTitle(document, evaluationStagiaire, language);
 
@@ -767,9 +764,9 @@ public class PDFGeneratorService {
         }
     }
 
-    private void addHeaderEvaluation(Document document, String language) throws DocumentException {
+    private void addHeaderEvaluation(Document document, String language, String name_college) throws DocumentException {
         Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.GRAY);
-        String headerText = "en".equals(language) ? "ANDRE-LAURENDEAU COLLEGE - Work-Study Program" : "CÉGEP ANDRÉ-LAURENDEAU - Alternance travail-études";
+        String headerText = "en".equals(language) ? name_college + " - Work-Study Program" : name_college + " - Alternance travail-études";
         Paragraph header = new Paragraph(headerText, headerFont);
         header.setAlignment(Element.ALIGN_CENTER);
         header.setSpacingAfter(6f);
@@ -799,7 +796,7 @@ public class PDFGeneratorService {
         infoTable.setSpacingAfter(6f);
 
         addInfoRow(infoTable, getTranslation("studentName", language), evaluation.getStudent().getFirstName() + " " + evaluation.getStudent().getLastName(), boldFont, normalFont);
-        addInfoRow(infoTable, getTranslation("program", language), evaluation.getStudent().getProgram(), boldFont, normalFont);
+        addInfoRow(infoTable, getTranslation("program", language), translateProgram(evaluation.getStudent().getProgram(), language), boldFont, normalFont);
         addInfoRow(infoTable, getTranslation("company", language), evaluation.getInternshipOffer().getCompanyName(), boldFont, normalFont);
         addInfoRow(infoTable, getTranslation("supervisor", language), evaluation.getEmployeur().getFirstName() + " " + evaluation.getEmployeur().getLastName(), boldFont, normalFont);
         addInfoRow(infoTable, getTranslation("position", language), evaluation.getEmployeur().getCompanyName(), boldFont, normalFont);
@@ -858,6 +855,59 @@ public class PDFGeneratorService {
                 "evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:"
         );
         return translations.getOrDefault(key, key);
+    }
+    private String translateProgram(String programKey, String language) {
+        Map<String, String> programTranslations = Map.ofEntries(
+                Map.entry(Program.COMPUTER_SCIENCE.getTranslationKey(), "en".equals(language) ? "Computer Science" : "Informatique"),
+                Map.entry(Program.SOFTWARE_ENGINEERING.getTranslationKey(), "en".equals(language) ? "Software Engineering" : "Génie logiciel"),
+                Map.entry(Program.INFORMATION_TECHNOLOGY.getTranslationKey(), "en".equals(language) ? "Information Technology" : "Technologie de l'information"),
+                Map.entry(Program.DATA_SCIENCE.getTranslationKey(), "en".equals(language) ? "Data Science" : "Science des données"),
+                Map.entry(Program.CYBER_SECURITY.getTranslationKey(), "en".equals(language) ? "Cyber Security" : "Cybersécurité"),
+                Map.entry(Program.ARTIFICIAL_INTELLIGENCE.getTranslationKey(), "en".equals(language) ? "Artificial Intelligence" : "Intelligence artificielle"),
+                Map.entry(Program.ELECTRICAL_ENGINEERING.getTranslationKey(), "en".equals(language) ? "Electrical Engineering" : "Génie électrique"),
+                Map.entry(Program.MECHANICAL_ENGINEERING.getTranslationKey(), "en".equals(language) ? "Mechanical Engineering" : "Génie mécanique"),
+                Map.entry(Program.CIVIL_ENGINEERING.getTranslationKey(), "en".equals(language) ? "Civil Engineering" : "Génie civil"),
+                Map.entry(Program.CHEMICAL_ENGINEERING.getTranslationKey(), "en".equals(language) ? "Chemical Engineering" : "Génie chimique"),
+                Map.entry(Program.BIOMEDICAL_ENGINEERING.getTranslationKey(), "en".equals(language) ? "Biomedical Engineering" : "Génie biomédical"),
+                Map.entry(Program.BUSINESS_ADMINISTRATION.getTranslationKey(), "en".equals(language) ? "Business Administration" : "Administration des affaires"),
+                Map.entry(Program.ACCOUNTING.getTranslationKey(), "en".equals(language) ? "Accounting" : "Comptabilité"),
+                Map.entry(Program.FINANCE.getTranslationKey(), "en".equals(language) ? "Finance" : "Finance"),
+                Map.entry(Program.ECONOMICS.getTranslationKey(), "en".equals(language) ? "Economics" : "Économie"),
+                Map.entry(Program.MARKETING.getTranslationKey(), "en".equals(language) ? "Marketing" : "Marketing"),
+                Map.entry(Program.MANAGEMENT.getTranslationKey(), "en".equals(language) ? "Management" : "Gestion"),
+                Map.entry(Program.PSYCHOLOGY.getTranslationKey(), "en".equals(language) ? "Psychology" : "Psychologie"),
+                Map.entry(Program.SOCIOLOGY.getTranslationKey(), "en".equals(language) ? "Sociology" : "Sociologie"),
+                Map.entry(Program.POLITICAL_SCIENCE.getTranslationKey(), "en".equals(language) ? "Political Science" : "Science politique"),
+                Map.entry(Program.INTERNATIONAL_RELATIONS.getTranslationKey(), "en".equals(language) ? "International Relations" : "Relations internationales"),
+                Map.entry(Program.LAW.getTranslationKey(), "en".equals(language) ? "Law" : "Droit"),
+                Map.entry(Program.EDUCATION.getTranslationKey(), "en".equals(language) ? "Education" : "Éducation"),
+                Map.entry(Program.LITERATURE.getTranslationKey(), "en".equals(language) ? "Literature" : "Littérature"),
+                Map.entry(Program.HISTORY.getTranslationKey(), "en".equals(language) ? "History" : "Histoire"),
+                Map.entry(Program.PHILOSOPHY.getTranslationKey(), "en".equals(language) ? "Philosophy" : "Philosophie"),
+                Map.entry(Program.LINGUISTICS.getTranslationKey(), "en".equals(language) ? "Linguistics" : "Linguistique"),
+                Map.entry(Program.BIOLOGY.getTranslationKey(), "en".equals(language) ? "Biology" : "Biologie"),
+                Map.entry(Program.CHEMISTRY.getTranslationKey(), "en".equals(language) ? "Chemistry" : "Chimie"),
+                Map.entry(Program.PHYSICS.getTranslationKey(), "en".equals(language) ? "Physics" : "Physique"),
+                Map.entry(Program.MATHEMATICS.getTranslationKey(), "en".equals(language) ? "Mathematics" : "Mathématiques"),
+                Map.entry(Program.STATISTICS.getTranslationKey(), "en".equals(language) ? "Statistics" : "Statistiques"),
+                Map.entry(Program.ENVIRONMENTAL_SCIENCE.getTranslationKey(), "en".equals(language) ? "Environmental Science" : "Science environnementale"),
+                Map.entry(Program.MEDICINE.getTranslationKey(), "en".equals(language) ? "Medicine" : "Médecine"),
+                Map.entry(Program.NURSING.getTranslationKey(), "en".equals(language) ? "Nursing" : "Soins infirmiers"),
+                Map.entry(Program.PHARMACY.getTranslationKey(), "en".equals(language) ? "Pharmacy" : "Pharmacie"),
+                Map.entry(Program.DENTISTRY.getTranslationKey(), "en".equals(language) ? "Dentistry" : "Dentisterie"),
+                Map.entry(Program.ARCHITECTURE.getTranslationKey(), "en".equals(language) ? "Architecture" : "Architecture"),
+                Map.entry(Program.FINE_ARTS.getTranslationKey(), "en".equals(language) ? "Fine Arts" : "Beaux-arts"),
+                Map.entry(Program.MUSIC.getTranslationKey(), "en".equals(language) ? "Music" : "Musique"),
+                Map.entry(Program.THEATER.getTranslationKey(), "en".equals(language) ? "Theater" : "Théâtre"),
+                Map.entry(Program.FILM_STUDIES.getTranslationKey(), "en".equals(language) ? "Film Studies" : "Études cinématographiques"),
+                Map.entry(Program.COMMUNICATION.getTranslationKey(), "en".equals(language) ? "Communication" : "Communication"),
+                Map.entry(Program.JOURNALISM.getTranslationKey(), "en".equals(language) ? "Journalism" : "Journalisme"),
+                Map.entry(Program.DESIGN.getTranslationKey(), "en".equals(language) ? "Design" : "Design"),
+                Map.entry(Program.ANTHROPOLOGY.getTranslationKey(), "en".equals(language) ? "Anthropology" : "Anthropologie"),
+                Map.entry(Program.GEOGRAPHY.getTranslationKey(), "en".equals(language) ? "Geography" : "Géographie"),
+                Map.entry(Program.SPORTS_SCIENCE.getTranslationKey(), "en".equals(language) ? "Sports Science" : "Science du sport")
+        );
+        return programTranslations.getOrDefault(programKey, programKey);
     }
 
     private String getGlobalAssessmentRatingKey(Integer globalAssessment) {
