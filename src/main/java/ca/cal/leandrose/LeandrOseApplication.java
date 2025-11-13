@@ -36,10 +36,14 @@ public class LeandrOseApplication {
       CandidatureService candidatureService,
       ConvocationService convocationService,
       EntenteStageService ententeStageService,
-      ProfService profService) {
+      ProfService profService,
+      ChatService chatService) {
 
     return args -> {
       try {
+        String aiResponse =
+            chatService.chat("Bonjour, ceci est un message de test pour le service de chat IA.");
+        System.out.println("AI Response: " + aiResponse);
         employeurService.createEmployeur(
             "Leandro",
             "Schoonewolff",
@@ -332,7 +336,6 @@ public class LeandrOseApplication {
           System.err.println("Erreur STORY 40 : " + e.getMessage());
         }
 
-
         // 1. Créer un professeur
         ProfDto prof1 =
             profService.createProf(
@@ -342,7 +345,6 @@ public class LeandrOseApplication {
                 "Password123!",
                 "PROF001",
                 "Collège Mainsonneuve",
-
                 "3800 R. Sherbrooke E, Montréal, QC H1X 2A2",
                 "(514) 364-7130",
                 "Département d'informatique");
@@ -395,10 +397,7 @@ public class LeandrOseApplication {
                 "STU100",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
         System.out.println(
-            "✓ Étudiant créé: "
-                + studentProf.getFirstName()
-                + " "
-                + studentProf.getLastName());
+            "✓ Étudiant créé: " + studentProf.getFirstName() + " " + studentProf.getLastName());
 
         // 3. CV et offre
         MultipartFile cvFileProf = loadPdfFromResources("test.pdf", "CV_Antoine_Tremblay.pdf");
@@ -417,7 +416,8 @@ public class LeandrOseApplication {
                 27.50f,
                 employeurProf,
                 offerFileProf);
-        InternshipOfferDto offerApprovedProf = gestionnaireService.approveOffer(offerDtoProf.getId());
+        InternshipOfferDto offerApprovedProf =
+            gestionnaireService.approveOffer(offerDtoProf.getId());
         System.out.println("✓ Offre de stage approuvée: " + offerApprovedProf.getDescription());
 
         // 4. Candidature acceptée par employeur ET étudiant
@@ -457,7 +457,11 @@ public class LeandrOseApplication {
 
         EntenteStageDto ententeCreatedProf = ententeStageService.creerEntente(ententeDtoProf);
         System.out.println(
-            "✓ Entente créée (Statut: " + ententeCreatedProf.getStatut() + ", ID: " + ententeCreatedProf.getId() + ")");
+            "✓ Entente créée (Statut: "
+                + ententeCreatedProf.getStatut()
+                + ", ID: "
+                + ententeCreatedProf.getId()
+                + ")");
 
         // 6. Faire signer l'entente par TOUTES les parties
         // Signature étudiant
@@ -465,8 +469,7 @@ public class LeandrOseApplication {
         System.out.println("✓ Entente signée par l'étudiant");
 
         // Signature employeur
-        ententeStageService.signerParEmployeur(
-            ententeCreatedProf.getId(), employeurProf.getId());
+        ententeStageService.signerParEmployeur(ententeCreatedProf.getId(), employeurProf.getId());
         System.out.println("✓ Entente signée par l'employeur");
 
         // Signature gestionnaire
@@ -486,13 +489,11 @@ public class LeandrOseApplication {
         if (ententeValidee.getStatut().toString().equals("VALIDEE")) {
           System.out.println("✓ L'entente est VALIDEE - Prêt pour attribution d'un prof!");
 
-
         } else {
           System.err.println(
               "✗ ERREUR: L'entente n'est pas VALIDEE. Statut actuel: "
                   + ententeValidee.getStatut());
         }
-
 
       } catch (Exception e) {
         System.err.println("Erreur générale non prévue: " + e.getMessage());

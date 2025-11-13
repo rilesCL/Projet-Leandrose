@@ -1,5 +1,6 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.presentation.request.ChatRequest;
 import ca.cal.leandrose.presentation.request.RejectOfferRequest;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
@@ -33,6 +34,7 @@ public class GestionnaireController {
   private final EntenteStageService ententeStageService;
   private final UserAppService userAppService;
   private final ProfService profService;
+  private final ChatService chatService;
 
   @PostMapping("/cv/{cvId}/approve")
   public ResponseEntity<CvDto> approveCv(@PathVariable Long cvId) {
@@ -272,6 +274,17 @@ public class GestionnaireController {
           .body(EntenteStageDto.withErrorMessage(e.getMessage()));
     }
   }
+
+    @PostMapping("/chatclient")
+    public ResponseEntity<String> exchange(@RequestBody ChatRequest request) {
+        try {
+            String response = chatService.chat(request.query());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("Chat error: " + e.getMessage());
+        }
+    }
 
   @ExceptionHandler(jakarta.persistence.EntityNotFoundException.class)
   public ResponseEntity<Object> handleEntityNotFoundException(
