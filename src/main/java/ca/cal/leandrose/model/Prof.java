@@ -18,9 +18,9 @@ import lombok.Setter;
 public class Prof extends UserApp {
   @Column(unique = true, nullable = false)
   private String employeeNumber;
-  private String nomCollege;
-  private String addresse;
-
+  private String nameCollege;
+  private String address;
+  private String fax_machine;
   private String department;
 
   @Builder
@@ -31,8 +31,9 @@ public class Prof extends UserApp {
       String email,
       String password,
       String employeeNumber,
-      String nomCollege,
-      String addresse,
+      String nameCollege,
+      String address,
+      String fax_machine,
       String department) {
     super(
         id,
@@ -40,8 +41,9 @@ public class Prof extends UserApp {
         lastName,
         Credentials.builder().email(email).password(password).role(Role.PROF).build());
     this.employeeNumber = employeeNumber;
-    this.nomCollege = nomCollege;
-    this.addresse = addresse;
+    this.nameCollege = nameCollege;
+    this.address = address;
+    this.fax_machine = fax_machine;
     this.department = department;
   }
 }

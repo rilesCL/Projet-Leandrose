@@ -48,8 +48,9 @@ class ProfServiceTest {
             .email("jean.dupont@college.ca")
             .password(encodedPassword)
             .employeeNumber("P12345")
-            .nomCollege("Collège Ahuntsic")
-            .addresse("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+            .nameCollege("Collège Ahuntsic")
+            .address("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+            .fax_machine("(514) 364-7130")
             .department("Informatique")
             .build();
 
@@ -64,6 +65,7 @@ class ProfServiceTest {
             "P12345",
             "Collège Ahuntsic",
              "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
+            "(514) 364-7130",
             "Informatique");
 
     assertNotNull(dto);
@@ -72,8 +74,9 @@ class ProfServiceTest {
     assertEquals("Dupont", dto.getLastName());
     assertEquals("jean.dupont@college.ca", dto.getEmail());
     assertEquals("P12345", dto.getEmployeeNumber());
-    assertEquals("Collège Ahuntsic", dto.getNomCollege());
-    assertEquals("9155 Rue St-Hubert, Montréal, QC H2M 1Y8", dto.getAddresse());
+    assertEquals("Collège Ahuntsic", dto.getNameCollege());
+    assertEquals("9155 Rue St-Hubert, Montréal, QC H2M 1Y8", dto.getAddress());
+    assertEquals("(514) 364-7130", dto.getFax_machine());
     assertEquals("Informatique", dto.getDepartment());
 
     verify(profRepository, times(1)).save(any(Prof.class));
@@ -95,6 +98,7 @@ class ProfServiceTest {
                             "P12345",
                             "Collège Ahuntsic",
                             "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
+                            "(514) 364-7130",
                             "Informatique"));
 
     assertEquals("Cet email est déjà utilisé", exception.getMessage());
@@ -118,6 +122,7 @@ class ProfServiceTest {
                             "P12345",
                             "Collège Ahuntsic",
                             "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
+                            "(514) 364-7130",
                             "Informatique"));
 
     assertEquals("Ce numéro d'employé est déjà utilisé", exception.getMessage());
@@ -132,7 +137,7 @@ class ProfServiceTest {
             profService.createProf(
                 null, "Dupont", "jean.dupont@college.ca", "password123",
                     "P12345", "Collège Ahuntsic",
-                    " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "Informatique"));
+                    " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130",  "Informatique"));
 
     assertThrows(
         IllegalArgumentException.class,
@@ -140,28 +145,28 @@ class ProfServiceTest {
                 profService.createProf(
                         "Jean", null, "jean.dupont@college.ca", "password123",
                         "P12345", "Collège Ahuntsic",
-                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "Informatique"));
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130",  "Informatique"));
     assertThrows(
         IllegalArgumentException.class,
         () ->
                 profService.createProf(
                         "Jean", "Dupont", null, "password123",
                         "P12345", "Collège Ahuntsic",
-                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "Informatique"));
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130", "Informatique"));
     assertThrows(
         IllegalArgumentException.class,
         () ->
                 profService.createProf(
                         "Jean", "Dupont", "jean.dupont@college.ca", null,
                         "P12345", "Collège Ahuntsic",
-                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "Informatique"));
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "(514) 364-7130", "Informatique"));
     assertThrows(
         IllegalArgumentException.class,
         () ->
                 profService.createProf(
                         "Jean", "Dupont", "jean.dupont@college.ca", "password123",
                         null, "Collège Ahuntsic",
-                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8", "Informatique"));
+                        " 9155 Rue St-Hubert, Montréal, QC H2M 1Y8",  "(514) 364-7130", "Informatique"));
     verify(profRepository, never()).save(any(Prof.class));
   }
 
@@ -175,8 +180,9 @@ class ProfServiceTest {
                 .email("jean.dupont@college.ca")
                 .password("encodedPass")
                 .employeeNumber("P12345")
-                .nomCollege("Collège Ahuntsic")
-                .addresse("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+                .nameCollege("Collège Ahuntsic")
+                .address("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+                .fax_machine("(514) 364-7130")
                 .department("Informatique")
                 .build();
 
@@ -215,8 +221,9 @@ class ProfServiceTest {
                 .email("jean.dupont@college.ca")
                 .password("encodedPass")
                 .employeeNumber("P12345")
-                .nomCollege("Collège Ahuntsic")
-                .addresse("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+                .nameCollege("Collège Ahuntsic")
+                .address("9155 Rue St-Hubert, Montréal, QC H2M 1Y8")
+                .fax_machine("(514) 364-7130")
                 .department("Informatique")
                 .build();
 
@@ -228,8 +235,9 @@ class ProfServiceTest {
             .email("marie.martin@college.ca")
             .password("encodedPass")
             .employeeNumber("P54321")
-            .nomCollege("College de Mainsonneuve")
-            .addresse("3800 R. Sherbrooke E, Montréal, QC H1X 2A2")
+            .nameCollege("College de Mainsonneuve")
+            .address("3800 R. Sherbrooke E, Montréal, QC H1X 2A2")
+            .fax_machine("(514) 364-7130")
             .department("Mathématiques")
             .build();
 
