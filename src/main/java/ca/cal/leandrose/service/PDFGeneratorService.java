@@ -147,7 +147,7 @@ public class PDFGeneratorService {
         Font cellBoldFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
         addTableRow(table, "Description", offer.getDescription(), cellBoldFont, cellFont);
         addTableRow(table, "Date de début", entente.getStartDate().format(DATE_FORMATTER), cellBoldFont, cellFont);
-        addTableRow(table, "Durée", String.valueOf(entente.getDurationInWeeks()), cellBoldFont, cellFont);
+        addTableRow(table, "Durée", entente.getDurationInWeeks() + " semaine(s)", cellBoldFont, cellFont);
         if (entente.getAddress() != null && !entente.getAddress().isBlank()) {
             addTableRow(table, "Lieu", entente.getAddress(), cellBoldFont, cellFont);
         }
