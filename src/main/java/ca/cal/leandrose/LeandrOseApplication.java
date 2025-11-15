@@ -41,9 +41,6 @@ public class LeandrOseApplication {
 
     return args -> {
       try {
-        String aiResponse =
-            chatService.chat("Bonjour, ceci est un message de test pour le service de chat IA.");
-        System.out.println("AI Response: " + aiResponse);
         employeurService.createEmployeur(
             "Leandro",
             "Schoonewolff",
@@ -52,7 +49,6 @@ public class LeandrOseApplication {
             "macolo",
             Program.COMPUTER_SCIENCE.getTranslationKey());
 
-        StudentDto studentDto =
             studentService.createStudent(
                 "Ghilas",
                 "Amr",
@@ -93,12 +89,12 @@ public class LeandrOseApplication {
                 "STU003",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
 
-        MultipartFile cvFile = loadPdfFromResources("test.pdf", "CV_Sophie_Martin.pdf");
+        MultipartFile cvFile = loadPdfFromResources("CV_Sophie_Martin.pdf");
         CvDto cvDto = cvService.uploadCv(studentConvocation.getId(), cvFile);
         CvDto cvApproved = gestionnaireService.approveCv(cvDto.getId());
 
         MultipartFile offerFile =
-            loadPdfFromResources("test.pdf", "Offre_Stage_TechInnovation.pdf");
+            loadPdfFromResources("Offre_Stage_TechInnovation.pdf");
         InternshipOfferDto offerDto =
             internshipOfferService.createOfferDto(
                 "Développeur Full-Stack Junior",
@@ -141,7 +137,7 @@ public class LeandrOseApplication {
                 "STU004",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
 
-        MultipartFile cvFile2 = loadPdfFromResources("test.pdf", "CV_Alexandre_Dubois.pdf");
+        MultipartFile cvFile2 = loadPdfFromResources("CV_Alexandre_Dubois.pdf");
         CvDto cvDto2 = cvService.uploadCv(studentConvocation2.getId(), cvFile2);
 
         CvDto cvApproved2 = gestionnaireService.approveCv(cvDto2.getId());
@@ -177,7 +173,7 @@ public class LeandrOseApplication {
                 "STU005",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
 
-        MultipartFile cvFile3 = loadPdfFromResources("test.pdf", "CV_Alexandre_Gagne.pdf");
+        MultipartFile cvFile3 = loadPdfFromResources("CV_Alexandre_Gagne.pdf");
         CvDto cvDto3 = cvService.uploadCv(studentConvocation3.getId(), cvFile3);
 
         CvDto cvApproved3 = gestionnaireService.approveCv(cvDto3.getId());
@@ -222,12 +218,12 @@ public class LeandrOseApplication {
                 "STU006",
                 Program.COMPUTER_SCIENCE.getTranslationKey());
 
-        MultipartFile cvFileEntente = loadPdfFromResources("test.pdf", "CV_Emilie_Fortin.pdf");
+        MultipartFile cvFileEntente = loadPdfFromResources("CV_Emilie_Fortin.pdf");
         CvDto cvDtoEntente = cvService.uploadCv(studentEntente.getId(), cvFileEntente);
         CvDto cvApprovedEntente = gestionnaireService.approveCv(cvDtoEntente.getId());
 
         MultipartFile offerFileEntente =
-            loadPdfFromResources("test.pdf", "Offre_Stage_Solutions_Pro.pdf");
+            loadPdfFromResources("Offre_Stage_Solutions_Pro.pdf");
         InternshipOfferDto offerDtoEntente =
             internshipOfferService.createOfferDto(
                 "Stage en développement web",
@@ -281,12 +277,12 @@ public class LeandrOseApplication {
                 "STU007",
                 Program.COMPUTER_SCIENCE.getTranslationKey());
 
-        MultipartFile cvFileEntente2 = loadPdfFromResources("test.pdf", "CV_Lucas_Bergeron.pdf");
+        MultipartFile cvFileEntente2 = loadPdfFromResources("CV_Lucas_Bergeron.pdf");
         CvDto cvDtoEntente2 = cvService.uploadCv(studentEntente2.getId(), cvFileEntente2);
         CvDto cvApprovedEntente2 = gestionnaireService.approveCv(cvDtoEntente2.getId());
 
         MultipartFile offerFileEntente2 =
-            loadPdfFromResources("test.pdf", "Offre_Stage_Solutions_Pro_2.pdf");
+            loadPdfFromResources("Offre_Stage_Solutions_Pro_2.pdf");
         InternshipOfferDto offerDtoEntente2 =
             internshipOfferService.createOfferDto(
                 "Stage en développement mobile",
@@ -400,13 +396,13 @@ public class LeandrOseApplication {
             "✓ Étudiant créé: " + studentProf.getFirstName() + " " + studentProf.getLastName());
 
         // 3. CV et offre
-        MultipartFile cvFileProf = loadPdfFromResources("test.pdf", "CV_Antoine_Tremblay.pdf");
+        MultipartFile cvFileProf = loadPdfFromResources("CV_Antoine_Tremblay.pdf");
         CvDto cvDtoProf = cvService.uploadCv(studentProf.getId(), cvFileProf);
         CvDto cvApprovedProf = gestionnaireService.approveCv(cvDtoProf.getId());
         System.out.println("✓ CV approuvé pour l'étudiant");
 
         MultipartFile offerFileProf =
-            loadPdfFromResources("test.pdf", "Offre_Stage_TechQuebec.pdf");
+            loadPdfFromResources("Offre_Stage_TechQuebec.pdf");
         InternshipOfferDto offerDtoProf =
             internshipOfferService.createOfferDto(
                 "Développeur Java/Spring Boot",
@@ -494,6 +490,21 @@ public class LeandrOseApplication {
               "✗ ERREUR: L'entente n'est pas VALIDEE. Statut actuel: "
                   + ententeValidee.getStatut());
         }
+          // Premier message
+          String aiResponse1 = chatService.chat("C'est quoi cette application?", "test-session");
+          System.out.println("Réponse IA 1: " + aiResponse1);
+
+          // Suite avec contexte
+          String aiResponse2 = chatService.chat("Comment fonctionne le processus d'approbation des CV?", "test-session");
+          System.out.println("Réponse IA 2: " + aiResponse2);
+
+          // Autre question de suivi
+          String aiResponse3 = chatService.chat("Qu'est-ce qui se passe après qu'un CV est approuvé?", "test-session");
+          System.out.println("Réponse IA 3: " + aiResponse3);
+
+          // Question sur les programmes
+          String aiResponse4 = chatService.chat("Quels sont tous les programmes disponibles?", "test-session");
+          System.out.println("Réponse IA 4: " + aiResponse4);
 
       } catch (Exception e) {
         System.err.println("Erreur générale non prévue: " + e.getMessage());
@@ -502,9 +513,9 @@ public class LeandrOseApplication {
     };
   }
 
-  private MultipartFile loadPdfFromResources(String resourcePath, String filename)
+  private MultipartFile loadPdfFromResources(String filename)
       throws IOException {
-    ClassPathResource resource = new ClassPathResource(resourcePath);
+    ClassPathResource resource = new ClassPathResource("test.pdf");
     try (InputStream inputStream = resource.getInputStream()) {
       byte[] pdfContent = inputStream.readAllBytes();
       return new CustomMultipartFile(pdfContent, filename);
