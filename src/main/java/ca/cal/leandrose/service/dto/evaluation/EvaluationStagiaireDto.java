@@ -7,6 +7,7 @@ public record EvaluationStagiaireDto(
         LocalDate dateEvaluation,
         Long studentId,
         Long employeurId,
+        Long professeurId,
         Long internshipOfferId,
         String pdfFilePath,
         boolean submitted

@@ -21,7 +21,58 @@ public class EvaluationStagiaireService {
     private final StudentRepository studentRepository;
     private final InternshipOfferRepository internshipOfferRepository;
     private final EntenteStageRepository ententeStageRepository;
+    private final ProfRepository profRepository;
     private final PDFGeneratorService pdfGeneratorService;
+
+    public EvaluationStagiaireDto createEvaluationByEmployer(Long employerId, Long studentId, Long internshipId){
+        return createEvaluationInternal(CreatorTypeEvaluation.EMPLOYER, employerId, studentId, internshipId);
+
+    }
+    public EvaluationStagiaireDto createEvaluationByProf(Long profId, Long studentId, Long internshipId){
+        return createEvaluationInternal(CreatorTypeEvaluation.PROF, profId, studentId, internshipId);
+    }
+
+    private EvaluationStagiaireDto createEvaluationInternal(CreatorTypeEvaluation creator, Long creatorId,
+                                                            Long studentId, Long internshipId){
+        if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipId, studentId)) {
+            throw new IllegalStateException("Une évaluation existe déjà pour ce stagiaire et ce stage");
+        }
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
+        InternshipOffer internshipOffer = internshipOfferRepository.findById(internshipId)
+                .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+
+        Employeur emp = null;
+        EntenteStage stage = null;
+
+        if (creator == CreatorTypeEvaluation.EMPLOYER){
+            emp = employeurRepository.findById(creatorId)
+                    .orElseThrow(() -> new RuntimeException("Employeur non trouvé"));
+
+        }
+        if (creator == CreatorTypeEvaluation.PROF){
+           Prof professeur = profRepository.findById(creatorId)
+                   .orElseThrow(() -> new RuntimeException("Professeur non trouvé"));
+           stage = ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(
+                   professeur.getId(),
+                   student.getId(),
+                   internshipOffer.getId()
+           )
+                   .orElseThrow(() -> new RuntimeException("Aucune entente de stage trouvée pour ce professeur, " +
+                           "ce stagiaire et cette offre"));
+
+        }
+        EvaluationStagiaire evaluation = EvaluationStagiaire.builder()
+                .dateEvaluation(LocalDate.now())
+                .student(student)
+                .internshipOffer(internshipOffer)
+                .employeur(emp)
+                .ententeStage(stage)
+                .submitted(false)
+                .build();
+        evaluationStagiaireRepository.save(evaluation);
+        return mapToDto(evaluation);
+    }
 
     public EvaluationStagiaireDto createEvaluation(Long employeurId, Long studentId, Long internshipId){
 
@@ -151,12 +202,42 @@ public class EvaluationStagiaireService {
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 
     }
+
     public List<EvaluationStagiaireDto> getEvaluationsByEmployeur(Long employeurId) {
-        return evaluationStagiaireRepository.findByEmployeurId(employeurId)
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+        return getEvaluationByCreator(CreatorTypeEvaluation.EMPLOYER, employeurId);
     }
+
+    public List<EvaluationStagiaireDto> getEvaluationsByProfesseur(Long profId) {
+        return getEvaluationByCreator(CreatorTypeEvaluation.PROF, profId);
+    }
+    private List<EvaluationStagiaireDto> getEvaluationByCreator(CreatorTypeEvaluation creator, Long creatorId){
+        List<EvaluationStagiaire> evaluations;
+
+        switch(creator){
+            case EMPLOYER ->
+                evaluations = evaluationStagiaireRepository.findByEmployeurId(creatorId);
+            case PROF ->
+                evaluations = evaluationStagiaireRepository.findByProfesseurId(creatorId);
+            default ->
+                throw new IllegalArgumentException("Unknown creator type: " + creator);
+
+        }
+        return evaluations.stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+//    public List<EvaluationStagiaireDto> getEvaluationsByEmployeur(Long employeurId) {
+//        return evaluationStagiaireRepository.findByEmployeurId(employeurId)
+//                .stream()
+//                .map(this::mapToDto)
+//                .collect(Collectors.toList());
+//    }
+//    public List<EvaluationStagiaireDto> getEvaluationsByProfesseur(Long profId) {
+//        return evaluationStagiaireRepository.findByProfesseurId(profId)
+//                .stream()
+//                .map(this::mapToDto)
+//                .collect(Collectors.toList());
+//    }
 
     private EvaluationStagiaireDto mapToDto(EvaluationStagiaire evaluation){
         return new EvaluationStagiaireDto(
@@ -164,6 +245,7 @@ public class EvaluationStagiaireService {
                 evaluation.getDateEvaluation(),
                 evaluation.getStudent().getId(),
                 evaluation.getEmployeur().getId(),
+                evaluation.getProfesseur().getId(),
                 evaluation.getInternshipOffer().getId(),
                 evaluation.getPdfFilePath(),
                 evaluation.isSubmitted()

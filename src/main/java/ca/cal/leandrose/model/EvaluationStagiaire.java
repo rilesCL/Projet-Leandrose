@@ -30,6 +30,10 @@ public class EvaluationStagiaire {
     private Student student;
 
     @ManyToOne
+    @JoinColumn(name = "professeur_id")
+    private Prof professeur;
+
+    @ManyToOne
     @JoinColumn(name = "internship_id")
     private InternshipOffer internshipOffer;
 
