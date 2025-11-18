@@ -53,11 +53,58 @@ export async function fetchProfStudents(profId, params = {}) {
     return handleFetch(url, { method: "GET", headers: authHeaders() });
 }
 
+export async function createEvaluation (studentId, offerId, token = null) {
+    const url = `${API_BASE}/prof/evaluations`;
+    console.log('Calling URL:', url);
+    console.log('With data:', { studentId, internshipOfferId: offerId });
+
+
+    const res = await handleFetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders(token)
+        },
+        body: JSON.stringify({studentId, internshipOfferId: offerId})
+    });
+    const responseData = await res.json()
+    console.log("Create evaluation Response", responseData)
+    return responseData
+}
+export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
+    const currentLanguage = localStorage.getItem("i18nextLng")
+    const res = await handleFetch(`${API_BASE}/prof/evaluations/${evaluationId}/generate-pdf`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Accept-Language": currentLanguage,
+            ...authHeaders(token)
+        },
+        body: JSON.stringify(formData)
+    });
+    return await res.json();
+}
+
 export async function getEligibleEvaluations(token = null) {
     const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/eligible`, {
         headers: authHeaders(token)
     });
     return await res.json();
+}
+export async function getEvaluationInfo(studentId, offerId, token = null) {
+    const url = `${API_BASE}/prof/evaluations/info?studentId=${studentId}&offerId=${offerId}`;
+
+    console.log("Calling Teacher Evaluation Info:", url);
+
+    const res = await handleEvalFetch(url, {
+        method: "GET",
+        headers: authHeaders(token)
+    });
+
+    const json = await res.json();
+    console.log("Evaluation Info Response:", json);
+
+    return json;
 }
 export async function checkTeacherAssigned(studentId, offerId, token = null){
     const res = await handleEvalFetch(

@@ -313,7 +313,7 @@ const EvaluationForm = () => {
                     </h2>
                     <p className="text-red-700 mb-4">{error}</p>
                     <button
-                        onClick={() => navigate('/dashboard/employeur/evaluations')}
+                        onClick={() => navigate('/dashboard/employeur')}
                         className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                     >
                         {t('evaluation.backToEvaluationsList')}
@@ -330,7 +330,7 @@ const EvaluationForm = () => {
                 <div className="mb-4">
                     <button
                         type="button"
-                        onClick={() => navigate('/dashboard/employeur/evaluations')}
+                        onClick={() => navigate('/dashboard/employeur')}
                         className="inline-flex items-center gap-2 rounded-md border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                     >
                         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none">

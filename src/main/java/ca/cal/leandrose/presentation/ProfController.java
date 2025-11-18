@@ -6,6 +6,7 @@ import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.ProfStudentItemDto;
 import ca.cal.leandrose.service.dto.UserDTO;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -206,7 +207,7 @@ public class ProfController {
         }
 
         try {
-            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfoForEmployer(
+            EvaluationTeacherInfoDto info = evaluationStagiaireService.getEvaluationInfoForTeacher(
                     me.getId(), studentId, offerId);
             return ResponseEntity.ok(info);
         } catch (Exception e) {
