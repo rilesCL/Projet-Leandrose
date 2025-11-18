@@ -109,8 +109,8 @@ public class EvaluationStagiaireService {
         EvaluationStagiaire evaluationStagiaire = evaluationStagiaireRepository.save(stage);
         return mapToDto(evaluationStagiaire);
     }
-    public EvaluationInfoDto getEvaluationInfo(Long employeurId, Long studentId, Long internshipOfferId) {
-        boolean isEligible = isEvaluationEligible(employeurId, studentId, internshipOfferId);
+    public EvaluationInfoDto getEvaluationInfoForEmployer(Long employeurId, Long studentId, Long internshipOfferId) {
+        boolean isEligible = isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, employeurId, studentId, internshipOfferId);
 
         if (!isEligible) {
             throw new IllegalStateException("Evaluation not allowed - agreement not validated or not found");
@@ -266,18 +266,6 @@ public class EvaluationStagiaireService {
                 .map(this::mapToDto)
                 .toList();
     }
-//    public List<EvaluationStagiaireDto> getEvaluationsByEmployeur(Long employeurId) {
-//        return evaluationStagiaireRepository.findByEmployeurId(employeurId)
-//                .stream()
-//                .map(this::mapToDto)
-//                .collect(Collectors.toList());
-//    }
-//    public List<EvaluationStagiaireDto> getEvaluationsByProfesseur(Long profId) {
-//        return evaluationStagiaireRepository.findByProfesseurId(profId)
-//                .stream()
-//                .map(this::mapToDto)
-//                .collect(Collectors.toList());
-//    }
 
     private EvaluationStagiaireDto mapToDto(EvaluationStagiaire evaluation){
         return new EvaluationStagiaireDto(
@@ -291,35 +279,55 @@ public class EvaluationStagiaireService {
                 evaluation.isSubmitted()
         );
     }
-    public boolean isEvaluationEligible(Long employeurId, Long studentId, Long internshipOfferId) {
-        Optional<EntenteStage> validAgreement = ententeStageRepository
-                .findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
-                        studentId, internshipOfferId, EntenteStage.StatutEntente.VALIDEE);
-
-        if (validAgreement.isEmpty()) {
-            return false;
-        }
-
-        EntenteStage agreement = validAgreement.get();
-        return agreement.getEmployeur().getId().equals(employeurId);
+    public boolean isEvaluationEligible(CreatorTypeEvaluation creatorType, Long creatorId, Long studentId, Long internshipOfferId) {
+        return findValidEntenteForCreator(creatorType, creatorId, studentId, internshipOfferId).isPresent();
     }
 
-    public List<EligibleEvaluationDto> getEligibleEvaluations(Long employeurId) {
-        List<EntenteStage> validatedAgreements = ententeStageRepository
-                .findByCandidature_InternshipOffer_Employeur_IdAndStatut(
-                        employeurId, EntenteStage.StatutEntente.VALIDEE);
+    public List<EligibleEvaluationDto> getEligibleEvaluations(CreatorTypeEvaluation creatorType, Long creatorId) {
+        List<EntenteStage> ententes = null;
 
-        return validatedAgreements.stream()
-                .map(agreement -> {
-                    Optional<EvaluationStagiaire> existingEvaluation = evaluationStagiaireRepository
-                            .findByStudentIdAndInternshipOfferId(
-                                    agreement.getStudent().getId(),
-                                    agreement.getCandidature().getInternshipOffer().getId()
+        if(creatorType == CreatorTypeEvaluation.EMPLOYER){
+            ententes = ententeStageRepository
+                    .findByCandidature_InternshipOffer_Employeur_IdAndStatut(
+                            creatorId, EntenteStage.StatutEntente.VALIDEE
+                    );
+        }
+        if(creatorType == CreatorTypeEvaluation.PROF){
+            ententes = ententeStageRepository
+                    .findByProf_IdAndStatut(creatorId, EntenteStage.StatutEntente.VALIDEE);
+        }
+        return ententes.stream()
+                .map(entente -> {
+                    Optional<EvaluationStagiaire> existingEval =
+                            evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(
+                                    entente.getStudent().getId(),
+                                    entente.getCandidature().getInternshipOffer().getId()
                             );
-
-                    return mapToEligibleEvaluationDto(agreement, existingEvaluation.orElse(null));
+                    return mapToEligibleEvaluationDto(entente, existingEval.orElse(null));
                 })
                 .collect(Collectors.toList());
+    }
+
+    private Optional<EntenteStage> findValidEntenteForCreator(
+            CreatorTypeEvaluation creatorType,
+            Long creatorId,
+            Long studentId,
+            Long internshipOfferId
+    ){
+        if(creatorType == CreatorTypeEvaluation.EMPLOYER){
+            return ententeStageRepository
+                    .findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                            studentId,
+                            internshipOfferId,
+                            EntenteStage.StatutEntente.VALIDEE
+                    )
+                    .filter(ent -> ent.getEmployeur().getId().equals(creatorId));
+
+        }
+        return ententeStageRepository
+                .findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                        creatorId, studentId, internshipOfferId, EntenteStage.StatutEntente.VALIDEE
+                );
     }
 
     private EligibleEvaluationDto mapToEligibleEvaluationDto(EntenteStage agreement, EvaluationStagiaire evaluation) {

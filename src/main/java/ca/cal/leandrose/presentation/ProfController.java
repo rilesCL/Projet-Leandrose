@@ -63,7 +63,7 @@ public class ProfController {
         }
 
         try{
-            boolean isEligible = evaluationStagiaireService.isEvaluationEligible(me.getId(),
+            boolean isEligible = evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.PROF, me.getId(),
                     createRequest.studentId(), createRequest.internshipOfferId());
 
             if (!isEligible){
@@ -187,7 +187,7 @@ public class ProfController {
             return ResponseEntity.status(403).build();
         }
 
-        List<EligibleEvaluationDto> eligibleEvaluations = evaluationStagiaireService.getEligibleEvaluations(me.getId());
+        List<EligibleEvaluationDto> eligibleEvaluations = evaluationStagiaireService.getEligibleEvaluations(CreatorTypeEvaluation.PROF, me.getId());
         return ResponseEntity.ok(eligibleEvaluations);
     }
 
@@ -204,7 +204,7 @@ public class ProfController {
         }
 
         try {
-            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfo(
+            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfoForEmployer(
                     me.getId(), studentId, offerId);
             return ResponseEntity.ok(info);
         } catch (Exception e) {

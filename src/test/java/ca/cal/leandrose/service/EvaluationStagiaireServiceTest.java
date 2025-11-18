@@ -185,7 +185,7 @@ class EvaluationStagiaireServiceTest {
     }
 
     @Test
-    void getEvaluationInfo_Success() {
+    void getEvaluationInfo_ForEmployer_Success() {
         // Given
         EntenteStage ententeStage = EntenteStage.builder()
                 .id(1L)
@@ -201,7 +201,7 @@ class EvaluationStagiaireServiceTest {
         when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
 
         // When
-        EvaluationInfoDto result = evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L);
+        EvaluationInfoDto result = evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L);
 
         // Then
         assertNotNull(result);
@@ -220,14 +220,14 @@ class EvaluationStagiaireServiceTest {
     }
 
     @Test
-    void getEvaluationInfo_NotEligible_ThrowsException() {
+    void getEvaluationInfo_ForEmployer_NotEligible_ThrowsException() {
         // Given
         when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(2L, 3L, EntenteStage.StatutEntente.VALIDEE))
                 .thenReturn(Optional.empty());
 
         // When & Then
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L));
+                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
 
         assertEquals("Evaluation not allowed - agreement not validated or not found", exception.getMessage());
         verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(2L, 3L, EntenteStage.StatutEntente.VALIDEE);
@@ -235,7 +235,7 @@ class EvaluationStagiaireServiceTest {
     }
 
     @Test
-    void getEvaluationInfo_EvaluationAlreadyExists_ThrowsException() {
+    void getEvaluationInfo_EvaluationAlreadyExists_ThrowsExceptionForEmployer() {
         // Given
         EntenteStage ententeStage = EntenteStage.builder()
                 .id(1L)
@@ -250,7 +250,7 @@ class EvaluationStagiaireServiceTest {
 
         // When & Then
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L));
+                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
 
         assertEquals("Une évaluation existe déjà pour ce stagiaire et ce stage", exception.getMessage());
         verify(evaluationStagiaireRepository).existsByInternshipOfferIdAndStudentId(3L, 2L);
@@ -258,7 +258,7 @@ class EvaluationStagiaireServiceTest {
     }
 
     @Test
-    void getEvaluationInfo_StudentNotFound_ThrowsException() {
+    void getEvaluationInfo_ForEmployer_StudentNotFound_ThrowsException() {
         // Given
         EntenteStage ententeStage = EntenteStage.builder()
                 .id(1L)
@@ -274,7 +274,7 @@ class EvaluationStagiaireServiceTest {
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L));
+                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
 
         assertEquals("Étudiant non trouvé", exception.getMessage());
         verify(studentRepository).findById(2L);

@@ -421,7 +421,7 @@ public class EmployeurController {
         }
 
         try{
-            boolean isEligible = evaluationStagiaireService.isEvaluationEligible(me.getId(),
+            boolean isEligible = evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, me.getId(),
                     createRequest.studentId(), createRequest.internshipOfferId());
 
             if (!isEligible){
@@ -546,7 +546,7 @@ public class EmployeurController {
             return ResponseEntity.status(403).build();
         }
 
-        List<EligibleEvaluationDto> eligibleEvaluations = evaluationStagiaireService.getEligibleEvaluations(me.getId());
+        List<EligibleEvaluationDto> eligibleEvaluations = evaluationStagiaireService.getEligibleEvaluations(CreatorTypeEvaluation.EMPLOYER, me.getId());
         return ResponseEntity.ok(eligibleEvaluations);
     }
 
@@ -563,7 +563,7 @@ public class EmployeurController {
         }
 
         try {
-            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfo(
+            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfoForEmployer(
                     me.getId(), studentId, offerId);
             return ResponseEntity.ok(info);
         } catch (Exception e) {

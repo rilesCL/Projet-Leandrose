@@ -6,10 +6,7 @@ import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
-import ca.cal.leandrose.service.dto.evaluation.CreateEvaluationRequest;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationInfoDto;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationStagiaireDto;
+import ca.cal.leandrose.service.dto.evaluation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -27,7 +24,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -387,7 +383,7 @@ class EmployeurControllerTest {
     @Test
     void createEvaluation_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.isEvaluationEligible(1L, 2L, 100L)).thenReturn(true);
+        when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 100L)).thenReturn(true);
         when(evaluationStagiaireService.createEvaluation(1L, 2L, 100L)).thenReturn(evaluationDto);
 
         CreateEvaluationRequest createRequest = new CreateEvaluationRequest(2L, 100L);
@@ -415,7 +411,7 @@ class EmployeurControllerTest {
     @Test
     void createEvaluation_notEligible_returnsBadRequest() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.isEvaluationEligible(1L, 2L, 3L)).thenReturn(false);
+        when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 3L)).thenReturn(false);
 
         CreateEvaluationRequest createRequest = new CreateEvaluationRequest(2L, 3L);
 
@@ -429,7 +425,7 @@ class EmployeurControllerTest {
     @Test
     void createEvaluation_serviceException_returnsBadRequest() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.isEvaluationEligible(1L, 2L, 3L)).thenReturn(true);
+        when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER ,1L, 2L, 3L)).thenReturn(true);
         when(evaluationStagiaireService.createEvaluation(1L, 2L, 3L))
                 .thenThrow(new RuntimeException("Evaluation error"));
 
@@ -586,7 +582,7 @@ class EmployeurControllerTest {
     @Test
     void getEligibleEvaluations_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.getEligibleEvaluations(1L)).thenReturn(List.of());
+        when(evaluationStagiaireService.getEligibleEvaluations(CreatorTypeEvaluation.EMPLOYER, 1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/employeur/evaluations/eligible")
                         .header("Authorization", "Bearer token"))
@@ -605,7 +601,7 @@ class EmployeurControllerTest {
     @Test
     void getEvaluationInfo_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L))
+        when(evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L))
                 .thenReturn(new EvaluationInfoDto(null, null));
 
         mockMvc.perform(get("/employeur/evaluations/info")
@@ -618,7 +614,7 @@ class EmployeurControllerTest {
     @Test
     void getEvaluationInfo_serviceException_returnsBadRequest() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L))
+        when(evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L))
                 .thenThrow(new RuntimeException("Evaluation not allowed"));
 
         mockMvc.perform(get("/employeur/evaluations/info")
