@@ -103,25 +103,9 @@ export async function createEvaluation (studentId, offerId, token = null) {
     return responseData
 }
 
-export async function generateEvaluationPdf (studentId, offerId, formData, token = null)  {
-    const res = await handleFetch(`${API_BASE}/employeur/evaluations/generate-pdf`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            ...authHeaders(token)
-        },
-        body: JSON.stringify({
-            studentId: studentId,
-            internshipOfferId: offerId,
-            formData: formData
-        })
-    })
-    return await res.json()
-}
 
 export async function previewEvaluationPdf (evaluationId, formData = null, token = null) {
     if (formData) {
-        // Preview with current form data (not saved)
         const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/preview-pdf`, {
             method: 'POST',
             headers: {

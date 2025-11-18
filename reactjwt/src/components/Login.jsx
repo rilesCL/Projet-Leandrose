@@ -122,7 +122,7 @@ const Login = () => {
                         navigate("/dashboard/gestionnaire");
                         break;
                     case "PROF":
-                        navigate("/prof/etudiants");
+                        navigate("/dashboard/prof");
                         break;
                     default:
                         navigate("/dashboard");

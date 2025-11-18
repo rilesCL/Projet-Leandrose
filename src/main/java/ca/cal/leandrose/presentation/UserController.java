@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
@@ -40,5 +42,11 @@ public class UserController {
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_JSON)
         .body(userService.getMe(authHeader));
+  }
+
+  @GetMapping("me/role")
+  public ResponseEntity<?> getMyRole(HttpServletRequest request){
+      UserDTO me = userService.getMe(request.getHeader("Authorization"));
+      return ResponseEntity.ok(Map.of("role", me.getRole().name()));
   }
 }

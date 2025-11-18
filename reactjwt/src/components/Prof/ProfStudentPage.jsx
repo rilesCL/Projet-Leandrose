@@ -144,36 +144,6 @@ export default function ProfStudentsPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <header className="bg-white shadow">
-                <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center">
-                            <span className="text-xl font-bold text-indigo-600">
-                                LeandrOSE
-                            </span>
-                        </div>
-
-                        <nav
-                            className="flex items-center space-x-4"
-                            aria-label="Navigation principale"
-                        >
-                            <span className="text-gray-700">
-                                Bienvenue, {userName}
-                            </span>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center text-gray-600 hover:text-red-600 transition"
-                            >
-                                <FaSignOutAlt className="mr-1" />
-                                <span className="hidden sm:inline">
-                                    Déconnexion
-                                </span>
-                            </button>
-                        </nav>
-                    </div>
-                </div>
-            </header>
-
             <div className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
                     <h1 className="text-2xl font-semibold text-gray-900 mb-6">Mes étudiants</h1>

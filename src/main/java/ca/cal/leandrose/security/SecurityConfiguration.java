@@ -42,6 +42,8 @@ public class SecurityConfiguration {
             auth ->
                 auth.requestMatchers(POST, "/user/login", "/api/register/**")
                     .permitAll()
+                        .requestMatchers(GET, "/user/me/role")
+                        .permitAll()
                     .requestMatchers(GET, "/api/register/programs")
                     .permitAll()
                     .requestMatchers(GET, "/gestionnaire/**")

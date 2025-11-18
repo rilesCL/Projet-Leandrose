@@ -38,3 +38,44 @@ export async function fetchProfStudents(profId, params = {}) {
     const url = `${API_BASE}/prof/${profId}/etudiants?${q.toString()}`;
     return handleFetch(url, { method: "GET", headers: authHeaders() });
 }
+
+export async function getEligibleEvaluations(token = null) {
+    const res = await handleFetch(`${API_BASE}/prof/evaluations/eligible`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
+export async function checkTeacherAssigned(studentId, offerId, token = null){
+    const res = await handleFetch(
+        `${API_BASE}/employeur/evaluations/check-teacher-assigned?studentId=${studentId}&offerId=${offerId}`, {
+            method: 'GET',
+            headers: {
+                ...authHeaders(token)
+            }
+        })
+    return await res.json();
+}
+export async function checkExistingEvaluation(studentId, offerId, token = null) {
+    const res = await handleFetch(`${API_BASE}/prof/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
+export async function previewEvaluationPdf (evaluationId, formData = null, token = null) {
+    if (formData) {
+        const res = await handleFetch(`${API_BASE}/prof/evaluations/${evaluationId}/preview-pdf`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeaders(token)
+            },
+            body: JSON.stringify(formData)
+        });
+        return await res.blob();
+    } else {
+        const res = await handleFetch(`${API_BASE}/prof/evaluations/${evaluationId}/pdf`, {
+            headers: authHeaders(token)
+        });
+        return await res.blob();
+    }
+}

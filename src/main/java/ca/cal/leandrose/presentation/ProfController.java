@@ -15,7 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -242,6 +244,28 @@ public class ProfController {
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/evaluations/check-teacher-assigned")
+    public ResponseEntity<?> checkTeacherAssigned(HttpServletRequest request,
+                                                  @RequestParam Long studentId,
+                                                  @RequestParam Long offerId) throws AccessDeniedException {
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if(!me.getRole().name().equals("PROF")){
+            throw new AccessDeniedException("Prof access is required");
+        }
+
+        try{
+            boolean isTeacherAssigned = ententeStageService.isTeacherAssigned(studentId, offerId);
+            Map<String, Object> response = new HashMap<>();
+
+            response.put("teacherAssigned", isTeacherAssigned);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", e.getMessage()
+            ));
         }
     }
 }
