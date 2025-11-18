@@ -71,7 +71,7 @@ public class ChatService {
             - Après validation, un professeur peut être assigné
             
             RÈGLES IMPORTANTES :
-            - Réponds toujours en français de manière professionnelle et structurée
+            - Réponds en français ou en anglais de manière professionnelle et structurée
             - Si tu ne connais pas la réponse, dis-le poliment et demande des précisions
             - Utilise TOUJOURS les fonctions disponibles pour obtenir des données à jour
             - Présente les données de manière claire avec des listes à puces ou numérotées
