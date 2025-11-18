@@ -17,6 +17,20 @@ async function handleFetch(url, options = {}) {
         throw { response: { data: err?.message || "Impossible de se connecter au serveur" } };
     }
 }
+async function handleEvalFetch(url, options = {}) {
+    try {
+        const res = await fetch(url, options);
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw { response: { data: errorText || `Erreur ${res.status}: ${res.statusText}` } };
+        }
+        return res;
+    } catch (error) {
+        if (error && error.response) throw error;
+        throw { response: { data: error?.message || "Impossible de se connecter au serveur" } };
+    }
+}
+
 
 function authHeaders() {
     const token = sessionStorage.getItem("accessToken");
@@ -40,13 +54,13 @@ export async function fetchProfStudents(profId, params = {}) {
 }
 
 export async function getEligibleEvaluations(token = null) {
-    const res = await handleFetch(`${API_BASE}/prof/evaluations/eligible`, {
+    const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/eligible`, {
         headers: authHeaders(token)
     });
     return await res.json();
 }
 export async function checkTeacherAssigned(studentId, offerId, token = null){
-    const res = await handleFetch(
+    const res = await handleEvalFetch(
         `${API_BASE}/employeur/evaluations/check-teacher-assigned?studentId=${studentId}&offerId=${offerId}`, {
             method: 'GET',
             headers: {
@@ -56,14 +70,14 @@ export async function checkTeacherAssigned(studentId, offerId, token = null){
     return await res.json();
 }
 export async function checkExistingEvaluation(studentId, offerId, token = null) {
-    const res = await handleFetch(`${API_BASE}/prof/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
+    const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
         headers: authHeaders(token)
     });
     return await res.json();
 }
 export async function previewEvaluationPdf (evaluationId, formData = null, token = null) {
     if (formData) {
-        const res = await handleFetch(`${API_BASE}/prof/evaluations/${evaluationId}/preview-pdf`, {
+        const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/${evaluationId}/preview-pdf`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +87,7 @@ export async function previewEvaluationPdf (evaluationId, formData = null, token
         });
         return await res.blob();
     } else {
-        const res = await handleFetch(`${API_BASE}/prof/evaluations/${evaluationId}/pdf`, {
+        const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/${evaluationId}/pdf`, {
             headers: authHeaders(token)
         });
         return await res.blob();

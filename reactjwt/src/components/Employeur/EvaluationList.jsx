@@ -1,91 +1,91 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import * as apiEmployer from "../../api/apiEmployeur.jsx"
-import * as apiProf from "../../api/apiProf.jsx"
-import {getMyRole} from "../../api/apiAuth.jsx";
+
+import * as apiEmployer from '../../api/apiEmployeur';
+import * as apiProf from '../../api/apiProf';
+import { getMyRole } from '../../api/apiAuth';
 
 import PdfViewer from '../PdfViewer.jsx';
 
-export default function EvaluationList(){
-    const {t} = useTranslation()
-    const [role, setRole] = useState(null)
-    const [eligibleAgreements, setEligiblesAgreement] = useState([])
-    const [evaluationStatus, setEvaluationStatus] = useState([])
-    const [teacherAssignmentStatus, setTeacherAssignementStatus] =  useState({})
-    const [loading, setLoading] = useState(false)
+export default function EvaluationsList() {
+    const { t } = useTranslation();
 
-    const [showPdfViewer, setShowPdfViewer] = useState(false)
-    const [currentPdfBlob, setCurrentPdfBlob] = useState(null)
+    const [role, setRole] = useState(null);
+    const [eligibleAgreements, setEligibleAgreements] = useState([]);
+    const [evaluationStatus, setEvaluationStatus] = useState({});
+    const [teacherAssignmentStatus, setTeacherAssignmentStatus] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    const [showPdfViewer, setShowPdfViewer] = useState(false);
+    const [currentPdfBlob, setCurrentPdfBlob] = useState(null);
+
 
     useEffect(() => {
         const loadRole = async () => {
-            try{
-                const res = await getMyRole()
-                setRole(res.role)
+            try {
+                const res = await getMyRole();
+                console.log("ROLE", res.role)
+                setRole(res.role);
+            } catch (err) {
+                console.error("Error fetching role:", err);
             }
-            catch(error){
-                console.error("Failed to fetch use role", error)
-            }
-        }
-        loadRole()
-    }, [])
+        };
+        loadRole();
+    }, []);
 
+    const isEmployer = role === "EMPLOYEUR";
+    const isTeacher = role === "PROF";
 
+    const api = isEmployer ? apiEmployer : apiProf;
 
-    const isEmployer = role === "EMPLOYEUR"
-    const isProf = role === "PROF"
-    const api = isEmployer ? apiEmployer : apiProf
 
     useEffect(() => {
-        const fetchEllibles = async () => {
-            try{
+        const fetchEligible = async () => {
+            try {
                 const agreements = await api.getEligibleEvaluations();
-                setEligiblesAgreement(agreements)
+                setEligibleAgreements(agreements);
 
-                const evalMap = {}
-                const teacherMap = {}
+                const evalMap = {};
+                const teacherMap = {};
 
-                for (const agreement of agreements){
-                    const key = `${agreements.studentId}-${agreements.offerId}`;
-                    try{
+                for (const agreement of agreements) {
+                    const key = `${agreement.studentId}-${agreement.offerId}`;
+
+                    try {
                         const existing = await api.checkExistingEvaluation(
                             agreement.studentId,
                             agreement.offerId
-                        )
-                        evalMap[key] = existing
+                        );
+                        evalMap[key] = existing;
 
-                        //Pour employeur seulement
-                        if(isEmployer) {
+                        if (isEmployer) {
                             const teacherCheck =
                                 await apiEmployer.checkTeacherAssigned(
                                     agreement.studentId,
                                     agreement.offerId
-                                )
-                            teacherMap[key] = teacherCheck.teacherAssigned
-                        }
-                        else {
+                                );
+                            teacherMap[key] = teacherCheck.teacherAssigned;
+                        } else {
                             teacherMap[key] = true;
                         }
-                    }
-                    catch(error){
-                        console.error("Error checking evaluation", error)
-                        evalMap[key] = {exists: false}
+
+                    } catch (err) {
+                        evalMap[key] = { exists: false };
                         teacherMap[key] = false;
                     }
                 }
-                setEvaluationStatus(evalMap)
-                setTeacherAssignementStatus(teacherMap)
+
+                setEvaluationStatus(evalMap);
+                setTeacherAssignmentStatus(teacherMap);
+            } finally {
+                setLoading(false);
             }
-            catch(error){
-                console.error("Error fetching eligibles evaluations: ", error)
-            }
-            finally{
-                setLoading(false)
-            }
-        }
-        fetchEllibles()
-    }, [role])
+        };
+
+        fetchEligible();
+    }, [role]);
+
 
     const handleViewPdf = async (studentId, offerId) => {
         try {
@@ -96,8 +96,8 @@ export default function EvaluationList(){
                 setCurrentPdfBlob(blob);
                 setShowPdfViewer(true);
             }
-        } catch (error) {
-            console.error("Error loading PDF:", error);
+        } catch (err) {
+            console.error("Error loading PDF:", err);
         }
     };
 
@@ -116,73 +116,56 @@ export default function EvaluationList(){
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                        {t("evaluationList.title")}
-                    </h1>
-                    <p className="text-gray-600 mt-2">
-                        {t("evaluationList.subtitle")}
-                    </p>
-                </div>
-
-                <Link
-                    to={isEmployer ? "/dashboard/employeur" : "/dashboard/prof"}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-100 bg-white text-sm font-medium text-blue-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 shadow-sm"
-                >
-                    ← {t("ententeStage.back")}
-                </Link>
-            </div>
 
             {eligibleAgreements.length === 0 ? (
-                <div className="text-center py-8">
-                    <p className="text-gray-500">{t("evaluationList.no_evaluations")}</p>
+                <div className="text-center py-8 text-gray-500">
+                    {t("evaluationList.no_evaluations")}
                 </div>
             ) : (
                 <div className="space-y-5">
                     {eligibleAgreements.map((agreement) => {
                         const key = `${agreement.studentId}-${agreement.offerId}`;
                         const status = evaluationStatus[key];
-                        const hasEvaluation = status?.exists;
+                        const hasEval = status?.exists;
                         const evaluation = status?.evaluation;
                         const teacherAssigned = teacherAssignmentStatus[key];
 
                         return (
                             <div
                                 key={agreement.id}
-                                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
+                                className="bg-white border rounded-xl p-6 shadow-sm"
                             >
                                 <div className="flex flex-col md:flex-row md:justify-between gap-6">
-                                    {/* Left */}
+
                                     <div className="flex-1 space-y-3">
-                                        <h3 className="text-xl font-semibold text-gray-900">
+                                        <h3 className="text-xl font-semibold">
                                             {agreement.studentFirstName} {agreement.studentLastName}
                                         </h3>
 
-                                        <p className="text-gray-700">
-                                            {agreement.internshipDescription}
-                                        </p>
+                                        <p>{agreement.internshipDescription}</p>
 
-                                        {hasEvaluation && evaluation && (
-                                            <div className="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                                        {hasEval && evaluation && (
+                                            <div className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm">
                                                 ✔ {t("evaluationList.evaluation")}{" "}
                                                 {evaluation.submitted
                                                     ? t("evaluationList.submitted")
-                                                    : t("evaluationList.draft_created")}{" "}
-                                                - {new Date(evaluation.dateEvaluation).toLocaleDateString()}
+                                                    : t("evaluationList.draft_created")}
+                                                {" - "}
+                                                {new Date(evaluation.dateEvaluation).toLocaleDateString()}
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Right */}
                                     <div className="flex flex-col gap-3 items-start md:items-end">
-                                        {hasEvaluation ? (
+                                        {hasEval ? (
                                             <button
                                                 onClick={() =>
-                                                    handleViewPdf(agreement.studentId, agreement.offerId)
+                                                    handleViewPdf(
+                                                        agreement.studentId,
+                                                        agreement.offerId
+                                                    )
                                                 }
-                                                className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 shadow-sm"
+                                                className="px-4 py-2 bg-emerald-600 text-white rounded-md"
                                             >
                                                 {t("evaluationList.view_pdf")}
                                             </button>
@@ -195,9 +178,9 @@ export default function EvaluationList(){
                                                             : `/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`
                                                         : "#"
                                                 }
-                                                className={`px-4 py-2 rounded-md text-white text-sm shadow-sm ${
+                                                className={`px-4 py-2 rounded-md text-white ${
                                                     teacherAssigned
-                                                        ? "bg-blue-600 hover:bg-blue-700"
+                                                        ? "bg-blue-600"
                                                         : "bg-gray-400 cursor-not-allowed"
                                                 }`}
                                             >
@@ -214,13 +197,13 @@ export default function EvaluationList(){
                 </div>
             )}
 
-            {/* PDF Viewer */}
             {showPdfViewer && currentPdfBlob && (
                 <PdfViewer file={currentPdfBlob} onClose={handleClosePdfViewer} />
             )}
         </div>
     );
 }
+
 
 
 // import React, { useState, useEffect } from 'react';
