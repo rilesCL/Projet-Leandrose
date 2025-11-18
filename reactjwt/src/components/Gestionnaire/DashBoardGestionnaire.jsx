@@ -14,6 +14,7 @@ export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [userName, setUserName] = useState("");
+    const [chatbotOpen, setChatbotOpen] = useState(false);
 
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(window.location.search);
@@ -77,6 +78,17 @@ export default function DashBoardGestionnaire() {
                         {t("appName")}
                     </span>
                     <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setChatbotOpen(!chatbotOpen)}
+                            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 border-2 text-xl ${
+                                chatbotOpen
+                                    ? 'bg-indigo-600 border-indigo-700'
+                                    : 'bg-white border-gray-300'
+                            }`}
+                            title={chatbotOpen ? "Fermer le chatbot" : "Ouvrir le chatbot"}
+                        >
+                            🤖
+                        </button>
                         <LanguageSelector />
                         <button
                             onClick={handleLogout}
@@ -137,7 +149,7 @@ export default function DashBoardGestionnaire() {
                     )}
                 </div>
             </main>
-            <Chatbot />
+            <Chatbot isOpen={chatbotOpen} onToggle={() => setChatbotOpen(false)} />
         </div>
     );
 }

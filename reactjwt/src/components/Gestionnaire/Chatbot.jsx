@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Trash2, Bot, User } from 'lucide-react';
+import { Send, Trash2, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 function getAuthHeaders(contentType = "application/json") {
     const accessToken = sessionStorage.getItem("accessToken");
@@ -11,12 +12,75 @@ function getAuthHeaders(contentType = "application/json") {
     return headers;
 }
 
-export default function Chatbot() {
+export default function Chatbot({ isOpen = false, onToggle }) {
+    const { t } = useTranslation();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [sessionId, setSessionId] = useState(null);
     const messagesEndRef = useRef(null);
+
+    // Mapping des clés de programmes vers leurs traductions
+    const programMapping = {
+        'COMPUTER_SCIENCE': t('program.computer_science'),
+        'SOFTWARE_ENGINEERING': t('program.software_engineering'),
+        'INFORMATION_TECHNOLOGY': t('program.information_technology'),
+        'DATA_SCIENCE': t('program.data_science'),
+        'CYBER_SECURITY': t('program.cyber_security'),
+        'ARTIFICIAL_INTELLIGENCE': t('program.artificial_intelligence'),
+        'ELECTRICAL_ENGINEERING': t('program.electrical_engineering'),
+        'MECHANICAL_ENGINEERING': t('program.mechanical_engineering'),
+        'CIVIL_ENGINEERING': t('program.civil_engineering'),
+        'CHEMICAL_ENGINEERING': t('program.chemical_engineering'),
+        'BIOMEDICAL_ENGINEERING': t('program.biomedical_engineering'),
+        'BUSINESS_ADMINISTRATION': t('program.business_administration'),
+        'ACCOUNTING': t('program.accounting'),
+        'FINANCE': t('program.finance'),
+        'ECONOMICS': t('program.economics'),
+        'MARKETING': t('program.marketing'),
+        'MANAGEMENT': t('program.management'),
+        'PSYCHOLOGY': t('program.psychology'),
+        'SOCIOLOGY': t('program.sociology'),
+        'POLITICAL_SCIENCE': t('program.political_science'),
+        'INTERNATIONAL_RELATIONS': t('program.international_relations'),
+        'LAW': t('program.law'),
+        'EDUCATION': t('program.education'),
+        'LITERATURE': t('program.literature'),
+        'HISTORY': t('program.history'),
+        'PHILOSOPHY': t('program.philosophy'),
+        'LINGUISTICS': t('program.linguistics'),
+        'BIOLOGY': t('program.biology'),
+        'CHEMISTRY': t('program.chemistry'),
+        'PHYSICS': t('program.physics'),
+        'MATHEMATICS': t('program.mathematics'),
+        'STATISTICS': t('program.statistics'),
+        'ENVIRONMENTAL_SCIENCE': t('program.environmental_science'),
+        'MEDICINE': t('program.medicine'),
+        'NURSING': t('program.nursing'),
+        'PHARMACY': t('program.pharmacy'),
+        'DENTISTRY': t('program.dentistry'),
+        'ARCHITECTURE': t('program.architecture'),
+        'FINE_ARTS': t('program.fine_arts'),
+        'MUSIC': t('program.music'),
+        'THEATER': t('program.theater'),
+        'FILM_STUDIES': t('program.film_studies'),
+        'COMMUNICATION': t('program.communication'),
+        'JOURNALISM': t('program.journalism'),
+        'DESIGN': t('program.design'),
+        'ANTHROPOLOGY': t('program.anthropology'),
+        'GEOGRAPHY': t('program.geography'),
+        'SPORTS_SCIENCE': t('program.sports_science')
+    };
+
+    // Fonction pour remplacer les clés par leurs valeurs traduites
+    const replaceProgramKeys = (text) => {
+        let result = text;
+        Object.keys(programMapping).forEach(key => {
+            const regex = new RegExp(`\\b${key}\\b`, 'g');
+            result = result.replace(regex, programMapping[key]);
+        });
+        return result;
+    };
 
     useEffect(() => {
         const newSessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -80,9 +144,13 @@ export default function Chatbot() {
             const data = await response.json();
             console.log('✅ Response data:', data); // Debug
 
+            // Nettoyer les astérisques et remplacer les clés par les valeurs traduites
+            let cleanContent = data.response.replace(/^\s*\*\s+/gm, '').trim();
+            cleanContent = replaceProgramKeys(cleanContent);
+
             const assistantMessage = {
                 role: 'assistant',
-                content: data.response,
+                content: cleanContent,
                 timestamp: new Date()
             };
 
@@ -139,6 +207,10 @@ export default function Chatbot() {
         "Affiche toutes les ententes de stage"
     ];
 
+    if (!isOpen) {
+        return null;
+    }
+
     return (
         <div className="fixed bottom-4 right-4 z-50">
             <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-96 h-[600px] flex flex-col overflow-hidden">
@@ -146,19 +218,30 @@ export default function Chatbot() {
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                            <Bot className="w-6 h-6" />
+                            <span className="text-2xl">🤖</span>
                             <div>
                                 <h1 className="text-base font-bold">Assistant LeandrOSE</h1>
                                 <p className="text-xs text-blue-100">Aide intelligente</p>
                             </div>
                         </div>
-                        <button
-                            onClick={clearChat}
-                            className="p-2 hover:bg-blue-500 rounded-lg transition-colors"
-                            title="Réinitialiser"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={clearChat}
+                                className="p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+                                title="Réinitialiser"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </button>
+                            {onToggle && (
+                                <button
+                                    onClick={onToggle}
+                                    className="p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+                                    title="Fermer"
+                                >
+                                    <span className="text-xl">×</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -181,7 +264,7 @@ export default function Chatbot() {
                                             : 'bg-gray-300 text-gray-700'
                                     }`}
                                 >
-                                    {message.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                                    {message.role === 'user' ? <User className="w-4 h-4" /> : <span className="text-lg">🤖</span>}
                                 </div>
                                 <div
                                     className={`rounded-lg p-3 ${
@@ -209,7 +292,7 @@ export default function Chatbot() {
                     {loading && (
                         <div className="flex justify-start">
                             <div className="flex items-center space-x-2 bg-white rounded-lg p-3 shadow-sm">
-                                <Bot className="w-4 h-4 text-gray-400" />
+                                <span className="text-lg">🤖</span>
                                 <div className="flex space-x-1">
                                     <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                                     <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
