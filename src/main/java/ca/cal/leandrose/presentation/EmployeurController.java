@@ -429,7 +429,7 @@ public class EmployeurController {
                         new EvaluationResponsesDto(null, "Evaluation not allowed - agreement not validated or not found")
                 );
             }
-            EvaluationStagiaireDto response = evaluationStagiaireService.createEvaluation(
+            EvaluationStagiaireDto response = evaluationStagiaireService.createEvaluationByEmployer(
                     me.getId(), createRequest.studentId(), createRequest.internshipOfferId()
             );
             return ResponseEntity.ok(response);

@@ -4,6 +4,9 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.prof.EntrepriseTeacherDto;
+import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
+import ca.cal.leandrose.service.dto.evaluation.prof.StudentTeacherDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +45,13 @@ public class EvaluationStagiaireService {
         InternshipOffer internshipOffer = internshipOfferRepository.findById(internshipId)
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
 
+        EntenteStage stage = ententeStageRepository
+                .findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(studentId, internshipId)
+                .orElseThrow(() -> new RuntimeException("Aucune entente de stage trouvée"));
+        Prof prof = stage.getProf();
+
         Employeur emp = null;
-        EntenteStage stage = null;
+
 
         if (creator == CreatorTypeEvaluation.EMPLOYER){
             emp = employeurRepository.findById(creatorId)
@@ -67,6 +75,7 @@ public class EvaluationStagiaireService {
                 .student(student)
                 .internshipOffer(internshipOffer)
                 .employeur(emp)
+                .professeur(prof)
                 .ententeStage(stage)
                 .submitted(false)
                 .build();
@@ -130,6 +139,37 @@ public class EvaluationStagiaireService {
         );
 
         return new EvaluationInfoDto(studentInfo, internshipInfo);
+    }
+
+    public EvaluationTeacherInfoDto getEvaluationInfoForTeacher(Long profId, Long studentId, Long internshipOfferId){
+        EntenteStage entente = ententeStageRepository
+                .findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(
+                        profId, studentId, internshipOfferId
+                )
+                .orElseThrow(() -> new IllegalStateException(
+                        "Aucune entente de stage associée à ce professeur pour cet étudiant et ce stage."
+                ));
+        if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipOfferId, studentId)) {
+            throw new IllegalStateException("Une évaluation existe déjà pour ce stagiaire et ce stage");
+        }
+        Student student = entente.getCandidature().getStudent();
+        InternshipOffer internship = entente.getCandidature().getInternshipOffer();
+        Employeur employeur = entente.getEmployeur();
+
+        if (employeur == null)
+            throw new IllegalStateException("Aucun employeur associé à cette ofre de stage");
+        EntrepriseTeacherDto entrepriseTeacherDto = new EntrepriseTeacherDto(
+                internship.getCompanyName(),
+                employeur.getFirstName() + " " + employeur.getLastName(),
+                internship.getAddress(),
+                employeur.getEmail()
+        );
+        StudentTeacherDto studentTeacherDto = new StudentTeacherDto(
+                student.getFirstName() + " " + student.getLastName(),
+                internship.getStartDate()
+        );
+
+        return new EvaluationTeacherInfoDto(entrepriseTeacherDto, studentTeacherDto);
     }
 
     public EvaluationStagiaireDto generateEvaluationPdfByEmployer(Long evaluationId, EvaluationFormData formData, String langage){

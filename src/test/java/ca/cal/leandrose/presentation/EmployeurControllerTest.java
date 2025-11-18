@@ -68,6 +68,7 @@ class EmployeurControllerTest {
   private EvaluationFormData formData;
   private EmployeurDto employeurDto;
   private StudentDto studentDto;
+  private ProfDto profDto;
   private MockHttpServletRequest request;
   private InternshipOfferDto internshipOfferDto;
 
@@ -76,6 +77,17 @@ class EmployeurControllerTest {
   void setUp(){
       request = new MockHttpServletRequest();
       objectMapper = new ObjectMapper();
+      profDto = ProfDto.builder()
+              .id(2L)
+              .firstName("Jean")
+              .lastName("Dupont")
+              .email("prof@gmail.com")
+              .employeeNumber("dakdadas")
+              .nameCollege("College Mainsonneuve")
+              .address("Rue Debois")
+              .fax_machine("437893434")
+              .department("Informatique")
+              .build();
 
       employeurDto =  EmployeurDto.builder()
               .id(1L)
@@ -104,12 +116,12 @@ class EmployeurControllerTest {
                       .build();
 
       evaluationDto = new EvaluationStagiaireDto(
-              3L, LocalDate.now(), 2L, 1L,  100L,"/path/to/pdf", false
+              3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", false
       );
-      formData = new EvaluationFormData(
-              Map.of(), "General comment", 2, "Global appreciation",
-              true, 10, "YES", true
-      );
+//      formData = new EvaluationFormData(
+//              Map.of(), "General comment", 2, "Global appreciation",
+//              true, 10, "YES", true
+//      );
   }
 
   private CandidatureDto createCandidatureDto(
@@ -458,7 +470,7 @@ class EmployeurControllerTest {
 
     @Test
     void generateEvaluationPdf_notOwner_returnsForbidden() throws Exception {
-        EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 100L, null, false);
+        EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 2L, 100L, null, false);
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(otherEvaluation);
@@ -549,7 +561,7 @@ class EmployeurControllerTest {
 
 
         EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(
-                1L, LocalDate.now(), 2L, 1L, 100L, null, false
+                1L, LocalDate.now(), 2L, 1L, 2L, 100L, null, false
         );
 
         when(userAppService.getMe(anyString())).thenReturn(differentEmployeur);
