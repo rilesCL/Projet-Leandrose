@@ -16,8 +16,6 @@ export default function EvaluationFormTeacher(){
     const [submitting, setSubmitting] = useState(false)
 
     const [info, setInfo] = useState(null)
-    const [student, setStudent] = useState(null)
-    const [company, setCompany] = useState(null)
     const [evaluationId, setEvaluationId] = useState(null)
 
     const [formData, setFormData] = useState({
@@ -25,16 +23,18 @@ export default function EvaluationFormTeacher(){
         hoursMonth1: "",
         hoursMonth2: "",
         hoursMonth3: "",
+        salaryPerHour: "",
         comments: "",
-        observations: "",
-        sameInternNextStage: "",
-        nbInternsAccepted: "",
-        schedule1Start: "",
-        schedule1End: "",
-        schedule2Start: "",
-        schedule2End: "",
-        schedule3Start: "",
-        schedule3End: "",
+        obs_stagePreference: "",
+        obs_openToHosting: "",
+        obs_sameInternAgain: "",
+        obs_variableShifts: "",
+        obs_shift1From: "",
+        obs_shift1To: "",
+        obs_shift2From: "",
+        obs_shift2To: "",
+        obs_shift3From: "",
+        obs_shift3To: "",
         questions: {}
     });
 
@@ -79,8 +79,6 @@ export default function EvaluationFormTeacher(){
                 }
                 const data = await getEvaluationInfo(studentId, offerId)
                 setInfo(data)
-                // setStudent(info.studentInfo)
-                // setCompany(info.companyInfo)
 
                 const initialQuestions = {}
                 Object.entries(questionGroups).forEach(([groupKey, questions]) => {
@@ -134,7 +132,10 @@ export default function EvaluationFormTeacher(){
     }
 
     if (loading) return <p>Chargement...</p>
-    if(error && !student) return <p className="text-red-500">{error}</p>;
+    if(error && !info) return <p className="text-red-500">{error}</p>;
+
+    if (loading) return <p>Chargement...</p>
+    if (error && !info) return <p className="text-red-500">{error}</p>;
 
     return (
         <div className="max-w-4xl mx-auto p-6">
@@ -157,17 +158,50 @@ export default function EvaluationFormTeacher(){
                 <p><strong>Date du stage :</strong> {info?.studentTeacherDto.internshipStartDate}</p>
 
                 <div className="mt-3">
-                    <label className="font-medium">Stage :</label>
-                    <div className="flex gap-4 mt-2">
-                        <label><input type="radio" value="1"
-                                      checked={formData.stageNumber === "1"}
-                                      onChange={e => handleChange("stageNumber", e.target.value)} /> 1</label>
+                    <label className="font-medium block mb-2 text-center">Stage :</label>
 
-                        <label><input type="radio" value="2"
-                                      checked={formData.stageNumber === "2"}
-                                      onChange={e => handleChange("stageNumber", e.target.value)} /> 2</label>
+                    <div className="flex justify-center gap-4">
+                        {[
+                            {
+                                value: "1",
+                                label: "1",
+                                baseClasses: "bg-blue-200 border-2 border-blue-400 text-blue-900 font-semibold hover:border-blue-500 hover:bg-blue-300/80",
+                                selectedClasses: "border-[3px] border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md",
+                                inputRing: "focus:ring-blue-500"
+                            },
+                            {
+                                value: "2",
+                                label: "2",
+                                baseClasses: "bg-blue-200 border-2 border-blue-400 text-blue-900 font-semibold hover:border-blue-500 hover:bg-blue-300/80",
+                                selectedClasses: "border-[3px] border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md",
+                                inputRing: "focus:ring-blue-500"
+                            }
+                        ].map(option => {
+                            const isSelected = formData.stageNumber === option.value;
+
+                            return (
+                                <label
+                                    key={option.value}
+                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
+                        ${option.baseClasses}
+                        ${isSelected ? option.selectedClasses : ""}
+                    `}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="stageNumber"
+                                        value={option.value}
+                                        checked={isSelected}
+                                        onChange={e => handleChange("stageNumber", e.target.value)}
+                                        className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                    />
+                                    <span className="text-sm font-medium">{option.label}</span>
+                                </label>
+                            );
+                        })}
                     </div>
                 </div>
+
             </section>
 
             {/* Questions */}
@@ -176,25 +210,129 @@ export default function EvaluationFormTeacher(){
                     <h3 className="text-lg font-semibold mb-4">{groupKey.toUpperCase()}</h3>
 
                     {questions.map((q, index) => (
-                        <div key={index} className="mb-4">
-                            <p className="mb-2">{q}</p>
+                        <div key={index} className="mb-6">
+                            <p className="mb-5">{q}</p>
 
-                            <div className="flex flex-wrap gap-4">
-                                {ratingOptions.map(option => (
-                                    <label key={option} className="flex items-center gap-2">
-                                        <input
-                                            type="radio"
-                                            name={`${groupKey}-${index}`}
-                                            value={option}
-                                            checked={formData.questions[groupKey][index] === option}
-                                            onChange={() => handleQuestionChange(groupKey, index, option)}
-                                        />
-                                        {option}
-                                    </label>
-                                ))}
+                            <div className="flex flex-wrap justify-center gap-3 mb-3">
+                                {[
+                                    {
+                                        value: 'EXCELLENT',
+                                        label: 'Totalement en accord',
+                                        baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
+                                        selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
+                                        inputRing: 'focus:ring-green-600 text-green-700'
+                                    },
+                                    {
+                                        value: 'TRES_BIEN',
+                                        label: 'Plutôt en accord',
+                                        baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
+                                        selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
+                                        inputRing: 'focus:ring-green-500 text-green-600'
+                                    },
+                                    {
+                                        value: 'SATISFAISANT',
+                                        label: 'Plutôt en désaccord',
+                                        baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
+                                        selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
+                                        inputRing: 'focus:ring-orange-500 text-orange-600'
+                                    },
+                                    {
+                                        value: 'A_AMELIORER',
+                                        label: 'Totalement en désaccord',
+                                        baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
+                                        selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
+                                        inputRing: 'focus:ring-red-600 text-red-700'
+                                    }
+                                ].map(option => {
+                                    const isSelected =
+                                        formData.questions[groupKey][index] === option.value;
+
+                                    return (
+                                        <label
+                                            key={option.value}
+                                            className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
+                                            ${option.baseClasses}
+                                            ${isSelected ? option.selectedClasses : ''}`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name={`${groupKey}-${index}`}
+                                                value={option.value}
+                                                checked={isSelected}
+                                                onChange={() =>
+                                                    handleQuestionChange(groupKey, index, option.value)
+                                                }
+                                                className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                            />
+                                            <span className="text-sm font-medium">{option.label}</span>
+                                        </label>
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}
+
+                    {groupKey === "conformity" && (
+                        <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+                            <h4 className="font-semibold mb-3">
+                                Préciser le nombre d’heures/semaine :
+                            </h4>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Premier mois :</label>
+                                    <input
+                                        type="number"
+                                        className="w-full p-2 border rounded"
+                                        value={formData.hoursMonth1}
+                                        onChange={e => handleChange("hoursMonth1", e.target.value)}
+                                        min="0"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Deuxième mois :</label>
+                                    <input
+                                        type="number"
+                                        className="w-full p-2 border rounded"
+                                        value={formData.hoursMonth2}
+                                        onChange={e => handleChange("hoursMonth2", e.target.value)}
+                                        min="0"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Troisième mois :</label>
+                                    <input
+                                        type="number"
+                                        className="w-full p-2 border rounded"
+                                        value={formData.hoursMonth3}
+                                        onChange={e => handleChange("hoursMonth3", e.target.value)}
+                                        min="0"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {groupKey === "general"  && (
+                            <div className="mt-4 ">
+                                <label className="block text-sm font-medium mb-1">
+                                    Préciser :
+                                </label>
+                                <div className="flex items-center justify-center gap-2">
+                                    <input
+                                        type="number"
+                                        className="w-32 p-2 border rounded"
+                                        placeholder="0.00"
+                                        step="0.01"
+                                        min="0"
+                                        value={formData.salaryPerHour}
+                                        onChange={e => handleChange("salaryPerHour", e.target.value)}
+                                    />
+                                    <span>/ l’heure</span>
+                                </div>
+                            </div>
+                    )}
                 </section>
             ))}
 
@@ -210,17 +348,167 @@ export default function EvaluationFormTeacher(){
             </section>
 
             {/* Observations */}
-            <section className="mb-6">
-                <label className="block font-medium mb-2">Observations générales :</label>
-                <textarea
-                    className="w-full p-2 border rounded"
-                    rows="4"
-                    value={formData.observations}
-                    onChange={e => handleChange("observations", e.target.value)}
-                />
+            <section className="mb-8 p-4 border rounded-lg bg-gray-50 ">
+                <h3 className="text-lg font-semibold mb-4">Observations générales</h3>
+
+                <div className="mb-6">
+                    <p className="font-medium mb-2">Ce milieu est à privilégier pour le :</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                        {[
+                            { value: "1", label: "Premier stage" },
+                            { value: "2", label: "Deuxième stage" }
+                        ].map(opt => {
+                            const isSelected = formData.obs_stagePreference === opt.value;
+                            return (
+                                <label
+                                    key={opt.value}
+                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
+                        bg-blue-100 border-2 border-blue-300 text-blue-900 font-medium
+                        ${isSelected ? "border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md" : ""}
+                        `}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="obs_stagePreference"
+                                        value={opt.value}
+                                        checked={isSelected}
+                                        onChange={() => handleChange("obs_stagePreference", opt.value)}
+                                        className="mr-2"
+                                    />
+                                    {opt.label}
+                                </label>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <div className="mb-6">
+                    <p className="font-medium mb-2">Ce milieu est ouvert à accueillir :</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                        {[
+                            { value: "1", label: "Un stagiaire" },
+                            { value: "2", label: "Deux stagiaires" },
+                            { value: "3", label: "Trois stagiaires" },
+                            { value: "4", label: "Plus de trois" }
+                        ].map(opt => {
+                            const isSelected = formData.obs_openToHosting === opt.value;
+                            return (
+                                <label
+                                    key={opt.value}
+                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
+                        bg-purple-100 border-2 border-purple-300 text-purple-900 font-medium
+                        ${isSelected ? "border-purple-700 ring-2 ring-purple-400 ring-offset-2 shadow-md" : ""}
+                        `}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="obs_openToHosting"
+                                        value={opt.value}
+                                        checked={isSelected}
+                                        onChange={() => handleChange("obs_openToHosting", opt.value)}
+                                        className="mr-2"
+                                    />
+                                    {opt.label}
+                                </label>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <div className="mb-6">
+                    <p className="font-medium mb-2">
+                        Ce milieu désire accueillir le même stagiaire pour un prochain stage :
+                    </p>
+                    <div className="flex justify-center gap-3">
+                        {[
+                            { value: "YES", label: "Oui" },
+                            { value: "NO", label: "Non" }
+                        ].map(opt => {
+                            const isSelected = formData.obs_sameInternAgain === opt.value;
+                            return (
+                                <label
+                                    key={opt.value}
+                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
+                        bg-green-100 border-2 border-green-300 text-green-900 font-medium
+                        ${isSelected ? "border-green-700 ring-2 ring-green-400 ring-offset-2 shadow-md" : ""}
+                        `}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="obs_sameInternAgain"
+                                        value={opt.value}
+                                        checked={isSelected}
+                                        onChange={() => handleChange("obs_sameInternAgain", opt.value)}
+                                        className="mr-2"
+                                    />
+                                    {opt.label}
+                                </label>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <div className="mb-6">
+                    <p className="font-medium mb-2">
+                        Ce milieu offre des quarts de travail variables :
+                    </p>
+                    <div className="flex gap-3 justify-center">
+                        {[
+                            { value: "YES", label: "Oui" },
+                            { value: "NO", label: "Non" }
+                        ].map(opt => {
+                            const isSelected = formData.obs_variableShifts === opt.value;
+                            return (
+                                <label
+                                    key={opt.value}
+                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
+                        bg-orange-100 border-2 border-orange-300 text-orange-900 font-medium
+                        ${isSelected ? "border-orange-700 ring-2 ring-orange-400 ring-offset-2 shadow-md" : ""}
+                        `}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="obs_variableShifts"
+                                        value={opt.value}
+                                        checked={isSelected}
+                                        onChange={() => handleChange("obs_variableShifts", opt.value)}
+                                        className="mr-2"
+                                    />
+                                    {opt.label}
+                                </label>
+                            );
+                        })}
+                    </div>
+
+                    {formData.obs_variableShifts === "YES" && (
+                        <div className="mt-4 space-y-3">
+                            {[1, 2, 3].map(n => (
+                                <div key={n} className="flex gap-3 items-center">
+                                    <span>De</span>
+                                    <input
+                                        type="time"
+                                        className="p-2 border rounded"
+                                        value={formData[`obs_shift${n}From`]}
+                                        onChange={e =>
+                                            handleChange(`obs_shift${n}From`, e.target.value)
+                                        }
+                                    />
+                                    <span>à</span>
+                                    <input
+                                        type="time"
+                                        className="p-2 border rounded"
+                                        value={formData[`obs_shift${n}To`]}
+                                        onChange={e =>
+                                            handleChange(`obs_shift${n}To`, e.target.value)
+                                        }
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </section>
 
-            {/* Submit */}
             <button
                 onClick={handleSubmit}
                 disabled={submitting}
@@ -233,5 +521,6 @@ export default function EvaluationFormTeacher(){
                 <p className="text-red-600 mt-4">{error}</p>
             )}
         </div>
-    )
+    );
+
 }
