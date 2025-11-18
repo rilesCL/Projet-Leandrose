@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/gestionnaire")
@@ -275,14 +272,45 @@ public class GestionnaireController {
     }
   }
 
+
     @PostMapping("/chatclient")
-    public ResponseEntity<String> exchange(@RequestBody ChatRequest request) {
+    public ResponseEntity<?> exchange(
+            @RequestBody ChatRequest request,
+            @RequestHeader(value = "X-Session-Id", required = false) String sessionId) {
         try {
-            String response = chatService.chat(request.query());
-            return ResponseEntity.ok(response);
+            String effectiveSessionId = sessionId != null ? sessionId : UUID.randomUUID().toString();
+
+            String response = chatService.chat(request.query(), effectiveSessionId);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("response", response);
+            result.put("sessionId", effectiveSessionId);
+
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
+            System.err.println("❌ Chat error: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError()
-                    .body("Chat error: " + e.getMessage());
+                    .body(Map.of("error", "Erreur du chat: " + e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/chatclient/session/{sessionId}")
+    public ResponseEntity<Void> clearChatSession(@PathVariable String sessionId) {
+        try {
+            chatService.clearHistory(sessionId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/chatclient/sessions")
+    public ResponseEntity<Set<String>> getActiveSessions() {
+        try {
+            return ResponseEntity.ok(chatService.getActiveSessions());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Set.of());
         }
     }
 

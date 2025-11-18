@@ -1,5 +1,8 @@
 package ca.cal.leandrose.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -15,118 +18,140 @@ public class ChatService {
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper;
 
-    // Stocker l'historique des conversations par session/utilisateur
+    private final GestionnaireService gestionnaireService;
+    private final InternshipOfferService internshipOfferService;
+    private final EntenteStageService ententeService;
+
     private final Map<String, List<Map<String, Object>>> conversationHistory = new ConcurrentHashMap<>();
+    private static final int MAX_HISTORY_SIZE = 20;
 
-    // Contexte système sur votre projet
+    public ChatService(GestionnaireService gestionnaireService,
+                       InternshipOfferService internshipOfferService,
+                       EntenteStageService ententeService) {
+        this.gestionnaireService = gestionnaireService;
+        this.internshipOfferService = internshipOfferService;
+        this.ententeService = ententeService;
+
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        System.out.println("✅ ChatService initialisé avec ObjectMapper configuré pour les dates");
+    }
+
     private static final String SYSTEM_CONTEXT = """
-            Tu es un assistant IA qui aide avec une application Spring Boot de gestion de stages appelée LeandrOSE.
+            Tu es un assistant IA spécialisé pour aider avec l'application LeandrOSE de gestion de stages.
+            
+            IMPORTANT : Tu dois TOUJOURS utiliser les fonctions disponibles pour récupérer des données en temps réel.
+            Ne jamais inventer ou supposer des données. Si tu as besoin d'informations, utilise les fonctions.
             
             Aperçu du projet :
-            - L'application gère les offres de stage pour un cégep/université
-            - Entités principales : Étudiants, Employeurs, Gestionnaires, Professeurs, Offres de stage, CV, Candidatures, Convocations d'entrevue, et Ententes de stage
+            - Application de gestion de stages pour un cégep/université
+            - Entités : Étudiants, Employeurs, Gestionnaires, Professeurs, Offres de stage, CV, Candidatures, Ententes
             
             Fonctionnalités clés :
-            1. Les étudiants peuvent téléverser des CV et postuler aux offres de stage
-            2. Les employeurs peuvent créer des offres de stage
-            3. Les gestionnaires approuvent/rejettent les CV et les offres de stage
-            4. Les employeurs peuvent inviter les étudiants à des entrevues (convocations)
-            5. L'employeur et l'étudiant doivent tous deux accepter les candidatures
-            6. Les ententes de stage sont créées et doivent être signées par l'étudiant, l'employeur, le gestionnaire et le professeur assigné
-            7. Les professeurs sont assignés pour superviser les stages
-            
-            Stack technique :
-            - Spring Boot 3.5.5
-            - Java 21
-            - Base de données PostgreSQL
-            - Authentification JWT
-            - JPA/Hibernate
-            - Génération de PDF avec iText
-            - APIs RESTful
-            
-            Programmes disponibles :
-            - Informatique (Computer Science)
-            - Génie logiciel (Software Engineering)
-            - Technologies de l'information (Information Technology)
-            - Science des données (Data Science)
-            - Cybersécurité (Cyber Security)
-            - Intelligence artificielle (Artificial Intelligence)
-            - Génie électrique (Electrical Engineering)
-            - Génie mécanique (Mechanical Engineering)
-            - Génie civil (Civil Engineering)
-            - Génie chimique (Chemical Engineering)
-            - Génie biomédical (Biomedical Engineering)
-            - Administration des affaires (Business Administration)
-            - Comptabilité (Accounting)
-            - Finance
-            - Économie (Economics)
-            - Marketing
-            - Gestion (Management)
-            - Psychologie (Psychology)
-            - Sociologie (Sociology)
-            - Science politique (Political Science)
-            - Relations internationales (International Relations)
-            - Droit (Law)
-            - Éducation (Education)
-            - Littérature (Literature)
-            - Histoire (History)
-            - Philosophie (Philosophy)
-            - Linguistique (Linguistics)
-            - Biologie (Biology)
-            - Chimie (Chemistry)
-            - Physique (Physics)
-            - Mathématiques (Mathematics)
-            - Statistiques (Statistics)
-            - Sciences environnementales (Environmental Science)
-            - Médecine (Medicine)
-            - Sciences infirmières (Nursing)
-            - Pharmacie (Pharmacy)
-            - Médecine dentaire (Dentistry)
-            - Architecture
-            - Beaux-arts (Fine Arts)
-            - Musique (Music)
-            - Théâtre (Theater)
-            - Études cinématographiques (Film Studies)
-            - Communication
-            - Journalisme (Journalism)
-            - Design
-            - Anthropologie (Anthropology)
-            - Géographie (Geography)
-            - Sciences du sport (Sports Science)
-            
-            Flux de travail principaux :
-            - Approbation de CV : Étudiant téléverse → Gestionnaire approuve/rejette
-            - Approbation d'offre : Employeur crée → Gestionnaire approuve/rejette
-            - Processus de candidature : Étudiant postule → Employeur accepte → Étudiant accepte → Statut devient ACCEPTED
-            - Entente de stage : Créée après acceptation des deux parties → Doit être signée par les 4 parties (étudiant, employeur, gestionnaire, prof)
+            1. Gestion des CV : Les étudiants téléversent des CV, les gestionnaires les approuvent/rejettent
+            2. Gestion des offres : Les employeurs créent des offres, les gestionnaires les approuvent/rejettent
+            3. Candidatures : Les étudiants postulent, processus d'acceptation mutuelle
+            4. Ententes de stage : Création et signature par 4 parties (étudiant, employeur, gestionnaire, prof)
             
             Statuts des candidatures :
-            - PENDING : En attente de la décision de l'employeur
-            - ACCEPTED_BY_EMPLOYER : Acceptée par l'employeur, en attente de la décision de l'étudiant
-            - ACCEPTED : Acceptée par les deux parties (prête pour création d'entente)
-            - REJECTED : Rejetée par l'employeur ou l'étudiant
+            - PENDING : En attente de l'employeur
+            - ACCEPTED_BY_EMPLOYER : Acceptée par l'employeur
+            - ACCEPTED : Acceptée par les deux parties
+            - REJECTED : Rejetée
             
-            Statuts des ententes de stage :
-            - EN_ATTENTE : Créée, en attente de signatures
-            - SIGNEE_ETUDIANT : Signée par l'étudiant
-            - SIGNEE_EMPLOYEUR : Signée par l'employeur
-            - SIGNEE_GESTIONNAIRE : Signée par le gestionnaire
-            - VALIDEE : Signée par toutes les parties (peut maintenant recevoir un prof)
+            Statuts des ententes :
+            - BROUILLON : En cours de création
+            - EN_ATTENTE_SIGNATURE : Créée, en attente de signatures
+            - VALIDEE : Signée par toutes les parties (étudiant, employeur, gestionnaire)
+            - Après validation, un professeur peut être assigné
             
-            Endpoints principaux :
-            - POST /gestionnaire/cv/{cvId}/approve : Approuver un CV
-            - POST /gestionnaire/cv/{cvId}/reject : Rejeter un CV
-            - POST /gestionnaire/offers/{id}/approve : Approuver une offre
-            - POST /gestionnaire/offers/{id}/reject : Rejeter une offre
-            - POST /gestionnaire/ententes : Créer une entente
-            - POST /gestionnaire/ententes/{ententeId}/signer : Signer une entente (gestionnaire)
-            - POST /gestionnaire/ententes/{ententeId}/attribuer-prof : Attribuer un professeur
-            - POST /gestionnaire/chatclient : Discuter avec l'assistant IA
-            
-            Réponds aux questions sur ce système, son architecture, ses fonctionnalités et comment l'utiliser ou l'étendre.
-            Réponds toujours en français et sois précis et professionnel.
+            RÈGLES IMPORTANTES :
+            - Réponds toujours en français de manière professionnelle et structurée
+            - Si tu ne connais pas la réponse, dis-le poliment et demande des précisions
+            - Utilise TOUJOURS les fonctions disponibles pour obtenir des données à jour
+            - Présente les données de manière claire avec des listes à puces ou numérotées
+            - Pour les listes longues, résume les informations principales
+            - Ne fournis que les informations demandées
             """;
+
+    private List<Map<String, Object>> getFunctionDeclarations() {
+        return List.of(
+                createFunctionDeclaration(
+                        "getPendingOffers",
+                        "Récupère la liste des offres de stage en attente d'approbation par les gestionnaires",
+                        Map.of()
+                ),
+                createFunctionDeclaration(
+                        "getApprovedOffers",
+                        "Récupère la liste des offres de stage approuvées et publiées",
+                        Map.of()
+                ),
+                createFunctionDeclaration(
+                        "getRejectedOffers",
+                        "Récupère la liste des offres de stage rejetées par les gestionnaires",
+                        Map.of()
+                ),
+                createFunctionDeclaration(
+                        "getPendingCvs",
+                        "Récupère la liste des CV en attente d'approbation par les gestionnaires",
+                        Map.of()
+                ),
+                createFunctionDeclaration(
+                        "getOfferDetails",
+                        "Récupère les détails complets d'une offre de stage spécifique par son ID",
+                        Map.of(
+                                "offerId", Map.of(
+                                        "type", "number",
+                                        "description", "L'ID numérique de l'offre de stage"
+                                )
+                        )
+                ),
+                createFunctionDeclaration(
+                        "getAllPrograms",
+                        "Récupère la liste complète de tous les programmes d'études disponibles dans le système",
+                        Map.of()
+                ),
+                createFunctionDeclaration(
+                        "getCandidaturesAcceptees",
+                        "Récupère les candidatures acceptées par l'étudiant ET l'employeur (prêtes pour création d'entente)",
+                        Map.of()
+                ),
+                createFunctionDeclaration(
+                        "getAllEntentes",
+                        "Récupère la liste complète de toutes les ententes de stage dans le système",
+                        Map.of()
+                ),
+                createFunctionDeclaration(
+                        "getEntenteDetails",
+                        "Récupère les détails complets d'une entente de stage spécifique par son ID",
+                        Map.of(
+                                "ententeId", Map.of(
+                                        "type", "number",
+                                        "description", "L'ID numérique de l'entente de stage"
+                                )
+                        )
+                )
+        );
+    }
+
+    private Map<String, Object> createFunctionDeclaration(String name, String description, Map<String, Object> parameters) {
+        Map<String, Object> function = new HashMap<>();
+        function.put("name", name);
+        function.put("description", description);
+
+        Map<String, Object> parametersSchema = new HashMap<>();
+        parametersSchema.put("type", "object");
+        parametersSchema.put("properties", parameters);
+        parametersSchema.put("required", new ArrayList<>(parameters.keySet()));
+
+        function.put("parameters", parametersSchema);
+        return function;
+    }
 
     public String chat(String userMessage) {
         return chat(userMessage, "default");
@@ -135,13 +160,10 @@ public class ChatService {
     public String chat(String userMessage, String sessionId) {
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
-        // Obtenir ou créer l'historique de conversation pour cette session
         List<Map<String, Object>> history = conversationHistory.computeIfAbsent(sessionId, k -> new ArrayList<>());
 
-        // Construire la conversation complète avec le contexte système
         List<Map<String, Object>> fullConversation = new ArrayList<>();
 
-        // Ajouter le contexte système comme premier message si l'historique est vide
         if (history.isEmpty()) {
             fullConversation.add(Map.of(
                     "role", "user",
@@ -149,33 +171,34 @@ public class ChatService {
             ));
             fullConversation.add(Map.of(
                     "role", "model",
-                    "parts", List.of(Map.of("text", "Je comprends. Je suis prêt à aider avec les questions sur le système de gestion de stages LeandrOSE."))
+                    "parts", List.of(Map.of("text", "Je comprends parfaitement. Je suis prêt à vous aider avec LeandrOSE. Je vais utiliser les fonctions disponibles pour obtenir des informations à jour du système."))
             ));
         }
 
-        // Ajouter l'historique de conversation
         fullConversation.addAll(history);
 
-        // Ajouter le message actuel de l'utilisateur
         Map<String, Object> userContent = Map.of(
                 "role", "user",
                 "parts", List.of(Map.of("text", userMessage))
         );
         fullConversation.add(userContent);
 
-        // Construire le corps de la requête
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("contents", fullConversation);
 
+        Map<String, Object> tools = Map.of(
+                "function_declarations", getFunctionDeclarations()
+        );
+        requestBody.put("tools", List.of(tools));
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
 
         try {
             ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
-
             Map<String, Object> responseBody = response.getBody();
+
             if (responseBody == null) {
                 throw new RuntimeException("Réponse vide de l'API Gemini");
             }
@@ -187,32 +210,217 @@ public class ChatService {
 
             Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
             List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
+
+            if (parts.get(0).containsKey("functionCall")) {
+                return handleFunctionCalling(sessionId, fullConversation, userContent, parts, url, headers);
+            }
+
             String aiResponse = (String) parts.get(0).get("text");
 
-            // Sauvegarder dans l'historique
             history.add(userContent);
             history.add(Map.of(
                     "role", "model",
                     "parts", List.of(Map.of("text", aiResponse))
             ));
 
-            // Limiter l'historique aux 20 derniers messages (10 échanges) pour éviter les limites de tokens
-            if (history.size() > 20) {
-                history.subList(0, history.size() - 20).clear();
-            }
+            trimHistory(history);
 
             return aiResponse;
+
         } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'appel à l'API Gemini: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Erreur lors de l'appel à l'API Gemini: " + e.getMessage(), e);
         }
     }
 
-    // Effacer l'historique de conversation pour une session
-    public void clearHistory(String sessionId) {
-        conversationHistory.remove(sessionId);
+    private String handleFunctionCalling(String sessionId, List<Map<String, Object>> fullConversation,
+                                         Map<String, Object> userContent, List<Map<String, Object>> parts,
+                                         String url, HttpHeaders headers) {
+
+        List<Map<String, Object>> history = conversationHistory.get(sessionId);
+
+        history.add(userContent);
+
+        Map<String, Object> functionCall = (Map<String, Object>) parts.get(0).get("functionCall");
+        String functionName = (String) functionCall.get("name");
+        Map<String, Object> functionArgs = (Map<String, Object>) functionCall.getOrDefault("args", Map.of());
+
+        System.out.println("🔧 Function call requested: " + functionName);
+        System.out.println("📥 Arguments: " + functionArgs);
+
+        Object functionResult = executeFunction(functionName, functionArgs);
+
+        String resultJson;
+        try {
+            resultJson = objectMapper.writeValueAsString(functionResult);
+            System.out.println("✅ Function result serialized successfully");
+            System.out.println("📤 Function result (first 300 chars): " +
+                    resultJson.substring(0, Math.min(300, resultJson.length())) + "...");
+        } catch (Exception e) {
+            System.err.println("❌ Erreur de sérialisation JSON: " + e.getMessage());
+            e.printStackTrace();
+
+            // Créer un message d'erreur détaillé
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Erreur de sérialisation");
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("functionName", functionName);
+            errorResponse.put("suggestion", "Les données contiennent probablement des types non supportés");
+
+            try {
+                resultJson = objectMapper.writeValueAsString(errorResponse);
+            } catch (Exception ex) {
+                resultJson = "{\"error\": \"Erreur critique de sérialisation\"}";
+            }
+        }
+
+        history.add(Map.of(
+                "role", "model",
+                "parts", List.of(Map.of("functionCall", functionCall))
+        ));
+
+        Map<String, Object> functionResponse = Map.of(
+                "role", "user",
+                "parts", List.of(Map.of(
+                        "functionResponse", Map.of(
+                                "name", functionName,
+                                "response", Map.of("result", resultJson)
+                        )
+                ))
+        );
+
+        history.add(functionResponse);
+
+        List<Map<String, Object>> newConversation = new ArrayList<>(fullConversation);
+        newConversation.add(Map.of(
+                "role", "model",
+                "parts", List.of(Map.of("functionCall", functionCall))
+        ));
+        newConversation.add(functionResponse);
+
+        Map<String, Object> newRequestBody = new HashMap<>();
+        newRequestBody.put("contents", newConversation);
+        newRequestBody.put("tools", List.of(Map.of("function_declarations", getFunctionDeclarations())));
+
+        HttpEntity<Map<String, Object>> newRequest = new HttpEntity<>(newRequestBody, headers);
+
+        try {
+            ResponseEntity<Map> newResponse = restTemplate.postForEntity(url, newRequest, Map.class);
+            Map<String, Object> newResponseBody = newResponse.getBody();
+
+            if (newResponseBody == null) {
+                throw new RuntimeException("Réponse vide après function call");
+            }
+
+            List<Map<String, Object>> newCandidates = (List<Map<String, Object>>) newResponseBody.get("candidates");
+            Map<String, Object> newContent = (Map<String, Object>) newCandidates.get(0).get("content");
+            List<Map<String, Object>> newParts = (List<Map<String, Object>>) newContent.get("parts");
+
+            String finalResponse = (String) newParts.get(0).get("text");
+
+            history.add(Map.of(
+                    "role", "model",
+                    "parts", List.of(Map.of("text", finalResponse))
+            ));
+
+            trimHistory(history);
+
+            return finalResponse;
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors du traitement de la function call: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors du traitement de la function call: " + e.getMessage(), e);
+        }
     }
 
-    // Obtenir toutes les sessions actives
+    private Object executeFunction(String functionName, Map<String, Object> args) {
+        try {
+            System.out.println("⚡ Exécution de la fonction: " + functionName);
+
+            Object result = switch (functionName) {
+                case "getPendingOffers" -> {
+                    var data = gestionnaireService.getPendingOffers();
+                    System.out.println("✅ getPendingOffers: " + data.size() + " offres récupérées");
+                    yield data;
+                }
+                case "getApprovedOffers" -> {
+                    var data = gestionnaireService.getApprovedOffers();
+                    System.out.println("✅ getApprovedOffers: " + data.size() + " offres récupérées");
+                    yield data;
+                }
+                case "getRejectedOffers" -> {
+                    var data = gestionnaireService.getRejectedoffers();
+                    System.out.println("✅ getRejectedOffers: " + data.size() + " offres récupérées");
+                    yield data;
+                }
+                case "getPendingCvs" -> {
+                    var data = gestionnaireService.getPendingCvs();
+                    System.out.println("✅ getPendingCvs: " + data.size() + " CVs récupérés");
+                    yield data;
+                }
+                case "getOfferDetails" -> {
+                    Long offerId = ((Number) args.get("offerId")).longValue();
+                    var data = internshipOfferService.getOffer(offerId);
+                    System.out.println("✅ getOfferDetails: offre #" + offerId + " récupérée");
+                    yield data;
+                }
+                case "getAllPrograms" -> {
+                    var data = gestionnaireService.getAllPrograms();
+                    System.out.println("✅ getAllPrograms: " + data.size() + " programmes récupérés");
+                    yield data;
+                }
+                case "getCandidaturesAcceptees" -> {
+                    var data = ententeService.getCandidaturesAcceptees();
+                    System.out.println("✅ getCandidaturesAcceptees: " + data.size() + " candidatures récupérées");
+                    yield data;
+                }
+                case "getAllEntentes" -> {
+                    var data = ententeService.getAllEntentes();
+                    System.out.println("✅ getAllEntentes: " + data.size() + " ententes récupérées");
+                    yield data;
+                }
+                case "getEntenteDetails" -> {
+                    Long ententeId = ((Number) args.get("ententeId")).longValue();
+                    var data = ententeService.getEntenteById(ententeId);
+                    System.out.println("✅ getEntenteDetails: entente #" + ententeId + " récupérée");
+                    yield data;
+                }
+                default -> {
+                    System.err.println("❌ Fonction inconnue: " + functionName);
+                    yield Map.of("error", "Fonction inconnue: " + functionName);
+                }
+            };
+
+            return result;
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'exécution de " + functionName + ": " + e.getMessage());
+            e.printStackTrace();
+
+            Map<String, String> errorResult = new HashMap<>();
+            errorResult.put("error", e.getMessage());
+            errorResult.put("function", functionName);
+            errorResult.put("type", e.getClass().getSimpleName());
+
+            return errorResult;
+        }
+    }
+
+    private void trimHistory(List<Map<String, Object>> history) {
+        if (history.size() > MAX_HISTORY_SIZE) {
+            int toRemove = history.size() - MAX_HISTORY_SIZE;
+            history.subList(0, toRemove).clear();
+            System.out.println("🧹 Historique nettoyé: " + toRemove + " messages supprimés");
+        }
+    }
+
+    public void clearHistory(String sessionId) {
+        conversationHistory.remove(sessionId);
+        System.out.println("🗑️ Historique de la session " + sessionId + " supprimé");
+    }
+
     public Set<String> getActiveSessions() {
         return conversationHistory.keySet();
     }

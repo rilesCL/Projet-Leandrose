@@ -8,6 +8,7 @@ import OffersPage from "./OffersPage.jsx";
 import EntentesStagePage from "./EntentesStagePage.jsx";
 import LanguageSelector from "../LanguageSelector.jsx";
 import GestionnaireListeEntentes from "./GestionnaireListeEntentes.jsx";
+import Chatbot from "./Chatbot.jsx";
 
 export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
@@ -136,6 +137,7 @@ export default function DashBoardGestionnaire() {
                     )}
                 </div>
             </main>
+            <Chatbot />
         </div>
     );
 }

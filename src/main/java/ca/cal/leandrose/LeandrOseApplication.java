@@ -490,21 +490,6 @@ public class LeandrOseApplication {
               "✗ ERREUR: L'entente n'est pas VALIDEE. Statut actuel: "
                   + ententeValidee.getStatut());
         }
-          // Premier message
-          String aiResponse1 = chatService.chat("C'est quoi cette application?", "test-session");
-          System.out.println("Réponse IA 1: " + aiResponse1);
-
-          // Suite avec contexte
-          String aiResponse2 = chatService.chat("Comment fonctionne le processus d'approbation des CV?", "test-session");
-          System.out.println("Réponse IA 2: " + aiResponse2);
-
-          // Autre question de suivi
-          String aiResponse3 = chatService.chat("Qu'est-ce qui se passe après qu'un CV est approuvé?", "test-session");
-          System.out.println("Réponse IA 3: " + aiResponse3);
-
-          // Question sur les programmes
-          String aiResponse4 = chatService.chat("Quels sont tous les programmes disponibles?", "test-session");
-          System.out.println("Réponse IA 4: " + aiResponse4);
 
       } catch (Exception e) {
         System.err.println("Erreur générale non prévue: " + e.getMessage());

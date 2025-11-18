@@ -7,10 +7,7 @@ import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
-import ca.cal.leandrose.service.dto.CvDto;
-import ca.cal.leandrose.service.dto.GestionnaireDto;
-import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import ca.cal.leandrose.service.dto.ProgramDto;
+import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -135,4 +132,5 @@ public class GestionnaireService {
   public List<ProgramDto> getAllPrograms() {
     return Arrays.stream(Program.values()).map(ProgramDto::fromEnum).toList();
   }
+
 }
