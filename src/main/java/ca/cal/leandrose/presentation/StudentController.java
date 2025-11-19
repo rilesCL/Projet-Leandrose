@@ -373,4 +373,93 @@ public class StudentController {
       return ResponseEntity.status(500).build();
     }
   }
+
+  @GetMapping("/prof")
+  public ResponseEntity<ProfDto> getMyProf(HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || authHeader.isBlank()) {
+      return ResponseEntity.status(401).build();
+    }
+
+    UserDTO me;
+    try {
+      me = userService.getMe(authHeader);
+    } catch (Exception e) {
+      return ResponseEntity.status(401).build();
+    }
+
+    if (me == null || !"STUDENT".equals(me.getRole().name())) {
+      return ResponseEntity.status(403).build();
+    }
+
+    try {
+      java.util.Optional<ProfDto> prof = studentService.getProfByStudentId(me.getId());
+      if (prof.isPresent()) {
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(prof.get());
+      } else {
+        return ResponseEntity.status(404).build();
+      }
+    } catch (Exception e) {
+      return ResponseEntity.status(500).build();
+    }
+  }
+
+  @GetMapping("/gestionnaire")
+  public ResponseEntity<GestionnaireDto> getMyGestionnaire(HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || authHeader.isBlank()) {
+      return ResponseEntity.status(401).build();
+    }
+
+    UserDTO me;
+    try {
+      me = userService.getMe(authHeader);
+    } catch (Exception e) {
+      return ResponseEntity.status(401).build();
+    }
+
+    if (me == null || !"STUDENT".equals(me.getRole().name())) {
+      return ResponseEntity.status(403).build();
+    }
+
+    try {
+      java.util.Optional<GestionnaireDto> gestionnaire =
+          studentService.getGestionnaireByStudentId(me.getId());
+      if (gestionnaire.isPresent()) {
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(gestionnaire.get());
+      } else {
+        return ResponseEntity.status(404).build();
+      }
+    } catch (Exception e) {
+      return ResponseEntity.status(500).build();
+    }
+  }
+
+  @GetMapping("/employeurs")
+  public ResponseEntity<List<EmployeurDto>> getMyEmployeurs(HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || authHeader.isBlank()) {
+      return ResponseEntity.status(401).build();
+    }
+
+    UserDTO me;
+    try {
+      me = userService.getMe(authHeader);
+    } catch (Exception e) {
+      return ResponseEntity.status(401).build();
+    }
+
+    if (me == null || !"STUDENT".equals(me.getRole().name())) {
+      return ResponseEntity.status(403).build();
+    }
+
+    try {
+      List<EmployeurDto> employeurs = studentService.getEmployeursByStudentId(me.getId());
+      return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(employeurs);
+    } catch (Exception e) {
+      return ResponseEntity.status(500).build();
+    }
+  }
 }
