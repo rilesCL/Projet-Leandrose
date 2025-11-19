@@ -136,12 +136,10 @@ const EvaluationForm = () => {
                     throw new Error(t("evaluation.errors.missing_studentId_Or_offerId"));
                 }
                 const existingCheck = await checkExistingEvaluation(studentId, offerId);
-                if (existingCheck.exists) {
-                    setError(t('evaluation.errors.evaluation_exists'));
-                    setTimeout(() => {
-                        navigate('/dashboard/employeur/evaluations');
-                    }, 3000);
-                    return;
+                let evalId =null
+                if (existingCheck.exists && existingCheck.evaluation) {
+                    evalId = existingCheck.evaluation.id
+                    setEvaluationId(evalId)
                 }
                 const evaluationInfo = await getEvaluationInfo(studentId, offerId);
                 setStudent({
@@ -272,8 +270,15 @@ const EvaluationForm = () => {
         setErrors({});
         setSubmitting(true);
         try {
-            const createResponse = await createEvaluation(studentId, offerId);
-            const evalId = createResponse.evaluationId || createResponse.id || createResponse;
+            let evalId
+            const existingCheck = await checkExistingEvaluation(studentId, offerId)
+
+            if (existingCheck.exists && existingCheck.evaluation) {
+                evalId = existingCheck.evaluation.id;
+            } else {
+                const createResponse = await createEvaluation(studentId, offerId);
+                evalId = createResponse.evaluationId || createResponse.id || createResponse;
+            }
             if (!evalId) {
                 throw new Error(t("evaluation.errors.evaluationId_received"));
             }

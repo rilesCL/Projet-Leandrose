@@ -203,12 +203,20 @@ const EvaluationForm = () => {
     };
 
     const handleSubmit = async () => {
+        setError(null)
         const validationsErrors = validateForm();
         if(Object.keys(validationsErrors).length > 0){
             setErrors(validationsErrors)
-            window.scrollTo({top: 0, behavior: "smooth"});
-            return;
+
+            setTimeout(() => {
+                const el = document.querySelector(".validation-error")
+                if (el && typeof el.scrollIntoView === "function"){
+                    el.scrollIntoView({behavior: "smooth", block: "center"})
+                }
+            }, 50)
+            return
         }
+        setErrors({})
         try {
             setSubmitting(true);
 
@@ -260,7 +268,7 @@ const EvaluationForm = () => {
                 <div className="mt-3">
                     <label className="font-medium block mb-2 text-center">{t("evaluation.intern")}</label>
                     {errors?.stageNumber && (
-                        <p className="text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
                             {errors.stageNumber}
                         </p>
                     )}
@@ -308,7 +316,7 @@ const EvaluationForm = () => {
                                 <p className="mb-3">{q}</p>
 
                                 {ratingErrors && (
-                                    <p className="text-sm text-red-600 mb-2">{ratingErrors}</p>
+                                    <p className="validation-error text-sm text-red-600 mb-2">{ratingErrors}</p>
                                 )}
                                 {/* Rating Buttons */}
                                 <div className="flex flex-wrap justify-center gap-3">
@@ -354,7 +362,7 @@ const EvaluationForm = () => {
                                 {groupKey === "general" && index === 1 && (
                                     <div className="mt-3 flex justify-center">
                                         {errors?.salary && (
-                                            <p className="text-sm text-red-600 mb-2 text-center">
+                                            <p className="validation-error text-sm text-red-600 mb-2 text-center">
                                                 {errors.salary}
                                             </p>
                                         )}
@@ -374,7 +382,7 @@ const EvaluationForm = () => {
 
                     {/* Hours for conformity */}
                     {groupKey === "conformity" && (
-                        <div className="mt-6 flex flex-col gap-3 items-center">
+                        <div className="mt-6 flex flex-col gap-3 items-center validation-error">
                             <label className="font-medium">{t('evaluation.placeholders.nbHoursWeek')}</label>
                             {errors?.hoursMonth1 && errors?.hoursMonth2 && errors?.hoursMonth3 && (
                                 <p className="text-sm text-red-600 mt-1">{errors.hoursMonth1}</p>
@@ -405,7 +413,7 @@ const EvaluationForm = () => {
                 {/* Preferred stage */}
                 <div className="mb-6">
                     {errors?.preferredStage && (
-                        <p className="text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
                             {errors.preferredStage}
                         </p>
                     )}
@@ -442,7 +450,7 @@ const EvaluationForm = () => {
                 {/* Capacity */}
                 <div className="mb-6">
                     {errors?.capacity && (
-                        <p className="text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
                             {errors.capacity}
                         </p>
                     )}
@@ -481,7 +489,7 @@ const EvaluationForm = () => {
                 {/* Same trainee again */}
                 <div className="mb-6">
                     {errors?.sameTraineeNextStage && (
-                        <p className="text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
                             {errors.sameTraineeNextStage}
                         </p>
                     )}
@@ -515,7 +523,7 @@ const EvaluationForm = () => {
                 {/* Variable shifts */}
                 <div className="mb-6">
                     {errors?.workShiftYesNo && (
-                        <p className="text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
                             {errors.workShiftYesNo}
                         </p>
                     )}
@@ -546,7 +554,7 @@ const EvaluationForm = () => {
                     </div>
 
                     {formData.workShiftYesNo === "YES" && (
-                        <div className="mt-4 space-y-3">
+                        <div className="validation-error mt-4 space-y-3">
                             {errors?.workShiftYesNo && (
                                 <p className="text-sm text-red-600 mb-2 text-center">
                                     {errors.workShiftYesNo}
