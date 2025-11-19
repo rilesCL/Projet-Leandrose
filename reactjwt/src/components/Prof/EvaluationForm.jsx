@@ -1,157 +1,161 @@
-import React, {useEffect, useState} from "react"
-import {useParams, useNavigate} from "react-router-dom"
-import {
-    createEvaluation,
-    getEvaluationInfo,
-    checkExistingEvaluation,
-    generateEvaluationPdfWithId
-} from "../../api/apiProf.jsx"
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getEvaluationInfo, createEvaluation, generateEvaluationPdfWithId } from "../../api/apiProf";
 
-export default function EvaluationFormTeacher(){
-    const {studentId, offerId} = useParams()
+const EvaluationForm = () => {
+
+
+    const { studentId, offerId } = useParams();
     const navigate = useNavigate();
 
+    const [info, setInfo] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null)
-    const [submitting, setSubmitting] = useState(false)
+    const [error, setError] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
-    const [info, setInfo] = useState(null)
-    const [evaluationId, setEvaluationId] = useState(null)
+
+    const teacherEvaluationTemplate = {
+        conformity: [
+            "Les tâches confiées au stagiaire sont conformes aux tâches annoncées.",
+            "Des mesures d’accueil facilitent l’intégration du stagiaire.",
+            "Le temps consacré à l’encadrement est suffisant."
+        ],
+        environment: [
+            "L’environnement respecte les normes d’hygiène et de sécurité.",
+            "Le climat de travail est agréable."
+        ],
+        general: [
+            "Le milieu de stage est accessible en transport en commun.",
+            "Le salaire offert est intéressant pour le stagiaire.",
+            "La communication avec le superviseur facilite le bon déroulement.",
+            "L’équipement fourni est adéquat.",
+            "Le volume de travail est acceptable."
+        ]
+    };
 
     const [formData, setFormData] = useState({
         stageNumber: "",
         hoursMonth1: "",
         hoursMonth2: "",
         hoursMonth3: "",
-        salaryPerHour: "",
+        salary: "",
+        questions: {},
         comments: "",
-        obs_stagePreference: "",
-        obs_openToHosting: "",
-        obs_sameInternAgain: "",
-        obs_variableShifts: "",
-        obs_shift1From: "",
-        obs_shift1To: "",
-        obs_shift2From: "",
-        obs_shift2To: "",
-        obs_shift3From: "",
-        obs_shift3To: "",
-        questions: {}
+        preferredStage: "",
+        capacity: "",
+        sameTraineeNextStage: null,
+        workShiftYesNo: null,
+        workShifts: [
+            { start: "", end: "" },
+            { start: "", end: "" },
+            { start: "", end: "" }
+        ]
     });
 
-    const questionGroups = {
-        conformity: [
-            "Les tâches confiées au stagiaire sont conformes aux tâches annoncées dans l’entente de stage.",
-            "Des mesures d’accueil facilitent l’intégration du nouveau stagiaire.",
-            "Le temps réel consacré à l’encadrement du stagiaire est suffisant."
-        ],
-        environment: [
-            "L’environnement de travail respecte les normes d’hygiène et de sécurité au travail.",
-            "Le climat de travail est agréable."
-        ],
-        general: [
-            "Le milieu de stage est accessible par transport en commun.",
-            "Le salaire offert est intéressant pour le stagiaire.",
-            "La communication avec le superviseur de stage facilite le déroulement du stage.",
-            "L’équipement fourni est adéquat pour réaliser les tâches confiées.",
-            "Le volume de travail est acceptable."
-        ]
-    };
-    const ratingOptions = [
-        "TOTAL_AGREE",
-        "MOSTLY_AGREE",
-        "MOSTLY_DISAGREE",
-        "TOTAL_DISAGREE",
-        "NOT_APPLICABLE"
-    ];
 
     useEffect(() => {
-        async function initialize(){
-            try{
-                if (!studentId || !offerId){
-                    setError("Paramatres invalides")
-                    return
-                }
-                const evaluation = await checkExistingEvaluation(studentId, offerId)
-                if(evaluation.exists){
-                    setError("Une évaluation a déjà été complétée")
-                    setTimeout(() => navigate("dashboard/prof"), 2000)
+        const loadInfo = async () => {
+            try {
+                setLoading(true);
+                const data = await getEvaluationInfo(studentId, offerId);
+                setInfo(data);
 
-                }
-                const data = await getEvaluationInfo(studentId, offerId)
-                setInfo(data)
-
-                const initialQuestions = {}
-                Object.entries(questionGroups).forEach(([groupKey, questions]) => {
+                // Initialize questions object
+                const initialQuestions = {};
+                Object.entries(teacherEvaluationTemplate).forEach(([groupKey, questions]) => {
                     initialQuestions[groupKey] = questions.map(() => "");
+                });
 
-                    setFormData(prev => ({
-                        ...prev,
-                        questions: initialQuestions
-                    }));
-                })
-            } catch (err){
-                console.log(err)
-                setError("Erreur de chargement du formulaire: ", err)
+                setFormData(prev => ({
+                    ...prev,
+                    questions: initialQuestions
+                }));
+
+            } catch (err) {
+                console.error(err);
+                setError("Erreur de chargement du formulaire");
+            } finally {
+                setLoading(false);
             }
-            finally{
-                setLoading(false)
-            }
-        }
-        initialize()
-    }, [studentId, offerId, navigate])
+        };
+
+        loadInfo();
+    }, [studentId, offerId]);
+
+    // --------------------
+    // 🔹 Handlers
+    // --------------------
+    const handleChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
 
     const handleQuestionChange = (group, index, value) => {
         setFormData(prev => ({
             ...prev,
             questions: {
                 ...prev.questions,
-                [group]: prev.questions[group].map((q, i) => i === index ? value: q)
+                [group]: prev.questions[group].map((v, i) => (i === index ? value : v))
             }
-        }))
-    }
-    const handleChange = (field, value) => {
-        setFormData(prev => ({...prev, [field]: value}))
-    }
+        }));
+    };
+
+    const handleShiftChange = (row, field, value) => {
+        const updated = [...formData.workShifts];
+        updated[row][field] = value;
+        setFormData(prev => ({ ...prev, workShifts: updated }));
+    };
+
+    // --------------------
+    // 🔹 Submit Form
+    // --------------------
     const handleSubmit = async () => {
-        setSubmitting(true)
-        setError(null)
+        try {
+            setSubmitting(true);
 
-        try{
-            const res = await createEvaluation(studentId, offerId)
-            const evalId = res.id || res.evaluationId;
-            setEvaluationId(evalId)
+            const createRes = await createEvaluation(studentId, offerId);
+            const evalId = createRes.evaluationId;
 
-            await generateEvaluationPdfWithId(evalId, formData)
-            setTimeout(() => navigate("dashboard/prof"), 2000)
-        } catch(err){
-            setError("Erreur lors de la soumission")
+            await generateEvaluationPdfWithId(evalId, formData);
+
+            navigate("/dashboard/prof/evaluations");
+
+        } catch (err) {
+            console.error(err);
+            setError("Erreur lors de la soumission.");
+        } finally {
+            setSubmitting(false);
         }
-        finally{
-            setSubmitting(false)
-        }
-    }
+    };
 
-    if (loading) return <p>Chargement...</p>
-    if(error && !info) return <p className="text-red-500">{error}</p>;
-
-    if (loading) return <p>Chargement...</p>
+    // --------------------
+    // 🔹 Rendering
+    // --------------------
+    if (loading) return <p>Chargement...</p>;
     if (error && !info) return <p className="text-red-500">{error}</p>;
+
 
     return (
         <div className="max-w-4xl mx-auto p-6">
+
             <h1 className="text-3xl font-bold text-center mb-8">
                 ÉVALUATION DU MILIEU DE STAGE
             </h1>
 
+            {/* ------------------------------
+                Identification Entreprise
+            --------------------------------*/}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h2 className="text-xl font-semibold mb-4">Identification de l'entreprise</h2>
-                <p><strong>Nom: </strong>{info?.entrepriseTeacherDto.companyName}</p>
-                <p><strong>Personne contact: </strong>{info?.entrepriseTeacherDto.contactName}</p>
-                <p><strong>Adresse: </strong>{info?.entrepriseTeacherDto.address}</p>
-                <p><strong>Email: </strong>{info?.entrepriseTeacherDto.email}</p>
+
+                <p><strong>Nom :</strong> {info?.entrepriseTeacherDto.companyName}</p>
+                <p><strong>Personne contact :</strong> {info?.entrepriseTeacherDto.contactName}</p>
+                <p><strong>Adresse :</strong> {info?.entrepriseTeacherDto.address}</p>
+                <p><strong>Email :</strong> {info?.entrepriseTeacherDto.email}</p>
             </section>
 
-            {/* Identification Stagiaire */}
+            {/* ------------------------------
+                IDENTIFICATION DU STAGIAIRE
+            --------------------------------*/}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h2 className="text-xl font-semibold mb-4">Identification du stagiaire</h2>
                 <p><strong>Nom :</strong> {info?.studentTeacherDto.fullname}</p>
@@ -159,9 +163,8 @@ export default function EvaluationFormTeacher(){
 
                 <div className="mt-3">
                     <label className="font-medium block mb-2 text-center">Stage :</label>
-
-                    <div className="flex justify-center gap-4">
-                        {[
+                        <div className="flex justify-center gap-4">
+                            {[
                             {
                                 value: "1",
                                 label: "1",
@@ -201,58 +204,42 @@ export default function EvaluationFormTeacher(){
                         })}
                     </div>
                 </div>
-
             </section>
 
-            {/* Questions */}
-            {Object.entries(questionGroups).map(([groupKey, questions]) => (
+            {Object.entries(teacherEvaluationTemplate).map(([groupKey, questions]) => (
                 <section key={groupKey} className="mb-8 p-4 border rounded-lg">
-                    <h3 className="text-lg font-semibold mb-4">{groupKey.toUpperCase()}</h3>
+
+                    <h3 className="text-lg font-semibold mb-4">
+                        {groupKey.toUpperCase()}
+                    </h3>
 
                     {questions.map((q, index) => (
                         <div key={index} className="mb-6">
-                            <p className="mb-5">{q}</p>
 
-                            <div className="flex flex-wrap justify-center gap-3 mb-3">
+                            <p className="mb-3">{q}</p>
+
+                            {/* Rating Buttons */}
+                            <div className="flex flex-wrap justify-center gap-3">
                                 {[
-                                    {
-                                        value: 'EXCELLENT',
-                                        label: 'Totalement en accord',
-                                        baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
-                                        selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
-                                        inputRing: 'focus:ring-green-600 text-green-700'
-                                    },
-                                    {
-                                        value: 'TRES_BIEN',
-                                        label: 'Plutôt en accord',
-                                        baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
-                                        selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
-                                        inputRing: 'focus:ring-green-500 text-green-600'
-                                    },
-                                    {
-                                        value: 'SATISFAISANT',
-                                        label: 'Plutôt en désaccord',
-                                        baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
-                                        selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
-                                        inputRing: 'focus:ring-orange-500 text-orange-600'
-                                    },
-                                    {
-                                        value: 'A_AMELIORER',
-                                        label: 'Totalement en désaccord',
-                                        baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
-                                        selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
-                                        inputRing: 'focus:ring-red-600 text-red-700'
-                                    }
+                                    { value: "EXCELLENT", label: "Totalement en accord" },
+                                    { value: "TRES_BIEN", label: "Plutôt en accord" },
+                                    { value: "SATISFAISANT", label: "Plutôt en désaccord" },
+                                    { value: "A_AMELIORER", label: "Totalement en désaccord" }
                                 ].map(option => {
-                                    const isSelected =
-                                        formData.questions[groupKey][index] === option.value;
+                                    const isSelected = formData.questions[groupKey][index] === option.value;
 
                                     return (
                                         <label
                                             key={option.value}
-                                            className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                            ${option.baseClasses}
-                                            ${isSelected ? option.selectedClasses : ''}`}
+                                            className={`
+                                                flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
+                                                border-2 font-semibold
+                                                ${option.value === "EXCELLENT" ? "bg-green-400 border-green-600" : ""}
+                                                ${option.value === "TRES_BIEN" ? "bg-green-200 border-green-400" : ""}
+                                                ${option.value === "SATISFAISANT" ? "bg-orange-200 border-orange-400" : ""}
+                                                ${option.value === "A_AMELIORER" ? "bg-red-400 border-red-600" : ""}
+                                                ${isSelected ? "ring-2 ring-black shadow-lg" : ""}
+                                            `}
                                         >
                                             <input
                                                 type="radio"
@@ -262,95 +249,53 @@ export default function EvaluationFormTeacher(){
                                                 onChange={() =>
                                                     handleQuestionChange(groupKey, index, option.value)
                                                 }
-                                                className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                                className="mr-2"
                                             />
-                                            <span className="text-sm font-medium">{option.label}</span>
+                                            <span>{option.label}</span>
                                         </label>
                                     );
                                 })}
                             </div>
+
+                            {/* Salary input if needed */}
+                            {groupKey === "general" && index === 1 && (
+                                <div className="mt-3 flex justify-center">
+                                    <input
+                                        type="text"
+                                        placeholder="Préciser le salaire /h"
+                                        className="border px-2 py-1 rounded"
+                                        value={formData.salary}
+                                        onChange={e => handleChange("salary", e.target.value)}
+                                    />
+                                </div>
+                            )}
+
                         </div>
                     ))}
 
+                    {/* Hours inputs only for conformity group */}
                     {groupKey === "conformity" && (
-                        <div className="mt-6 p-4 border rounded-lg bg-gray-50">
-                            <h4 className="font-semibold mb-3">
-                                Préciser le nombre d’heures/semaine :
-                            </h4>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Premier mois :</label>
-                                    <input
-                                        type="number"
-                                        className="w-full p-2 border rounded"
-                                        value={formData.hoursMonth1}
-                                        onChange={e => handleChange("hoursMonth1", e.target.value)}
-                                        min="0"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Deuxième mois :</label>
-                                    <input
-                                        type="number"
-                                        className="w-full p-2 border rounded"
-                                        value={formData.hoursMonth2}
-                                        onChange={e => handleChange("hoursMonth2", e.target.value)}
-                                        min="0"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Troisième mois :</label>
-                                    <input
-                                        type="number"
-                                        className="w-full p-2 border rounded"
-                                        value={formData.hoursMonth3}
-                                        onChange={e => handleChange("hoursMonth3", e.target.value)}
-                                        min="0"
-                                    />
-                                </div>
+                        <div className="mt-6 flex flex-col gap-3 items-center">
+                            <label className="font-medium">Préciser le nombre d’heures / semaine :</label>
+                            <div className="flex gap-4">
+                                <input className="border p-1 rounded" placeholder="Premier mois"
+                                       value={formData.hoursMonth1}
+                                       onChange={e => handleChange("hoursMonth1", e.target.value)} />
+                                <input className="border p-1 rounded" placeholder="Deuxième mois"
+                                       value={formData.hoursMonth2}
+                                       onChange={e => handleChange("hoursMonth2", e.target.value)} />
+                                <input className="border p-1 rounded" placeholder="Troisième mois"
+                                       value={formData.hoursMonth3}
+                                       onChange={e => handleChange("hoursMonth3", e.target.value)} />
                             </div>
                         </div>
                     )}
-                    {groupKey === "general"  && (
-                            <div className="mt-4 ">
-                                <label className="block text-sm font-medium mb-1">
-                                    Préciser :
-                                </label>
-                                <div className="flex items-center justify-center gap-2">
-                                    <input
-                                        type="number"
-                                        className="w-32 p-2 border rounded"
-                                        placeholder="0.00"
-                                        step="0.01"
-                                        min="0"
-                                        value={formData.salaryPerHour}
-                                        onChange={e => handleChange("salaryPerHour", e.target.value)}
-                                    />
-                                    <span>/ l’heure</span>
-                                </div>
-                            </div>
-                    )}
+
                 </section>
             ))}
 
-            {/* Comments */}
-            <section className="mb-6">
-                <label className="block font-medium mb-2">Commentaires :</label>
-                <textarea
-                    className="w-full p-2 border rounded"
-                    rows="4"
-                    value={formData.comments}
-                    onChange={e => handleChange("comments", e.target.value)}
-                />
-            </section>
-
-            {/* Observations */}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50 ">
                 <h3 className="text-lg font-semibold mb-4">Observations générales</h3>
-
                 <div className="mb-6">
                     <p className="font-medium mb-2">Ce milieu est à privilégier pour le :</p>
                     <div className="flex flex-wrap justify-center gap-3">
@@ -358,7 +303,7 @@ export default function EvaluationFormTeacher(){
                             { value: "1", label: "Premier stage" },
                             { value: "2", label: "Deuxième stage" }
                         ].map(opt => {
-                            const isSelected = formData.obs_stagePreference === opt.value;
+                            const isSelected = formData.preferredStage === opt.value;
                             return (
                                 <label
                                     key={opt.value}
@@ -372,7 +317,7 @@ export default function EvaluationFormTeacher(){
                                         name="obs_stagePreference"
                                         value={opt.value}
                                         checked={isSelected}
-                                        onChange={() => handleChange("obs_stagePreference", opt.value)}
+                                        onChange={e => handleChange("preferredStage", e.target.value)}
                                         className="mr-2"
                                     />
                                     {opt.label}
@@ -391,7 +336,7 @@ export default function EvaluationFormTeacher(){
                             { value: "3", label: "Trois stagiaires" },
                             { value: "4", label: "Plus de trois" }
                         ].map(opt => {
-                            const isSelected = formData.obs_openToHosting === opt.value;
+                            const isSelected = formData.capacity === opt.value;
                             return (
                                 <label
                                     key={opt.value}
@@ -405,7 +350,7 @@ export default function EvaluationFormTeacher(){
                                         name="obs_openToHosting"
                                         value={opt.value}
                                         checked={isSelected}
-                                        onChange={() => handleChange("obs_openToHosting", opt.value)}
+                                        onChange={e => handleChange("capacity", e.target.value)}
                                         className="mr-2"
                                     />
                                     {opt.label}
@@ -424,7 +369,7 @@ export default function EvaluationFormTeacher(){
                             { value: "YES", label: "Oui" },
                             { value: "NO", label: "Non" }
                         ].map(opt => {
-                            const isSelected = formData.obs_sameInternAgain === opt.value;
+                            const isSelected = formData.sameTraineeNextStage === opt.value;
                             return (
                                 <label
                                     key={opt.value}
@@ -438,7 +383,7 @@ export default function EvaluationFormTeacher(){
                                         name="obs_sameInternAgain"
                                         value={opt.value}
                                         checked={isSelected}
-                                        onChange={() => handleChange("obs_sameInternAgain", opt.value)}
+                                        onChange={e => handleChange("sameTraineeNextStage", e.target.value)}
                                         className="mr-2"
                                     />
                                     {opt.label}
@@ -457,7 +402,7 @@ export default function EvaluationFormTeacher(){
                             { value: "YES", label: "Oui" },
                             { value: "NO", label: "Non" }
                         ].map(opt => {
-                            const isSelected = formData.obs_variableShifts === opt.value;
+                            const isSelected = formData.workShifts === opt.value;
                             return (
                                 <label
                                     key={opt.value}
@@ -471,7 +416,7 @@ export default function EvaluationFormTeacher(){
                                         name="obs_variableShifts"
                                         value={opt.value}
                                         checked={isSelected}
-                                        onChange={() => handleChange("obs_variableShifts", opt.value)}
+                                        onChange={e => handleChange("workShiftYesNo", e.target.value)}
                                         className="mr-2"
                                     />
                                     {opt.label}
@@ -480,7 +425,7 @@ export default function EvaluationFormTeacher(){
                         })}
                     </div>
 
-                    {formData.obs_variableShifts === "YES" && (
+                    {formData.workShifts === "YES" && (
                         <div className="mt-4 space-y-3">
                             {[1, 2, 3].map(n => (
                                 <div key={n} className="flex gap-3 items-center">
@@ -509,6 +454,7 @@ export default function EvaluationFormTeacher(){
                 </div>
             </section>
 
+            {/* Submit */}
             <button
                 onClick={handleSubmit}
                 disabled={submitting}
@@ -517,10 +463,10 @@ export default function EvaluationFormTeacher(){
                 {submitting ? "Soumission..." : "Soumettre l’évaluation"}
             </button>
 
-            {error && (
-                <p className="text-red-600 mt-4">{error}</p>
-            )}
+            {error && <p className="text-red-500 mt-4">{error}</p>}
+
         </div>
     );
+};
 
-}
+export default EvaluationForm;

@@ -1,20 +1,33 @@
 // src/api/profApi.js
 const API_BASE = "http://localhost:8080"; // <— sans slash final
 
+// async function handleFetch(url, options = {}) {
+//     try {
+//         const res = await fetch(url, options);
+//         const ct = res.headers.get("content-type") || "";
+//         const text = await res.text();
+//         const data = text && ct.includes("application/json") ? JSON.parse(text) : text || null;
+//         if (!res.ok) {
+//             const msg = typeof data === "string" ? data : data?.error || `Erreur ${res.status}`;
+//             throw { response: { data: msg } };
+//         }
+//         return data ?? [];
+//     } catch (err) {
+//         if (err?.response) throw err;
+//         throw { response: { data: err?.message || "Impossible de se connecter au serveur" } };
+//     }
+// }
 async function handleFetch(url, options = {}) {
     try {
         const res = await fetch(url, options);
-        const ct = res.headers.get("content-type") || "";
-        const text = await res.text();
-        const data = text && ct.includes("application/json") ? JSON.parse(text) : text || null;
         if (!res.ok) {
-            const msg = typeof data === "string" ? data : data?.error || `Erreur ${res.status}`;
-            throw { response: { data: msg } };
+            const errorText = await res.text();
+            throw { response: { data: errorText || `Erreur ${res.status}: ${res.statusText}` } };
         }
-        return data ?? [];
-    } catch (err) {
-        if (err?.response) throw err;
-        throw { response: { data: err?.message || "Impossible de se connecter au serveur" } };
+        return res;
+    } catch (error) {
+        if (error && error.response) throw error;
+        throw { response: { data: error?.message || "Impossible de se connecter au serveur" } };
     }
 }
 async function handleEvalFetch(url, options = {}) {
@@ -32,11 +45,12 @@ async function handleEvalFetch(url, options = {}) {
 }
 
 
-function authHeaders() {
-    const token = sessionStorage.getItem("accessToken");
-    const h = { Accept: "application/json" };
-    if (token) h.Authorization = `Bearer ${token}`;
-    return h;
+function authHeaders(token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const tokenType = (sessionStorage.getItem("tokenType") || "BEARER").toUpperCase();
+    const headers = {};
+    if (accessToken) headers["Authorization"] = tokenType.startsWith("BEARER") ? `Bearer ${accessToken}` : accessToken;
+    return headers;
 }
 
 export async function fetchProfStudents(profId, params = {}) {
@@ -59,7 +73,7 @@ export async function createEvaluation (studentId, offerId, token = null) {
     console.log('With data:', { studentId, internshipOfferId: offerId });
 
 
-    const res = await handleFetch(url, {
+    const res = await handleEvalFetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

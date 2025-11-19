@@ -6,6 +6,7 @@ import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.ProfStudentItemDto;
 import ca.cal.leandrose.service.dto.UserDTO;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationProfFormDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Min;
@@ -88,29 +89,41 @@ public class ProfController {
     public ResponseEntity<?> generateEvaluationPdf(
             HttpServletRequest request,
             @PathVariable Long evaluationId,
-            @RequestBody EvaluationFormData formData,
+            @RequestBody EvaluationProfFormDto formData,
             @RequestHeader(value = "Accept-Language", defaultValue = "fr") String language) {
 
-        UserDTO me = userService.getMe(request.getHeader("Authorization"));
-
-        if (!me.getRole().name().equals("PROF")) {
-            return ResponseEntity.status(403).build();
-        }
+        System.out.println("=== PROF CONTROLLER DEBUG ===");
+        System.out.println("Request URI: " + request.getRequestURI());
+        System.out.println("Request URL: " + request.getRequestURL());
+        System.out.println("Authorization header present: " + (request.getHeader("Authorization") != null));
 
         try {
-            EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
-            if (!evaluation.professeurId().equals(me.getId())) {
-                return ResponseEntity.status(403).body("Accès non autorisé");
+            UserDTO me = userService.getMe(request.getHeader("Authorization"));
+            System.out.println("User authenticated: " + me.getRole().name());
+            // ... rest of your method
+            if (!me.getRole().name().equals("PROF")) {
+                return ResponseEntity.status(403).build();
             }
 
-            String lang = language.startsWith("en") ? "en" : "fr";
-            EvaluationStagiaireDto updatedEvaluation =
-                    evaluationStagiaireService.generateEvaluationByTeacher(evaluationId, formData, lang);
+            try {
+                EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
+                if (!evaluation.professeurId().equals(me.getId())) {
+                    return ResponseEntity.status(403).body("Accès non autorisé");
+                }
 
-            return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
+                String lang = language.startsWith("en") ? "en" : "fr";
+                EvaluationStagiaireDto updatedEvaluation =
+                        evaluationStagiaireService.generateEvaluationByTeacher(evaluationId, formData, lang);
 
+                return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            System.out.println("Authentication failed: " + e.getMessage());
+            return ResponseEntity.status(401).build();
         }
     }
 

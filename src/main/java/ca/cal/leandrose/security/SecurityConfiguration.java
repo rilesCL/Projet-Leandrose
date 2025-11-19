@@ -91,6 +91,14 @@ public class SecurityConfiguration {
                     .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
                     .requestMatchers(GET, "/employeur/offers", "/employeur/offers/*/download")
                     .hasAuthority("EMPLOYEUR")
+                        .requestMatchers(POST, "/prof/evaluations").hasAuthority("PROF")
+                        .requestMatchers(POST, "/prof/evaluations/*/generate-pdf").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/*").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/*/pdf").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/eligible").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/info").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/check-existing").hasAuthority("PROF")
                     .requestMatchers(
                         GET,
                         "/employeur/offers/*/candidatures",

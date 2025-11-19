@@ -5,6 +5,7 @@ import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.dto.evaluation.prof.EntrepriseTeacherDto;
+import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationProfFormDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.StudentTeacherDto;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +70,8 @@ public class EvaluationStagiaireService {
                    .orElseThrow(() -> new RuntimeException("Aucune entente de stage trouvée pour ce professeur, " +
                            "ce stagiaire et cette offre"));
 
+           prof = professeur;
+           emp = stage.getEmployeur();
         }
         EvaluationStagiaire evaluation = EvaluationStagiaire.builder()
                 .dateEvaluation(LocalDate.now())
@@ -185,7 +188,7 @@ public class EvaluationStagiaireService {
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
         return mapToDto(savedEvaluation);
     }
-    public EvaluationStagiaireDto generateEvaluationByTeacher(Long evaluationId, EvaluationFormData formData, String langage){
+    public EvaluationStagiaireDto generateEvaluationByTeacher(Long evaluationId, EvaluationProfFormDto formData, String langage){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 

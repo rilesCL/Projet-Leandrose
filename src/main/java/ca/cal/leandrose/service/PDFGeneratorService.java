@@ -5,6 +5,7 @@ import ca.cal.leandrose.service.dto.evaluation.CategoryData;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
 import ca.cal.leandrose.service.dto.evaluation.QuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.WorkShiftRange;
+import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationProfFormDto;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -244,7 +245,7 @@ public class PDFGeneratorService {
         }
     }
 
-    public String generatedEvaluationByTeacher(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language){
+    public String generatedEvaluationByTeacher(EvaluationStagiaire evaluationStagiaire, EvaluationProfFormDto formData, String language){
         try{
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
             if (!Files.exists(evaluationDir)) {
@@ -984,7 +985,7 @@ public class PDFGeneratorService {
         addInfoRow(infoTable, "" , stageText, labelFont, valueFont);
 
     }
-    private void addEvaluationSection(Document document, EvaluationFormData formData, String language) throws DocumentException{
+    private void addEvaluationSection(Document document, EvaluationProfFormDto formData, String language) throws DocumentException{
         Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
         Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
         Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.ITALIC);
@@ -1035,7 +1036,7 @@ public class PDFGeneratorService {
         }
     }
 
-    private void addObservationsGeneralesSection(Document document, EvaluationFormData formData, String language)
+    private void addObservationsGeneralesSection(Document document, EvaluationProfFormDto formData, String language)
             throws DocumentException{
         Font sectionTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
@@ -1237,7 +1238,7 @@ public class PDFGeneratorService {
     }
 
     private void addHoursTable(Document document,
-                               EvaluationFormData formData, String language) throws DocumentException{
+                               EvaluationProfFormDto formData, String language) throws DocumentException{
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
         Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
@@ -1269,7 +1270,7 @@ public class PDFGeneratorService {
         document.add(hoursTable);
     }
 
-    private void addSalarySection(Document document, EvaluationFormData formData, String language) throws DocumentException{
+    private void addSalarySection(Document document, EvaluationProfFormDto formData, String language) throws DocumentException{
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10);
         Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
