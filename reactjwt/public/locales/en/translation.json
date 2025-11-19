@@ -1031,6 +1031,58 @@
       "welcome_nextInternship": "THE COMPANY WOULD LIKE TO HOST THIS STUDENT FOR THEIR NEXT INTERNSHIP:",
       "technical_training": "Was the intern's technical training sufficient to fulfill the internship mandate?"
     },
-    "submitEvaluation": "Submit Evaluation"
+    "submitEvaluation": "Submit Evaluation",
+    "conformity": {
+      "title": "Conformity",
+      "description": "Conformity of the internship environment",
+      "q1": "The tasks assigned to the intern are in line with the advertised tasks.",
+      "q2": "Reception measures facilitate the integration of the new intern.",
+      "q3": "The time devoted to supervision is sufficient."
+    },
+    "environment": {
+      "title": "Environment",
+      "description": "Work environment",
+      "q1": "The environment complies with hygiene and safety standards.",
+      "q2": "The working environment is pleasant."
+    },
+    "general": {
+      "title": "General",
+      "description": "General",
+      "q1": "The internship location is accessible by public transport.",
+      "q2": "The salary offered is attractive for the intern.",
+      "q3": "Communication with the supervisor facilitates the smooth running of the process.",
+      "q4": "The equipment provided is adequate.",
+      "q5": "The workload is acceptable."
+    },
+    "name": "Name: ",
+    "contact_person": "Contact: ",
+    "address": "Adress: ",
+    "email": "Email: ",
+    "internStartDate": "Date of the course: ",
+    "intern": "Internship",
+    "placeholders": {
+      "nbHoursWeek": "Specify the number of hours per week",
+      "first_month": "First month",
+      "second_month": "Second month",
+      "third_month" : "Third month",
+      "salary": "Specify the hourly wage"
+    },
+    "observations": {
+      "title": "General Observation",
+      "q1": "This environment is preferable for :",
+      "q2": "This environment is open to welcoming :",
+      "q3": "This organization wishes to welcome the same intern for a future internship:",
+      "q4": "This environment offers variable shifts:",
+      "first_intern": "First intern",
+      "second_intern": "Second intern",
+      "stage1": "One intern",
+      "stage2": "Two interns",
+      "stage3": "Three interns",
+      "stage4": "More than three",
+      "yes": "Yes",
+      "no": "No",
+      "from": "From",
+      "to": "to"
+    }
   }
 }

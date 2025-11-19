@@ -1033,6 +1033,58 @@
       "welcome_nextInternship": "L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE",
       "technical_training": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?"
     },
-    "submitEvaluation": "Soumettre l'évaluation"
+    "submitEvaluation": "Soumettre l'évaluation",
+    "conformity": {
+      "title": "Conformité",
+      "description": "Conformité du milieu de stage",
+      "q1": "Les tâches confiées au stagiaire sont conformes aux tâches annoncées.",
+      "q2": "Des mesures d’accueil facilitent l’intégration du nouveau stagiaire.",
+      "q3": "Le temps consacré à l’encadrement est suffisant."
+    },
+    "environment": {
+      "title": "Environement",
+      "description": "Environement du travail",
+      "q1": "L’environnement respecte les normes d’hygiène et de sécurité.",
+      "q2": "Le climat de travail est agréable."
+    },
+    "general": {
+      "title": "Géneral",
+      "description": "Géneral",
+      "q1": "Le milieu de stage est accessible en transport en commun.",
+      "q2": "Le salaire offert est intéressant pour le stagiaire.",
+      "q3": "La communication avec le superviseur facilite le bon déroulement.",
+      "q4": "L’équipement fourni est adéquat.",
+      "q5": "Le volume de travail est acceptable."
+    },
+    "name": "Nom: ",
+    "contact_person": "Contact: ",
+    "address": "Adresse: ",
+    "email": "Courriel: ",
+    "internStartDate": "Date du stage",
+    "intern": "Stage",
+    "placeholders": {
+      "nbHoursWeek": "Préciser le nombre d'heures par semaine",
+      "first_month": "Premier mois",
+      "second_month": "Deuxième mois",
+      "third_month" : "Troisième mois",
+      "salary": "Préciser le salaire "
+    },
+    "observations": {
+      "title": "Observations générales",
+      "q1": "Ce milieu est à privilégier pour le :",
+      "q2": "Ce milieu est ouvert à accueillir :",
+      "q3": "Ce milieu désire accueillir le même stagiaire pour un prochain stage :",
+      "q4": "Ce milieu offre des quarts de travail variables :",
+      "first_intern": "Premier stage",
+      "second_intern": "Deuxième stage",
+      "stage1": "Un stagiaire",
+      "stage2": "Deux stagiaires",
+      "stage3": "Trois stagiaires",
+      "stage4": "Plus de trois",
+      "yes": "Oui",
+      "no": "Non",
+      "from": "De",
+      "to": "à"
+    }
   }
 }
