@@ -9,7 +9,9 @@ public record EvaluationStagiaireDto(
         Long employeurId,
         Long professeurId,
         Long internshipOfferId,
-        String pdfFilePath,
-        boolean submitted
+        String employerPdfPath,
+        String professorPdfPath,
+        boolean submittedByEmployer,
+        boolean submittedByProfessor
 ) {
 }

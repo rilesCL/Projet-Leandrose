@@ -462,7 +462,7 @@ public class EmployeurController {
             String lang = language.startsWith("en") ? "en" : "fr";
             EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdfByEmployer(evaluationId, formData, lang);
 
-            return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
+            return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.employerPdfPath(), "PDF généré avec succès"));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -490,7 +490,7 @@ public class EmployeurController {
                 return ResponseEntity.status(403).build();
             }
 
-            byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId);
+            byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId, CreatorTypeEvaluation.EMPLOYER);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"evaluation_" + evaluationId + ".pdf\"")

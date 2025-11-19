@@ -125,10 +125,15 @@ export default function EvaluationsList() {
                 <div className="space-y-5">
                     {eligibleAgreements.map((agreement) => {
                         const key = `${agreement.studentId}-${agreement.offerId}`;
-                        const status = evaluationStatus[key];
-                        const hasEval = status?.exists;
+                        const status = evaluationStatus[key] || {};
                         const evaluation = status?.evaluation;
+                        const hasEval =
+                            evaluation &&
+                                ((isTeacher && evaluation.submittedByProfessor) ||
+                                    (isEmployer && evaluation.submittedByEmployer))
+
                         const teacherAssigned = teacherAssignmentStatus[key];
+                        const canCreate = teacherAssigned && !hasEval
 
                         return (
                             <div
@@ -144,14 +149,20 @@ export default function EvaluationsList() {
 
                                         <p>{agreement.internshipDescription}</p>
 
-                                        {hasEval && evaluation && (
+                                        {hasEval && (
                                             <div className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm">
                                                 ✔ {t("evaluationList.evaluation")}{" "}
-                                                {evaluation.submitted
-                                                    ? t("evaluationList.submitted")
-                                                    : t("evaluationList.draft_created")}
+                                                {isTeacher
+                                                    ? evaluation.submittedByProfessor
+                                                        ? t("evaluationList.submitted")
+                                                        : t("evaluationList.draft_created")
+                                                    : evaluation.submittedByEmployer
+                                                        ? t("evaluationList.submitted")
+                                                        : t("evaluationList.draft_created")}
                                                 {" - "}
-                                                {new Date(evaluation.dateEvaluation).toLocaleDateString()}
+                                                {new Date(
+                                                    evaluation.dateEvaluation
+                                                ).toLocaleDateString()}
                                             </div>
                                         )}
                                     </div>
@@ -172,7 +183,7 @@ export default function EvaluationsList() {
                                         ) : (
                                             <Link
                                                 to={
-                                                    teacherAssigned
+                                                    canCreate
                                                         ? isTeacher
                                                             ? `/dashboard/prof/evaluation/${agreement.studentId}/${agreement.offerId}`
                                                             : `/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`
@@ -184,7 +195,7 @@ export default function EvaluationsList() {
                                                         : "bg-gray-400 cursor-not-allowed"
                                                 }`}
                                             >
-                                                {teacherAssigned
+                                                {canCreate
                                                     ? t("evaluationList.create_evaluation")
                                                     : t("evaluationList.awaiting_teacher")}
                                             </Link>

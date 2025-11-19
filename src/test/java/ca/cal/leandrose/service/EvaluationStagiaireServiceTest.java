@@ -76,7 +76,7 @@ class EvaluationStagiaireServiceTest {
                 .employeur(employeur)
                 .student(student)
                 .internshipOffer(internshipOffer)
-                .submitted(false)
+                .submittedByEmployer(false)
                 .build();
         candidature = Candidature.builder()
                 .id(1L)
@@ -106,7 +106,7 @@ class EvaluationStagiaireServiceTest {
         assertEquals(1L, result.employeurId());
         assertEquals(2L, result.studentId());
         assertEquals(3L, result.internshipOfferId());
-        assertFalse(result.submitted());
+        assertFalse(result.submittedByEmployer());
 
         verify(evaluationStagiaireRepository).existsByInternshipOfferIdAndStudentId(3L, 2L);
         verify(employeurRepository).findById(1L);
@@ -322,7 +322,7 @@ class EvaluationStagiaireServiceTest {
                 .employeur(employeur)
                 .student(student)
                 .internshipOffer(internshipOffer)
-                .submitted(true)
+                .submittedByEmployer(true)
                 .build();
 
         when(evaluationStagiaireRepository.findByEmployeurId(1L))
@@ -338,11 +338,11 @@ class EvaluationStagiaireServiceTest {
         EvaluationStagiaireDto firstResult = result.get(0);
         assertEquals(1L, firstResult.id());
         assertEquals(1L, firstResult.employeurId());
-        assertFalse(firstResult.submitted());
+        assertFalse(firstResult.submittedByEmployer());
 
         EvaluationStagiaireDto secondResult = result.get(1);
         assertEquals(2L, secondResult.id());
-        assertTrue(secondResult.submitted());
+        assertTrue(secondResult.submittedByEmployer());
 
         verify(evaluationStagiaireRepository).findByEmployeurId(1L);
     }

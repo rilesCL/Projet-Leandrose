@@ -49,7 +49,7 @@ public class EvaluationStagiaireService {
         EntenteStage stage = ententeStageRepository
                 .findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(studentId, internshipId)
                 .orElseThrow(() -> new RuntimeException("Aucune entente de stage trouvée"));
-        Prof prof = stage.getProf();
+        Prof prof = null;
 
         Employeur emp = null;
 
@@ -57,6 +57,7 @@ public class EvaluationStagiaireService {
         if (creator == CreatorTypeEvaluation.EMPLOYER){
             emp = employeurRepository.findById(creatorId)
                     .orElseThrow(() -> new RuntimeException("Employeur non trouvé"));
+            prof = stage.getProf();
 
         }
         if (creator == CreatorTypeEvaluation.PROF){
@@ -80,7 +81,10 @@ public class EvaluationStagiaireService {
                 .employeur(emp)
                 .professeur(prof)
                 .ententeStage(stage)
-                .submitted(false)
+                .submittedByEmployer(false)
+                .submittedByProfessor(false)
+                .employerPdfFilePath(null)
+                .professorPdfFilePath(null)
                 .build();
         evaluationStagiaireRepository.save(evaluation);
         return mapToDto(evaluation);
@@ -106,7 +110,7 @@ public class EvaluationStagiaireService {
                 .employeur(employeur)
                 .student(student)
                 .internshipOffer(internshipOffer)
-                .submitted(false)
+                .submittedByEmployer(false)
                 .build();
 
         EvaluationStagiaire evaluationStagiaire = evaluationStagiaireRepository.save(stage);
@@ -114,13 +118,16 @@ public class EvaluationStagiaireService {
     }
     public EvaluationInfoDto getEvaluationInfoForEmployer(Long employeurId, Long studentId, Long internshipOfferId) {
         boolean isEligible = isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, employeurId, studentId, internshipOfferId);
+        EvaluationStagiaire eval =
+                evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(studentId, internshipOfferId)
+                        .orElse(null);
 
         if (!isEligible) {
             throw new IllegalStateException("Evaluation not allowed - agreement not validated or not found");
         }
 
-        if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipOfferId, studentId)) {
-            throw new IllegalStateException("Une évaluation existe déjà pour ce stagiaire et ce stage");
+        if (eval != null && eval.isSubmittedByEmployer()) {
+            throw new IllegalStateException("L'employeur a déjà complété cette formulaire.");
         }
 
         Student student = studentRepository.findById(studentId)
@@ -152,8 +159,13 @@ public class EvaluationStagiaireService {
                 .orElseThrow(() -> new IllegalStateException(
                         "Aucune entente de stage associée à ce professeur pour cet étudiant et ce stage."
                 ));
-        if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipOfferId, studentId)) {
-            throw new IllegalStateException("Une évaluation existe déjà pour ce stagiaire et ce stage");
+
+        EvaluationStagiaire eval =
+                evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(studentId, internshipOfferId)
+                        .orElse(null);
+
+        if (eval != null && eval.isSubmittedByProfessor()) {
+            throw new IllegalStateException("L'évaluation professeur a déjà été complétée");
         }
         Student student = entente.getCandidature().getStudent();
         InternshipOffer internship = entente.getCandidature().getInternshipOffer();
@@ -183,8 +195,8 @@ public class EvaluationStagiaireService {
         String pdfPath = pdfGeneratorService.generatedEvaluationByEmployer(evaluation, formData, langage,
                 professeur.getFirstName(), professeur.getLastName(),
                 professeur.getNameCollege(), professeur.getAddress(), professeur.getFax_machine());
-        evaluation.setPdfFilePath(pdfPath);
-        evaluation.setSubmitted(true);
+        evaluation.setEmployerPdfFilePath(pdfPath);
+        evaluation.setSubmittedByEmployer(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
         return mapToDto(savedEvaluation);
     }
@@ -193,8 +205,8 @@ public class EvaluationStagiaireService {
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 
         String pdfPath = pdfGeneratorService.generatedEvaluationByTeacher(evaluation, formData, langage);
-        evaluation.setPdfFilePath(pdfPath);
-        evaluation.setSubmitted(true);
+        evaluation.setProfessorPdfFilePath(pdfPath);
+        evaluation.setSubmittedByProfessor(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
         return mapToDto(savedEvaluation);
     }
@@ -229,15 +241,19 @@ public class EvaluationStagiaireService {
                 .build();
     }
 
-    public byte[] getEvaluationPdf(Long evaluationId){
+    public byte[] getEvaluationPdf(Long evaluationId, CreatorTypeEvaluation actor){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 
-        if (evaluation.getPdfFilePath() == null) {
+        String path = (actor == CreatorTypeEvaluation.EMPLOYER)
+                ? evaluation.getEmployerPdfFilePath():
+                evaluation.getProfessorPdfFilePath();
+
+        if (path == null) {
             throw new RuntimeException("PDF non généré pour cette évaluation");
         }
 
-        return pdfGeneratorService.lireFichierPDF(evaluation.getPdfFilePath());
+        return pdfGeneratorService.lireFichierPDF(path);
     }
     public EvaluationStagiaireDto getEvaluationById(Long id){
         return evaluationStagiaireRepository.findById(id)
@@ -278,8 +294,10 @@ public class EvaluationStagiaireService {
                 evaluation.getEmployeur().getId(),
                 evaluation.getProfesseur().getId(),
                 evaluation.getInternshipOffer().getId(),
-                evaluation.getPdfFilePath(),
-                evaluation.isSubmitted()
+                evaluation.getEmployerPdfFilePath(),
+                evaluation.getProfessorPdfFilePath(),
+                evaluation.isSubmittedByEmployer(),
+                evaluation.isSubmittedByProfessor()
         );
     }
     public boolean isEvaluationEligible(CreatorTypeEvaluation creatorType, Long creatorId, Long studentId, Long internshipOfferId) {
@@ -337,7 +355,8 @@ public class EvaluationStagiaireService {
         Candidature candidature = agreement.getCandidature();
         Student student = candidature.getStudent();
         InternshipOffer offer = candidature.getInternshipOffer();
-
+        boolean isSubmitted = evaluation != null
+                && (evaluation.isSubmittedByEmployer() || evaluation.isSubmittedByProfessor());
         return new EligibleEvaluationDto(
                 agreement.getId(),
                 student.getId(),
@@ -351,7 +370,7 @@ public class EvaluationStagiaireService {
                 offer.getStartDate().plusWeeks(offer.getDurationInWeeks()),
                 evaluation != null,  // hasEvaluation
                 evaluation != null ? evaluation.getId() : null,  // evaluationId
-                evaluation != null ? evaluation.isSubmitted() : false  // evaluationSubmitted
+                isSubmitted // evaluationSubmitted
         );
     }
 

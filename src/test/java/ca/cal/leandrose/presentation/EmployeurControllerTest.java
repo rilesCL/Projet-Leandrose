@@ -112,7 +112,7 @@ class EmployeurControllerTest {
                       .build();
 
       evaluationDto = new EvaluationStagiaireDto(
-              3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", false
+              3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", null, true, false
       );
 //      formData = new EvaluationFormData(
 //              Map.of(), "General comment", 2, "Global appreciation",
@@ -466,7 +466,8 @@ class EmployeurControllerTest {
 
     @Test
     void generateEvaluationPdf_notOwner_returnsForbidden() throws Exception {
-        EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 2L, 100L, null, false);
+        EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 2L,
+                100L, null, null, false, false);
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(otherEvaluation);
@@ -484,7 +485,7 @@ class EmployeurControllerTest {
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
-        when(evaluationStagiaireService.getEvaluationPdf(1L)).thenReturn(pdfBytes);
+        when(evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER)).thenReturn(pdfBytes);
 
         mockMvc.perform(get("/employeur/evaluations/1/pdf")
                         .header("Authorization", "Bearer token"))
@@ -496,7 +497,7 @@ class EmployeurControllerTest {
     void getEvaluationPdf_notFound_returnsNotFound() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
-        when(evaluationStagiaireService.getEvaluationPdf(1L))
+        when(evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER))
                 .thenThrow(new RuntimeException("PDF not found"));
 
         mockMvc.perform(get("/employeur/evaluations/1/pdf")
@@ -557,7 +558,8 @@ class EmployeurControllerTest {
 
 
         EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(
-                1L, LocalDate.now(), 2L, 1L, 2L, 100L, null, false
+                1L, LocalDate.now(), 2L, 1L, 2L, 100L,
+                null, null, false, false
         );
 
         when(userAppService.getMe(anyString())).thenReturn(differentEmployeur);

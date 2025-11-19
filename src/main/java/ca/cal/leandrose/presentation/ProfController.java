@@ -115,7 +115,7 @@ public class ProfController {
                 EvaluationStagiaireDto updatedEvaluation =
                         evaluationStagiaireService.generateEvaluationByTeacher(evaluationId, formData, lang);
 
-                return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
+                return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.professorPdfPath(), "PDF généré avec succès"));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -147,7 +147,7 @@ public class ProfController {
                 return ResponseEntity.status(403).build();
             }
 
-            byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId);
+            byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId, CreatorTypeEvaluation.PROF);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"evaluation_" + evaluationId + ".pdf\"")

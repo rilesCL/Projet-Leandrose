@@ -41,7 +41,11 @@ public class EvaluationStagiaire {
     @JoinColumn(name = "entente_stage_id")
     private EntenteStage ententeStage;
 
-    private String pdfFilePath;
-    private boolean submitted;
+    private String employerPdfFilePath;
+    private String professorPdfFilePath;
+
+
+    private boolean submittedByEmployer;
+    private boolean submittedByProfessor;
 
 }
