@@ -36,44 +36,73 @@ public class EvaluationStagiaireService {
         return createEvaluationInternal(CreatorTypeEvaluation.PROF, profId, studentId, internshipId);
     }
 
-    private EvaluationStagiaireDto createEvaluationInternal(CreatorTypeEvaluation creator, Long creatorId,
-                                                            Long studentId, Long internshipId){
-        if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipId, studentId)) {
-            throw new IllegalStateException("Une évaluation existe déjà pour ce stagiaire et ce stage");
-        }
+    private EvaluationStagiaireDto createEvaluationInternal(
+            CreatorTypeEvaluation creator,
+            Long creatorId,
+            Long studentId,
+            Long internshipId
+    ) {
+
+        // Fetch core entities
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
+
         InternshipOffer internshipOffer = internshipOfferRepository.findById(internshipId)
                 .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
 
         EntenteStage stage = ententeStageRepository
                 .findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(studentId, internshipId)
                 .orElseThrow(() -> new RuntimeException("Aucune entente de stage trouvée"));
-        Prof prof = null;
+
+        Employeur employerFromStage = stage.getEmployeur();
+        Prof profFromStage = stage.getProf();
+
+        Optional<EvaluationStagiaire> existingOpt =
+                evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(studentId, internshipId);
+
+        if (existingOpt.isPresent()) {
+            EvaluationStagiaire existing = existingOpt.get();
+
+            // EMPLOYER tries to start their section
+            if (creator == CreatorTypeEvaluation.EMPLOYER) {
+
+                if (!existing.isSubmittedByEmployer()) {
+                    // employer continues their section
+                    return mapToDto(existing);
+                }
+            }
+
+            // PROF tries to start their section
+            if (creator == CreatorTypeEvaluation.PROF) {
+
+                if (!existing.isSubmittedByProfessor()) {
+                    // professor continues their section
+                    return mapToDto(existing);
+                }
+            }
+
+            // If both sections are already submitted
+            throw new IllegalStateException("L'évaluation complète existe déjà pour ce stagiaire.");
+        }
+
+
+      //créer un nouveau formulaire
 
         Employeur emp = null;
+        Prof prof = null;
 
-
-        if (creator == CreatorTypeEvaluation.EMPLOYER){
+        if (creator == CreatorTypeEvaluation.EMPLOYER) {
             emp = employeurRepository.findById(creatorId)
                     .orElseThrow(() -> new RuntimeException("Employeur non trouvé"));
-            prof = stage.getProf();
-
+            prof = profFromStage;
         }
-        if (creator == CreatorTypeEvaluation.PROF){
-           Prof professeur = profRepository.findById(creatorId)
-                   .orElseThrow(() -> new RuntimeException("Professeur non trouvé"));
-           stage = ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(
-                   professeur.getId(),
-                   student.getId(),
-                   internshipOffer.getId()
-           )
-                   .orElseThrow(() -> new RuntimeException("Aucune entente de stage trouvée pour ce professeur, " +
-                           "ce stagiaire et cette offre"));
 
-           prof = professeur;
-           emp = stage.getEmployeur();
+        if (creator == CreatorTypeEvaluation.PROF) {
+            prof = profRepository.findById(creatorId)
+                    .orElseThrow(() -> new RuntimeException("Professeur non trouvé"));
+            emp = employerFromStage;
         }
+
         EvaluationStagiaire evaluation = EvaluationStagiaire.builder()
                 .dateEvaluation(LocalDate.now())
                 .student(student)
@@ -81,14 +110,19 @@ public class EvaluationStagiaireService {
                 .employeur(emp)
                 .professeur(prof)
                 .ententeStage(stage)
+
                 .submittedByEmployer(false)
                 .submittedByProfessor(false)
+
                 .employerPdfFilePath(null)
                 .professorPdfFilePath(null)
                 .build();
+
         evaluationStagiaireRepository.save(evaluation);
+
         return mapToDto(evaluation);
     }
+
 
     public EvaluationStagiaireDto createEvaluation(Long employeurId, Long studentId, Long internshipId){
 

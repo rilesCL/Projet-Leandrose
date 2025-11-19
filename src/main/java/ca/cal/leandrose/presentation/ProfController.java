@@ -100,7 +100,6 @@ public class ProfController {
         try {
             UserDTO me = userService.getMe(request.getHeader("Authorization"));
             System.out.println("User authenticated: " + me.getRole().name());
-            // ... rest of your method
             if (!me.getRole().name().equals("PROF")) {
                 return ResponseEntity.status(403).build();
             }

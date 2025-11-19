@@ -189,7 +189,7 @@ const EvaluationForm = () => {
             categories: {
                 ...prev.categories,
                 [category]: prev.categories[category].map((q, i) =>
-                    i === index ? value : q
+                    i === index ? {...q, rating: value}: q
                 )
             }
         }));
@@ -213,8 +213,9 @@ const EvaluationForm = () => {
             setSubmitting(true);
 
             const createRes = await createEvaluation(studentId, offerId);
-            const evalId = createRes.evaluationId;
+            const evalId = createRes.id;
 
+            console.log("Form Data: ", formData)
             await generateEvaluationPdfWithId(evalId, formData);
 
             navigate("/dashboard/prof/evaluations");
@@ -318,7 +319,7 @@ const EvaluationForm = () => {
                                         { value: "A_AMELIORER", label: t('evaluation.rating.totally_disagree') }
                                     ].map(option => {
                                         const isSelected =
-                                            formData.categories[groupKey]?.[index] === option.value;
+                                            formData.categories[groupKey]?.[index]?.rating === option.value;
 
                                         return (
                                             <label

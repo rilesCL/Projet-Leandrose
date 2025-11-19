@@ -91,7 +91,7 @@ export async function generateEvaluationPdfWithId(evaluationId, formData, token 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            "Accept-Language": currentLanguage,
+            "Accept-Language": currentLanguage ?? "fr",
             ...authHeaders(token)
         },
         body: JSON.stringify(formData)
