@@ -1,5 +1,7 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.presentation.request.UpdateUserRequest;
+import ca.cal.leandrose.presentation.request.VerifyPasswordRequest;
 import ca.cal.leandrose.service.AuthService;
 import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.JWTAuthResponse;
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,4 +45,22 @@ public class UserController {
         .contentType(MediaType.APPLICATION_JSON)
         .body(userService.getMe(authHeader));
   }
+    @PostMapping("/verify-password")
+    public ResponseEntity<Map<String, Boolean>> verifyPassword(
+            HttpServletRequest request,
+            @RequestBody VerifyPasswordRequest req
+    ) {
+        String authHeader = request.getHeader("Authorization");
+        boolean isValid = userService.verifyPassword(authHeader, req.getPassword());
+        return ResponseEntity.ok(Map.of("valid", isValid));
+    }
+    @PutMapping("/me")
+    public ResponseEntity<UserDTO> updateProfile(
+            HttpServletRequest request,
+            @RequestBody UpdateUserRequest req
+    ) {
+        String authHeader = request.getHeader("Authorization");
+        UserDTO updated = userService.updateProfile(authHeader, req);
+        return ResponseEntity.ok(updated);
+    }
 }
