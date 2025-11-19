@@ -19,6 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -838,6 +839,263 @@ class StudentControllerTest {
 
     mockMvc
         .perform(get("/student/ententes/10/pdf").header("Authorization", "Bearer token"))
+        .andExpect(status().isInternalServerError());
+  }
+
+  @Test
+  void getMyProf_asStudent_withProf_returnsProfDto() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    ProfDto profDto =
+        ProfDto.builder()
+            .id(10L)
+            .firstName("Prof")
+            .lastName("Smith")
+            .email("prof@college.com")
+            .role(ca.cal.leandrose.model.auth.Role.PROF)
+            .employeeNumber("EMP001")
+            .nameCollege("College Test")
+            .department("Informatique")
+            .build();
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getProfByStudentId(1L)).thenReturn(Optional.of(profDto));
+
+    mockMvc
+        .perform(get("/student/prof").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(10))
+        .andExpect(jsonPath("$.firstName").value("Prof"))
+        .andExpect(jsonPath("$.lastName").value("Smith"))
+        .andExpect(jsonPath("$.email").value("prof@college.com"))
+        .andExpect(jsonPath("$.employeeNumber").value("EMP001"));
+
+    verify(studentService).getProfByStudentId(1L);
+  }
+
+  @Test
+  void getMyProf_asStudent_noProf_returnsNotFound() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getProfByStudentId(1L)).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/student/prof").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound());
+
+    verify(studentService).getProfByStudentId(1L);
+  }
+
+  @Test
+  void getMyProf_missingAuthorization_returnsUnauthorized() throws Exception {
+    mockMvc.perform(get("/student/prof")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void getMyProf_notStudent_returnsForbidden() throws Exception {
+    UserDTO employeur =
+        new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+    when(userAppService.getMe(anyString())).thenReturn(employeur);
+
+    mockMvc
+        .perform(get("/student/prof").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+
+    verify(studentService, never()).getProfByStudentId(anyLong());
+  }
+
+  @Test
+  void getMyProf_serviceThrowsException_returnsInternalServerError() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getProfByStudentId(1L))
+        .thenThrow(new RuntimeException("Database error"));
+
+    mockMvc
+        .perform(get("/student/prof").header("Authorization", "Bearer token"))
+        .andExpect(status().isInternalServerError());
+  }
+
+  @Test
+  void getMyGestionnaire_asStudent_withGestionnaire_returnsGestionnaireDto() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    GestionnaireDto gestionnaireDto =
+        GestionnaireDto.builder()
+            .id(5L)
+            .firstName("Gest")
+            .lastname("Manager")
+            .email("gest@college.com")
+            .role(ca.cal.leandrose.model.auth.Role.GESTIONNAIRE)
+            .phoneNumber("514-123-4567")
+            .build();
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getGestionnaireByStudentId(1L))
+        .thenReturn(Optional.of(gestionnaireDto));
+
+    mockMvc
+        .perform(get("/student/gestionnaire").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(5))
+        .andExpect(jsonPath("$.firstName").value("Gest"))
+        .andExpect(jsonPath("$.lastName").value("Manager"))
+        .andExpect(jsonPath("$.email").value("gest@college.com"))
+        .andExpect(jsonPath("$.phoneNumber").value("514-123-4567"));
+
+    verify(studentService).getGestionnaireByStudentId(1L);
+  }
+
+  @Test
+  void getMyGestionnaire_asStudent_noGestionnaire_returnsNotFound() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getGestionnaireByStudentId(1L)).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/student/gestionnaire").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound());
+
+    verify(studentService).getGestionnaireByStudentId(1L);
+  }
+
+  @Test
+  void getMyGestionnaire_missingAuthorization_returnsUnauthorized() throws Exception {
+    mockMvc.perform(get("/student/gestionnaire")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void getMyGestionnaire_notStudent_returnsForbidden() throws Exception {
+    UserDTO employeur =
+        new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+    when(userAppService.getMe(anyString())).thenReturn(employeur);
+
+    mockMvc
+        .perform(get("/student/gestionnaire").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+
+    verify(studentService, never()).getGestionnaireByStudentId(anyLong());
+  }
+
+  @Test
+  void getMyGestionnaire_serviceThrowsException_returnsInternalServerError() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getGestionnaireByStudentId(1L))
+        .thenThrow(new RuntimeException("Database error"));
+
+    mockMvc
+        .perform(get("/student/gestionnaire").header("Authorization", "Bearer token"))
+        .andExpect(status().isInternalServerError());
+  }
+
+  @Test
+  void getMyEmployeurs_asStudent_withEmployeurs_returnsList() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    EmployeurDto employeur1 =
+        EmployeurDto.builder()
+            .id(20L)
+            .firstName("Employeur1")
+            .lastname("One")
+            .email("emp1@company.com")
+            .role(ca.cal.leandrose.model.auth.Role.EMPLOYEUR)
+            .companyName("TechCorp")
+            .field("IT")
+            .build();
+
+    EmployeurDto employeur2 =
+        EmployeurDto.builder()
+            .id(21L)
+            .firstName("Employeur2")
+            .lastname("Two")
+            .email("emp2@company.com")
+            .role(ca.cal.leandrose.model.auth.Role.EMPLOYEUR)
+            .companyName("DevCorp")
+            .field("Software")
+            .build();
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getEmployeursByStudentId(1L))
+        .thenReturn(List.of(employeur1, employeur2));
+
+    mockMvc
+        .perform(get("/student/employeurs").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[0].id").value(20))
+        .andExpect(jsonPath("$[0].companyName").value("TechCorp"))
+        .andExpect(jsonPath("$[1].id").value(21))
+        .andExpect(jsonPath("$[1].companyName").value("DevCorp"));
+
+    verify(studentService).getEmployeursByStudentId(1L);
+  }
+
+  @Test
+  void getMyEmployeurs_asStudent_noEmployeurs_returnsEmptyList() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getEmployeursByStudentId(1L)).thenReturn(List.of());
+
+    mockMvc
+        .perform(get("/student/employeurs").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(0));
+
+    verify(studentService).getEmployeursByStudentId(1L);
+  }
+
+  @Test
+  void getMyEmployeurs_missingAuthorization_returnsUnauthorized() throws Exception {
+    mockMvc.perform(get("/student/employeurs")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void getMyEmployeurs_notStudent_returnsForbidden() throws Exception {
+    UserDTO employeur =
+        new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+    when(userAppService.getMe(anyString())).thenReturn(employeur);
+
+    mockMvc
+        .perform(get("/student/employeurs").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+
+    verify(studentService, never()).getEmployeursByStudentId(anyLong());
+  }
+
+  @Test
+  void getMyEmployeurs_serviceThrowsException_returnsInternalServerError() throws Exception {
+    UserDTO student =
+        new UserDTO(
+            1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
+
+    when(userAppService.getMe(anyString())).thenReturn(student);
+    when(studentService.getEmployeursByStudentId(1L))
+        .thenThrow(new RuntimeException("Database error"));
+
+    mockMvc
+        .perform(get("/student/employeurs").header("Authorization", "Bearer token"))
         .andExpect(status().isInternalServerError());
   }
 }
