@@ -941,7 +941,11 @@
       "discussedRequired": "Please indicate if this evaluation was discussed with the trainee",
       "supervisionHoursRequired": "Please enter the number of supervision hours",
       "welcomeNextInternshipRequired": "Please indicate if you would welcome another intern",
-      "technicalTrainingRequired": "Please indicate if the technical training was sufficient"
+      "technicalTrainingRequired": "Please indicate if the technical training was sufficient",
+      "selectOption": "Please select an option",
+      "missingFields": "Please fill up the following fields",
+      "hoursRequired": "The hours for all three fields are required",
+      "salaryRequired": "The salary is required"
     },
     "errors": {
       "missing_studentId_Or_offerId": "Missing student ID or offer number",

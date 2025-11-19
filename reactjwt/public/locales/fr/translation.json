@@ -943,7 +943,12 @@
       "discussedRequired": "Veuillez indiquer si l'évaluation a été discutée avec le stagiaire.",
       "supervisionHoursRequired": "Veuillez entrer le nombre d'heures de supervision (valeur numérique requise).",
       "welcomeNextInternshipRequired": "Veuillez indiquer si vous seriez prêt à accueillir un autre stagiaire.",
-      "technicalTrainingRequired": "Veuillez indiquer si la formation technique reçue par le stagiaire était suffisante."
+      "technicalTrainingRequired": "Veuillez indiquer si la formation technique reçue par le stagiaire était suffisante.",
+      "selectOption": "Veuillez choisir un option",
+      "missingFields": "Veuillez remplir les champs suivants",
+      "hoursRequired": "Les heures pour les trois sont requis",
+      "salaryRequired": "Le salaire est requis"
+
     },
     "errors": {
       "missing_studentId_Or_offerId": "Carte d'étudiant ou numéro d'offre manquant",
