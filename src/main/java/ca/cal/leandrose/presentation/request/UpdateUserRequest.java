@@ -10,11 +10,8 @@ public class UpdateUserRequest {
     private String firstName;
     private String lastName;
 
+    private String email;
+    private String newPassword;
+
     private String phoneNumber;
-
-    private String companyName;
-    private String field;
-
-    private String program;
-    private String studentNumber;
 }
