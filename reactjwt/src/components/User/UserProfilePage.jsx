@@ -1,6 +1,8 @@
+// src/components/UserProfilePage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 export default function UserProfilePage() {
     const { t } = useTranslation();
@@ -9,15 +11,39 @@ export default function UserProfilePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [user, setUser] = useState(null);
+
     const [form, setForm] = useState({
         firstName: "",
         lastName: "",
         email: "",
         phone: "",
-        password: "",
+        newPassword: "",
     });
-    const [message, setMessage] = useState("");
-    const [error, setError] = useState("");
+
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [successPopup, setSuccessPopup] = useState("");
+    const [errorPopup, setErrorPopup] = useState("");
+
+    const [showNameSection, setShowNameSection] = useState(false);
+    const [showPhoneSection, setShowPhoneSection] = useState(false);
+    const [showPasswordSection, setShowPasswordSection] = useState(false);
+
+    const getDashboardByRole = (role) => {
+        switch (role) {
+            case "STUDENT":
+                return "/dashboard/student";
+            case "EMPLOYEUR":
+                return "/dashboard/employeur";
+            case "GESTIONNAIRE":
+                return "/dashboard/gestionnaire";
+            case "PROF":
+                return "/prof/etudiants";
+            default:
+                return "/dashboard";
+        }
+    };
 
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");
@@ -29,13 +55,11 @@ export default function UserProfilePage() {
         (async () => {
             try {
                 const res = await fetch("http://localhost:8080/user/me", {
-                    method: "GET",
-                    headers: {
-                        Accept: "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
+
                 if (!res.ok) throw new Error("Impossible de récupérer le profil.");
+
                 const data = await res.json();
                 setUser(data);
                 setForm({
@@ -43,10 +67,10 @@ export default function UserProfilePage() {
                     lastName: data.lastName || "",
                     email: data.email || "",
                     phone: data.phone || "",
-                    password: "",
+                    newPassword: "",
                 });
-            } catch (e) {
-                setError(e.message || "Erreur lors du chargement du profil.");
+            } catch (err) {
+                setErrorPopup(err.message || "Erreur lors du chargement du profil.");
             } finally {
                 setLoading(false);
             }
@@ -60,8 +84,8 @@ export default function UserProfilePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage("");
-        setError("");
+        setErrorPopup("");
+        setSuccessPopup("");
 
         const token = sessionStorage.getItem("accessToken");
         if (!token) {
@@ -69,13 +93,29 @@ export default function UserProfilePage() {
             return;
         }
 
-        // On n’envoie pas le mot de passe si le champ est vide
-        const payload = { ...form };
-        if (!payload.password) {
-            delete payload.password;
+        if (!currentPassword) {
+            setErrorPopup("Vous devez entrer votre mot de passe actuel.");
+            return;
+        }
+
+        if (form.newPassword && form.newPassword !== confirmPassword) {
+            setErrorPopup("La confirmation du mot de passe ne correspond pas.");
+            return;
+        }
+
+        const payload = {
+            firstName: form.firstName,
+            lastName: form.lastName,
+            phone: form.phone,
+            currentPassword: currentPassword,
+        };
+
+        if (form.newPassword) {
+            payload.password = form.newPassword;
         }
 
         setSaving(true);
+
         try {
             const res = await fetch("http://localhost:8080/user/me", {
                 method: "PUT",
@@ -87,18 +127,23 @@ export default function UserProfilePage() {
             });
 
             if (!res.ok) {
-                throw new Error("Erreur lors de la sauvegarde du profil.");
+                throw new Error("Mot de passe incorrect ou erreur de mise à jour.");
             }
 
             const updated = await res.json();
-            setUser(updated);
-            setForm((prev) => ({
-                ...prev,
-                password: "", // on vide le champ password après
-            }));
-            setMessage("Profil mis à jour avec succès.");
-        } catch (e) {
-            setError(e.message || "Erreur lors de la mise à jour du profil.");
+
+            setUser((prev) => ({ ...prev, ...updated }));
+
+            setCurrentPassword("");
+            setConfirmPassword("");
+            setForm((prev) => ({ ...prev, newPassword: "" }));
+
+            setSuccessPopup("Profil mis à jour avec succès !");
+
+            const roleForRedirect = updated.role || (user && user.role);
+            navigate(getDashboardByRole(roleForRedirect));
+        } catch (err) {
+            setErrorPopup(err.message || "Erreur lors de la mise à jour.");
         } finally {
             setSaving(false);
         }
@@ -106,140 +151,177 @@ export default function UserProfilePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <p className="text-gray-600">Chargement du profil…</p>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-                <div className="bg-white shadow rounded-lg p-6 max-w-md w-full text-center">
-                    <p className="text-red-600 mb-4">
-                        {error || "Impossible d’afficher le profil."}
-                    </p>
-                    <button
-                        onClick={() => navigate("/login")}
-                        className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700"
-                    >
-                        Retour à la connexion
-                    </button>
-                </div>
+            <div className="min-h-screen flex items-center justify-center text-gray-600">
+                Chargement du profil…
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-10">
+        <div className="min-h-screen relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-10">
+            {successPopup && (
+                <div className="fixed top-1/3 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg text-lg z-50">
+                    {successPopup}
+                </div>
+            )}
+
+            {errorPopup && (
+                <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-5 py-2 rounded-lg shadow-md z-50">
+                    {errorPopup}
+                </div>
+            )}
+
             <div className="max-w-2xl mx-auto px-4">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="mb-4 text-sm text-gray-600 hover:text-indigo-600"
-                >
-                    ← Retour
-                </button>
+                <div className="bg-white rounded-2xl shadow-lg border p-6">
+                    <h1 className="text-2xl font-bold mb-2">Mon profil</h1>
+                    <p className="text-gray-500 mb-6">Modifiez vos informations de compte.</p>
 
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                        {t("profile.title") || "Mon profil"}
-                    </h1>
-                    <p className="text-sm text-gray-500 mb-4">
-                        {t("profile.subtitle") ||
-                            "Modifiez vos informations de compte."}
-                    </p>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="border rounded-xl p-4">
+                            <button
+                                type="button"
+                                onClick={() => setShowNameSection(!showNameSection)}
+                                className="w-full flex justify-between items-center"
+                            >
+                                <span className="font-semibold text-gray-800">Prénom / Nom</span>
+                                {showNameSection ? <FaChevronUp /> : <FaChevronDown />}
+                            </button>
 
-                    {message && (
-                        <div className="mb-3 p-2.5 rounded bg-green-50 border border-green-200 text-green-800 text-sm">
-                            {message}
+                            {showNameSection && (
+                                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Prénom
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="firstName"
+                                            value={form.firstName}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Nom
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="lastName"
+                                            value={form.lastName}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
-                    {error && (
-                        <div className="mb-3 p-2.5 rounded bg-red-50 border border-red-200 text-red-800 text-sm">
-                            {error}
-                        </div>
-                    )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Prénom
-                                </label>
+                        <div className="border rounded-xl p-4">
+                            <span className="font-semibold text-gray-800">Email</span>
+                            <div className="mt-3">
                                 <input
-                                    type="text"
-                                    name="firstName"
-                                    value={form.firstName}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                    type="email"
+                                    value={form.email}
+                                    disabled
+                                    className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                                 />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Nom
-                                </label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    value={form.lastName}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    L’adresse courriel ne peut pas être modifiée.
+                                </p>
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={form.email}
-                                disabled
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-100 cursor-not-allowed text-gray-500"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">
-                                L’adresse courriel ne peut pas être modifiée.
-                            </p>
+                        <div className="border rounded-xl p-4">
+                            <button
+                                type="button"
+                                onClick={() => setShowPhoneSection(!showPhoneSection)}
+                                className="w-full flex justify-between items-center"
+                            >
+                                <span className="font-semibold text-gray-800">Téléphone</span>
+                                {showPhoneSection ? <FaChevronUp /> : <FaChevronDown />}
+                            </button>
+
+                            {showPhoneSection && (
+                                <div className="mt-4">
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={form.phone}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                </div>
+                            )}
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Téléphone
-                            </label>
-                            <input
-                                type="text"
-                                name="phone"
-                                value={form.phone}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            />
+                        <div className="border rounded-xl p-4">
+                            <button
+                                type="button"
+                                onClick={() => setShowPasswordSection(!showPasswordSection)}
+                                className="w-full flex justify-between items-center"
+                            >
+                                <span className="font-semibold text-gray-800">Mot de passe</span>
+                                {showPasswordSection ? <FaChevronUp /> : <FaChevronDown />}
+                            </button>
+
+                            {showPasswordSection && (
+                                <div className="mt-4 space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Nouveau mot de passe (optionnel)
+                                        </label>
+                                        <input
+                                            type="password"
+                                            name="newPassword"
+                                            value={form.newPassword}
+                                            onChange={handleChange}
+                                            placeholder="Nouveau mot de passe"
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Nouveau mot de passe (confirmer)
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            placeholder="Confirmer le nouveau mot de passe"
+                                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
-                        <div>
+                        <div className="border rounded-xl p-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Nouveau mot de passe (optionnel)
+                                Mot de passe actuel <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="password"
-                                name="password"
-                                value={form.password}
-                                onChange={handleChange}
-                                placeholder="Laisser vide pour ne pas changer"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                placeholder="Entrez votre mot de passe actuel pour confirmer"
+                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
+                            <p className="text-xs text-gray-500 mt-1">
+                                Requis pour enregistrer toute modification de votre profil.
+                            </p>
                         </div>
 
-                        <div className="pt-2 flex justify-end gap-3">
+                        <div className="pt-4 flex justify-between items-center">
                             <button
                                 type="button"
-                                onClick={() => navigate(-1)}
+                                onClick={() => navigate(getDashboardByRole(user?.role))}
                                 className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 text-sm font-medium"
                                 disabled={saving}
                             >
-                                Annuler
+                                Retour
                             </button>
+
                             <button
                                 type="submit"
                                 disabled={saving}
