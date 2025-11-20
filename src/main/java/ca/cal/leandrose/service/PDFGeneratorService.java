@@ -5,11 +5,16 @@ import ca.cal.leandrose.service.dto.evaluation.CategoryData;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
 import ca.cal.leandrose.service.dto.evaluation.QuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.WorkShiftRange;
+import ca.cal.leandrose.service.dto.evaluation.prof.EntrepriseTeacherDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationProfFormDto;
+import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
+import ca.cal.leandrose.service.dto.evaluation.prof.StudentTeacherDto;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -245,7 +250,8 @@ public class PDFGeneratorService {
         }
     }
 
-    public String generatedEvaluationByTeacher(EvaluationStagiaire evaluationStagiaire, EvaluationProfFormDto formData, String language){
+    public String generatedEvaluationByTeacher(EvaluationStagiaire evaluationStagiaire,
+                                               EvaluationProfFormDto formData, EvaluationTeacherInfoDto teacherInfo, String language){
         try{
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
             if (!Files.exists(evaluationDir)) {
@@ -261,9 +267,10 @@ public class PDFGeneratorService {
             document.open();
 
 
+
             addHeaderEvaluationParProf(document, language);
-            addEmployerSection(document, evaluationStagiaire, language);
-            addStudentSection(document, evaluationStagiaire, language);
+            addEmployerSection(document, evaluationStagiaire, teacherInfo.entrepriseTeacherDto(), language);
+            addStudentSection(document, evaluationStagiaire, teacherInfo.studentTeacherDto(), language);
             addEvaluationSection(document, formData, language);
             addObservationsGeneralesSection(document, formData, language);
             addTeacherSignature(document, language);
@@ -920,7 +927,7 @@ public class PDFGeneratorService {
         addInfoRow(infoTable, getTranslation("evaluationDate", language), evaluation.getDateEvaluation().format(DATE_FORMATTER), boldFont, normalFont);
         document.add(infoTable);
     }
-    private void addEmployerSection(Document document, EvaluationStagiaire evaluationStagiaire, String language) throws DocumentException{
+    private void addEmployerSection(Document document, EvaluationStagiaire evaluationStagiaire,EntrepriseTeacherDto dto, String language) throws DocumentException{
         Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
         Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
@@ -938,19 +945,16 @@ public class PDFGeneratorService {
         infoTable.setWidths(new float[]{3f, 7f});
         infoTable.setSpacingAfter(8f);
 
-        String companyName = evaluationStagiaire.getEmployeur().getCompanyName();
-        String contactName = evaluationStagiaire.getEmployeur().getFirstName()
-                + evaluationStagiaire.getEmployeur().getLastName();
-        String address = evaluationStagiaire.getInternshipOffer().getAddress();
-        String email = evaluationStagiaire.getEmployeur().getEmail();
 
-        addInfoRow(infoTable, getTranslation("company", language), companyName, labelFont, valueFont);
-        addInfoRow(infoTable, getTranslation("contactPerson", language), contactName, labelFont, valueFont);
-        addInfoRow(infoTable, getTranslation("address", language), address, labelFont, valueFont);
-        addInfoRow(infoTable, getTranslation("email", language), email, labelFont, valueFont);
+
+        addInfoRow(infoTable, getTranslation("company", language), dto.companyName(), labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("contactPerson", language), dto.contactName(), labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("address", language), dto.address(), labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("email", language), dto.email(), labelFont, valueFont);
+        document.add(infoTable);
 
     }
-    private void addStudentSection(Document document, EvaluationStagiaire evaluationStagiaire, String language) throws DocumentException{
+    private void addStudentSection(Document document, EvaluationStagiaire evaluationStagiaire,  StudentTeacherDto dto, String language) throws DocumentException{
         Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
         Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
@@ -968,12 +972,8 @@ public class PDFGeneratorService {
         infoTable.setWidths(new float[]{3f, 7f});
         infoTable.setSpacingAfter(8f);
 
-        String studentName = evaluationStagiaire.getStudent().getFirstName()
-                + evaluationStagiaire.getStudent().getLastName();
-        String internshipDate = evaluationStagiaire.getInternshipOffer().getStartDate().toString();
-
-        addInfoRow(infoTable, getTranslation("studentName", language), studentName, labelFont, valueFont);
-        addInfoRow(infoTable, getTranslation("internshipDate", language), internshipDate, labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("studentName", language), dto.fullname(), labelFont, valueFont);
+        addInfoRow(infoTable, getTranslation("internshipDate", language), dto.internshipStartDate().toString(), labelFont, valueFont);
 
         String stageText;
         if ("en".equals("language")){
@@ -983,58 +983,159 @@ public class PDFGeneratorService {
             stageText = "Stage (encercler):  1   2";
         }
         addInfoRow(infoTable, "" , stageText, labelFont, valueFont);
+        document.add(infoTable);
 
     }
-    private void addEvaluationSection(Document document, EvaluationProfFormDto formData, String language) throws DocumentException{
-        Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
-        Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
-        Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.ITALIC);
+    private void addEvaluationSection(Document document, EvaluationProfFormDto formData, String language) throws DocumentException {
+        Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
+        Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
+        Font commentFont = FontFactory.getFont(FontFactory.HELVETICA, 8.5f, BaseColor.DARK_GRAY);
 
+        // Get the categories (questions + titles) for teacher in the requested language
         Map<String, CategoryData> categories = getEvaluationCategoriesTeacher(language);
 
-        for(Map.Entry<String, CategoryData> entry: categories.entrySet()){
+        // Use the same rating keys/order as the employer implementation so values line up.
+        // You can also call getRatingKeys(language) if you already have it implemented.
+        List<String> ratingKeys = List.of("EXCELLENT", "TRES_BIEN", "SATISFAISANT", "A_AMELIORER");
+        List<String> ratingLabels = getRatingLabels(language); // reuse if you already have it
+
+        for (Map.Entry<String, CategoryData> entry : categories.entrySet()) {
             String categoryKey = entry.getKey();
             CategoryData cat = entry.getValue();
-            List<QuestionResponse> responses = formData.categories().get(entry.getKey());
+            List<QuestionResponse> responses = formData.categories() != null ? formData.categories().get(categoryKey) : null;
 
-            document.add(new Paragraph(cat.getTitle(), categoryFont));
-            document.add(Chunk.NEWLINE);
+            // Category title
+            Paragraph categoryTitle = new Paragraph(cat.getTitle(), categoryFont);
+            categoryTitle.setSpacingBefore(6f);
+            categoryTitle.setSpacingAfter(4f);
+            document.add(categoryTitle);
 
-            PdfPTable table = new PdfPTable(6);
-            table.setWidthPercentage(100);
-            table.setWidths(new float[]{5f, 2f, 2f, 2f, 2f, 2f});
-
-            for(String header: getRatingLabels(language)){
-                PdfPCell cell = new PdfPCell(new Phrase(header, smallFont));
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
-                table.addCell(cell);
+            // Category description if present
+            if (cat.getDescription() != null && !cat.getDescription().isBlank()) {
+                Paragraph categoryDesc = new Paragraph(cat.getDescription(), questionFont);
+                categoryDesc.setSpacingAfter(6f);
+                document.add(categoryDesc);
             }
 
-            for (int i = 0 ; i < cat.getQuestions().size(); i++){
+            // For each question in the category
+            for (int i = 0; i < cat.getQuestions().size(); i++) {
                 String questionText = cat.getQuestions().get(i);
-                QuestionResponse response = responses != null && i < responses.size()
-                        ? responses.get(i): null;
-                table.addCell(new Phrase(questionText, questionFont));
-                String rating = response != null ? response.rating() : "";
+                document.add(new Paragraph((i + 1) + ". " + questionText, questionFont));
+                document.add(Chunk.NEWLINE);
 
-                for(String option: getRatingKeys(language)){
-                    String symbol = option.equals(rating) ? "☑" : "☐";
-                    PdfPCell cell = new PdfPCell(new Phrase(symbol, questionFont));
+                // The selected rating saved in DTO: must match the keys above
+                String selectedRating = getQuestionRating(formData, categoryKey, i);
+
+                // prepare a small table for the rating options (icons/checkbox per option)
+                PdfPTable ratingOptionsTable = new PdfPTable(ratingKeys.size());
+                ratingOptionsTable.setWidthPercentage(100);
+                ratingOptionsTable.setSpacingAfter(4f);
+
+                for (int k = 0; k < ratingKeys.size(); k++) {
+                    String key = ratingKeys.get(k);
+                    boolean isSelected = key.equals(selectedRating);
+
+                    // Try to render a checkbox image (if you have an image helper). If null, fallback to text checkbox.
+                    Image checkboxImg = createCheckboxImage(isSelected);
+                    PdfPCell cell;
+                    if (checkboxImg != null) {
+                        Paragraph p = new Paragraph();
+                        // adjust vertical offset so it lines nicely with text
+                        p.add(new Chunk(checkboxImg, 0, -2, true));
+                        cell = new PdfPCell(p);
+                    } else {
+                        // fallback: unicode checkbox
+                        String ascii = isSelected ? "☑" : "☐";
+                        Paragraph p = new Paragraph(ascii + " " + getSafeLabel(ratingLabels, k), questionFont);
+                        cell = new PdfPCell(p);
+                    }
+
+                    cell.setBorder(Rectangle.NO_BORDER);
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    table.addCell(cell);
+                    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                    cell.setPadding(6f);
+                    ratingOptionsTable.addCell(cell);
                 }
+
+                document.add(ratingOptionsTable);
+
+                // optional comment for the question
+                String comment = getQuestionComment(formData, categoryKey, i);
+                if (comment != null && !comment.isBlank()) {
+                    String commentLabel = "en".equals(language) ? "Comment: " : "Commentaire: ";
+                    Paragraph commentPara = new Paragraph(commentLabel + comment, commentFont);
+                    commentPara.setIndentationLeft(12f);
+                    commentPara.setSpacingAfter(4f);
+                    document.add(commentPara);
+                }
+
+                document.add(Chunk.NEWLINE);
             }
-            document.add(table);
-            document.add(Chunk.NEWLINE);
 
-            if(categoryKey.equals("tasks"))
+            // If you want to add tables for hours/salary that depend on category:
+            if (categoryKey.equals("conformity") || categoryKey.equals("tasks")) {
+                // call the existing helper to add the hours table if present
                 addHoursTable(document, formData, language);
-
-            if(categoryKey.equals("conditions"))
+            }
+            if (categoryKey.equals("general") || categoryKey.equals("conditions")) {
                 addSalarySection(document, formData, language);
+            }
+
+            // Add a page break after a section if desired (employer code did this).
+            document.newPage();
         }
     }
+//    private void addEvaluationSection(Document document, EvaluationProfFormDto formData, String language) throws DocumentException{
+//        Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+//        Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+//        Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.ITALIC);
+//
+//        Map<String, CategoryData> categories = getEvaluationCategoriesTeacher(language);
+//
+//        for(Map.Entry<String, CategoryData> entry: categories.entrySet()){
+//            String categoryKey = entry.getKey();
+//            CategoryData cat = entry.getValue();
+//            List<QuestionResponse> responses = formData.categories().get(entry.getKey());
+//
+//            document.add(new Paragraph(cat.getTitle(), categoryFont));
+//            document.add(Chunk.NEWLINE);
+//
+//            PdfPTable table = new PdfPTable(6);
+//            table.setWidthPercentage(100);
+//            table.setWidths(new float[]{5f, 2f, 2f, 2f, 2f, 2f});
+//
+//            for(String header: getRatingLabels(language)){
+//                PdfPCell cell = new PdfPCell(new Phrase(header, smallFont));
+//                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+//                table.addCell(cell);
+//            }
+//
+//            for (int i = 0 ; i < cat.getQuestions().size(); i++){
+//                String questionText = cat.getQuestions().get(i);
+//                QuestionResponse response = responses != null && i < responses.size()
+//                        ? responses.get(i): null;
+//                table.addCell(new Phrase(questionText, questionFont));
+//                String rating = response != null ? response.rating() : "";
+//
+//                for(String option: getRatingKeys(language)){
+//                    String normalized = normalizeRating(rating, language);
+//                    String symbol = option.equals(normalized) ? "☑" : "☐";
+//                    PdfPCell cell = new PdfPCell(new Phrase(symbol, questionFont));
+//                    cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//                    table.addCell(cell);
+//                }
+//            }
+//            document.add(table);
+//            document.add(Chunk.NEWLINE);
+//
+//            if(categoryKey.equals("tasks"))
+//                addHoursTable(document, formData, language);
+//
+//            if(categoryKey.equals("conditions"))
+//                addSalarySection(document, formData, language);
+//        }
+//    }
 
     private void addObservationsGeneralesSection(Document document, EvaluationProfFormDto formData, String language)
             throws DocumentException{
@@ -1449,4 +1550,32 @@ public class PDFGeneratorService {
             default -> null;
         };
     }
+    private String getSafeLabel(List<String> labels, int idx) {
+        if (labels == null || idx < 0 || idx >= labels.size()) return "";
+        return labels.get(idx);
+    }
+
+    /**
+     * Returns the rating value stored for a specific question.
+     * This matters because the stored value MUST equal one of ratingKeys (EXCELLENT/TRES_BIEN/...)
+     */
+    private String getQuestionRating(EvaluationProfFormDto formData, String categoryKey, int index) {
+        if (formData == null || formData.categories() == null) return null;
+        List<QuestionResponse> list = formData.categories().get(categoryKey);
+        if (list == null || index < 0 || index >= list.size()) return null;
+        QuestionResponse qr = list.get(index);
+        return qr == null ? null : qr.rating();
+    }
+
+    /**
+     * Returns the comment saved for a specific question (if you store comments in QuestionResponse).
+     */
+    private String getQuestionComment(EvaluationProfFormDto formData, String categoryKey, int index) {
+        if (formData == null || formData.categories() == null) return null;
+        List<QuestionResponse> list = formData.categories().get(categoryKey);
+        if (list == null || index < 0 || index >= list.size()) return null;
+        QuestionResponse qr = list.get(index);
+        return qr == null ? null : qr.comment(); // adjust if your DTO uses a different field name
+    }
+
 }

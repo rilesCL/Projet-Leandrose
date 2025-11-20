@@ -20,6 +20,8 @@ const EvaluationForm = () => {
     const [errors, setErrors] = useState({})
     const [evaluationId, setEvaluationId] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null);
 
     const teacherEvaluationTemplate = {
         conformity: {
@@ -67,6 +69,11 @@ const EvaluationForm = () => {
             { start: "", end: "" }
         ]
     });
+    function normalizeYesNo(value) {
+        if (value === "YES") return true;
+        if (value === "NO") return false;
+        return value; // fallback for non-yes/no fields
+    }
 
     const validateForm = () => {
         const newErrors = {}
@@ -217,6 +224,13 @@ const EvaluationForm = () => {
 
     const handleSubmit = async () => {
         setError(null)
+        const normalizedForm = {
+            ...formData,
+            sameTraineeNextStage: normalizeYesNo(formData.sameTraineeNextStage),
+            workShiftYesNo: normalizeYesNo(formData.workShiftYesNo),
+            technicalTrainingSufficient: normalizeYesNo(formData.technicalTrainingSufficient),
+            discussedWithTrainee: normalizeYesNo(formData.discussedWithTrainee),
+        };
         const validationsErrors = validateForm();
         if(Object.keys(validationsErrors).length > 0){
             setErrors(validationsErrors)
@@ -230,7 +244,7 @@ const EvaluationForm = () => {
             return
         }
         setErrors({})
-
+        setSubmitting(true);
 
         try {
             const createRes = await createEvaluation(studentId, offerId);
@@ -238,10 +252,11 @@ const EvaluationForm = () => {
             console.log("Create response: ", createRes)
 
             console.log("Form Data: ", formData)
-            await generateEvaluationPdfWithId(evalId, formData);
-            setSubmitting(true);
+            await generateEvaluationPdfWithId(evalId, normalizedForm);
+            setSuccessMessage(t("evaluation.submittedSuccess"));
+            setSubmitted(true);
             setTimeout(() => {
-                navigate("/dashboard/employeur/evaluations")
+                navigate("/dashboard/prof/evaluations")
             }, 2000)
 
         } catch (err) {
@@ -610,16 +625,25 @@ const EvaluationForm = () => {
                 </div>
             </section>
 
-            {/* Submit */}
-            <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-                {submitting ? "Soumission..." : "Soumettre l’évaluation"}
-            </button>
-
-            {error && <p className="text-red-500 mt-4">{error}</p>}
+            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+                <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={submitting || submitted}
+                    className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    {submitting ? (
+                        <span className="flex items-center gap-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            {t('evaluation.submitting')}
+                            </span>
+                    ) : submitted ? (
+                        t('evaluation.submitted')
+                    ) : (
+                        t('evaluation.submitEvaluation')
+                    )}
+                </button>
+            </div>
 
         </div>
     );

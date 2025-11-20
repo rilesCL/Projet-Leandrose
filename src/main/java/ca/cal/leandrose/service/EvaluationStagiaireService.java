@@ -237,8 +237,9 @@ public class EvaluationStagiaireService {
     public EvaluationStagiaireDto generateEvaluationByTeacher(Long evaluationId, EvaluationProfFormDto formData, String langage){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
+        EvaluationTeacherInfoDto info = buildTeacherInfo(evaluation);
 
-        String pdfPath = pdfGeneratorService.generatedEvaluationByTeacher(evaluation, formData, langage);
+        String pdfPath = pdfGeneratorService.generatedEvaluationByTeacher(evaluation, formData, info, langage);
         evaluation.setProfessorPdfFilePath(pdfPath);
         evaluation.setSubmittedByProfessor(true);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
@@ -411,5 +412,21 @@ public class EvaluationStagiaireService {
     public Optional<EvaluationStagiaireDto> getExistingEvaluation(Long studentId, Long internshipOfferId) {
         return evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(studentId, internshipOfferId)
                 .map(this::mapToDto);
+    }
+    private EvaluationTeacherInfoDto buildTeacherInfo(EvaluationStagiaire e) {
+
+        EntrepriseTeacherDto entreprise = new EntrepriseTeacherDto(
+                e.getEmployeur().getCompanyName(),
+                e.getEmployeur().getFirstName() + " " + e.getEmployeur().getLastName(),
+                e.getInternshipOffer().getAddress(),
+                e.getEmployeur().getEmail()
+        );
+
+        StudentTeacherDto student = new StudentTeacherDto(
+                e.getStudent().getFirstName() + " " + e.getStudent().getLastName(),
+                e.getInternshipOffer().getStartDate()
+        );
+
+        return new EvaluationTeacherInfoDto(entreprise, student);
     }
 }
