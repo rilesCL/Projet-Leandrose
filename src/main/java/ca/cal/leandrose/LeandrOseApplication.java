@@ -36,7 +36,8 @@ public class LeandrOseApplication {
       CandidatureService candidatureService,
       ConvocationService convocationService,
       EntenteStageService ententeStageService,
-      ProfService profService) {
+      ProfService profService,
+      ChatService chatService) {
 
     return args -> {
       try {
@@ -48,7 +49,6 @@ public class LeandrOseApplication {
             "macolo",
             Program.COMPUTER_SCIENCE.getTranslationKey());
 
-        StudentDto studentDto =
             studentService.createStudent(
                 "Ghilas",
                 "Amr",
@@ -89,12 +89,12 @@ public class LeandrOseApplication {
                 "STU003",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
 
-        MultipartFile cvFile = loadPdfFromResources("test.pdf", "CV_Sophie_Martin.pdf");
+        MultipartFile cvFile = loadPdfFromResources("CV_Sophie_Martin.pdf");
         CvDto cvDto = cvService.uploadCv(studentConvocation.getId(), cvFile);
         CvDto cvApproved = gestionnaireService.approveCv(cvDto.getId());
 
         MultipartFile offerFile =
-            loadPdfFromResources("test.pdf", "Offre_Stage_TechInnovation.pdf");
+            loadPdfFromResources("Offre_Stage_TechInnovation.pdf");
         InternshipOfferDto offerDto =
             internshipOfferService.createOfferDto(
                 "Développeur Full-Stack Junior",
@@ -137,7 +137,7 @@ public class LeandrOseApplication {
                 "STU004",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
 
-        MultipartFile cvFile2 = loadPdfFromResources("test.pdf", "CV_Alexandre_Dubois.pdf");
+        MultipartFile cvFile2 = loadPdfFromResources("CV_Alexandre_Dubois.pdf");
         CvDto cvDto2 = cvService.uploadCv(studentConvocation2.getId(), cvFile2);
 
         CvDto cvApproved2 = gestionnaireService.approveCv(cvDto2.getId());
@@ -173,7 +173,7 @@ public class LeandrOseApplication {
                 "STU005",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
 
-        MultipartFile cvFile3 = loadPdfFromResources("test.pdf", "CV_Alexandre_Gagne.pdf");
+        MultipartFile cvFile3 = loadPdfFromResources("CV_Alexandre_Gagne.pdf");
         CvDto cvDto3 = cvService.uploadCv(studentConvocation3.getId(), cvFile3);
 
         CvDto cvApproved3 = gestionnaireService.approveCv(cvDto3.getId());
@@ -218,12 +218,12 @@ public class LeandrOseApplication {
                 "STU006",
                 Program.COMPUTER_SCIENCE.getTranslationKey());
 
-        MultipartFile cvFileEntente = loadPdfFromResources("test.pdf", "CV_Emilie_Fortin.pdf");
+        MultipartFile cvFileEntente = loadPdfFromResources("CV_Emilie_Fortin.pdf");
         CvDto cvDtoEntente = cvService.uploadCv(studentEntente.getId(), cvFileEntente);
         CvDto cvApprovedEntente = gestionnaireService.approveCv(cvDtoEntente.getId());
 
         MultipartFile offerFileEntente =
-            loadPdfFromResources("test.pdf", "Offre_Stage_Solutions_Pro.pdf");
+            loadPdfFromResources("Offre_Stage_Solutions_Pro.pdf");
         InternshipOfferDto offerDtoEntente =
             internshipOfferService.createOfferDto(
                 "Stage en développement web",
@@ -277,12 +277,12 @@ public class LeandrOseApplication {
                 "STU007",
                 Program.COMPUTER_SCIENCE.getTranslationKey());
 
-        MultipartFile cvFileEntente2 = loadPdfFromResources("test.pdf", "CV_Lucas_Bergeron.pdf");
+        MultipartFile cvFileEntente2 = loadPdfFromResources("CV_Lucas_Bergeron.pdf");
         CvDto cvDtoEntente2 = cvService.uploadCv(studentEntente2.getId(), cvFileEntente2);
         CvDto cvApprovedEntente2 = gestionnaireService.approveCv(cvDtoEntente2.getId());
 
         MultipartFile offerFileEntente2 =
-            loadPdfFromResources("test.pdf", "Offre_Stage_Solutions_Pro_2.pdf");
+            loadPdfFromResources("Offre_Stage_Solutions_Pro_2.pdf");
         InternshipOfferDto offerDtoEntente2 =
             internshipOfferService.createOfferDto(
                 "Stage en développement mobile",
@@ -332,7 +332,6 @@ public class LeandrOseApplication {
           System.err.println("Erreur STORY 40 : " + e.getMessage());
         }
 
-
         // 1. Créer un professeur
         ProfDto prof1 =
             profService.createProf(
@@ -342,7 +341,6 @@ public class LeandrOseApplication {
                 "Password123!",
                 "PROF001",
                 "Collège Mainsonneuve",
-
                 "3800 R. Sherbrooke E, Montréal, QC H1X 2A2",
                 "(514) 364-7130",
                 "Département d'informatique");
@@ -395,19 +393,16 @@ public class LeandrOseApplication {
                 "STU100",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
         System.out.println(
-            "✓ Étudiant créé: "
-                + studentProf.getFirstName()
-                + " "
-                + studentProf.getLastName());
+            "✓ Étudiant créé: " + studentProf.getFirstName() + " " + studentProf.getLastName());
 
         // 3. CV et offre
-        MultipartFile cvFileProf = loadPdfFromResources("test.pdf", "CV_Antoine_Tremblay.pdf");
+        MultipartFile cvFileProf = loadPdfFromResources("CV_Antoine_Tremblay.pdf");
         CvDto cvDtoProf = cvService.uploadCv(studentProf.getId(), cvFileProf);
         CvDto cvApprovedProf = gestionnaireService.approveCv(cvDtoProf.getId());
         System.out.println("✓ CV approuvé pour l'étudiant");
 
         MultipartFile offerFileProf =
-            loadPdfFromResources("test.pdf", "Offre_Stage_TechQuebec.pdf");
+            loadPdfFromResources("Offre_Stage_TechQuebec.pdf");
         InternshipOfferDto offerDtoProf =
             internshipOfferService.createOfferDto(
                 "Développeur Java/Spring Boot",
@@ -417,7 +412,8 @@ public class LeandrOseApplication {
                 27.50f,
                 employeurProf,
                 offerFileProf);
-        InternshipOfferDto offerApprovedProf = gestionnaireService.approveOffer(offerDtoProf.getId());
+        InternshipOfferDto offerApprovedProf =
+            gestionnaireService.approveOffer(offerDtoProf.getId());
         System.out.println("✓ Offre de stage approuvée: " + offerApprovedProf.getDescription());
 
         // 4. Candidature acceptée par employeur ET étudiant
@@ -457,7 +453,11 @@ public class LeandrOseApplication {
 
         EntenteStageDto ententeCreatedProf = ententeStageService.creerEntente(ententeDtoProf);
         System.out.println(
-            "✓ Entente créée (Statut: " + ententeCreatedProf.getStatut() + ", ID: " + ententeCreatedProf.getId() + ")");
+            "✓ Entente créée (Statut: "
+                + ententeCreatedProf.getStatut()
+                + ", ID: "
+                + ententeCreatedProf.getId()
+                + ")");
 
         // 6. Faire signer l'entente par TOUTES les parties
         // Signature étudiant
@@ -465,8 +465,7 @@ public class LeandrOseApplication {
         System.out.println("✓ Entente signée par l'étudiant");
 
         // Signature employeur
-        ententeStageService.signerParEmployeur(
-            ententeCreatedProf.getId(), employeurProf.getId());
+        ententeStageService.signerParEmployeur(ententeCreatedProf.getId(), employeurProf.getId());
         System.out.println("✓ Entente signée par l'employeur");
 
         // Signature gestionnaire
@@ -486,13 +485,11 @@ public class LeandrOseApplication {
         if (ententeValidee.getStatut().toString().equals("VALIDEE")) {
           System.out.println("✓ L'entente est VALIDEE - Prêt pour attribution d'un prof!");
 
-
         } else {
           System.err.println(
               "✗ ERREUR: L'entente n'est pas VALIDEE. Statut actuel: "
                   + ententeValidee.getStatut());
         }
-
 
       } catch (Exception e) {
         System.err.println("Erreur générale non prévue: " + e.getMessage());
@@ -501,9 +498,9 @@ public class LeandrOseApplication {
     };
   }
 
-  private MultipartFile loadPdfFromResources(String resourcePath, String filename)
+  private MultipartFile loadPdfFromResources(String filename)
       throws IOException {
-    ClassPathResource resource = new ClassPathResource(resourcePath);
+    ClassPathResource resource = new ClassPathResource("test.pdf");
     try (InputStream inputStream = resource.getInputStream()) {
       byte[] pdfContent = inputStream.readAllBytes();
       return new CustomMultipartFile(pdfContent, filename);

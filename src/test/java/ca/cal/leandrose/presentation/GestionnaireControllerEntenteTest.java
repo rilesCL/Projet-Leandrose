@@ -44,6 +44,8 @@ class GestionnaireControllerEntenteTest {
 
   @MockitoBean private CvService cvService;
 
+  @MockitoBean private ChatService chatService;
+
   @MockitoBean private UserAppService userAppService;
   @MockitoBean private ProfService profService;
 
