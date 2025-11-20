@@ -161,6 +161,12 @@ export default function ProfStudentsPage() {
                                 Bienvenue, {userName}
                             </span>
                             <button
+                                onClick={() => navigate("/profil")}
+                                className="text-sm text-gray-600 hover:text-indigo-600"
+                            >
+                                {t("profile.menu") || "Mon profil"}
+                            </button>
+                            <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"
                             >

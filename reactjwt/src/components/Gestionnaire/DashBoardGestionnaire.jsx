@@ -78,6 +78,12 @@ export default function DashBoardGestionnaire() {
                     <div className="flex items-center gap-4">
                         <LanguageSelector />
                         <button
+                            onClick={() => navigate("/profil")}
+                            className="text-sm text-gray-600 hover:text-indigo-600"
+                        >
+                            {t("profile.menu") || "Mon profil"}
+                        </button>
+                        <button
                             onClick={handleLogout}
                             className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-all duration-200"
                         >
