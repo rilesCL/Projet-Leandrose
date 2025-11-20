@@ -54,10 +54,6 @@ const EvaluationForm = () => {
     const [formData, setFormData] = useState({
         categories: {},
         stageNumber: "",
-        hoursMonth1: "",
-        hoursMonth2: "",
-        hoursMonth3: "",
-        salary: "",
         comments: "",
         preferredStage: "",
         capacity: "",
@@ -69,10 +65,11 @@ const EvaluationForm = () => {
             { start: "", end: "" }
         ]
     });
+
     function normalizeYesNo(value) {
         if (value === "YES") return true;
         if (value === "NO") return false;
-        return value; // fallback for non-yes/no fields
+        return value;
     }
 
     const validateForm = () => {
@@ -115,15 +112,6 @@ const EvaluationForm = () => {
                 }
             }
         }
-        if (formData.categories.conformity) {
-            if (!formData.hoursMonth1?.trim()) newErrors.hoursMonth1 = t('evaluation.validation.hoursRequired');
-            if (!formData.hoursMonth2?.trim()) newErrors.hoursMonth2 = t('evaluation.validation.hoursRequired');
-            if (!formData.hoursMonth3?.trim()) newErrors.hoursMonth3 = t('evaluation.validation.hoursRequired');
-        }
-
-        // Salary (question index 1 in "general")
-        if (formData.categories.general && !formData.salary)
-            newErrors.salary = t('evaluation.validation.salaryRequired');
 
         return newErrors;
     }
@@ -133,7 +121,7 @@ const EvaluationForm = () => {
             try {
                 setLoading(true);
                 const existingCheck = await checkExistingEvaluation(studentId, offerId)
-                let evalId =null
+                let evalId = null
                 if (existingCheck.exists && existingCheck.evaluation) {
                     evalId = existingCheck.evaluation.id
                     console.log("Evaluation Id: ", evalId)
@@ -280,24 +268,24 @@ const EvaluationForm = () => {
             </h1>
 
             {/* Company Info */}
-            <section className="mb-8 p-4 border rounded-lg bg-gray-50">
-                <h2 className="text-xl font-semibold mb-4">{t('evaluation.companyInfo')}</h2>
+            <section className="mb-8 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">{t('evaluation.companyInfo')}</h2>
 
-                <p><strong>{t('evaluation.name')}</strong> {info?.entrepriseTeacherDto.companyName}</p>
-                <p><strong>{t('evaluation.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}</p>
-                <p><strong>{t('evaluation.address')}</strong> {info?.entrepriseTeacherDto.address}</p>
-                <p><strong>{t('evaluation.email')}</strong> {info?.entrepriseTeacherDto.email}</p>
+                <p className="dark:text-gray-200"><strong>{t('evaluation.name')}</strong> {info?.entrepriseTeacherDto.companyName}</p>
+                <p className="dark:text-gray-200"><strong>{t('evaluation.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}</p>
+                <p className="dark:text-gray-200"><strong>{t('evaluation.address')}</strong> {info?.entrepriseTeacherDto.address}</p>
+                <p className="dark:text-gray-200"><strong>{t('evaluation.email')}</strong> {info?.entrepriseTeacherDto.email}</p>
             </section>
 
             {/* Student Info */}
-            <section className="mb-8 p-4 border rounded-lg bg-gray-50">
-                <h2 className="text-xl font-semibold mb-4">{t('evaluation.studentInfo')}</h2>
-                <p><strong>{t('evaluation.name')}</strong> {info?.studentTeacherDto.fullname}</p>
-                <p><strong>{t('evaluation.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
+            <section className="mb-8 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">{t('evaluation.studentInfo')}</h2>
+                <p className="dark:text-gray-200"><strong>{t('evaluation.name')}</strong> {info?.studentTeacherDto.fullname}</p>
+                <p className="dark:text-gray-200"><strong>{t('evaluation.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
 
                 {/* Stage number selection */}
                 <div className="mt-3">
-                    <label className="font-medium block mb-2 text-center">{t("evaluation.intern")}</label>
+                    <label className="font-medium block mb-2 text-center dark:text-gray-100">{t("evaluation.intern")}</label>
                     {errors?.stageNumber && (
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">
                             {errors.stageNumber}
@@ -312,8 +300,8 @@ const EvaluationForm = () => {
                                 <label
                                     key={strVal}
                                     className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-blue-200 border-2 border-blue-400 text-blue-900 font-semibold
-                                        ${isSelected ? "border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md" : ""}
+                                        bg-blue-200 dark:bg-blue-700 border-2 border-blue-400 dark:border-blue-500 text-blue-900 dark:text-blue-100 font-semibold
+                                        ${isSelected ? "border-blue-600 dark:border-blue-300 ring-2 ring-blue-400 dark:ring-blue-500 ring-offset-2 shadow-md" : ""}
                                     `}
                                 >
                                     <input
@@ -334,9 +322,9 @@ const EvaluationForm = () => {
 
             {/* Question Groups */}
             {Object.entries(teacherEvaluationTemplate).map(([groupKey, group]) => (
-                <section key={groupKey} className="mb-8 p-4 border rounded-lg">
+                <section key={groupKey} className="mb-8 p-4 border rounded-lg dark:bg-gray-800 dark:border-gray-700">
 
-                    <h3 className="text-lg font-semibold mb-4">{t(`evaluation.${groupKey}.title`)}</h3>
+                    <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">{t(`evaluation.${groupKey}.title`)}</h3>
 
                     {group.questions.map((q, index) => {
                         const ratingErrors = errors?.categories?.[groupKey]?.[index]
@@ -344,7 +332,7 @@ const EvaluationForm = () => {
                         return (
                             <div key={index} className="mb-6">
 
-                                <p className="mb-3">{q}</p>
+                                <p className="mb-3 dark:text-gray-200">{q}</p>
 
                                 {ratingErrors && (
                                     <p className="validation-error text-sm text-red-600 mb-2">{ratingErrors}</p>
@@ -366,11 +354,11 @@ const EvaluationForm = () => {
                                                 className={`
                                                     flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
                                                     border-2 font-semibold
-                                                    ${option.value === "EXCELLENT" ? "bg-green-400 border-green-600" : ""}
-                                                    ${option.value === "TRES_BIEN" ? "bg-green-200 border-green-400" : ""}
-                                                    ${option.value === "SATISFAISANT" ? "bg-orange-200 border-orange-400" : ""}
-                                                    ${option.value === "A_AMELIORER" ? "bg-red-400 border-red-600" : ""}
-                                                    ${isSelected ? "ring-2 ring-black shadow-lg" : ""}
+                                                    ${option.value === "EXCELLENT" ? "bg-green-400 dark:bg-green-600 border-green-600 dark:border-green-500 dark:text-white" : ""}
+                                                    ${option.value === "TRES_BIEN" ? "bg-green-200 dark:bg-green-700 border-green-400 dark:border-green-600 dark:text-white" : ""}
+                                                    ${option.value === "SATISFAISANT" ? "bg-orange-200 dark:bg-orange-700 border-orange-400 dark:border-orange-600 dark:text-white" : ""}
+                                                    ${option.value === "A_AMELIORER" ? "bg-red-400 dark:bg-red-600 border-red-600 dark:border-red-500 dark:text-white" : ""}
+                                                    ${isSelected ? "ring-2 ring-black dark:ring-white shadow-lg" : ""}
                                                 `}
                                             >
                                                 <input
@@ -388,58 +376,15 @@ const EvaluationForm = () => {
                                         );
                                     })}
                                 </div>
-
-                                {/* Salary field (general, question 2) */}
-                                {groupKey === "general" && index === 1 && (
-                                    <div className="mt-3 flex justify-center">
-                                        {errors?.salary && (
-                                            <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                                                {errors.salary}
-                                            </p>
-                                        )}
-                                        <input
-                                            type="text"
-                                            placeholder={t('evaluation.placeholders.salary')}
-                                            className="border px-2 py-1 rounded"
-                                            value={formData.salary}
-                                            onChange={e => handleChange("salary", e.target.value)}
-                                        />
-                                    </div>
-                                )}
-
                             </div>
                         );
                     })}
-
-                    {/* Hours for conformity */}
-                    {groupKey === "conformity" && (
-                        <div className="mt-6 flex flex-col gap-3 items-center validation-error">
-                            <label className="font-medium">{t('evaluation.placeholders.nbHoursWeek')}</label>
-                            {errors?.hoursMonth1 && errors?.hoursMonth2 && errors?.hoursMonth3 && (
-                                <p className="text-sm text-red-600 mt-1">{errors.hoursMonth1}</p>
-                            )}
-                            <div className="flex gap-4">
-                                <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.first_month')}
-                                       value={formData.hoursMonth1}
-                                       onChange={e => handleChange("hoursMonth1", e.target.value)} />
-                                <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.second_month')}
-                                       value={formData.hoursMonth2}
-                                       onChange={e => handleChange("hoursMonth2", e.target.value)} />
-
-                                <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.third_month')}
-                                       value={formData.hoursMonth3}
-                                       onChange={e => handleChange("hoursMonth3", e.target.value)} />
-
-                            </div>
-                        </div>
-                    )}
-
                 </section>
             ))}
 
             {/* OBSERVATIONS GÉNÉRALES */}
-            <section className="mb-8 p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold mb-4">{t("evaluation.observations.title")}</h3>
+            <section className="mb-8 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                <h3 className="text-lg font-semibold mb-4 dark:text-gray-100">{t("evaluation.observations.title")}</h3>
 
                 {/* Preferred stage */}
                 <div className="mb-6">
@@ -448,7 +393,7 @@ const EvaluationForm = () => {
                             {errors.preferredStage}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q1")}</p>
+                    <p className="font-medium mb-2 dark:text-gray-200">{t("evaluation.observations.q1")}</p>
                     <div className="flex flex-wrap justify-center gap-3">
                         {[{ value: "1", label: t('evaluation.observations.first_intern')},
                             { value: "2", label: t('evaluation.observations.second_intern') }].map(
@@ -458,8 +403,8 @@ const EvaluationForm = () => {
                                     <label
                                         key={opt.value}
                                         className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                            bg-blue-100 border-2 border-blue-300 text-blue-900 font-medium
-                                            ${isSelected ? "border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md" : ""}
+                                            bg-blue-100 dark:bg-blue-800 border-2 border-blue-300 dark:border-blue-600 text-blue-900 dark:text-blue-100 font-medium
+                                            ${isSelected ? "border-blue-600 dark:border-blue-400 ring-2 ring-blue-400 dark:ring-blue-500 ring-offset-2 shadow-md" : ""}
                                         `}
                                     >
                                         <input
@@ -485,7 +430,7 @@ const EvaluationForm = () => {
                             {errors.capacity}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q2")}</p>
+                    <p className="font-medium mb-2 dark:text-gray-200">{t("evaluation.observations.q2")}</p>
                     <div className="flex flex-wrap justify-center gap-3">
                         {[
                             { value: "1", label: t('evaluation.observations.stage1') },
@@ -498,8 +443,8 @@ const EvaluationForm = () => {
                                 <label
                                     key={opt.value}
                                     className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-purple-100 border-2 border-purple-300 text-purple-900 font-medium
-                                        ${isSelected ? "border-purple-700 ring-2 ring-purple-400 ring-offset-2 shadow-md" : ""}
+                                        bg-purple-100 dark:bg-purple-800 border-2 border-purple-300 dark:border-purple-600 text-purple-900 dark:text-purple-100 font-medium
+                                        ${isSelected ? "border-purple-700 dark:border-purple-400 ring-2 ring-purple-400 dark:ring-purple-500 ring-offset-2 shadow-md" : ""}
                                     `}
                                 >
                                     <input
@@ -524,7 +469,7 @@ const EvaluationForm = () => {
                             {errors.sameTraineeNextStage}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q3")}</p>
+                    <p className="font-medium mb-2 dark:text-gray-200">{t("evaluation.observations.q3")}</p>
                     <div className="flex justify-center gap-3">
                         {[{ value: "YES", label: t('evaluation.observations.yes') }, { value: "NO", label: t('evaluation.observations.no') }].map(opt => {
                             const isSelected = formData.sameTraineeNextStage === opt.value;
@@ -532,8 +477,8 @@ const EvaluationForm = () => {
                                 <label
                                     key={opt.value}
                                     className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-green-100 border-2 border-green-300 text-green-900 font-medium
-                                        ${isSelected ? "border-green-700 ring-2 ring-green-400 ring-offset-2 shadow-md" : ""}
+                                        bg-green-100 dark:bg-green-800 border-2 border-green-300 dark:border-green-600 text-green-900 dark:text-green-100 font-medium
+                                        ${isSelected ? "border-green-700 dark:border-green-400 ring-2 ring-green-400 dark:ring-green-500 ring-offset-2 shadow-md" : ""}
                                     `}
                                 >
                                     <input
@@ -558,7 +503,7 @@ const EvaluationForm = () => {
                             {errors.workShiftYesNo}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q3")}</p>
+                    <p className="font-medium mb-2 dark:text-gray-200">{t("evaluation.observations.q4")}</p>
                     <div className="flex gap-3 justify-center">
                         {[{ value: "YES", label: t('evaluation.observations.yes') }, { value: "NO", label: t('evaluation.observations.no') }].map(opt => {
                             const isSelected = formData.workShiftYesNo === opt.value;
@@ -566,8 +511,8 @@ const EvaluationForm = () => {
                                 <label
                                     key={opt.value}
                                     className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-orange-100 border-2 border-orange-300 text-orange-900 font-medium
-                                        ${isSelected ? "border-orange-700 ring-2 ring-orange-400 ring-offset-2 shadow-md" : ""}
+                                        bg-orange-100 dark:bg-orange-800 border-2 border-orange-300 dark:border-orange-600 text-orange-900 dark:text-orange-100 font-medium
+                                        ${isSelected ? "border-orange-700 dark:border-orange-400 ring-2 ring-orange-400 dark:ring-orange-500 ring-offset-2 shadow-md" : ""}
                                     `}
                                 >
                                     <input
@@ -597,17 +542,17 @@ const EvaluationForm = () => {
                                     <div key={n} className="flex flex-col items-center gap-1">
 
                                         <div className="flex gap-3 items-center justify-center">
-                                            <span>{t('evaluation.observations.from')}</span>
+                                            <span className="dark:text-gray-200">{t('evaluation.observations.from')}</span>
                                             <input
                                                 type="time"
-                                                className="p-2 border rounded"
+                                                className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                                                 value={formData[`obs_shift${n}From`] || ""}
                                                 onChange={e => handleChange(`obs_shift${n}From`, e.target.value)}
                                             />
-                                            <span>{t('evaluation.observations.to')}</span>
+                                            <span className="dark:text-gray-200">{t('evaluation.observations.to')}</span>
                                             <input
                                                 type="time"
-                                                className="p-2 border rounded"
+                                                className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                                                 value={formData[`obs_shift${n}To`] || ""}
                                                 onChange={e => handleChange(`obs_shift${n}To`, e.target.value)}
                                             />
@@ -625,12 +570,12 @@ const EvaluationForm = () => {
                 </div>
             </section>
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <button
                     type="button"
                     onClick={handleSubmit}
                     disabled={submitting || submitted}
-                    className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-2.5 bg-blue-600 dark:bg-blue-700 text-white font-medium rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     {submitting ? (
                         <span className="flex items-center gap-2">
