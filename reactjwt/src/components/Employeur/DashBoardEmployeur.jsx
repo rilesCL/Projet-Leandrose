@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import LanguageSelector from "../LanguageSelector.jsx";
 import EmployeurListeStages from "./EmployeurListeStages.jsx";
 import EvaluationList from "./EvaluationList.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate();
@@ -85,7 +86,8 @@ export default function DashBoardEmployeur() {
                             className="flex items-center space-x-4"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
-                            <LanguageSelector />
+                            <ThemeToggle/>
+                            <LanguageSelector/>
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"

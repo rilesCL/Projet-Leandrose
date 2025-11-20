@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
 import { fetchProfStudents } from "../../api/apiProf.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 const STATUS_LABELS = {
     // stage
@@ -160,6 +161,7 @@ export default function ProfStudentsPage() {
                             <span className="text-gray-700">
                                 Bienvenue, {userName}
                             </span>
+                            <ThemeToggle/>
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"

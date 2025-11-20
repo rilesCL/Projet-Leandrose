@@ -10,6 +10,7 @@ import StudentEntentesListe from "./StudentEntentesListe.jsx";
 import {updateStudentInfo} from "../../api/apiStudent.jsx";
 import {fetchPrograms} from "../../api/apiRegister.jsx";
 import InfosContactPage from "./InfosContactPage.jsx";
+import ThemeToggle from '../ThemeToggle.jsx';
 
 export default function DashBoardStudent() {
     const navigate = useNavigate();
@@ -212,6 +213,7 @@ export default function DashBoardStudent() {
                 <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
                     <span className="text-xl font-bold text-indigo-600">{t("appName")}</span>
                     <div className="flex items-center gap-4">
+                        <ThemeToggle/>
                         <LanguageSelector/>
                         <button
                             onClick={handleLogout}

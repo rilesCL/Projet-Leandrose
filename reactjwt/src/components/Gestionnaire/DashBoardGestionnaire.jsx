@@ -9,6 +9,7 @@ import EntentesStagePage from "./EntentesStagePage.jsx";
 import LanguageSelector from "../LanguageSelector.jsx";
 import GestionnaireListeEntentes from "./GestionnaireListeEntentes.jsx";
 import Chatbot from "./Chatbot.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
@@ -89,6 +90,7 @@ export default function DashBoardGestionnaire() {
                         >
                             🤖
                         </button>
+                        <ThemeToggle/>
                         <LanguageSelector />
                         <button
                             onClick={handleLogout}
