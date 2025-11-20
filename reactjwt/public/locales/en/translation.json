@@ -241,7 +241,23 @@
       "offers": "Offers",
       "ententes": "Internship Agreements",
       "cv": "My CV",
-      "applications": "My Applications"
+      "applications": "My Applications",
+      "contacts": "Contacts"
+    },
+    "contacts": {
+      "title": "My Contacts",
+      "subtitle": "View contact information for your internship support team",
+      "supportTeam": "Support Team",
+      "professor": "Supervising Professor",
+      "gestionnaire": "Internship Manager",
+      "employeur": "Employer",
+      "employeurs": "Employers",
+      "noContact": "No contact available",
+      "noEmployeur": "No employer associated",
+      "loading": "Loading...",
+      "department": "Department",
+      "infoReadonlyTitle": "Information:",
+      "infoReadonly": "These informations are read-only."
     },
     "reregistration": {
       "title": "Re-registration Required",

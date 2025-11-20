@@ -9,6 +9,7 @@ import StudentApplicationsList from './StudentApplicationsList.jsx';
 import StudentEntentesListe from "./StudentEntentesListe.jsx";
 import {updateStudentInfo} from "../../api/apiStudent.jsx";
 import {fetchPrograms} from "../../api/apiRegister.jsx";
+import InfosContactPage from "./InfosContactPage.jsx";
 
 export default function DashBoardStudent() {
     const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function DashBoardStudent() {
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(window.location.search);
         const raw = (params.get('tab') || params.get('section') || 'offers').toLowerCase();
-        if (["offers", "cv", "applications", "ententes"].includes(raw)) return raw;
+        if (["offers", "cv", "applications", "ententes", "contacts"].includes(raw)) return raw;
         return 'offers';
     });
 
@@ -245,6 +246,7 @@ export default function DashBoardStudent() {
                             <Btn target="cv">{t("dashboardStudent.tabs.cv")}</Btn>
                             <Btn target="applications">{t("dashboardStudent.tabs.applications")}</Btn>
                             <Btn target="ententes">{t("dashboardStudent.tabs.ententes") || "Ententes"}</Btn>
+                            <Btn target="contacts">{t("dashboardStudent.tabs.contacts")}</Btn>
                         </div>
                     </div>
 
@@ -260,6 +262,7 @@ export default function DashBoardStudent() {
                     {section === 'cv' && <StudentCvList/>}
                     {section === 'applications' && <StudentApplicationsList/>}
                     {section === 'ententes' && <StudentEntentesListe/>}
+                    {section === 'contacts' && <InfosContactPage/>}
                 </div>
             </main>
         </div>

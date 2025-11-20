@@ -242,7 +242,23 @@
       "offers": "Offres",
       "ententes": "Ententes de stage",
       "cv": "Mon CV",
-      "applications": "Mes candidatures"
+      "applications": "Mes candidatures",
+      "contacts": "Contacts"
+    },
+    "contacts": {
+      "title": "Mes Contacts",
+      "subtitle": "Consultez les informations de contact de votre équipe de suivi de stage",
+      "supportTeam": "Équipe de suivi",
+      "professor": "Professeur Référent",
+      "gestionnaire": "Gestionnaire de Stage",
+      "employeur": "Employeur",
+      "employeurs": "Employeurs",
+      "noContact": "Aucun contact disponible",
+      "noEmployeur": "Aucun employeur associé",
+      "loading": "Chargement...",
+      "department": "Département",
+      "infoReadonlyTitle": "Information:",
+      "infoReadonly": "Ces informations sont en lecture seule."
     },
     "reregistration": {
       "title": "Réinscription requise",
