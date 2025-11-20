@@ -1032,5 +1032,86 @@
       "technical_training": "Was the intern's technical training sufficient to fulfill the internship mandate?"
     },
     "submitEvaluation": "Submit Evaluation"
+  },
+  "profile": {
+    "menu": "My Profile"
+  },
+  "userProfile": {
+    "title": "My Profile",
+    "subtitle": "Edit your account information.",
+    "loading": "Loading profile…",
+    "nameSection": {
+      "title": "First Name / Last Name",
+      "firstName": "First Name",
+      "lastName": "Last Name"
+    },
+    "emailSection": {
+      "title": "Email",
+      "cannotBeChanged": "The email address cannot be changed."
+    },
+    "phoneSection": {
+      "title": "Phone"
+    },
+    "passwordSection": {
+      "title": "Password",
+      "newPasswordLabel": "New password (optional)",
+      "newPasswordPlaceholder": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "confirmPasswordPlaceholder": "Confirm the new password"
+    },
+    "currentPasswordSection": {
+      "label": "Current password",
+      "placeholder": "Enter your current password to confirm",
+      "helpText": "Required to save any changes to your profile."
+    },
+    "buttons": {
+      "back": "Back",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "success": {
+      "updateSuccess": "Profile updated successfully!"
+    },
+    "errors": {
+      "loadFailed": "Error loading profile.",
+      "currentPasswordRequired": "You must enter your current password.",
+      "passwordMismatch": "Password confirmation does not match.",
+      "updateFailed": "Incorrect password or update error."
+    }
+  },
+  "studentProfile": {
+    "title": "My Profile",
+    "professor": {
+      "title": "My Professor",
+      "loading": "Loading professor...",
+      "notFound": "No professor assigned",
+      "notFoundDescription": "No professor has been assigned to your internship yet.",
+      "employeeNumber": "Employee number",
+      "nameCollege": "College",
+      "department": "Department",
+      "address": "Address",
+      "fax": "Fax",
+      "error": "Error loading professor",
+      "errorDescription": "Unable to load your professor information."
+    },
+    "gestionnaire": {
+      "title": "My Internship Manager",
+      "loading": "Loading manager...",
+      "notFound": "No manager assigned",
+      "notFoundDescription": "No manager has been assigned to your internship yet.",
+      "phoneNumber": "Phone number",
+      "error": "Error loading manager",
+      "errorDescription": "Unable to load your internship manager information."
+    },
+    "employeurs": {
+      "title": "My Employers",
+      "loading": "Loading employers...",
+      "noEmployeurs": "No employers",
+      "noEmployeursDescription": "You don't have any employers associated with your internships yet.",
+      "companyName": "Company name",
+      "field": "Industry",
+      "error": "Error loading employers",
+      "errorDescription": "Unable to load your employers list."
+    }
   }
 }

@@ -58,7 +58,7 @@ export default function UserProfilePage() {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                if (!res.ok) throw new Error("Impossible de récupérer le profil.");
+                if (!res.ok) throw new Error(t("userProfile.errors.loadFailed"));
 
                 const data = await res.json();
                 setUser(data);
@@ -70,7 +70,7 @@ export default function UserProfilePage() {
                     newPassword: "",
                 });
             } catch (err) {
-                setErrorPopup(err.message || "Erreur lors du chargement du profil.");
+                setErrorPopup(err.message || t("userProfile.errors.loadFailed"));
             } finally {
                 setLoading(false);
             }
@@ -94,12 +94,12 @@ export default function UserProfilePage() {
         }
 
         if (!currentPassword) {
-            setErrorPopup("Vous devez entrer votre mot de passe actuel.");
+            setErrorPopup(t("userProfile.errors.currentPasswordRequired"));
             return;
         }
 
         if (form.newPassword && form.newPassword !== confirmPassword) {
-            setErrorPopup("La confirmation du mot de passe ne correspond pas.");
+            setErrorPopup(t("userProfile.errors.passwordMismatch"));
             return;
         }
 
@@ -127,7 +127,7 @@ export default function UserProfilePage() {
             });
 
             if (!res.ok) {
-                throw new Error("Mot de passe incorrect ou erreur de mise à jour.");
+                throw new Error(t("userProfile.errors.updateFailed"));
             }
 
             const updated = await res.json();
@@ -138,12 +138,12 @@ export default function UserProfilePage() {
             setConfirmPassword("");
             setForm((prev) => ({ ...prev, newPassword: "" }));
 
-            setSuccessPopup("Profil mis à jour avec succès !");
+            setSuccessPopup(t("userProfile.success.updateSuccess"));
 
             const roleForRedirect = updated.role || (user && user.role);
             navigate(getDashboardByRole(roleForRedirect));
         } catch (err) {
-            setErrorPopup(err.message || "Erreur lors de la mise à jour.");
+            setErrorPopup(err.message || t("userProfile.errors.updateFailed"));
         } finally {
             setSaving(false);
         }
@@ -152,7 +152,7 @@ export default function UserProfilePage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center text-gray-600">
-                Chargement du profil…
+                {t("userProfile.loading")}
             </div>
         );
     }
@@ -173,8 +173,8 @@ export default function UserProfilePage() {
 
             <div className="max-w-2xl mx-auto px-4">
                 <div className="bg-white rounded-2xl shadow-lg border p-6">
-                    <h1 className="text-2xl font-bold mb-2">Mon profil</h1>
-                    <p className="text-gray-500 mb-6">Modifiez vos informations de compte.</p>
+                    <h1 className="text-2xl font-bold mb-2">{t("userProfile.title")}</h1>
+                    <p className="text-gray-500 mb-6">{t("userProfile.subtitle")}</p>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="border rounded-xl p-4">
@@ -183,7 +183,7 @@ export default function UserProfilePage() {
                                 onClick={() => setShowNameSection(!showNameSection)}
                                 className="w-full flex justify-between items-center"
                             >
-                                <span className="font-semibold text-gray-800">Prénom / Nom</span>
+                                <span className="font-semibold text-gray-800">{t("userProfile.nameSection.title")}</span>
                                 {showNameSection ? <FaChevronUp /> : <FaChevronDown />}
                             </button>
 
@@ -191,7 +191,7 @@ export default function UserProfilePage() {
                                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Prénom
+                                            {t("userProfile.nameSection.firstName")}
                                         </label>
                                         <input
                                             type="text"
@@ -203,7 +203,7 @@ export default function UserProfilePage() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Nom
+                                            {t("userProfile.nameSection.lastName")}
                                         </label>
                                         <input
                                             type="text"
@@ -218,7 +218,7 @@ export default function UserProfilePage() {
                         </div>
 
                         <div className="border rounded-xl p-4">
-                            <span className="font-semibold text-gray-800">Email</span>
+                            <span className="font-semibold text-gray-800">{t("userProfile.emailSection.title")}</span>
                             <div className="mt-3">
                                 <input
                                     type="email"
@@ -227,7 +227,7 @@ export default function UserProfilePage() {
                                     className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">
-                                    L’adresse courriel ne peut pas être modifiée.
+                                    {t("userProfile.emailSection.cannotBeChanged")}
                                 </p>
                             </div>
                         </div>
@@ -238,7 +238,7 @@ export default function UserProfilePage() {
                                 onClick={() => setShowPhoneSection(!showPhoneSection)}
                                 className="w-full flex justify-between items-center"
                             >
-                                <span className="font-semibold text-gray-800">Téléphone</span>
+                                <span className="font-semibold text-gray-800">{t("userProfile.phoneSection.title")}</span>
                                 {showPhoneSection ? <FaChevronUp /> : <FaChevronDown />}
                             </button>
 
@@ -261,7 +261,7 @@ export default function UserProfilePage() {
                                 onClick={() => setShowPasswordSection(!showPasswordSection)}
                                 className="w-full flex justify-between items-center"
                             >
-                                <span className="font-semibold text-gray-800">Mot de passe</span>
+                                <span className="font-semibold text-gray-800">{t("userProfile.passwordSection.title")}</span>
                                 {showPasswordSection ? <FaChevronUp /> : <FaChevronDown />}
                             </button>
 
@@ -269,26 +269,26 @@ export default function UserProfilePage() {
                                 <div className="mt-4 space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Nouveau mot de passe (optionnel)
+                                            {t("userProfile.passwordSection.newPasswordLabel")}
                                         </label>
                                         <input
                                             type="password"
                                             name="newPassword"
                                             value={form.newPassword}
                                             onChange={handleChange}
-                                            placeholder="Nouveau mot de passe"
+                                            placeholder={t("userProfile.passwordSection.newPasswordPlaceholder")}
                                             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Nouveau mot de passe (confirmer)
+                                            {t("userProfile.passwordSection.confirmPasswordLabel")}
                                         </label>
                                         <input
                                             type="password"
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            placeholder="Confirmer le nouveau mot de passe"
+                                            placeholder={t("userProfile.passwordSection.confirmPasswordPlaceholder")}
                                             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         />
                                     </div>
@@ -298,17 +298,17 @@ export default function UserProfilePage() {
 
                         <div className="border rounded-xl p-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Mot de passe actuel <span className="text-red-500">*</span>
+                                {t("userProfile.currentPasswordSection.label")} <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="password"
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
-                                placeholder="Entrez votre mot de passe actuel pour confirmer"
+                                placeholder={t("userProfile.currentPasswordSection.placeholder")}
                                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                             <p className="text-xs text-gray-500 mt-1">
-                                Requis pour enregistrer toute modification de votre profil.
+                                {t("userProfile.currentPasswordSection.helpText")}
                             </p>
                         </div>
 
@@ -319,7 +319,7 @@ export default function UserProfilePage() {
                                 className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 text-sm font-medium"
                                 disabled={saving}
                             >
-                                Retour
+                                {t("userProfile.buttons.back")}
                             </button>
 
                             <button
@@ -327,7 +327,7 @@ export default function UserProfilePage() {
                                 disabled={saving}
                                 className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50"
                             >
-                                {saving ? "Enregistrement…" : "Sauvegarder"}
+                                {saving ? t("userProfile.buttons.saving") : t("userProfile.buttons.save")}
                             </button>
                         </div>
                     </form>
