@@ -284,6 +284,7 @@ const EvaluationForm = () => {
             }
             setEvaluationId(evalId);
             await new Promise(resolve => setTimeout(resolve, 500));
+            console.log("EvaluationId: ", evalId)
             await generateEvaluationPdfWithId(evalId, formData);
             setSubmitted(true);
             setSuccessMessage(t("evaluation.submittedSuccess"));

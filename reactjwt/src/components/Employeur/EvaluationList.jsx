@@ -41,6 +41,7 @@ export default function EvaluationsList() {
 
 
     useEffect(() => {
+        if(!role) return
         const fetchEligible = async () => {
             try {
                 const agreements = await api.getEligibleEvaluations();
@@ -59,12 +60,13 @@ export default function EvaluationsList() {
                         );
                         evalMap[key] = existing;
 
-                        if (isEmployer) {
+                        if (role === "EMPLOYEUR") {
                             const teacherCheck =
                                 await apiEmployer.checkTeacherAssigned(
                                     agreement.studentId,
                                     agreement.offerId
                                 );
+                            console.log("Teacher check", teacherCheck)
                             teacherMap[key] = teacherCheck.teacherAssigned;
                         } else {
                             teacherMap[key] = true;

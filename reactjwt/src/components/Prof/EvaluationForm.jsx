@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getEvaluationInfo, createEvaluation, generateEvaluationPdfWithId } from "../../api/apiProf";
+import {
+    getEvaluationInfo,
+    createEvaluation,
+    generateEvaluationPdfWithId,
+    checkExistingEvaluation
+} from "../../api/apiProf";
 import { useTranslation } from 'react-i18next';
 
 const EvaluationForm = () => {
@@ -13,6 +18,7 @@ const EvaluationForm = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [errors, setErrors] = useState({})
+    const [evaluationId, setEvaluationId] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
     const teacherEvaluationTemplate = {
@@ -119,6 +125,13 @@ const EvaluationForm = () => {
         const loadInfo = async () => {
             try {
                 setLoading(true);
+                const existingCheck = await checkExistingEvaluation(studentId, offerId)
+                let evalId =null
+                if (existingCheck.exists && existingCheck.evaluation) {
+                    evalId = existingCheck.evaluation.id
+                    console.log("Evaluation Id: ", evalId)
+                    setEvaluationId(evalId)
+                }
                 const data = await getEvaluationInfo(studentId, offerId);
                 setInfo(data);
 
@@ -217,16 +230,19 @@ const EvaluationForm = () => {
             return
         }
         setErrors({})
-        try {
-            setSubmitting(true);
 
+
+        try {
             const createRes = await createEvaluation(studentId, offerId);
             const evalId = createRes.id;
+            console.log("Create response: ", createRes)
 
             console.log("Form Data: ", formData)
             await generateEvaluationPdfWithId(evalId, formData);
-
-            navigate("/dashboard/prof/evaluations");
+            setSubmitting(true);
+            setTimeout(() => {
+                navigate("/dashboard/employeur/evaluations")
+            }, 2000)
 
         } catch (err) {
             console.error(err);

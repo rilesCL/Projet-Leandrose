@@ -131,7 +131,7 @@ export async function checkTeacherAssigned(studentId, offerId, token = null){
     return await res.json();
 }
 export async function checkExistingEvaluation(studentId, offerId, token = null) {
-    const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
+    const res = await handleFetch(`${API_BASE}/prof/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
         headers: authHeaders(token)
     });
     return await res.json();
