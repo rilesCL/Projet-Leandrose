@@ -16,7 +16,6 @@ export default function UserProfilePage() {
         firstName: "",
         lastName: "",
         email: "",
-        phone: "",
         newPassword: "",
     });
 
@@ -27,7 +26,6 @@ export default function UserProfilePage() {
     const [errorPopup, setErrorPopup] = useState("");
 
     const [showNameSection, setShowNameSection] = useState(false);
-    const [showPhoneSection, setShowPhoneSection] = useState(false);
     const [showPasswordSection, setShowPasswordSection] = useState(false);
 
     const getDashboardByRole = (role) => {
@@ -66,7 +64,6 @@ export default function UserProfilePage() {
                     firstName: data.firstName || "",
                     lastName: data.lastName || "",
                     email: data.email || "",
-                    phone: data.phone || "",
                     newPassword: "",
                 });
             } catch (err) {
@@ -106,7 +103,6 @@ export default function UserProfilePage() {
         const payload = {
             firstName: form.firstName,
             lastName: form.lastName,
-            phone: form.phone,
             currentPassword: currentPassword,
         };
 
@@ -230,29 +226,6 @@ export default function UserProfilePage() {
                                     {t("userProfile.emailSection.cannotBeChanged")}
                                 </p>
                             </div>
-                        </div>
-
-                        <div className="border rounded-xl p-4">
-                            <button
-                                type="button"
-                                onClick={() => setShowPhoneSection(!showPhoneSection)}
-                                className="w-full flex justify-between items-center"
-                            >
-                                <span className="font-semibold text-gray-800">{t("userProfile.phoneSection.title")}</span>
-                                {showPhoneSection ? <FaChevronUp /> : <FaChevronDown />}
-                            </button>
-
-                            {showPhoneSection && (
-                                <div className="mt-4">
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={form.phone}
-                                        onChange={handleChange}
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    />
-                                </div>
-                            )}
                         </div>
 
                         <div className="border rounded-xl p-4">
