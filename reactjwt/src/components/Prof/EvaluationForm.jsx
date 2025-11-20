@@ -25,6 +25,7 @@ const EvaluationForm = () => {
 
     const teacherEvaluationTemplate = {
         conformity: {
+            title: t('evaluation.conformity.title'),
             description: t('evaluation.conformity.description'),
             questions: [
                 t('evaluation.conformity.q1'),
@@ -33,6 +34,7 @@ const EvaluationForm = () => {
             ]
         },
         environment: {
+            title: t('evaluation.environment.title'),
             description: t('evaluation.environment.description'),
             questions: [
                 t('evaluation.environment.q1'),
@@ -40,6 +42,7 @@ const EvaluationForm = () => {
             ]
         },
         general: {
+            title: t('evaluation.general.title'),
             description: t('evaluation.general.description'),
             questions: [
                 t('evaluation.general.q1'),

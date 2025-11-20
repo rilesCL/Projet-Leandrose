@@ -222,8 +222,8 @@ public class PDFGeneratorService {
 
             addRatingLegendAligned(document, language);
 
-            addEvaluationContent(document, formData, language);
-//            addGenericEvaluationContent(document, formData, language, getCategoriesByLanguage(language), true, null, null);
+//            addEvaluationContent(document, formData, language);
+            addGenericEvaluationContent(document, formData, language, getCategoriesByLanguage(language), true, null, null);
 
             addGeneralComments(document, formData, language);
 
@@ -826,7 +826,7 @@ public class PDFGeneratorService {
     private Map<String, CategoryData> getEvaluationCategoriesTeacher(String language){
         if ("en".equals(language)){
             return Map.of(
-                    "tasks", new CategoryData(
+                    "conformity", new CategoryData(
                             "TASKS & INTEGRATION",
                             "",
                             List.of(
@@ -844,7 +844,7 @@ public class PDFGeneratorService {
                                     "The work climate is pleasant."
                             )
                     ),
-                    "conditions", new CategoryData(
+                    "general", new CategoryData(
                             "WORKING CONDITIONS",
                             "",
                             List.of(
@@ -859,7 +859,7 @@ public class PDFGeneratorService {
         }
         else {
             return Map.of(
-                    "tasks", new CategoryData(
+                    "conformity", new CategoryData(
                             "ÉVALUATION",
                             "",
                             List.of(
@@ -876,7 +876,7 @@ public class PDFGeneratorService {
                                     "Le climat de travail est agréable."
                             )
                     ),
-                    "conditions", new CategoryData(
+                    "general", new CategoryData(
                             "CONDITIONS DE TRAVAIL",
                             "",
                             List.of(
