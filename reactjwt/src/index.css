@@ -112,3 +112,11 @@ button:focus-visible {
         background-color: #f9f9f9;
     }
 }
+.dark {
+    filter: invert(0.9) hue-rotate(180deg);
+}
+
+.dark img,
+.dark video {
+    filter: invert(0.9) hue-rotate(180deg);
+}

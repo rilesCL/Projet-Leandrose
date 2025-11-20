@@ -9,6 +9,7 @@ import EntentesStagePage from "./EntentesStagePage.jsx";
 import LanguageSelector from "../LanguageSelector.jsx";
 import GestionnaireListeEntentes from "./GestionnaireListeEntentes.jsx";
 import Chatbot from "./Chatbot.jsx";
+import ThemeToggle from "../ThemeToggle.jsx";
 
 export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
@@ -74,9 +75,9 @@ export default function DashBoardGestionnaire() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white shadow-md border-b border-indigo-100">
                 <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-                    <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-800 bg-clip-text text-transparent">
-                        {t("appName")}
-                    </span>
+                    <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+    {t("appName")}
+</span>
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setChatbotOpen(!chatbotOpen)}
@@ -89,6 +90,7 @@ export default function DashBoardGestionnaire() {
                         >
                             🤖
                         </button>
+                        <ThemeToggle/>
                         <LanguageSelector />
                         <button
                             onClick={handleLogout}

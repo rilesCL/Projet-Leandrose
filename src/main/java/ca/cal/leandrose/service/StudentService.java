@@ -1,23 +1,31 @@
 package ca.cal.leandrose.service;
 
+import ca.cal.leandrose.model.EntenteStage;
 import ca.cal.leandrose.model.SchoolTerm;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.CvRepository;
+import ca.cal.leandrose.repository.EntenteStageRepository;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
+import ca.cal.leandrose.service.dto.EmployeurDto;
+import ca.cal.leandrose.service.dto.GestionnaireDto;
+import ca.cal.leandrose.service.dto.ProfDto;
 import ca.cal.leandrose.service.dto.StudentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
   private final StudentRepository studentRepository;
   private final PasswordEncoder passwordEncoder;
+  private final EntenteStageRepository ententeStageRepository;
 
   @Transactional
   public StudentDto createStudent(
@@ -99,5 +107,99 @@ public class StudentService {
     Student updated = studentRepository.save(student);
 
     return StudentDto.create(updated);
+  }
+
+  @Transactional(readOnly = true)
+  public Optional<ProfDto> getProfByStudentId(Long studentId) {
+    if (studentId == null || studentId <= 0) {
+      return Optional.empty();
+    }
+
+    // Récupérer toutes les ententes de l'étudiant et trouver celle avec un prof
+    List<EntenteStage> ententes =
+        ententeStageRepository.findAll().stream()
+            .filter(
+                entente -> {
+                  Long studentEntenteId = entente.getCandidature().getStudent().getId();
+                  return studentEntenteId != null && studentEntenteId.equals(studentId);
+                })
+            .filter(entente -> entente.getProf() != null)
+            .sorted((e1, e2) -> {
+              // Trier par date de modification (plus récent en premier)
+              if (e1.getDateModification() == null && e2.getDateModification() == null) {
+                return 0;
+              }
+              if (e1.getDateModification() == null) {
+                return 1;
+              }
+              if (e2.getDateModification() == null) {
+                return -1;
+              }
+              return e2.getDateModification().compareTo(e1.getDateModification());
+            })
+            .collect(Collectors.toList());
+
+    // Retourner le prof de la première entente trouvée (la plus récente)
+    return ententes.stream()
+        .findFirst()
+        .map(EntenteStage::getProf)
+        .map(prof -> ProfDto.create(prof));
+  }
+
+  @Transactional(readOnly = true)
+  public Optional<GestionnaireDto> getGestionnaireByStudentId(Long studentId) {
+    if (studentId == null || studentId <= 0) {
+      return Optional.empty();
+    }
+
+    // Récupérer toutes les ententes de l'étudiant et trouver celle avec un gestionnaire
+    List<EntenteStage> ententes =
+        ententeStageRepository.findAll().stream()
+            .filter(
+                entente -> {
+                  Long studentEntenteId = entente.getCandidature().getStudent().getId();
+                  return studentEntenteId != null && studentEntenteId.equals(studentId);
+                })
+            .filter(entente -> entente.getGestionnaire() != null)
+            .sorted((e1, e2) -> {
+              // Trier par date de modification (plus récent en premier)
+              if (e1.getDateModification() == null && e2.getDateModification() == null) {
+                return 0;
+              }
+              if (e1.getDateModification() == null) {
+                return 1;
+              }
+              if (e2.getDateModification() == null) {
+                return -1;
+              }
+              return e2.getDateModification().compareTo(e1.getDateModification());
+            })
+            .collect(Collectors.toList());
+
+    // Retourner le gestionnaire de la première entente trouvée (la plus récente)
+    return ententes.stream()
+        .findFirst()
+        .map(EntenteStage::getGestionnaire)
+        .map(gestionnaire -> GestionnaireDto.create(gestionnaire));
+  }
+
+  @Transactional(readOnly = true)
+  public List<EmployeurDto> getEmployeursByStudentId(Long studentId) {
+    if (studentId == null || studentId <= 0) {
+      return List.of();
+    }
+
+    // Récupérer toutes les ententes de l'étudiant et extraire les employeurs uniques
+    return ententeStageRepository.findAll().stream()
+        .filter(
+            entente -> {
+              Long studentEntenteId = entente.getCandidature().getStudent().getId();
+              return studentEntenteId != null && studentEntenteId.equals(studentId);
+            })
+        .map(EntenteStage::getEmployeur)
+        .filter(employeur -> employeur != null)
+        .distinct()
+        .map(employeur -> EmployeurDto.create(employeur))
+        .collect(Collectors.toList());
   }
 }

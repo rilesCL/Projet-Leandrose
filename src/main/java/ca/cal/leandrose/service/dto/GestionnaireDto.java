@@ -3,7 +3,9 @@ package ca.cal.leandrose.service.dto;
 import ca.cal.leandrose.model.Gestionnaire;
 import ca.cal.leandrose.model.auth.Role;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class GestionnaireDto extends UserDTO {
   private String phoneNumber;
 
