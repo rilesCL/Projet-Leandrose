@@ -106,6 +106,16 @@ export default function StudentContactsPage() {
                         </div>
                     )}
 
+                    {person.program && (
+                        <div className="flex items-center gap-2">
+                            <FaBriefcase className="text-gray-400 text-sm" />
+                            <span className="text-gray-700 font-medium">
+                                {t(person.program.replace("program.", ""))}
+        </span>
+                        </div>
+                    )}
+
+
                     {person.field && (
                         <div className="flex items-center gap-2">
                             <FaBriefcase className="text-gray-400 text-sm" />
@@ -164,7 +174,7 @@ export default function StudentContactsPage() {
                                 <ContactCard
                                     key={employeur.id || index}
                                     title={`${t('dashboardStudent.contacts.employeur')} ${employeurs.length > 1 ? index + 1 : ''}`}
-                                    icon={FaBuilding}
+                                     icon={FaBuilding}
                                     person={employeur}
                                     showCompany={true}
                                 />
