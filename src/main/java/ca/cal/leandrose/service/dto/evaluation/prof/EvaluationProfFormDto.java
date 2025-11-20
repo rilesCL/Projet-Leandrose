@@ -1,13 +1,14 @@
 package ca.cal.leandrose.service.dto.evaluation.prof;
 
-import ca.cal.leandrose.service.dto.evaluation.QuestionResponse;
+import ca.cal.leandrose.service.dto.evaluation.EvaluationForm;
+import ca.cal.leandrose.service.dto.evaluation.IQuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.WorkShiftRange;
 
 import java.util.List;
 import java.util.Map;
 
 public record EvaluationProfFormDto(
-        Map<String, List<QuestionResponse>> categories,
+        Map<String, List<QuestionResponseTeacher>> categories,
         Integer firstMonthsHours,
         Integer secondMonthsHours,
         Integer thirdMonthHours,
@@ -16,5 +17,13 @@ public record EvaluationProfFormDto(
         Integer capacity,
         Boolean sameTraineeNextStage,
         List<WorkShiftRange> workShifts
-) {
+) implements EvaluationForm {
+    @Override
+    public Map<String, List<? extends IQuestionResponse>> getCategories() {
+        // Safe cast since QuestionResponseTeacher implements IQuestionResponse
+        @SuppressWarnings("unchecked")
+        Map<String, List<? extends IQuestionResponse>> result = (Map<String, List<? extends IQuestionResponse>>)
+                (Map<?, ?>) categories;
+        return result;
+    }
 }

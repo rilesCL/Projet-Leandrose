@@ -221,7 +221,7 @@ public class EvaluationStagiaireService {
         return new EvaluationTeacherInfoDto(entrepriseTeacherDto, studentTeacherDto);
     }
 
-    public EvaluationStagiaireDto generateEvaluationPdfByEmployer(Long evaluationId, EvaluationFormData formData, String langage){
+    public EvaluationStagiaireDto generateEvaluationPdfByEmployer(Long evaluationId, EvaluationEmployerFormData formData, String langage){
         EvaluationStagiaire evaluation = evaluationStagiaireRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));
 

@@ -444,7 +444,7 @@ public class EmployeurController {
     public ResponseEntity<?> generateEvaluationPdf(
             HttpServletRequest request,
             @PathVariable Long evaluationId,
-            @RequestBody EvaluationFormData formData,
+            @RequestBody EvaluationEmployerFormData formData,
             @RequestHeader(value = "Accept-Language", defaultValue = "fr") String language) {
 
         UserDTO me = userService.getMe(request.getHeader("Authorization"));

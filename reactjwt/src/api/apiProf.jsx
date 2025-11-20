@@ -1,22 +1,6 @@
 // src/api/profApi.js
 const API_BASE = "http://localhost:8080"; // <— sans slash final
 
-// async function handleFetch(url, options = {}) {
-//     try {
-//         const res = await fetch(url, options);
-//         const ct = res.headers.get("content-type") || "";
-//         const text = await res.text();
-//         const data = text && ct.includes("application/json") ? JSON.parse(text) : text || null;
-//         if (!res.ok) {
-//             const msg = typeof data === "string" ? data : data?.error || `Erreur ${res.status}`;
-//             throw { response: { data: msg } };
-//         }
-//         return data ?? [];
-//     } catch (err) {
-//         if (err?.response) throw err;
-//         throw { response: { data: err?.message || "Impossible de se connecter au serveur" } };
-//     }
-// }
 async function handleFetch(url, options = {}) {
     try {
         const res = await fetch(url, options);
@@ -87,6 +71,7 @@ export async function createEvaluation (studentId, offerId, token = null) {
 }
 export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
     const currentLanguage = localStorage.getItem("i18nextLng")
+    console.log("Form data: ", formData)
     const res = await handleFetch(`${API_BASE}/prof/evaluations/${evaluationId}/generate-pdf`, {
         method: 'POST',
         headers: {

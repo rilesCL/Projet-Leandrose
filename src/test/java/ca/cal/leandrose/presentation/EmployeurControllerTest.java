@@ -61,7 +61,7 @@ class EmployeurControllerTest {
 
 
   private EvaluationStagiaireDto evaluationDto;
-  private EvaluationFormData formData;
+  private EvaluationEmployerFormData formData;
   private EmployeurDto employeurDto;
   private StudentDto studentDto;
   private ProfDto profDto;

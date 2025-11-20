@@ -95,6 +95,7 @@ public class ProfController {
         System.out.println("=== PROF CONTROLLER DEBUG ===");
         System.out.println("Request URI: " + request.getRequestURI());
         System.out.println("Request URL: " + request.getRequestURL());
+        System.out.println("FormData: " + formData);
         System.out.println("Authorization header present: " + (request.getHeader("Authorization") != null));
 
         try {

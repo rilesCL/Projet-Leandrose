@@ -17,7 +17,7 @@ const EvaluationForm = () => {
     const [info, setInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
     const [evaluationId, setEvaluationId] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
@@ -54,10 +54,10 @@ const EvaluationForm = () => {
     const [formData, setFormData] = useState({
         categories: {},
         stageNumber: "",
-        hoursMonth1: "",
-        hoursMonth2: "",
-        hoursMonth3: "",
-        salary: "",
+        firstMonthsHours: "",
+        secondMonthsHours: "",
+        thirdMonthHours: "",
+        salaryHours: "",
         comments: "",
         preferredStage: "",
         capacity: "",
@@ -69,18 +69,19 @@ const EvaluationForm = () => {
             { start: "", end: "" }
         ]
     });
+
     function normalizeYesNo(value) {
         if (value === "YES") return true;
         if (value === "NO") return false;
-        return value; // fallback for non-yes/no fields
+        return value;
     }
 
     const validateForm = () => {
-        const newErrors = {}
+        const newErrors = {};
 
-        for (const [categoryKey, questions] of Object.entries(formData.categories)){
-            for(let i= 0; i <questions.length; i++){
-                const q = questions[i]
+        for (const [categoryKey, questions] of Object.entries(formData.categories)) {
+            for (let i = 0; i < questions.length; i++) {
+                const q = questions[i];
 
                 if (!q.rating) {
                     if (!newErrors.categories) newErrors.categories = {};
@@ -115,30 +116,29 @@ const EvaluationForm = () => {
                 }
             }
         }
+
         if (formData.categories.conformity) {
-            if (!formData.hoursMonth1?.trim()) newErrors.hoursMonth1 = t('evaluation.validation.hoursRequired');
-            if (!formData.hoursMonth2?.trim()) newErrors.hoursMonth2 = t('evaluation.validation.hoursRequired');
-            if (!formData.hoursMonth3?.trim()) newErrors.hoursMonth3 = t('evaluation.validation.hoursRequired');
+            if (!formData.firstMonthsHours.trim()) newErrors.firstMonthsHours = t('evaluation.validation.hoursRequired');
+            if (!formData.secondMonthsHours.trim()) newErrors.secondMonthsHours = t('evaluation.validation.hoursRequired');
+            if (!formData.thirdMonthHours.trim()) newErrors.thirdMonthHours = t('evaluation.validation.hoursRequired');
         }
 
-        // Salary (question index 1 in "general")
-        if (formData.categories.general && !formData.salary)
-            newErrors.salary = t('evaluation.validation.salaryRequired');
+        if (formData.categories.general && !formData.salaryHours)
+            newErrors.salaryHours = t('evaluation.validation.salaryRequired');
 
         return newErrors;
-    }
+    };
 
     useEffect(() => {
         const loadInfo = async () => {
             try {
                 setLoading(true);
-                const existingCheck = await checkExistingEvaluation(studentId, offerId)
-                let evalId =null
+
+                const existingCheck = await checkExistingEvaluation(studentId, offerId);
                 if (existingCheck.exists && existingCheck.evaluation) {
-                    evalId = existingCheck.evaluation.id
-                    console.log("Evaluation Id: ", evalId)
-                    setEvaluationId(evalId)
+                    setEvaluationId(existingCheck.evaluation.id);
                 }
+
                 const data = await getEvaluationInfo(studentId, offerId);
                 setInfo(data);
 
@@ -146,7 +146,7 @@ const EvaluationForm = () => {
                 Object.entries(teacherEvaluationTemplate).forEach(([key, group]) => {
                     initialCategories[key] =
                         Array.isArray(group.questions)
-                            ? group.questions.map(() => "")
+                            ? group.questions.map(() => ({ rating: "" }))
                             : [];
                 });
 
@@ -165,6 +165,7 @@ const EvaluationForm = () => {
 
         loadInfo();
     }, [studentId, offerId]);
+
 
     const clearCategoryQuestionError = (categoryKey, questionIndex) => {
         setErrors(prev => {
@@ -200,7 +201,7 @@ const EvaluationForm = () => {
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        clearFieldError(field)
+        clearFieldError(field);
     };
 
     const handleQuestionChange = (category, index, value) => {
@@ -209,55 +210,46 @@ const EvaluationForm = () => {
             categories: {
                 ...prev.categories,
                 [category]: prev.categories[category].map((q, i) =>
-                    i === index ? {...q, rating: value}: q
+                    i === index ? { ...q, rating: value } : q
                 )
             }
         }));
-        clearCategoryQuestionError(category, index)
-    };
-
-    const handleShiftChange = (row, field, value) => {
-        const updated = [...formData.workShifts];
-        updated[row][field] = value;
-        setFormData(prev => ({ ...prev, workShifts: updated }));
+        clearCategoryQuestionError(category, index);
     };
 
     const handleSubmit = async () => {
-        setError(null)
+        setError(null);
+
         const normalizedForm = {
             ...formData,
             sameTraineeNextStage: normalizeYesNo(formData.sameTraineeNextStage),
-            workShiftYesNo: normalizeYesNo(formData.workShiftYesNo),
-            technicalTrainingSufficient: normalizeYesNo(formData.technicalTrainingSufficient),
-            discussedWithTrainee: normalizeYesNo(formData.discussedWithTrainee),
+            workShiftYesNo: normalizeYesNo(formData.workShiftYesNo)
         };
-        const validationsErrors = validateForm();
-        if(Object.keys(validationsErrors).length > 0){
-            setErrors(validationsErrors)
+
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
 
             setTimeout(() => {
-                const el = document.querySelector(".validation-error")
-                if (el && typeof el.scrollIntoView === "function"){
-                    el.scrollIntoView({behavior: "smooth", block: "center"})
-                }
-            }, 50)
-            return
-        }
-        setErrors({})
-        setSubmitting(true);
+                const el = document.querySelector(".validation-error");
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 50);
 
+            return;
+        }
+
+        setSubmitting(true);
         try {
             const createRes = await createEvaluation(studentId, offerId);
             const evalId = createRes.id;
-            console.log("Create response: ", createRes)
 
-            console.log("Form Data: ", formData)
             await generateEvaluationPdfWithId(evalId, normalizedForm);
-            setSuccessMessage(t("evaluation.submittedSuccess"));
             setSubmitted(true);
+            setSuccessMessage(t("evaluation.submittedSuccess"));
+
             setTimeout(() => {
-                navigate("/dashboard/prof/evaluations")
-            }, 2000)
+                navigate("/dashboard/prof/evaluations");
+            }, 2000);
 
         } catch (err) {
             console.error(err);
@@ -270,6 +262,7 @@ const EvaluationForm = () => {
 
     if (loading) return <p>{t('evaluation.loading')}</p>;
     if (error && !info) return <p className="text-red-500">{error}</p>;
+
 
 
     return (
@@ -392,17 +385,17 @@ const EvaluationForm = () => {
                                 {/* Salary field (general, question 2) */}
                                 {groupKey === "general" && index === 1 && (
                                     <div className="mt-3 flex justify-center">
-                                        {errors?.salary && (
+                                        {errors?.salaryHours && (
                                             <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                                                {errors.salary}
+                                                {errors.salaryHours}
                                             </p>
                                         )}
                                         <input
                                             type="text"
                                             placeholder={t('evaluation.placeholders.salary')}
                                             className="border px-2 py-1 rounded"
-                                            value={formData.salary}
-                                            onChange={e => handleChange("salary", e.target.value)}
+                                            value={formData.salaryHours}
+                                            onChange={e => handleChange("salaryHours", e.target.value)}
                                         />
                                     </div>
                                 )}
@@ -415,20 +408,20 @@ const EvaluationForm = () => {
                     {groupKey === "conformity" && (
                         <div className="mt-6 flex flex-col gap-3 items-center validation-error">
                             <label className="font-medium">{t('evaluation.placeholders.nbHoursWeek')}</label>
-                            {errors?.hoursMonth1 && errors?.hoursMonth2 && errors?.hoursMonth3 && (
-                                <p className="text-sm text-red-600 mt-1">{errors.hoursMonth1}</p>
+                            {errors?.firstMonthsHours && errors?.secondMonthsHours && errors?.thirdMonthHours && (
+                                <p className="text-sm text-red-600 mt-1">{errors.firstMonthsHours}</p>
                             )}
                             <div className="flex gap-4">
                                 <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.first_month')}
-                                       value={formData.hoursMonth1}
-                                       onChange={e => handleChange("hoursMonth1", e.target.value)} />
+                                       value={formData.firstMonthsHours}
+                                       onChange={e => handleChange("firstMonthsHours", e.target.value)} />
                                 <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.second_month')}
-                                       value={formData.hoursMonth2}
-                                       onChange={e => handleChange("hoursMonth2", e.target.value)} />
+                                       value={formData.secondMonthsHours}
+                                       onChange={e => handleChange("secondMonthsHours", e.target.value)} />
 
                                 <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.third_month')}
-                                       value={formData.hoursMonth3}
-                                       onChange={e => handleChange("hoursMonth3", e.target.value)} />
+                                       value={formData.thirdMonthHours}
+                                       onChange={e => handleChange("thirdMonthHours", e.target.value)} />
 
                             </div>
                         </div>
