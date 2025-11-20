@@ -27,16 +27,6 @@ vi.mock('../../LanguageSelector.jsx', () => ({
 global.fetch = vi.fn();
 
 const mockNavigate = vi.fn();
-const mockLocation = { search: '' };
-
-vi.mock('react-router-dom', async () => {
-    const actual = await vi.importActual('react-router-dom');
-    return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-        useLocation: () => mockLocation
-    };
-});
 
 const buildTestI18n = () => {
     const resources = {
@@ -87,6 +77,14 @@ const buildTestI18n = () => {
 
     return instance;
 };
+
+vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual('react-router-dom');
+    return {
+        ...actual,
+        useNavigate: () => mockNavigate
+    };
+});
 
 const MockDashBoardEmployeur = ({ initialTab = '' } = {}) => {
     const i18nInstance = buildTestI18n();
@@ -219,18 +217,18 @@ describe('DashBoardEmployeur', () => {
 
             await screen.findByText(/Welcome Jean!/);
 
-            const offersTab = screen.getByText('Internship Offers').closest('button');
-            const ententesTab = screen.getByText('Agreements').closest('button');
+            let offersTab = screen.getByText('Internship Offers').closest('button');
+            let ententesTab = screen.getByText('Agreements').closest('button');
 
-            expect(offersTab).toHaveClass('bg-gradient-to-r');
-            expect(offersTab).toHaveClass('from-indigo-600');
+            expect(offersTab).toHaveClass('bg-gradient-to-r', 'from-indigo-600');
             expect(ententesTab).toHaveClass('bg-white');
 
             fireEvent.click(ententesTab);
 
             await waitFor(() => {
-                expect(ententesTab).toHaveClass('bg-gradient-to-r');
-                expect(ententesTab).toHaveClass('from-indigo-600');
+                offersTab = screen.getByText('Internship Offers').closest('button');
+                ententesTab = screen.getByText('Agreements').closest('button');
+                expect(ententesTab).toHaveClass('bg-gradient-to-r', 'from-indigo-600');
             });
             expect(offersTab).toHaveClass('bg-white');
         });
@@ -238,15 +236,7 @@ describe('DashBoardEmployeur', () => {
 
     describe('URL Parameter Handling', () => {
         it('loads offers tab when tab parameter is "offers"', async () => {
-            const i18nInstance = buildTestI18n();
-
-            render(
-                <I18nextProvider i18n={i18nInstance}>
-                    <MemoryRouter initialEntries={['/dashboard/employeur?tab=offers']}>
-                        <DashBoardEmployeur />
-                    </MemoryRouter>
-                </I18nextProvider>
-            );
+            render(<MockDashBoardEmployeur initialTab="offers" />);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -254,15 +244,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('loads ententes tab when tab parameter is "ententes"', async () => {
-            const i18nInstance = buildTestI18n();
-
-            render(
-                <I18nextProvider i18n={i18nInstance}>
-                    <MemoryRouter initialEntries={['/dashboard/employeur?tab=ententes']}>
-                        <DashBoardEmployeur />
-                    </MemoryRouter>
-                </I18nextProvider>
-            );
+            render(<MockDashBoardEmployeur initialTab="ententes" />);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -270,15 +252,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('loads evaluations tab when tab parameter is "evaluations"', async () => {
-            const i18nInstance = buildTestI18n();
-
-            render(
-                <I18nextProvider i18n={i18nInstance}>
-                    <MemoryRouter initialEntries={['/dashboard/employeur?tab=evaluations']}>
-                        <DashBoardEmployeur />
-                    </MemoryRouter>
-                </I18nextProvider>
-            );
+            render(<MockDashBoardEmployeur initialTab="evaluations" />);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -286,15 +260,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('defaults to offers tab when invalid tab parameter is provided', async () => {
-            const i18nInstance = buildTestI18n();
-
-            render(
-                <I18nextProvider i18n={i18nInstance}>
-                    <MemoryRouter initialEntries={['/dashboard/employeur?tab=invalid']}>
-                        <DashBoardEmployeur />
-                    </MemoryRouter>
-                </I18nextProvider>
-            );
+            render(<MockDashBoardEmployeur initialTab="invalid" />);
 
             await screen.findByText(/Welcome Jean!/);
 
