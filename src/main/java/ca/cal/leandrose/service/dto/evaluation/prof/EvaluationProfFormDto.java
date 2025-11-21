@@ -2,7 +2,6 @@ package ca.cal.leandrose.service.dto.evaluation.prof;
 
 import ca.cal.leandrose.service.dto.evaluation.EvaluationForm;
 import ca.cal.leandrose.service.dto.evaluation.IQuestionResponse;
-import ca.cal.leandrose.service.dto.evaluation.WorkShiftRange;
 
 import java.util.List;
 import java.util.Map;

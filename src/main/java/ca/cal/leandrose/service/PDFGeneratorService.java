@@ -2,6 +2,7 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.prof.*;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -196,9 +197,6 @@ public class PDFGeneratorService {
         document.add(footer);
     }
 
-    // -----------------------------
-    // Génération PDF d'évaluation (compact)
-    // -----------------------------
     public String generatedEvaluationByEmployer(EvaluationStagiaire evaluationStagiaire, EvaluationEmployerFormData formData, String language,
                                                 String profFirstName, String profLastName,
                                                 String nameCollege, String address, String fax_machine ) {
@@ -222,8 +220,8 @@ public class PDFGeneratorService {
 
             addRatingLegendAligned(document, language);
 
-//            addEvaluationContent(document, formData, language);
-            addGenericEvaluationContent(document, formData, language, getCategoriesByLanguage(language), true, null, null);
+            addGenericEvaluationContent(document, formData, language, getEvaluationCategoriesEmployer(language),
+                    true, null, null);
 
             addGeneralComments(document, formData, language);
 
@@ -261,8 +259,6 @@ public class PDFGeneratorService {
             this.pdfWriter = writer;
             document.open();
 
-
-
             addHeaderEvaluationParProf(document, language);
             addEmployerSection(document, evaluationStagiaire, teacherInfo.entrepriseTeacherDto(), language);
             addStudentSection(document, formData, teacherInfo.studentTeacherDto(), language);
@@ -271,7 +267,7 @@ public class PDFGeneratorService {
                     document,
                     formData,
                     language,
-                    getEvaluationCategoriesTeacher(language), // Professor categories
+                    getEvaluationCategoriesTeacher(language),
                     false,
                     null,
                     (categoryKey, doc) -> {
@@ -379,32 +375,6 @@ public class PDFGeneratorService {
         return Collections.emptyMap();
     }
 
-    private String getQuestionRating(EvaluationEmployerFormData formData, String categoryKey, int index) {
-        Map<String, List<Object>> categories = getCategoriesMap(formData);
-        if (categories.containsKey(categoryKey)) {
-            List<Object> qList = categories.get(categoryKey);
-            if (qList != null && index < qList.size()) {
-                Object qObj = qList.get(index);
-                Object rating = invokeGetter(qObj, "rating", "getRating");
-                return rating != null ? String.valueOf(rating) : null;
-            }
-        }
-        return null;
-    }
-
-    private String getQuestionComment(EvaluationEmployerFormData formData, String categoryKey, int index) {
-        Map<String, List<Object>> categories = getCategoriesMap(formData);
-        if (categories.containsKey(categoryKey)) {
-            List<Object> qList = categories.get(categoryKey);
-            if (qList != null && index < qList.size()) {
-                Object qObj = qList.get(index);
-                Object comment = invokeGetter(qObj, "comment", "getComment");
-                return comment != null ? String.valueOf(comment) : null;
-            }
-        }
-        return null;
-    }
-
     private Integer getGlobalAssessmentValue(EvaluationEmployerFormData formData) {
         Object ga = invokeGetter(formData, "globalAssessment", "getGlobalAssessment");
         if (ga == null) return null;
@@ -486,77 +456,6 @@ public class PDFGeneratorService {
         return null;
     }
 
-    // -----------------------------
-    // Contenu principal (sections compactes, saut de page après chaque section)
-    // -----------------------------
-    private void addEvaluationContent(Document document, EvaluationEmployerFormData formData, String language) throws DocumentException {
-        Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
-        Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
-        Font commentFont = FontFactory.getFont(FontFactory.HELVETICA, 8.5f, BaseColor.DARK_GRAY);
-
-        Map<String, CategoryData> categories = getCategoriesByLanguage(language);
-        List<String> ratingKeys = List.of("EXCELLENT", "TRES_BIEN", "SATISFAISANT", "A_AMELIORER");
-
-        for (Map.Entry<String, CategoryData> category : categories.entrySet()) {
-            String categoryKey = category.getKey();
-            CategoryData categoryData = category.getValue();
-
-            Paragraph categoryTitle = new Paragraph(categoryData.getTitle(), categoryFont);
-            categoryTitle.setSpacingBefore(6f);
-            categoryTitle.setSpacingAfter(4f);
-            document.add(categoryTitle);
-
-            Paragraph categoryDesc = new Paragraph(categoryData.getDescription(), questionFont);
-            categoryDesc.setSpacingAfter(6f);
-            document.add(categoryDesc);
-
-            List<String> questions = categoryData.getQuestions();
-            for (int i = 0; i < questions.size(); i++) {
-                String question = questions.get(i);
-                document.add(new Paragraph((i + 1) + ". " + question, questionFont));
-                document.add(Chunk.NEWLINE);
-
-                String selectedRating = getQuestionRating(formData, categoryKey, i);
-
-                PdfPTable ratingOptionsTable = new PdfPTable(ratingKeys.size());
-                ratingOptionsTable.setWidthPercentage(100);
-                ratingOptionsTable.setSpacingAfter(4f);
-
-                for (String key : ratingKeys) {
-                    boolean isSelected = key.equals(selectedRating);
-                    Image checkboxImg = createCheckboxImage(isSelected);
-                    PdfPCell cell;
-                    if (checkboxImg != null) {
-                        Paragraph p = new Paragraph();
-                        p.add(new Chunk(checkboxImg, 0, -2, true));
-                        cell = new PdfPCell(p);
-                    } else {
-                        cell = new PdfPCell(new Phrase(isSelected ? "[x]" : "[ ]"));
-                    }
-                    cell.setBorder(Rectangle.NO_BORDER);
-                    cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                    cell.setPadding(4f);
-                    ratingOptionsTable.addCell(cell);
-                }
-
-                document.add(ratingOptionsTable);
-
-                String comment = getQuestionComment(formData, categoryKey, i);
-                if (comment != null && !comment.isBlank()) {
-                    String commentLabel = "en".equals(language) ? "Comment: " : "Commentaire: ";
-                    Paragraph commentPara = new Paragraph(commentLabel + comment, commentFont);
-                    commentPara.setIndentationLeft(12f);
-                    commentPara.setSpacingAfter(4f);
-                    document.add(commentPara);
-                }
-                document.add(Chunk.NEWLINE);
-            }
-
-            // Saut de page après chaque section
-            document.newPage();
-        }
-    }
 
     // -----------------------------
     // Page d'appréciation globale — réintègre les descriptions complètes (liste verticale)
@@ -798,28 +697,71 @@ public class PDFGeneratorService {
         }
     }
 
-    private Map<String, CategoryData> getCategoriesByLanguage(String language) {
+    private Map<String, CategoryData> getEvaluationCategoriesEmployer(String language) {
         if ("en".equals(language)) {
             return Map.of(
-                    "productivity", new CategoryData("PRODUCTIVITY", "Ability to optimize work performance",
-                            List.of("Plan and organize work effectively", "Quickly understand work instructions", "Maintain a steady work pace", "Establish priorities", "Meet deadlines")),
-                    "quality", new CategoryData("WORK QUALITY", "Ability to produce careful and precise work",
-                            List.of("Demonstrate rigor in work", "Respect company quality standards", "Work autonomously in verifying own work", "Seek opportunities for improvement", "To conduct a thorough analysis of the problems encountered")),
-                    "relationships", new CategoryData("QUALITY OF INTERPERSONAL RELATIONSHIP", "Ability to establish harmonious interactions in the workplace",
-                            List.of("Easily establish connections with people", "Actively contribute to teamwork", "Adapt easily to the company culture", "Accept constructive criticism", "Be respectful toward people", "Demonstrate active listening by trying to understand the other person's point of view")),
-                    "skills", new CategoryData("PERSONAL SKILLS", "Ability to demonstrate mature and responsible attitudes or behaviors",
-                            List.of("Demonstrate interest and motivation at work", "Express ideas clearly", "Show initiative", "Work safely", "Demonstrate a good sense of responsibility requiring minimal supervision", "To be punctual and diligent at work"))
+                    "productivity",
+                    new CategoryData("PRODUCTIVITY",
+                            "Ability to optimize work performance",
+                            List.of("Plan and organize work effectively",
+                                    "Quickly understand work instructions",
+                                    "Maintain a steady work pace", "Establish priorities",
+                                    "Meet deadlines")),
+                    "quality", new CategoryData("WORK QUALITY",
+                            "Ability to produce careful and precise work",
+                            List.of("Demonstrate rigor in work",
+                                    "Respect company quality standards",
+                                    "Work autonomously in verifying own work",
+                                    "Seek opportunities for improvement",
+                                    "To conduct a thorough analysis of the problems encountered")),
+                    "relationships", new CategoryData("QUALITY OF INTERPERSONAL RELATIONSHIP",
+                            "Ability to establish harmonious interactions in the workplace",
+                            List.of("Easily establish connections with people",
+                                    "Actively contribute to teamwork",
+                                    "Adapt easily to the company culture",
+                                    "Accept constructive criticism", "Be respectful toward people",
+                                    "Demonstrate active listening by trying to understand the " +
+                                            "other person's point of view")),
+                    "skills", new CategoryData("PERSONAL SKILLS",
+                            "Ability to demonstrate mature and responsible attitudes or behaviors",
+                            List.of("Demonstrate interest and motivation at work",
+                                    "Express ideas clearly", "Show initiative",
+                                    "Work safely",
+                                    "Demonstrate a good sense of responsibility requiring minimal supervision",
+                                    "To be punctual and diligent at work"))
             );
         } else {
             return Map.of(
-                    "productivity", new CategoryData("PRODUCTIVITÉ", "Capacité d'optimiser son rendement au travail",
-                            List.of("Planifier et organiser son travail de façon efficace", "Comprendre rapidement les directives relatives à son travail", "Maintenir un rythme de travail soutenu", "Établir ses priorités", "Respecter ses échéanciers")),
-                    "quality", new CategoryData("QUALITÉ DU TRAVAIL", "Capacité de produire un travail soigné et précis",
-                            List.of("Démontrer de la rigueur dans son travail", "Respecter les normes de qualité de l'entreprise", "Faire preuve d'autonomie dans la vérification de son travail", "Rechercher des occasions d'amélioration", "Mener une analyse approfondie des problèmes rencontrés")),
-                    "relationships", new CategoryData("QUALITÉS DES RELATIONS INTERPERSONNELLES", "Capacité d’établir des interrelations harmonieuses dans son milieu de travail",
-                            List.of("établir facilement des contacts avec les gens", "contribuer activement au travail d’équipe", "s’adapter facilement à la culture de l’entreprise", "accepter les critiques constructives", "être respectueux envers les gens", "faire preuve d’écoute active en essayant de comprendre le point de vue de l’autre")),
-                    "skills", new CategoryData("HABILETÉS PERSONNELLES", "Capacité de faire preuve d’attitudes ou de comportements matures et responsables",
-                            List.of("démontrer de l’intérêt et de la motivation au travail", "exprimer clairement ses idées", "faire preuve d’initiative", "travailler de façon sécuritaire", "démontrer un bon sens des responsabilités ne requérant qu’un minimum de supervision", "être ponctuel et assidu à son travail"))
+                    "productivity", new CategoryData("PRODUCTIVITÉ",
+                            "Capacité d'optimiser son rendement au travail",
+                            List.of("Planifier et organiser son travail de façon efficace",
+                                    "Comprendre rapidement les directives relatives à son travail",
+                                    "Maintenir un rythme de travail soutenu",
+                                    "Établir ses priorités",
+                                    "Respecter ses échéanciers")),
+                    "quality", new CategoryData("QUALITÉ DU TRAVAIL",
+                            "Capacité de produire un travail soigné et précis",
+                            List.of("Démontrer de la rigueur dans son travail",
+                                    "Respecter les normes de qualité de l'entreprise",
+                                    "Faire preuve d'autonomie dans la vérification de son travail",
+                                    "Rechercher des occasions d'amélioration",
+                                    "Mener une analyse approfondie des problèmes rencontrés")),
+                    "relationships", new CategoryData("QUALITÉS DES RELATIONS INTERPERSONNELLES",
+                            "Capacité d’établir des interrelations harmonieuses dans son milieu de travail",
+                            List.of("établir facilement des contacts avec les gens",
+                                    "contribuer activement au travail d’équipe",
+                                    "s’adapter facilement à la culture de l’entreprise",
+                                    "accepter les critiques constructives",
+                                    "être respectueux envers les gens",
+                                    "faire preuve d’écoute active en essayant de comprendre le point de vue de l’autre")),
+                    "skills", new CategoryData("HABILETÉS PERSONNELLES",
+                            "Capacité de faire preuve d’attitudes ou de comportements matures et responsables",
+                            List.of("démontrer de l’intérêt et de la motivation au travail",
+                                    "exprimer clairement ses idées",
+                                    "faire preuve d’initiative",
+                                    "travailler de façon sécuritaire",
+                                    "démontrer un bon sens des responsabilités ne requérant qu’un minimum de supervision",
+                                    "être ponctuel et assidu à son travail"))
             );
         }
     }
@@ -1012,101 +954,6 @@ public class PDFGeneratorService {
         document.add(infoTable);
     }
 
-    private void addEvaluationSection(Document document, EvaluationProfFormDto formData, String language) throws DocumentException {
-        Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
-        Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
-
-        Map<String, CategoryData> categories = getEvaluationCategoriesTeacher(language);
-
-        List<String> ratingKeys = List.of("EXCELLENT", "TRES_BIEN", "SATISFAISANT", "A_AMELIORER");
-        List<String> ratingLabels = getRatingLabels(language); // reuse if you already have it
-
-        System.out.println("=== DEBUG: FormData Categories ===");
-        if (formData.categories() != null) {
-            formData.categories().forEach((key, value) -> {
-                System.out.println("Category: " + key);
-                for (int i = 0; i < value.size(); i++) {
-                    QuestionResponseTeacher response = value.get(i);
-                    System.out.println("  Q" + (i+1) + " - Rating: " + response.rating());
-                }
-            });
-        } else {
-            System.out.println("No categories in formData");
-        }
-
-
-        for (Map.Entry<String, CategoryData> entry : categories.entrySet()) {
-            String categoryKey = entry.getKey();
-            CategoryData cat = entry.getValue();
-            System.out.println("FormData: " + formData);
-            System.out.println("CategoryKey: " + entry.getKey());
-            System.out.println("CategoryValue: " + entry.getValue());
-
-            List<QuestionResponseTeacher> responses = formData.categories() != null ? formData.categories().get(categoryKey) : null;
-
-            System.out.println("Processing category: " + categoryKey);
-
-            Paragraph categoryTitle = new Paragraph(cat.getTitle(), categoryFont);
-            categoryTitle.setSpacingBefore(6f);
-            categoryTitle.setSpacingAfter(4f);
-            document.add(categoryTitle);
-
-            if (cat.getDescription() != null && !cat.getDescription().isBlank()) {
-                Paragraph categoryDesc = new Paragraph(cat.getDescription(), questionFont);
-                categoryDesc.setSpacingAfter(6f);
-                document.add(categoryDesc);
-            }
-
-            for (int i = 0; i < cat.getQuestions().size(); i++) {
-                String questionText = cat.getQuestions().get(i);
-                document.add(new Paragraph((i + 1) + ". " + questionText, questionFont));
-                document.add(Chunk.NEWLINE);
-
-                String selectedRating = getQuestionRating(formData, categoryKey, i);
-
-                PdfPTable ratingOptionsTable = new PdfPTable(ratingKeys.size());
-                ratingOptionsTable.setWidthPercentage(100);
-                ratingOptionsTable.setSpacingAfter(4f);
-
-                for (int k = 0; k < ratingKeys.size(); k++) {
-                    String key = ratingKeys.get(k);
-                    boolean isSelected = key.equals(selectedRating);
-
-                    Image checkboxImg = createCheckboxImage(isSelected);
-                    PdfPCell cell;
-                    if (checkboxImg != null) {
-                        Paragraph p = new Paragraph();
-                        p.add(new Chunk(checkboxImg, 0, -2, true));
-                        cell = new PdfPCell(p);
-                    } else {
-                        String ascii = isSelected ? "☑" : "☐";
-                        Paragraph p = new Paragraph(ascii + " " + getSafeLabel(ratingLabels, k), questionFont);
-                        cell = new PdfPCell(p);
-                    }
-
-                    cell.setBorder(Rectangle.NO_BORDER);
-                    cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                    cell.setPadding(6f);
-                    ratingOptionsTable.addCell(cell);
-                }
-
-                document.add(ratingOptionsTable);
-
-                document.add(Chunk.NEWLINE);
-            }
-
-            if (categoryKey.equals("conformity") || categoryKey.equals("tasks")) {
-                addHoursTable(document, formData, language);
-            }
-            if (categoryKey.equals("general") || categoryKey.equals("conditions")) {
-                addSalarySection(document, formData, language);
-            }
-
-            document.newPage();
-        }
-    }
-
     private void addObservationsGeneralesSection(Document document, EvaluationProfFormDto formData, String language)
             throws DocumentException{
         Font sectionTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
@@ -1188,7 +1035,6 @@ public class PDFGeneratorService {
 
         table.addCell(makeContainerCell(yesNoTable));
 
-        //Shift variables
         table.addCell(makeLabel(
                 "Ce milieu offre des quarts de travail variables :",
                 "This environment offers variable work shifts:",
@@ -1335,13 +1181,20 @@ public class PDFGeneratorService {
         hoursTable.setSpacingAfter(10f);
         hoursTable.setWidths(new float[]{4f, 3f});
 
+        String labelSpecifyTime = "en".equals(language)
+                ? "Specify the number of hours/week:"
+                : "Préciser le nombre d’heures/semaine :";
+
+        PdfPCell topLabel = new PdfPCell(new Phrase(labelSpecifyTime, labelFont));
+        topLabel.setBorder(Rectangle.NO_BORDER);
+        topLabel.setColspan(2);
+        topLabel.setPaddingBottom(5f);
+        hoursTable.addCell(topLabel);
+
         String m1 = "en".equals(language) ? "First month hours": "Premier mois (heures)";
         String m2 = "en".equals(language) ? "Second month hours": "Deuxième mois (heures)";
         String m3 = "en".equals(language) ? "Third month hours": "Troisième mois (heures)";
 
-        System.out.println("1st month hour" + formData.firstMonthsHours());
-        System.out.println("2nd month hour" + formData.secondMonthsHours());
-        System.out.println("3rd month hour" + formData.thirdMonthHours());
         hoursTable.addCell(new Phrase(m1, labelFont));
         hoursTable.addCell(new Phrase(
                 formData.firstMonthsHours() == null ? "____________": formData.firstMonthsHours().toString(),
@@ -1520,10 +1373,6 @@ public class PDFGeneratorService {
         return labels.get(idx);
     }
 
-    /**
-     * Returns the rating value stored for a specific question.
-     * This matters because the stored value MUST equal one of ratingKeys (EXCELLENT/TRES_BIEN/...)
-     */
    private void addGenericEvaluationContent(
            Document document,
            EvaluationForm formData,

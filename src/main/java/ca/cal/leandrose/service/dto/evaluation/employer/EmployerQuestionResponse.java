@@ -1,4 +1,6 @@
-package ca.cal.leandrose.service.dto.evaluation;
+package ca.cal.leandrose.service.dto.evaluation.employer;
+
+import ca.cal.leandrose.service.dto.evaluation.IQuestionResponse;
 
 public record EmployerQuestionResponse(
         String comment,
