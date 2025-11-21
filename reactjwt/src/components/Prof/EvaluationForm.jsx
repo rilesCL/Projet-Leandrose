@@ -56,7 +56,6 @@ const EvaluationForm = () => {
 
     const [formData, setFormData] = useState({
         categories: {},
-        stageNumber: "",
         firstMonthsHours: "",
         secondMonthsHours: "",
         thirdMonthHours: "",
@@ -96,8 +95,6 @@ const EvaluationForm = () => {
             }
         }
 
-        if (!formData.stageNumber)
-            newErrors.stageNumber = t('evaluation.validation.missingRating');
 
         if (!formData.preferredStage)
             newErrors.preferredStage = t('evaluation.validation.selectOption');
@@ -290,42 +287,6 @@ const EvaluationForm = () => {
                 <h2 className="text-xl font-semibold mb-4">{t('evaluation.studentInfo')}</h2>
                 <p><strong>{t('evaluation.name')}</strong> {info?.studentTeacherDto.fullname}</p>
                 <p><strong>{t('evaluation.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
-
-                {/* Stage number selection */}
-                <div className="mt-3">
-                    <label className="font-medium block mb-2 text-center">{t("evaluation.intern")}</label>
-                    {errors?.stageNumber && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                            {errors.stageNumber}
-                        </p>
-                    )}
-
-                    <div className="flex justify-center gap-4">
-                        {[1, 2].map(val => {
-                            const strVal = val.toString();
-                            const isSelected = formData.stageNumber === strVal;
-                            return (
-                                <label
-                                    key={strVal}
-                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-blue-200 border-2 border-blue-400 text-blue-900 font-semibold
-                                        ${isSelected ? "border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md" : ""}
-                                    `}
-                                >
-                                    <input
-                                        type="radio"
-                                        name="stageNumber"
-                                        value={strVal}
-                                        checked={isSelected}
-                                        onChange={e => handleChange("stageNumber", e.target.value)}
-                                        className="mr-2"
-                                    />
-                                    {strVal}
-                                </label>
-                            );
-                        })}
-                    </div>
-                </div>
             </section>
 
             {/* Question Groups */}

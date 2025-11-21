@@ -265,7 +265,7 @@ public class PDFGeneratorService {
 
             addHeaderEvaluationParProf(document, language);
             addEmployerSection(document, evaluationStagiaire, teacherInfo.entrepriseTeacherDto(), language);
-            addStudentSection(document, evaluationStagiaire, teacherInfo.studentTeacherDto(), language);
+            addStudentSection(document, formData, teacherInfo.studentTeacherDto(), language);
             addRatingLegendAligned(document, language);
             addGenericEvaluationContent(
                     document,
@@ -970,10 +970,11 @@ public class PDFGeneratorService {
         document.add(infoTable);
 
     }
-    private void addStudentSection(Document document, EvaluationStagiaire evaluationStagiaire,  StudentTeacherDto dto, String language) throws DocumentException{
+    private void addStudentSection(Document document, EvaluationProfFormDto formData,  StudentTeacherDto dto, String language) throws DocumentException{
         Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
         Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+        Font circleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
 
         String titleText = "en".equals(language)
                 ? "IDENTIFICATION OF THE INTERN"
@@ -991,16 +992,24 @@ public class PDFGeneratorService {
         addInfoRow(infoTable, getTranslation("studentName", language), dto.fullname(), labelFont, valueFont);
         addInfoRow(infoTable, getTranslation("internshipDate", language), dto.internshipStartDate().toString(), labelFont, valueFont);
 
-        String stageText;
-        if ("en".equals("language")){
-            stageText = "Internship (circle one):  1    2";
-        }
-        else{
-            stageText = "Stage (encercler):  1   2";
-        }
-        addInfoRow(infoTable, "" , stageText, labelFont, valueFont);
-        document.add(infoTable);
+        Integer preferredStage = null;
 
+        try{
+            preferredStage = formData.preferredStage()!= null
+                    ? Integer.parseInt(String.valueOf(formData.preferredStage()))
+                    : null;
+        } catch(Exception ignored){}
+
+
+        System.out.println("Stage " + preferredStage);
+
+
+        String stageText = "en".equals(language)
+                ? "Internship: "
+                : "Stage: ";
+
+        addInfoRow(infoTable, stageText, String.valueOf(preferredStage), labelFont, valueFont);
+        document.add(infoTable);
     }
 
     private void addEvaluationSection(Document document, EvaluationProfFormDto formData, String language) throws DocumentException {
@@ -1037,29 +1046,24 @@ public class PDFGeneratorService {
 
             System.out.println("Processing category: " + categoryKey);
 
-            // Category title
             Paragraph categoryTitle = new Paragraph(cat.getTitle(), categoryFont);
             categoryTitle.setSpacingBefore(6f);
             categoryTitle.setSpacingAfter(4f);
             document.add(categoryTitle);
 
-            // Category description if present
             if (cat.getDescription() != null && !cat.getDescription().isBlank()) {
                 Paragraph categoryDesc = new Paragraph(cat.getDescription(), questionFont);
                 categoryDesc.setSpacingAfter(6f);
                 document.add(categoryDesc);
             }
 
-            // For each question in the category
             for (int i = 0; i < cat.getQuestions().size(); i++) {
                 String questionText = cat.getQuestions().get(i);
                 document.add(new Paragraph((i + 1) + ". " + questionText, questionFont));
                 document.add(Chunk.NEWLINE);
 
-                // The selected rating saved in DTO: must match the keys above
                 String selectedRating = getQuestionRating(formData, categoryKey, i);
 
-                // prepare a small table for the rating options (icons/checkbox per option)
                 PdfPTable ratingOptionsTable = new PdfPTable(ratingKeys.size());
                 ratingOptionsTable.setWidthPercentage(100);
                 ratingOptionsTable.setSpacingAfter(4f);
@@ -1072,11 +1076,9 @@ public class PDFGeneratorService {
                     PdfPCell cell;
                     if (checkboxImg != null) {
                         Paragraph p = new Paragraph();
-                        // adjust vertical offset so it lines nicely with text
                         p.add(new Chunk(checkboxImg, 0, -2, true));
                         cell = new PdfPCell(p);
                     } else {
-                        // fallback: unicode checkbox
                         String ascii = isSelected ? "☑" : "☐";
                         Paragraph p = new Paragraph(ascii + " " + getSafeLabel(ratingLabels, k), questionFont);
                         cell = new PdfPCell(p);
@@ -1094,16 +1096,13 @@ public class PDFGeneratorService {
                 document.add(Chunk.NEWLINE);
             }
 
-            // If you want to add tables for hours/salary that depend on category:
             if (categoryKey.equals("conformity") || categoryKey.equals("tasks")) {
-                // call the existing helper to add the hours table if present
                 addHoursTable(document, formData, language);
             }
             if (categoryKey.equals("general") || categoryKey.equals("conditions")) {
                 addSalarySection(document, formData, language);
             }
 
-            // Add a page break after a section if desired (employer code did this).
             document.newPage();
         }
     }
@@ -1445,19 +1444,6 @@ public class PDFGeneratorService {
                 Map.entry("internshipDate", "en".equals(language) ? "Internship Date": "Date du stage")
 
         );
-//        Map<String, String> translations = Map.of(
-//                "studentName", "en".equals(language) ? "Student Name:" : "Nom de l'élève:",
-//                "program", "en".equals(language) ? "Program:" : "Programme d'études:",
-//                "company", "en".equals(language) ? "Company Name:" : "Nom de l'entreprise:",
-//                "supervisor", "en".equals(language) ? "Supervisor:" : "Nom du superviseur:",
-//                "position", "en".equals(language) ? "Position:" : "Fonction:",
-//                "evaluationDate", "en".equals(language) ? "Evaluation Date:" : "Date d'évaluation:",
-//                "contactPerson", "en".equals(language) ? "Contact Person:": "Personne contact:",
-//                "address", "en".equals(language) ? "Address:": "Adresse:",
-//                "email", "en".equals(language) ? "Email:": "Courriel:",
-//                "internName", "en".equals(language) ? "Name of the Intern": "Nom du stagiaire",
-//                "internshipDate", "en".equals(language) ? "Internship Date": "Date du stage"
-//        );
         return translations.getOrDefault(key, key);
     }
     private String translateProgram(String programKey, String language) {
@@ -1649,16 +1635,6 @@ public class PDFGeneratorService {
            document.newPage();
        }
    }
-//    private String getQuestionRating(EvaluationProfFormDto formData, String categoryKey, int index) {
-//        if (formData.categories() == null) return null;
-//
-//        List<QuestionResponseTeacher> responses = formData.categories().get(categoryKey);
-//        if (responses != null && index < responses.size()) {
-//            QuestionResponseTeacher response = responses.get(index);
-//            return response.rating();
-//        }
-//        return null;
-//    }
 
     private String getQuestionRating(EvaluationForm formData, String categoryKey, int index) {
         if (formData.getCategories() == null) return null;
