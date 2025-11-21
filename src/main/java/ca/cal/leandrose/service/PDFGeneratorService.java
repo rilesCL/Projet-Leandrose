@@ -836,7 +836,7 @@ public class PDFGeneratorService {
                                     "The actual time spent supervising the intern is sufficient."
                             )
                     ),
-                    "environement", new CategoryData(
+                    "environment", new CategoryData(
                             "WORK ENVIRONEMENT",
                             "",
                             List.of(
@@ -1189,26 +1189,42 @@ public class PDFGeneratorService {
         table.addCell(makeContainerCell(yesNoTable));
 
         //Shift variables
-        PdfPTable shifts = new PdfPTable(1);
-        shifts.setWidthPercentage(100);
-        shifts.addCell(makeLabel(
+        table.addCell(makeLabel(
                 "Ce milieu offre des quarts de travail variables :",
                 "This environment offers variable work shifts:",
                 language,
                 labelFont
         ));
-        for (int i = 0; i < 3; i++){
-            WorkShiftRange range =
-                    (formData.workShifts() != null && formData.workShifts().size() > i)
-                            ? formData.workShifts().get(i)
-                            : new WorkShiftRange("____", "____");
-            String lineFr = "De " + range.from() + "à " + range.to();
-            String lineEn = "From " + range.from() + "to " + range.to();
 
-            shifts.addCell(new Phrase(t(lineFr, lineEn, language), valueFont));
+        PdfPTable yesOrNoShift = new PdfPTable(2);
+        System.out.println("Yes or no: " + formData.workShiftYesNo());
+        System.out.println("WorkshiftRanges: " + formData.workShifts());
+        yesOrNoShift.setWidthPercentage(100);
+        boolean hasVariableShifts = formData.workShiftYesNo() != null && formData.workShiftYesNo();
+        yesOrNoShift.addCell(makeYesNoCell("OUI", "YES", hasVariableShifts, language));
+        yesOrNoShift.addCell(makeYesNoCell("NON", "NO", !hasVariableShifts, language));
+
+        table.addCell(makeContainerCell(yesOrNoShift));
+
+        if(hasVariableShifts){
+            PdfPTable shiftsTable = new PdfPTable(1);
+            shiftsTable.setWidthPercentage(100);
+
+            for (int i = 0; i <3; i++){
+                WorkShiftRange range =
+                        (formData.workShifts() != null && formData.workShifts().size() > i)
+                        ? formData.workShifts().get(i)
+                        : new WorkShiftRange("____", "____");
+                String fr = "De " + range.from() + " à " + range.to();
+                String en = "From " + range.from() + " to " + range.to();
+
+                shiftsTable.addCell(new Phrase(t(fr, en, language), valueFont));
+
+            }
+            table.addCell(new PdfPCell());
+
+            table.addCell(makeContainerCell(shiftsTable));
         }
-        table.addCell(makeContainerCell(shifts));
-        table.addCell(new PdfPCell());
         document.add(table);
     }
 
@@ -1405,17 +1421,6 @@ public class PDFGeneratorService {
         table.addCell(left);
         table.addCell(right);
     }
-
-//    private void addInfoRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {
-//        PdfPCell labelCell = new PdfPCell(new Phrase(label, labelFont));
-//        labelCell.setBorder(Rectangle.NO_BORDER);
-//        labelCell.setPadding(2f);
-//        PdfPCell valueCell = new PdfPCell(new Phrase(value != null ? value : "", valueFont));
-//        valueCell.setBorder(Rectangle.NO_BORDER);
-//        valueCell.setPadding(2f);
-//        table.addCell(labelCell);
-//        table.addCell(valueCell);
-//    }
 
 
 

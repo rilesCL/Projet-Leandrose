@@ -16,6 +16,7 @@ public record EvaluationProfFormDto(
         Integer preferredStage,
         Integer capacity,
         Boolean sameTraineeNextStage,
+        Boolean workShiftYesNo,
         List<WorkShiftRange> workShifts
 ) implements EvaluationForm {
     @Override
