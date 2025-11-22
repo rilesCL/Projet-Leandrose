@@ -631,6 +631,23 @@ const EvaluationForm = () => {
                     )}
                 </div>
             </section>
+            {successMessage && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                <circle cx="10" cy="10" r="8" />
+                                <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm font-medium text-green-800">
+                                {successMessage}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
                 <button
