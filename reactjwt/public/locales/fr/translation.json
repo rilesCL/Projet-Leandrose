@@ -947,7 +947,9 @@
       "selectOption": "Veuillez choisir un option",
       "missingFields": "Veuillez remplir les champs suivants",
       "hoursRequired": "Les heures pour les trois sont requis",
-      "salaryRequired": "Le salaire est requis"
+      "salaryRequired": "Le salaire est requis",
+      "hoursInvalid": "Les heures doivent être un nombre valide et non négatif",
+      "salaryInvalid": "Le salaire doit être un nombre valide et non négatif"
 
     },
     "errors": {

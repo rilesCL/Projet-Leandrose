@@ -78,6 +78,15 @@ const EvaluationForm = () => {
         return value;
     }
 
+    const isInvalidNumber = (value) => {
+        if (value === null || value === undefined) return true;
+        if(typeof value === "string") value = value.trim()
+        if (value === "") return true
+
+        const num = Number(value)
+        return isNaN(num) || num < 0
+    }
+
     const validateForm = () => {
         const newErrors = {};
 
@@ -108,24 +117,46 @@ const EvaluationForm = () => {
         if (!formData.workShiftYesNo)
             newErrors.workShiftYesNo = t('evaluation.validation.selectOption');
 
-        // if (formData.workShiftYesNo === "YES") {
-        //     for (let i = 0; i < 3; i++) {
-        //         if (!formData.workShifts[i].start || !formData.workShifts[i].end) {
-        //             if (!newErrors.workShifts) newErrors.workShifts = [];
-        //             newErrors.workShifts[i] = t('evaluation.validation.missingFields');
-        //         }
-        //     }
-        // }
+        if (formData.workShiftYesNo === "YES") {
+            newErrors.workShifts = [null, null, null]
+            for (let i = 0; i < 3; i++) {
+                const {start, end} = formData.workShifts[i];
 
-        if (formData.categories.conformity) {
-            if (!formData.firstMonthsHours.trim()) newErrors.firstMonthsHours = t('evaluation.validation.hoursRequired');
-            if (!formData.secondMonthsHours.trim()) newErrors.secondMonthsHours = t('evaluation.validation.hoursRequired');
-            if (!formData.thirdMonthHours.trim()) newErrors.thirdMonthHours = t('evaluation.validation.hoursRequired');
+                if(!start || !end){
+                    newErrors.workShifts[i] = t('evaluation.validation.missingFields');
+                }
+            }
+            if (newErrors.workShifts.every(v => v === null)){
+                delete newErrors.workShifts;
+            }
         }
 
-        if (formData.categories.general && !formData.salaryHours)
-            newErrors.salaryHours = t('evaluation.validation.salaryRequired');
+        if (formData.categories.conformity) {
+            if (!formData.firstMonthsHours || formData.firstMonthsHours.trim() === "") {
+                newErrors.firstMonthsHours = t('evaluation.validation.hoursRequired');
+            } else if (isInvalidNumber(formData.firstMonthsHours)) {
+                newErrors.firstMonthsHours = t('evaluation.validation.hoursInvalid');
+            }
 
+            if (!formData.secondMonthsHours || formData.secondMonthsHours.trim() === "") {
+                newErrors.secondMonthsHours = t('evaluation.validation.hoursRequired');
+            } else if (isInvalidNumber(formData.secondMonthsHours)) {
+                newErrors.secondMonthsHours = t('evaluation.validation.hoursInvalid');
+            }
+
+            if (!formData.thirdMonthHours || formData.thirdMonthHours.trim() === "") {
+                newErrors.thirdMonthHours = t('evaluation.validation.hoursRequired');
+            } else if (isInvalidNumber(formData.thirdMonthHours)) {
+                newErrors.thirdMonthHours = t('evaluation.validation.hoursInvalid');
+            }
+        }
+        if(formData.categories.general){
+            if (!formData.salaryHours || String(formData.salaryHours).trim() === "") {
+                newErrors.salaryHours = t('evaluation.validation.salaryRequired');
+            } else if (isInvalidNumber(formData.salaryHours)) {
+                newErrors.salaryHours = t('evaluation.validation.salaryInvalid');
+            }
+        }
         return newErrors;
     };
 
@@ -360,7 +391,7 @@ const EvaluationForm = () => {
                                             </p>
                                         )}
                                         <input
-                                            type="text"
+                                            type="number"
                                             placeholder={t('evaluation.placeholders.salary')}
                                             className="border px-2 py-1 rounded"
                                             value={formData.salaryHours}
@@ -381,14 +412,14 @@ const EvaluationForm = () => {
                                 <p className="text-sm text-red-600 mt-1">{errors.firstMonthsHours}</p>
                             )}
                             <div className="flex gap-4">
-                                <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.first_month')}
+                                <input type="number" className="border p-1 rounded" placeholder={t('evaluation.placeholders.first_month')}
                                        value={formData.firstMonthsHours}
                                        onChange={e => handleChange("firstMonthsHours", e.target.value)} />
-                                <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.second_month')}
+                                <input type="number" className="border p-1 rounded" placeholder={t('evaluation.placeholders.second_month')}
                                        value={formData.secondMonthsHours}
                                        onChange={e => handleChange("secondMonthsHours", e.target.value)} />
 
-                                <input className="border p-1 rounded" placeholder={t('evaluation.placeholders.third_month')}
+                                <input type="number" className="border p-1 rounded" placeholder={t('evaluation.placeholders.third_month')}
                                        value={formData.thirdMonthHours}
                                        onChange={e => handleChange("thirdMonthHours", e.target.value)} />
 
@@ -588,39 +619,14 @@ const EvaluationForm = () => {
                                             />
 
                                         </div>
+                                        {errors?.workShifts?.[idx] && (
+                                            <p className="text-sm text-red-600 text-center validation-error">
+                                                {errors.workShifts[idx]}
+                                            </p>
+                                        )}
                                     </div>
                                 );
                             })}
-
-                            {/*{[1, 2, 3].map(n => {*/}
-                            {/*    const errorMsg = errors?.workShifts?.[n - 1];*/}
-                            {/*    return (*/}
-                            {/*        <div key={n} className="flex flex-col items-center gap-1">*/}
-
-                            {/*            <div className="flex gap-3 items-center justify-center">*/}
-                            {/*                <span>{t('evaluation.observations.from')}</span>*/}
-                            {/*                <input*/}
-                            {/*                    type="time"*/}
-                            {/*                    className="p-2 border rounded"*/}
-                            {/*                    value={formData[`obs_shift${n}From`] || ""}*/}
-                            {/*                    onChange={e => handleChange(`obs_shift${n}From`, e.target.value)}*/}
-                            {/*                />*/}
-                            {/*                <span>{t('evaluation.observations.to')}</span>*/}
-                            {/*                <input*/}
-                            {/*                    type="time"*/}
-                            {/*                    className="p-2 border rounded"*/}
-                            {/*                    value={formData[`obs_shift${n}To`] || ""}*/}
-                            {/*                    onChange={e => handleChange(`obs_shift${n}To`, e.target.value)}*/}
-                            {/*                />*/}
-                            {/*            </div>*/}
-
-                            {/*            {errorMsg && (*/}
-                            {/*                <p className="text-sm text-red-600 text-center">{errorMsg}</p>*/}
-                            {/*            )}*/}
-
-                            {/*        </div>*/}
-                            {/*    );*/}
-                            {/*})}*/}
                         </div>
                     )}
                 </div>
