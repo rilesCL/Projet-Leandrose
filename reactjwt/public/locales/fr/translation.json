@@ -1052,7 +1052,10 @@
       "cannotBeChanged": "L'adresse courriel ne peut pas être modifiée."
     },
     "phoneSection": {
-      "title": "Téléphone"
+      "title": "Téléphone",
+      "current": "Numéro de téléphone actuel",
+      "label": "Numéro de téléphone",
+      "placeholder": "Entrez votre numéro de téléphone"
     },
     "passwordSection": {
       "title": "Mot de passe",

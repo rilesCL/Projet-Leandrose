@@ -55,12 +55,22 @@ public class UserController {
         return ResponseEntity.ok(Map.of("valid", isValid));
     }
     @PutMapping("/me")
-    public ResponseEntity<UserDTO> updateProfile(
+    public ResponseEntity<?> updateProfile(
             HttpServletRequest request,
             @RequestBody UpdateUserRequest req
     ) {
-        String authHeader = request.getHeader("Authorization");
-        UserDTO updated = userService.updateProfile(authHeader, req);
-        return ResponseEntity.ok(updated);
+        try {
+            String authHeader = request.getHeader("Authorization");
+            UserDTO updated = userService.updateProfile(authHeader, req);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("error", "Une erreur est survenue lors de la mise à jour"));
+        }
     }
 }

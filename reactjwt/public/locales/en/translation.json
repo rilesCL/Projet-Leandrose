@@ -1050,7 +1050,10 @@
       "cannotBeChanged": "The email address cannot be changed."
     },
     "phoneSection": {
-      "title": "Phone"
+      "title": "Phone",
+      "current": "Current phone number",
+      "label": "Phone number",
+      "placeholder": "Enter your phone number"
     },
     "passwordSection": {
       "title": "Password",

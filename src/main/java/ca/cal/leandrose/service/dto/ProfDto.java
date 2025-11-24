@@ -14,6 +14,7 @@ public class ProfDto extends UserDTO {
   private String address;
   private String fax_machine;
   private String department;
+  private String phoneNumber;
   private Map<String, String> error;
 
   @Builder
@@ -27,13 +28,15 @@ public class ProfDto extends UserDTO {
       String nameCollege,
       String address,
       String fax_machine,
-      String department) {
+      String department,
+      String phoneNumber) {
     super(id, firstName, lastName, email, role);
     this.employeeNumber = employeeNumber;
     this.nameCollege = nameCollege;
     this.address = address;
     this.fax_machine = fax_machine;
     this.department = department;
+    this.phoneNumber = phoneNumber;
   }
 
   public ProfDto() {}
@@ -54,6 +57,7 @@ public class ProfDto extends UserDTO {
         .address(prof.getAddress())
         .fax_machine(prof.getFax_machine())
         .department(prof.getDepartment())
+        .phoneNumber(prof.getPhoneNumber())
         .build();
   }
 

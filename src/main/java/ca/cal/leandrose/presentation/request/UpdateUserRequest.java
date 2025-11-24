@@ -12,6 +12,7 @@ public class UpdateUserRequest {
 
     private String email;
     private String newPassword;
+    private String currentPassword;
 
     private String phoneNumber;
 }

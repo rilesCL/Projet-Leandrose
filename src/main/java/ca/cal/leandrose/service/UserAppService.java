@@ -91,6 +91,18 @@ public class UserAppService {
     public UserDTO updateProfile(String authHeader, UpdateUserRequest req) {
         UserApp user = getUserFromAuthHeader(authHeader);
 
+        // Validate current password if a new password is being set
+        if (req.getNewPassword() != null
+                && !req.getNewPassword().isBlank()
+                && user.getCredentials() != null) {
+            if (req.getCurrentPassword() == null || req.getCurrentPassword().isBlank()) {
+                throw new IllegalArgumentException("Le mot de passe actuel est requis pour changer le mot de passe");
+            }
+            if (!passwordEncoder.matches(req.getCurrentPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("Le mot de passe actuel est incorrect");
+            }
+        }
+
         if (req.getFirstName() != null) {
             user.setFirstName(req.getFirstName());
         }
@@ -110,11 +122,30 @@ public class UserAppService {
             user.getCredentials().setPassword(encoded);
         }
 
-        if (user.getRole() == Role.GESTIONNAIRE && req.getPhoneNumber() != null) {
-            Gestionnaire g =
-                    gestionnaireRepository.findById(user.getId()).orElseThrow();
-            g.setPhoneNumber(req.getPhoneNumber());
-            gestionnaireRepository.save(g);
+        // Update phone number for all user types
+        if (req.getPhoneNumber() != null) {
+            switch (user.getRole()) {
+                case GESTIONNAIRE -> {
+                    Gestionnaire g = gestionnaireRepository.findById(user.getId()).orElseThrow();
+                    g.setPhoneNumber(req.getPhoneNumber());
+                    gestionnaireRepository.save(g);
+                }
+                case STUDENT -> {
+                    Student s = studentRepository.findById(user.getId()).orElseThrow();
+                    s.setPhoneNumber(req.getPhoneNumber());
+                    studentRepository.save(s);
+                }
+                case EMPLOYEUR -> {
+                    Employeur e = employeurRepository.findById(user.getId()).orElseThrow();
+                    e.setPhoneNumber(req.getPhoneNumber());
+                    employeurRepository.save(e);
+                }
+                case PROF -> {
+                    Prof p = profRepository.findById(user.getId()).orElseThrow();
+                    p.setPhoneNumber(req.getPhoneNumber());
+                    profRepository.save(p);
+                }
+            }
         }
 
         userAppRepository.save(user);

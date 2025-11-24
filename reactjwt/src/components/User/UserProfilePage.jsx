@@ -27,7 +27,7 @@ export default function UserProfilePage() {
     const [errorPopup, setErrorPopup] = useState("");
 
     const [showNameSection, setShowNameSection] = useState(false);
-    const [showPhoneSection, setShowPhoneSection] = useState(false);
+    const [showPhoneSection, setShowPhoneSection] = useState(true);
     const [showPasswordSection, setShowPasswordSection] = useState(false);
 
     const getDashboardByRole = (role) => {
@@ -66,7 +66,7 @@ export default function UserProfilePage() {
                     firstName: data.firstName || "",
                     lastName: data.lastName || "",
                     email: data.email || "",
-                    phone: data.phone || "",
+                    phone: "", // Champ vide par défaut, le numéro actuel est affiché en haut
                     newPassword: "",
                 });
             } catch (err) {
@@ -106,12 +106,15 @@ export default function UserProfilePage() {
         const payload = {
             firstName: form.firstName,
             lastName: form.lastName,
-            phone: form.phone,
-            currentPassword: currentPassword,
+            phoneNumber: form.phone,
         };
+        
+        if (currentPassword) {
+            payload.currentPassword = currentPassword;
+        }
 
         if (form.newPassword) {
-            payload.password = form.newPassword;
+            payload.newPassword = form.newPassword;
         }
 
         setSaving(true);
@@ -127,21 +130,32 @@ export default function UserProfilePage() {
             });
 
             if (!res.ok) {
-                throw new Error(t("userProfile.errors.updateFailed"));
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || t("userProfile.errors.updateFailed"));
             }
 
             const updated = await res.json();
 
             setUser((prev) => ({ ...prev, ...updated }));
+            setForm((prev) => ({
+                ...prev,
+                firstName: updated.firstName || prev.firstName,
+                lastName: updated.lastName || prev.lastName,
+                phone: "", // Réinitialiser le champ téléphone après sauvegarde
+                newPassword: "",
+            }));
 
             setCurrentPassword("");
             setConfirmPassword("");
-            setForm((prev) => ({ ...prev, newPassword: "" }));
 
             setSuccessPopup(t("userProfile.success.updateSuccess"));
-
-            const roleForRedirect = updated.role || (user && user.role);
-            navigate(getDashboardByRole(roleForRedirect));
+            
+            // Auto-hide success message after 3 seconds and redirect
+            setTimeout(() => {
+                setSuccessPopup("");
+                const roleForRedirect = updated.role || (user && user.role);
+                navigate(getDashboardByRole(roleForRedirect));
+            }, 3000);
         } catch (err) {
             setErrorPopup(err.message || t("userProfile.errors.updateFailed"));
         } finally {
@@ -160,9 +174,14 @@ export default function UserProfilePage() {
     return (
         <div className="min-h-screen relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-10">
             {successPopup && (
-                <div className="fixed top-1/3 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg text-lg z-50">
-                    {successPopup}
-                </div>
+                <>
+                    {/* Overlay pour bloquer la page */}
+                    <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+                    {/* Message de succès */}
+                    <div className="fixed top-1/3 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg text-lg z-50">
+                        {successPopup}
+                    </div>
+                </>
             )}
 
             {errorPopup && (
@@ -233,26 +252,23 @@ export default function UserProfilePage() {
                         </div>
 
                         <div className="border rounded-xl p-4">
-                            <button
-                                type="button"
-                                onClick={() => setShowPhoneSection(!showPhoneSection)}
-                                className="w-full flex justify-between items-center"
-                            >
-                                <span className="font-semibold text-gray-800">{t("userProfile.phoneSection.title")}</span>
-                                {showPhoneSection ? <FaChevronUp /> : <FaChevronDown />}
-                            </button>
-
-                            {showPhoneSection && (
-                                <div className="mt-4">
-                                    <input
-                                        type="text"
-                                        name="phone"
-                                        value={form.phone}
-                                        onChange={handleChange}
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    />
+                            {user && (user.phoneNumber || user.phone) && (
+                                <div className="mb-3 text-sm text-gray-600">
+                                    <span className="font-medium">{t("userProfile.phoneSection.current")}: </span>
+                                    <span>{user.phoneNumber || user.phone}</span>
                                 </div>
                             )}
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {t("userProfile.phoneSection.label")}
+                            </label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={form.phone || ""}
+                                onChange={handleChange}
+                                placeholder={t("userProfile.phoneSection.placeholder")}
+                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
                         </div>
 
                         <div className="border rounded-xl p-4">
