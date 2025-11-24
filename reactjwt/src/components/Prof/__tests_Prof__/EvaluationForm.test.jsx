@@ -4,6 +4,7 @@ import { I18nextProvider, initReactI18next } from 'react-i18next';
 import i18n from 'i18next';
 import EvaluationForm from '../EvaluationForm.jsx';
 import * as apiProf from '../../../api/apiProf';
+import userEvent from "@testing-library/user-event";
 
 vi.mock('../../../api/apiProf', () => ({
     checkExistingEvaluation: vi.fn(),
@@ -238,4 +239,56 @@ describe('EvaluationForm (Prof)', () => {
         expect(submitButton).toBeInTheDocument();
         expect(submitButton).toBeEnabled();
     });
+
+    it("shows validations errors when required fields are missing", async  () => {
+        const user = userEvent.setup()
+        render(<MockProfEvaluationForm />);
+
+        const submitButton = await screen.findByRole('button', {name: /Submit Evaluation/i})
+        await user.click(submitButton)
+
+        const errorsRating = await screen.findAllByText(/Rating is required/i)
+        const errorsOption = await screen.findAllByText(/Please select an option/i)
+
+
+        expect(errorsRating).toHaveLength(10)
+        expect(errorsOption).toHaveLength(4)
+
+        expect(mockedApi.createEvaluation).not.toHaveBeenCalled()
+        expect(mockedApi.generateEvaluationPdfWithId).not.toHaveBeenCalled()
+    })
+    it("validates hours fields when conformity questions are answered", async () => {
+        const user = userEvent.setup()
+        render(<MockProfEvaluationForm />);
+
+        await screen.findByText("CONFORMITY")
+
+        const ratings = await screen.findAllByRole('radio', {name: /Totally agree/i})
+
+
+        await user.click(ratings[0])
+        await user.click(ratings[1])
+        await user.click(ratings[2])
+
+        const submitButton = await screen.findByRole('button', {name: /Submit Evaluation/i})
+        await user.click(submitButton)
+        expect(await screen.findByText(/Hours are required/i)).toBeInTheDocument()
+
+    })
+    it("validates work shift ranges when YES is selected", async () => {
+        const user = userEvent.setup()
+        render(<MockProfEvaluationForm />);
+
+        await screen.findByText("General Observations")
+
+        const yesButtons = await screen.findAllByText("Yes")
+        await user.click(yesButtons[1])
+
+        const submitButton = await screen.findByRole('button', {name: /Submit Evaluation/i})
+        await user.click(submitButton)
+
+        const errors = await screen.findAllByText(/Please fill all fields/i)
+        expect(errors.length).toBeGreaterThan(0)
+
+    })
 });
