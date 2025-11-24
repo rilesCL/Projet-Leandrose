@@ -1,5 +1,7 @@
 package ca.cal.leandrose.service.dto.evaluation;
 
+import ca.cal.leandrose.model.SchoolTerm;
+
 import java.time.LocalDate;
 
 public record EligibleEvaluationDto(
@@ -11,6 +13,7 @@ public record EligibleEvaluationDto(
         String studentProgram,
         String internshipDescription,
         String companyName,
+        SchoolTerm internshipTerm,
         LocalDate startDate,
         LocalDate endDate,
         Boolean hasEvaluation,

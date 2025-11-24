@@ -6,10 +6,11 @@ import PdfViewer from '../PdfViewer.jsx';
 
 const API_BASE = 'http://localhost:8080';
 
-export default function InternshipOffersList() {
+export default function InternshipOffersList({ selectedTerm }) {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [offers, setOffers] = useState([]);
+    const [filteredOffers, setFilteredOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [candidatureData, setCandidatureData] = useState({});
@@ -18,6 +19,25 @@ export default function InternshipOffersList() {
     const [currentComment, setCurrentComment] = useState("");
     const [showPdfModal, setShowPdfModal] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
+
+    useEffect(() => {
+        if (!selectedTerm || !offers.length) {
+            setFilteredOffers(offers);
+            return;
+        }
+
+        const filtered = offers.filter(offer => {
+            if (!offer.schoolTerm) return false;
+
+            const termParts = offer.schoolTerm.trim().split(/\s+/);
+            const offerSeason = termParts[0]?.toUpperCase();
+            const offerYear = parseInt(termParts[1]);
+
+            return offerSeason === selectedTerm.season && offerYear === selectedTerm.year;
+        });
+
+        setFilteredOffers(filtered);
+    }, [selectedTerm, offers]);
 
     const translateSchoolTerm = (termString) => {
         if (!termString || typeof termString !== 'string') return '';
@@ -69,11 +89,11 @@ export default function InternshipOffersList() {
     }, [t]);
 
     useEffect(() => {
-        if (!offers || offers.length === 0) return;
+        if (!filteredOffers || filteredOffers.length === 0) return;
         let cancelled = false;
         async function loadCounts() {
             setLoadingCounts(true);
-            const entries = await Promise.all(offers.map(async (o) => {
+            const entries = await Promise.all(filteredOffers.map(async (o) => {
                 try {
                     const list = await getOfferCandidatures(o.id);
                     const preview = list.slice(0, 3).map(c => [c.studentFirstName, c.studentLastName].filter(Boolean).join(' ') || c.studentName || '?');
@@ -89,7 +109,7 @@ export default function InternshipOffersList() {
         }
         loadCounts();
         return () => { cancelled = true; };
-    }, [offers]);
+    }, [filteredOffers]);
 
     const getStatusLabel = (status) => {
         const statusUpper = (status || "").toString().toUpperCase();
@@ -205,13 +225,31 @@ export default function InternshipOffersList() {
         );
     }
 
+    if (filteredOffers.length === 0 && selectedTerm) {
+        return (
+            <div className="bg-white shadow rounded-lg p-8 text-center">
+                <div className="text-gray-400 mb-4">
+                    <div className="mx-auto h-16 w-16 rounded bg-gray-100 flex items-center justify-center">
+                        <span className="text-gray-500 text-3xl">🔍</span>
+                    </div>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t("internshipOffersList.noOffersForTerm")}</h3>
+                <p className="text-gray-600 mb-4">
+                    {t("internshipOffersList.noOffersForTermDescription", {
+                        term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}`
+                    })}
+                </p>
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="bg-white shadow rounded-lg overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-medium text-gray-900">{t("internshipOffersList.title")}</h3>
                     <p className="text-sm text-gray-600">
-                        {t("internshipOffersList.subtitle")} ({offers.length} {offers.length > 1 ? t("internshipOffersList.offers") : t("internshipOffersList.offer")})
+                        {t("internshipOffersList.subtitle")} ({filteredOffers.length} {filteredOffers.length > 1 ? t("internshipOffersList.offers") : t("internshipOffersList.offer")})
                     </p>
                 </div>
 
@@ -243,7 +281,7 @@ export default function InternshipOffersList() {
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                        {offers.map((offer) => {
+                        {filteredOffers.map((offer) => {
                             const cData = candidatureData[offer.id];
                             const count = cData ? cData.count : (loadingCounts ? '…' : 0);
                             const preview = cData && cData.preview && cData.preview.length ? cData.preview.join(', ') : '';

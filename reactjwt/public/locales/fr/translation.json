@@ -6,6 +6,10 @@
     "WINTER": "Hiver",
     "SUMMER": "Été"
   },
+  "termSelector": {
+    "selectTerm": "Sélectionner une session",
+    "current": "Actuelle"
+  },
   "previewPdf": {
     "preview": "Aperçu",
     "next": "Suivant",
@@ -307,6 +311,8 @@
     "subtitle": "Gérez vos offres publiées",
     "offer": "offre",
     "offers": "offres",
+    "noOffersForTerm": "Aucune offre pour cette session",
+    "noOffersForTermDescription": "Il n'y a aucune offre de stage pour la session {{term}}.",
     "table": {
       "description": "Description",
       "startDate": "Date de début",
@@ -812,6 +818,8 @@
     "student": "Étudiant",
     "stage": "Stage",
     "period": "Période",
+    "noEntenteForTerm": "Aucune entente pour cette session",
+    "noEntenteForTermDescription": "Il n'y a aucune entente de stage pour la session {{term}}.",
     "status": {
       "title": "statut",
       "validation": "Validée",
@@ -940,6 +948,7 @@
     "draft_created": "Brouillon créé",
     "evaluation": "Évaluation",
     "view_pdf": "Voir le PDF",
+    "no_evaluations_for_term": "Aucune évaluation pour la session {{term}}",
     "errors": {
       "checking_evaluation": "Évaluation de la vérification des erreurs pour l'étudiant: ",
       "fetching_evaluations": "Erreur lors de la récupération des accords éligibles",

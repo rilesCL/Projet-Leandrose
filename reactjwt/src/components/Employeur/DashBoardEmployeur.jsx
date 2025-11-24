@@ -7,12 +7,14 @@ import LanguageSelector from "../LanguageSelector.jsx";
 import EmployeurListeStages from "./EmployeurListeStages.jsx";
 import EvaluationList from "./EvaluationList.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
+import TermSelector from "../TermSelector.jsx";
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate();
     const location = useLocation();
     const { t, i18n } = useTranslation();
     const [userName, setUserName] = useState("");
+    const [selectedTerm, setSelectedTerm] = useState(null);
 
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(location.search);
@@ -25,6 +27,10 @@ export default function DashBoardEmployeur() {
         sessionStorage.clear();
         localStorage.clear();
         navigate("/login", { replace: true });
+    };
+
+    const handleTermChange = (term) => {
+        setSelectedTerm(term);
     };
 
     useEffect(() => {
@@ -86,6 +92,7 @@ export default function DashBoardEmployeur() {
                             className="flex items-center space-x-4"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
+                            <TermSelector onTermChange={handleTermChange} />
                             <ThemeToggle/>
                             <LanguageSelector/>
                             <button
@@ -129,19 +136,19 @@ export default function DashBoardEmployeur() {
                     {/* Content Sections */}
                     {section === 'offers' && (
                         <div className="space-y-8">
-                            <InternshipOffersList />
+                            <InternshipOffersList selectedTerm={selectedTerm} />
                         </div>
                     )}
 
                     {section === 'ententes' && (
                         <div className="space-y-8">
-                            <EmployeurListeStages />
+                            <EmployeurListeStages selectedTerm={selectedTerm} />
                         </div>
                     )}
 
                     {section === 'evaluations' && (
                         <div className="space-y-8">
-                            <EvaluationList />
+                            <EvaluationList selectedTerm={selectedTerm} />
                         </div>
                     )}
                 </div>

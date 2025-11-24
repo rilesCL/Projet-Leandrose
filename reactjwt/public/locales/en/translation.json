@@ -6,6 +6,10 @@
     "WINTER": "Winter",
     "SUMMER": "Summer"
   },
+  "termSelector": {
+    "selectTerm": "Select a term",
+    "current": "Current"
+  },
   "previewPdf": {
     "preview": "Preview",
     "next": "Next",
@@ -345,6 +349,8 @@
     "subtitle": "Manage your published offers",
     "offer": "offer",
     "offers": "offers",
+    "noOffersForTerm": "No offers for this term",
+    "noOffersForTermDescription": "There are no internship offers for the {{term}} term.",
     "table": {
       "description": "Description",
       "startDate": "Start date",
@@ -810,6 +816,8 @@
     "student": "Student",
     "stage": "Internship",
     "period": "Period",
+    "noEntenteForTerm": "No agreements for this term",
+    "noEntenteForTermDescription": "There are no internship agreements for the {{term}} term.",
     "status": {
       "title": "status",
       "validation": "Validated",
@@ -938,6 +946,7 @@
     "draft_created": "Draft Created",
     "evaluation": "Evaluation",
     "view_pdf": "View PDF",
+    "no_evaluations_for_term": "No evaluations for the {{term}} term",
     "errors": {
       "checking_evaluation": "Error checking assessment for the student:",
       "fetching_evaluations": "Error retrieving eligible agreements",

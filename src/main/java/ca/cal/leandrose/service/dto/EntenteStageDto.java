@@ -1,9 +1,6 @@
 package ca.cal.leandrose.service.dto;
 
-import ca.cal.leandrose.model.Candidature;
-import ca.cal.leandrose.model.EntenteStage;
-import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Student;
+import ca.cal.leandrose.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +31,7 @@ public class EntenteStageDto {
   private int duree;
   private String lieu;
   private Float remuneration;
+  private String schoolTerm;
 
   private LocalDateTime dateCreation;
   private LocalDateTime dateModification;
@@ -73,6 +71,7 @@ public class EntenteStageDto {
                 .durationInWeeks(offer.getDurationInWeeks())
                 .address(offer.getAddress())
                 .remuneration(offer.getRemuneration())
+                    .schoolTerm(offer.getSchoolTerm().getTermAsString())
                 .status(offer.getStatus().name())
                 .employeurId(offer.getEmployeur() != null ? offer.getEmployeur().getId() : null)
                 .companyName(offer.getCompanyName())
@@ -92,6 +91,7 @@ public class EntenteStageDto {
         .dateDebut(offer.getStartDate())
         .duree(offer.getDurationInWeeks())
         .remuneration(offer.getRemuneration())
+            .schoolTerm(offer.getSchoolTerm().getTermAsString())
         .lieu(offer.getAddress())
         .contactEntreprise(offer.getEmployeurEmail())
         .dateCreation(entente.getDateCreation())

@@ -14,8 +14,10 @@ import {
     FaCheck
 } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
-export default function EmployeurListeStages() {
+
+export default function EmployeurListeStages({ selectedTerm }) {
     const [ententes, setEntentes] = useState([]);
+    const [filteredEntentes, setFilteredEntentes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortField, setSortField] = useState("dateCreation");
     const {t} = useTranslation();
@@ -23,6 +25,28 @@ export default function EmployeurListeStages() {
     const [pdfToPreview, setPdfToPreview] = useState(null);
     const [toast, setToast] = useState({ show: false, message: '', type: '' });
     const [signatureModal, setSignatureModal] = useState({ show: false, entente: null });
+
+    useEffect(() => {
+        if (!selectedTerm || !ententes.length) {
+            setFilteredEntentes(ententes);
+            return;
+        }
+
+        const filtered = ententes.filter(entente => {
+            const offer = entente.internshipOffer;
+            console.log("entente: ", entente);
+            console.log("offre: ", offer);
+            if (!offer || !offer.schoolTerm) return false;
+
+            const termParts = offer.schoolTerm.trim().split(/\s+/);
+            const offerSeason = termParts[0]?.toUpperCase();
+            const offerYear = parseInt(termParts[1]);
+
+            return offerSeason === selectedTerm.season && offerYear === selectedTerm.year;
+        });
+
+        setFilteredEntentes(filtered);
+    }, [selectedTerm, ententes]);
 
     useEffect(() => {
         fetchAgreements();
@@ -138,7 +162,7 @@ export default function EmployeurListeStages() {
     };
 
     const getSortedEntentes = () => {
-        return [...ententes].sort((a, b) => {
+        return [...filteredEntentes].sort((a, b) => {
             let aValue = a[sortField];
             let bValue = b[sortField];
 
@@ -396,10 +420,15 @@ export default function EmployeurListeStages() {
                                 <FaFileAlt className="text-2xl text-gray-400" />
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                {t("ententeStage.noneStagetitle")}
+                                {selectedTerm ? t("ententeStage.noEntenteForTerm") : t("ententeStage.noneStagetitle")}
                             </h3>
                             <p className="text-gray-500 mb-6">
-                                {t("ententeStage.noneStagedescription")}
+                                {selectedTerm
+                                    ? t("ententeStage.noEntenteForTermDescription", {
+                                        term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}`
+                                    })
+                                    : t("ententeStage.noneStagedescription")
+                                }
                             </p>
                         </div>
                     </div>
@@ -535,12 +564,12 @@ export default function EmployeurListeStages() {
                         </div>
                     </div>
                 )}
-            {pdfToPreview && (
-                <PdfViewer
-                    file={pdfToPreview}
-                    onClose={() => setPdfToPreview(null)}
-                />
-            )}
+                {pdfToPreview && (
+                    <PdfViewer
+                        file={pdfToPreview}
+                        onClose={() => setPdfToPreview(null)}
+                    />
+                )}
             </div>
         </div>
     );

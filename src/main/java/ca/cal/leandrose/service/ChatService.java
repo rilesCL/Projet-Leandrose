@@ -261,7 +261,6 @@ public class ChatService {
             System.err.println("❌ Erreur de sérialisation JSON: " + e.getMessage());
             e.printStackTrace();
 
-            // Créer un message d'erreur détaillé
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("error", "Erreur de sérialisation");
             errorResponse.put("message", e.getMessage());

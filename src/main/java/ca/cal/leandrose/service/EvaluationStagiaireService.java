@@ -204,6 +204,7 @@ public class EvaluationStagiaireService {
                 student.getProgram(),
                 offer.getDescription(),
                 offer.getCompanyName(),
+                offer.getSchoolTerm(),
                 offer.getStartDate(),
                 offer.getStartDate().plusWeeks(offer.getDurationInWeeks()),
                 evaluation != null,  // hasEvaluation

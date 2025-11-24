@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { getEligibleEvaluations, checkExistingEvaluation, previewEvaluationPdf, checkTeacherAssigned } from '../../api/apiEmployeur';
 import PdfViewer from '../PdfViewer.jsx';
 
-export default function EvaluationsList() {
+export default function EvaluationsList({ selectedTerm }) {
     const [eligibleAgreements, setEligibleAgreements] = useState([]);
+    const [filteredAgreements, setFilteredAgreements] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPdfViewer, setShowPdfViewer] = useState(false);
     const [currentPdfBlob, setCurrentPdfBlob] = useState(null);
@@ -14,12 +15,38 @@ export default function EvaluationsList() {
     const {t} = useTranslation()
 
     useEffect(() => {
+        if (!selectedTerm || !eligibleAgreements.length) {
+            setFilteredAgreements(eligibleAgreements);
+            return;
+        }
+
+        const filtered = eligibleAgreements.filter(agreement => {
+            if (!agreement.internshipTerm) return false;
+
+            if (typeof agreement.internshipTerm === 'object') {
+                return agreement.internshipTerm.season === selectedTerm.season &&
+                    agreement.internshipTerm.year === selectedTerm.year;
+            }
+
+            if (typeof agreement.internshipTerm === 'string') {
+                const termParts = agreement.internshipTerm.trim().split(/\s+/);
+                const agreementSeason = termParts[0]?.toUpperCase();
+                const agreementYear = parseInt(termParts[1]);
+                return agreementSeason === selectedTerm.season && agreementYear === selectedTerm.year;
+            }
+
+            return false;
+        });
+
+        setFilteredAgreements(filtered);
+    }, [selectedTerm, eligibleAgreements]);
+
+    useEffect(() => {
         const fetchEligibleAgreements = async () => {
             try {
                 const agreements = await getEligibleEvaluations();
                 setEligibleAgreements(agreements);
 
-                // Check evaluation status for each agreement
                 const statusMap = {};
                 const teacherAssignmentMap = {}
                 for (const agreement of agreements) {
@@ -82,29 +109,28 @@ export default function EvaluationsList() {
                         {t("evaluationList.subtitle")}
                     </p>
                 </div>
-                <Link
-                    to="/dashboard/employeur"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-blue-100 bg-white text-sm font-medium text-blue-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
-                >
-                    <span aria-hidden="true">←</span>
-                    {t("ententeStage.back")}
-                </Link>
             </div>
 
             {eligibleAgreements.length === 0 ? (
                 <div className="text-center py-8">
                     <p className="text-gray-500">{t("evaluationList.no_evaluations")}</p>
                 </div>
+            ) : filteredAgreements.length === 0 ? (
+                <div className="text-center py-8">
+                    <p className="text-gray-500">
+                        {t("evaluationList.no_evaluations_for_term", {
+                            term: selectedTerm ? `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}` : ''
+                        })}
+                    </p>
+                </div>
             ) : (
                 <div className="space-y-5">
-                    {eligibleAgreements.map(agreement => {
+                    {filteredAgreements.map(agreement => {
                         const statusKey = `${agreement.studentId}-${agreement.offerId}`;
                         const status = evaluationStatus[statusKey];
                         const hasEvaluation = status?.exists;
                         const evaluation = status?.evaluation;
                         const isTeacherAssigned = teacherAssignmentStatus[statusKey]
-                        console.log("Status key: ", statusKey)
-                        console.log(isTeacherAssigned)
                         return (
 
                             <div
@@ -115,7 +141,7 @@ export default function EvaluationsList() {
                                     <div className="flex-1 space-y-3">
                                         <div className="flex items-center gap-3 flex-wrap">
                                             <h3 className="text-xl font-semibold text-gray-900">
-                                            {agreement.studentFirstName} {agreement.studentLastName}
+                                                {agreement.studentFirstName} {agreement.studentLastName}
                                             </h3>
                                             <span className="text-xs font-medium uppercase tracking-wide bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
                                                 {t(agreement.studentProgram)}
@@ -176,7 +202,6 @@ export default function EvaluationsList() {
                 </div>
             )}
 
-            {/* PDF Viewer Modal */}
             {showPdfViewer && currentPdfBlob && (
                 <PdfViewer
                     file={currentPdfBlob}
