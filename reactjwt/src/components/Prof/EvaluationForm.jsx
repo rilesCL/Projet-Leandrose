@@ -267,8 +267,10 @@ const EvaluationForm = () => {
             setErrors(validationErrors);
 
             setTimeout(() => {
-                const el = document.querySelector(".validation-error");
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                const el = document.querySelector('.validation-error');
+                if (el && typeof el.scrollIntoView === 'function') {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }, 50);
 
             return;

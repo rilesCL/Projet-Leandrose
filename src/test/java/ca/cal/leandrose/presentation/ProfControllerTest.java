@@ -2,6 +2,8 @@ package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.EntenteStageService;
+import ca.cal.leandrose.service.EvaluationStagiaireService;
+import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.ProfStudentItemDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -33,6 +35,12 @@ class ProfControllerTest {
 
     @MockitoBean
     private EntenteStageService ententeStageService;
+
+    @MockitoBean
+    private EvaluationStagiaireService evaluationStagiaireService;
+
+    @MockitoBean
+    private UserAppService userAppService;
 
     private ProfStudentItemDto dto(long ententeId, long studentId, String fn, String ln,
                                    String company, String title,

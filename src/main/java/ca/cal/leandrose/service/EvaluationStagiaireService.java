@@ -128,7 +128,7 @@ public class EvaluationStagiaireService {
     public EvaluationStagiaireDto createEvaluation(Long employeurId, Long studentId, Long internshipId){
 
         if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipId, studentId)){
-            throw new IllegalStateException("Une évaluation existe déjà pour ce stagiaire et ce stage");
+            throw new RuntimeException("Une évaluation existe déjà pour ce stagiaire et ce stage");
         }
 
         Employeur employeur = employeurRepository.findById(employeurId)

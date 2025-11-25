@@ -1,12 +1,14 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.Candidature;
+import ca.cal.leandrose.model.EvaluationStagiaire;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -24,12 +26,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -115,11 +114,46 @@ class EmployeurControllerTest {
       evaluationDto = new EvaluationStagiaireDto(
               3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", null, true, false
       );
-//      formData = new EvaluationFormData(
-//              Map.of(), "General comment", 2, "Global appreciation",
-//              true, 10, "YES", true
-//      );
+      formData  = createEvaluationEmployerFormData();
   }
+
+    private EvaluationEmployerFormData createEvaluationEmployerFormData() {
+        // Create sample questions and responses using the record
+        EmployerQuestionResponse question1 = new EmployerQuestionResponse(
+                "Very good performance",  // comment
+                true,                     // checked
+                "Excellent"               // rating
+        );
+
+        EmployerQuestionResponse question2 = new EmployerQuestionResponse(
+                "Satisfactory work",      // comment
+                true,                     // checked
+                "Good"                    // rating
+        );
+
+        EmployerQuestionResponse question3 = new EmployerQuestionResponse(
+                "Needs improvement",      // comment
+                false,                    // checked
+                "Average"                 // rating
+        );
+
+        // Create categories map
+        Map<String, List<EmployerQuestionResponse>> categories = new HashMap<>();
+        categories.put("Technical Skills", Arrays.asList(question1, question2));
+        categories.put("Professionalism", Arrays.asList(question1, question3));
+        categories.put("Communication", Arrays.asList(question2));
+
+        return new EvaluationEmployerFormData(
+                categories,
+                "Excellent intern, would hire again",  // generalComment
+                5,                                     // globalAssessment
+                "Outstanding performance",             // globalAppreciation
+                true,                                  // discussedWithTrainee
+                20,                                    // supervisionHours
+                "Yes, definitely",                     // welcomeNextInternship
+                true                                   // technicalTrainingSufficient
+        );
+    }
 
   private CandidatureDto createCandidatureDto(
       Long id, Long employeurId, String studentFirstName, String studentLastName) {
@@ -427,7 +461,7 @@ class EmployeurControllerTest {
     void createEvaluation_serviceException_returnsBadRequest() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER ,1L, 2L, 3L)).thenReturn(true);
-        when(evaluationStagiaireService.createEvaluation(1L, 2L, 3L))
+        when(evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L))
                 .thenThrow(new RuntimeException("Evaluation error"));
 
         CreateEvaluationRequest createRequest = new CreateEvaluationRequest(2L, 3L);
@@ -442,9 +476,13 @@ class EmployeurControllerTest {
     @Test
     void generateEvaluationPdf_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
-        when(evaluationStagiaireService.generateEvaluationPdfByEmployer(anyLong(), any(), anyString()))
-                .thenReturn(evaluationDto);
+
+        EvaluationStagiaireDto evaluationWithPdf = evaluationDto;
+
+        when(evaluationStagiaireService.generateEvaluationPdfByEmployer(eq(1L), any(), eq("fr")))
+                .thenReturn(evaluationWithPdf);
 
         mockMvc.perform(post("/employeur/evaluations/1/generate-pdf")
                         .header("Authorization", "Bearer token")
