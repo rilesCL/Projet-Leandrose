@@ -47,4 +47,3 @@ public class Prof extends UserApp {
     this.department = department;
   }
 }
-

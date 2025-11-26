@@ -3,7 +3,6 @@ package ca.cal.leandrose.service;
 import ca.cal.leandrose.model.EntenteStage;
 import ca.cal.leandrose.model.SchoolTerm;
 import ca.cal.leandrose.model.Student;
-import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.EntenteStageRepository;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
@@ -115,7 +114,6 @@ public class StudentService {
       return Optional.empty();
     }
 
-    // Récupérer toutes les ententes de l'étudiant et trouver celle avec un prof
     List<EntenteStage> ententes =
         ententeStageRepository.findAll().stream()
             .filter(
@@ -125,7 +123,6 @@ public class StudentService {
                 })
             .filter(entente -> entente.getProf() != null)
             .sorted((e1, e2) -> {
-              // Trier par date de modification (plus récent en premier)
               if (e1.getDateModification() == null && e2.getDateModification() == null) {
                 return 0;
               }
@@ -139,7 +136,6 @@ public class StudentService {
             })
             .collect(Collectors.toList());
 
-    // Retourner le prof de la première entente trouvée (la plus récente)
     return ententes.stream()
         .findFirst()
         .map(EntenteStage::getProf)
@@ -152,7 +148,6 @@ public class StudentService {
       return Optional.empty();
     }
 
-    // Récupérer toutes les ententes de l'étudiant et trouver celle avec un gestionnaire
     List<EntenteStage> ententes =
         ententeStageRepository.findAll().stream()
             .filter(
@@ -162,7 +157,6 @@ public class StudentService {
                 })
             .filter(entente -> entente.getGestionnaire() != null)
             .sorted((e1, e2) -> {
-              // Trier par date de modification (plus récent en premier)
               if (e1.getDateModification() == null && e2.getDateModification() == null) {
                 return 0;
               }
@@ -176,7 +170,6 @@ public class StudentService {
             })
             .collect(Collectors.toList());
 
-    // Retourner le gestionnaire de la première entente trouvée (la plus récente)
     return ententes.stream()
         .findFirst()
         .map(EntenteStage::getGestionnaire)
@@ -189,7 +182,6 @@ public class StudentService {
       return List.of();
     }
 
-    // Récupérer toutes les ententes de l'étudiant et extraire les employeurs uniques
     return ententeStageRepository.findAll().stream()
         .filter(
             entente -> {

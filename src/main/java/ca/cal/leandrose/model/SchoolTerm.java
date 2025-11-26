@@ -92,5 +92,3 @@ public class SchoolTerm {
     return (getSeason() != null)? getSeason().toString() + " " + getYear():null;
   }
 }
-
-

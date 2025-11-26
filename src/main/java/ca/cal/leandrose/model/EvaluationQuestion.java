@@ -1,6 +1,5 @@
 package ca.cal.leandrose.model;
 
-
 import jakarta.persistence.*;
 
 @Entity
@@ -24,4 +23,3 @@ public class EvaluationQuestion {
     @Column(length = 1000)
     private String comment;
 }
-

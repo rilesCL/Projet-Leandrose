@@ -35,7 +35,6 @@ public class PDFGeneratorService {
 
     private transient PdfWriter pdfWriter;
 
-    // --- (Méthodes d'entente identiques à la version précédente ; inchangées) ---
     public String genererEntentePDF(EntenteStage entente) {
         try {
             Path ententeDir = Paths.get(baseUploadDir).toAbsolutePath().normalize();
@@ -194,9 +193,6 @@ public class PDFGeneratorService {
         document.add(footer);
     }
 
-    // -----------------------------
-    // Génération PDF d'évaluation (compact)
-    // -----------------------------
     public String genererEvaluationPdf(EvaluationStagiaire evaluationStagiaire, EvaluationFormData formData, String language,
                                        String profFirstName, String profLastName,
                                        String nameCollege, String address, String fax_machine ) {
@@ -224,7 +220,6 @@ public class PDFGeneratorService {
 
             addGeneralComments(document, formData, language);
 
-            // Force newPage pour la page finale d'appréciation globale
             document.newPage();
             addTraineeEvaluationPage(document, formData, language, profFirstName, profLastName, nameCollege, address, fax_machine);
 
@@ -242,7 +237,6 @@ public class PDFGeneratorService {
         }
     }
 
-    // --- utilitaire : dessine une case cochée / non cochée et retourne Image
     private Image createCheckboxImage(boolean checked) {
         try {
             if (this.pdfWriter == null) return null;
@@ -268,9 +262,6 @@ public class PDFGeneratorService {
         }
     }
 
-    // -----------------------------
-    // Légende alignée en haut (4 colonnes)
-    // -----------------------------
     private void addRatingLegendAligned(Document document, String language) throws DocumentException {
         Font legendTitleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
         Font legendDescFont = FontFactory.getFont(FontFactory.HELVETICA, 8.5f, BaseColor.DARK_GRAY);
@@ -297,9 +288,6 @@ public class PDFGeneratorService {
         document.add(legendTable);
     }
 
-    // -----------------------------
-    // Reflection helpers to read EvaluationFormData flexibellement
-    // -----------------------------
     @SuppressWarnings("unchecked")
     private Map<String, List<Object>> getCategoriesMap(EvaluationFormData formData) {
         if (formData == null) return Collections.emptyMap();
@@ -420,15 +408,11 @@ public class PDFGeneratorService {
                     return m.invoke(obj);
                 }
             } catch (Exception e) {
-                // ignore
             }
         }
         return null;
     }
 
-    // -----------------------------
-    // Contenu principal (sections compactes, saut de page après chaque section)
-    // -----------------------------
     private void addEvaluationContent(Document document, EvaluationFormData formData, String language) throws DocumentException {
         Font categoryFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
         Font questionFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
@@ -493,14 +477,10 @@ public class PDFGeneratorService {
                 document.add(Chunk.NEWLINE);
             }
 
-            // Saut de page après chaque section
             document.newPage();
         }
     }
 
-    // -----------------------------
-    // Page d'appréciation globale — réintègre les descriptions complètes (liste verticale)
-    // -----------------------------
     private void addTraineeEvaluationPage(Document document, EvaluationFormData formData,
                                           String language, String profFirstName, String profLastName,
                                           String nameCollege, String address, String fax_machine) throws DocumentException {
@@ -517,7 +497,6 @@ public class PDFGeneratorService {
         title.setSpacingAfter(8f);
         document.add(title);
 
-        // Table d'options (cases alignées sous la légende)
         document.add(new Paragraph("en".equals(language) ? "Overall Assessment:" : "Appréciation globale :", normalFont));
         document.add(Chunk.NEWLINE);
 
@@ -548,8 +527,6 @@ public class PDFGeneratorService {
         document.add(globalTable);
         document.add(Chunk.NEWLINE);
 
-        // --- Ici : Liste verticale des descriptions complètes, avec case cochée devant l'option sélectionnée ---
-        // Utilise la même order que globalKeys
         List<String> fullDescriptions = new ArrayList<>();
         for (String k : globalKeys) {
             fullDescriptions.add(getRatingDisplayText(k, language));
@@ -573,7 +550,6 @@ public class PDFGeneratorService {
 
         document.add(Chunk.NEWLINE);
 
-        // Global appreciation text
         Paragraph appreciationTitle = new Paragraph("en".equals(language) ? "SPECIFY YOUR ASSESSMENT:" : "PRÉCISEZ VOTRE APPRÉCIATION:", sectionFont);
         appreciationTitle.setSpacingAfter(6f);
         document.add(appreciationTitle);
@@ -589,7 +565,6 @@ public class PDFGeneratorService {
         }
         document.add(Chunk.NEWLINE);
 
-        // Discussion oui/non
         String discussionText = "en".equals(language)
                 ? "This evaluation was discussed with the trainee:"
                 : "Cette évaluation a été discutée avec le stagiaire :";
@@ -618,7 +593,6 @@ public class PDFGeneratorService {
         document.add(discussionTable);
         document.add(Chunk.NEWLINE);
 
-        // Supervision hours
         String hoursText = "en".equals(language)
                 ? "Please indicate the actual number of supervision hours per week granted to the trainee:"
                 : "Veuillez indiquer le nombre d'heures réel par semaine d'encadrement accordé au stagiaire :";
@@ -641,7 +615,6 @@ public class PDFGeneratorService {
         }
         document.add(Chunk.NEWLINE);
 
-        // Welcome next internship
         String nextInternshipText = "en".equals(language)
                 ? "WOULD THE COMPANY LIKE TO WELCOME THIS STUDENT FOR THEIR NEXT INTERNSHIP:"
                 : "L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE :";
@@ -671,7 +644,6 @@ public class PDFGeneratorService {
         document.add(welcomeTable);
         document.add(Chunk.NEWLINE);
 
-        // Technical training sufficient
         String trainingText = "en".equals(language)
                 ? "Was the trainee's technical training sufficient to accomplish the internship mandate?"
                 : "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?";
@@ -696,7 +668,6 @@ public class PDFGeneratorService {
         document.add(trainingTable);
         document.add(Chunk.NEWLINE);
 
-        // Signature & contact (compact)
         Paragraph name = new Paragraph(("en".equals(language) ? "Name: " : "Nom : ") + "____________________    " + ( "en".equals(language) ? "Function: " : "Fonction : ") + "____________________", normalFont);
         name.setSpacingAfter(6f);
         document.add(name);
@@ -715,9 +686,6 @@ public class PDFGeneratorService {
         document.add(addr);
     }
 
-    // -----------------------------
-    // Traductions / catégories / utilitaires
-    // -----------------------------
     private String getRatingDisplayText(String rating, String language) {
         if ("en".equals(language)) {
             return switch (rating) {
