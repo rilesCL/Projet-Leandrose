@@ -419,7 +419,7 @@ class EmployeurControllerTest {
     void createEvaluation_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 100L)).thenReturn(true);
-        when(evaluationStagiaireService.createEvaluation(1L, 2L, 100L)).thenReturn(evaluationDto);
+        when(evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 100L)).thenReturn(evaluationDto);
 
         CreateEvaluationRequest createRequest = new CreateEvaluationRequest(2L, 100L);
 

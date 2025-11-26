@@ -14,6 +14,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +51,7 @@ class EvaluationStagiaireServiceTest {
     private EvaluationStagiaire evaluationStagiaire;
     private Candidature candidature;
     private Prof professeur;
+    private EntenteStage ententeStage;
 
     @BeforeEach
     void setUp() {
@@ -82,6 +84,26 @@ class EvaluationStagiaireServiceTest {
                 .employeur(employeur)
                 .build();
 
+        candidature = Candidature.builder()
+                .id(1L)
+                .student(student)
+                .internshipOffer(internshipOffer)
+                .build();
+        ententeStage = EntenteStage.builder()
+                .id(1L)
+                .candidature(candidature)
+                .prof(professeur)
+                .gestionnaire(null) // or create a Gestionnaire if needed
+                .missionsObjectifs("Développement d'applications Java, participation aux réunions d'équipe")
+                .statut(EntenteStage.StatutEntente.VALIDEE) // or whatever status is appropriate
+                .dateCreation(LocalDateTime.now())
+                .dateModification(LocalDateTime.now())
+                .cheminDocumentPDF("/path/to/entente.pdf")
+                .dateSignatureEtudiant(LocalDateTime.now())
+                .dateSignatureEmployeur(LocalDateTime.now())
+                .dateSignatureGestionnaire(LocalDateTime.now())
+                .build();
+
         evaluationStagiaire = EvaluationStagiaire.builder()
                 .id(1L)
                 .dateEvaluation(LocalDate.now())
@@ -89,12 +111,8 @@ class EvaluationStagiaireServiceTest {
                 .student(student)
                 .professeur(professeur)
                 .internshipOffer(internshipOffer)
+                .ententeStage(ententeStage)
                 .submittedByEmployer(false)
-                .build();
-        candidature = Candidature.builder()
-                .id(1L)
-                .student(student)
-                .internshipOffer(internshipOffer)
                 .build();
     }
 
@@ -102,16 +120,21 @@ class EvaluationStagiaireServiceTest {
     @Test
     void createEvaluation_Success() {
         // Given
-        when(evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(3L, 2L))
-                .thenReturn(false);
-        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
         when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
+        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.empty());
         when(evaluationStagiaireRepository.save(any(EvaluationStagiaire.class)))
-                .thenReturn(evaluationStagiaire);
-
+                .thenAnswer(invocation -> {
+                    EvaluationStagiaire evaluation = invocation.getArgument(0);
+                    evaluation.setId(1L);
+                    return evaluation;
+                });
         // When
-        EvaluationStagiaireDto result = evaluationStagiaireService.createEvaluation(1L, 2L, 3L);
+        EvaluationStagiaireDto result = evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L);
 
         // Then
         assertNotNull(result);
@@ -121,7 +144,6 @@ class EvaluationStagiaireServiceTest {
         assertEquals(3L, result.internshipOfferId());
         assertFalse(result.submittedByEmployer());
 
-        verify(evaluationStagiaireRepository).existsByInternshipOfferIdAndStudentId(3L, 2L);
         verify(employeurRepository).findById(1L);
         verify(studentRepository).findById(2L);
         verify(internshipOfferRepository).findById(3L);
@@ -131,49 +153,66 @@ class EvaluationStagiaireServiceTest {
     @Test
     void createEvaluation_EvaluationAlreadyExists_ThrowsException() {
         // Given
-        when(evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(3L, 2L))
-                .thenReturn(true);
+        EvaluationStagiaire existingEvaluation = EvaluationStagiaire.builder()
+                .id(1L)
+                .student(student)
+                .internshipOffer(internshipOffer)
+                .employeur(employeur)
+                .professeur(professeur)
+                .submittedByEmployer(true) // Employer has already submitted
+                .submittedByProfessor(false)
+                .build();
+
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(existingEvaluation));
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.createEvaluation(1L, 2L, 3L));
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
 
-        assertEquals("Une évaluation existe déjà pour ce stagiaire et ce stage", exception.getMessage());
-        verify(evaluationStagiaireRepository).existsByInternshipOfferIdAndStudentId(3L, 2L);
-        verify(employeurRepository, never()).findById(anyLong());
-        verify(studentRepository, never()).findById(anyLong());
-        verify(internshipOfferRepository, never()).findById(anyLong());
+        assertEquals("L'évaluation complète existe déjà pour ce stagiaire.", exception.getMessage());
+
+        verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L);
+        verify(studentRepository).findById(2L);
+        verify(internshipOfferRepository).findById(3L);
+        verify(evaluationStagiaireRepository).findByStudentIdAndInternshipOfferId(2L, 3L);
         verify(evaluationStagiaireRepository, never()).save(any(EvaluationStagiaire.class));
     }
 
     @Test
     void createEvaluation_EmployeurNotFound_ThrowsException() {
         // Given
-        when(evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(3L, 2L))
-                .thenReturn(false);
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
         when(employeurRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.createEvaluation(1L, 2L, 3L));
+                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
 
         assertEquals("Employeur non trouvé", exception.getMessage());
+
+        verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L);
+        verify(studentRepository).findById(2L);
+        verify(internshipOfferRepository).findById(3L);
         verify(employeurRepository).findById(1L);
-        verify(studentRepository, never()).findById(anyLong());
-        verify(internshipOfferRepository, never()).findById(anyLong());
+        verify(evaluationStagiaireRepository, never()).save(any(EvaluationStagiaire.class));
     }
 
     @Test
     void createEvaluation_StudentNotFound_ThrowsException() {
         // Given
-        when(evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(3L, 2L))
-                .thenReturn(false);
-        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
         when(studentRepository.findById(2L)).thenReturn(Optional.empty());
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.createEvaluation(1L, 2L, 3L));
+                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
 
         assertEquals("Étudiant non trouvé", exception.getMessage());
         verify(studentRepository).findById(2L);
@@ -183,17 +222,14 @@ class EvaluationStagiaireServiceTest {
     @Test
     void createEvaluation_InternshipOfferNotFound_ThrowsException() {
         // Given
-        when(evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(3L, 2L))
-                .thenReturn(false);
-        when(employeurRepository.findById(1L)).thenReturn(Optional.of(employeur));
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
         when(internshipOfferRepository.findById(3L)).thenReturn(Optional.empty());
 
         // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.createEvaluation(1L, 2L, 3L));
+                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
 
-        assertEquals("Entente non trouvé", exception.getMessage());
+        assertEquals("Offre de stage non trouvée", exception.getMessage());
         verify(internshipOfferRepository).findById(3L);
     }
 

@@ -123,34 +123,6 @@ public class EvaluationStagiaireService {
 
         return mapToDto(evaluation);
     }
-
-
-    public EvaluationStagiaireDto createEvaluation(Long employeurId, Long studentId, Long internshipId){
-
-        if (evaluationStagiaireRepository.existsByInternshipOfferIdAndStudentId(internshipId, studentId)){
-            throw new RuntimeException("Une évaluation existe déjà pour ce stagiaire et ce stage");
-        }
-
-        Employeur employeur = employeurRepository.findById(employeurId)
-                .orElseThrow(() -> new RuntimeException("Employeur non trouvé"));
-
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
-
-        InternshipOffer internshipOffer = internshipOfferRepository.findById(internshipId)
-                .orElseThrow(() -> new RuntimeException("Entente non trouvé"));
-
-        EvaluationStagiaire stage = EvaluationStagiaire.builder()
-                .dateEvaluation(LocalDate.now())
-                .employeur(employeur)
-                .student(student)
-                .internshipOffer(internshipOffer)
-                .submittedByEmployer(false)
-                .build();
-
-        EvaluationStagiaire evaluationStagiaire = evaluationStagiaireRepository.save(stage);
-        return mapToDto(evaluationStagiaire);
-    }
     public EvaluationInfoDto getEvaluationInfoForEmployer(Long employeurId, Long studentId, Long internshipOfferId) {
         boolean isEligible = isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, employeurId, studentId, internshipOfferId);
         EvaluationStagiaire eval =
