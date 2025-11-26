@@ -7,7 +7,7 @@ import LanguageSelector from "../LanguageSelector.jsx";
 import StudentInternshipOffersList from "./StudentInternshipOffersList.jsx";
 import StudentApplicationsList from './StudentApplicationsList.jsx';
 import StudentEntentesListe from "./StudentEntentesListe.jsx";
-import {updateStudentInfo, getStudentMe} from "../../api/apiStudent.jsx";
+import {getStudentMe, updateStudentInfo} from "../../api/apiStudent.jsx";
 import {fetchPrograms} from "../../api/apiRegister.jsx";
 import InfosContactPage from "./InfosContactPage.jsx";
 import ThemeToggle from '../ThemeToggle.jsx';

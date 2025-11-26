@@ -2,7 +2,6 @@ package ca.cal.leandrose.service.mapper;
 
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.SchoolTerm;
 import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
 

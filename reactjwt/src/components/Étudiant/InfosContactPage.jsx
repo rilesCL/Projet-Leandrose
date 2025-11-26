@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { FaUser, FaBuilding, FaEnvelope, FaPhone, FaBriefcase, FaSpinner } from 'react-icons/fa';
-import { getStudentProf, getStudentGestionnaire, getStudentEmployeurs } from '../../api/apiStudent.jsx';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {FaBriefcase, FaBuilding, FaEnvelope, FaPhone, FaSpinner, FaUser} from 'react-icons/fa';
+import {getStudentEmployeurs, getStudentGestionnaire, getStudentProf} from '../../api/apiStudent.jsx';
 
 export default function StudentContactsPage() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [professor, setProfessor] = useState(null);
     const [gestionnaire, setGestionnaire] = useState(null);
     const [employeurs, setEmployeurs] = useState([]);
@@ -43,13 +43,13 @@ export default function StudentContactsPage() {
         }
     };
 
-    const ContactCard = ({ title, icon: Icon, person, showCompany = false, isProfessor = false }) => {
+    const ContactCard = ({title, icon: Icon, person, showCompany = false, isProfessor = false}) => {
         if (!person || !person.id) {
             return (
                 <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="bg-gray-100 p-3 rounded-full">
-                            <Icon className="text-gray-400 text-xl" />
+                            <Icon className="text-gray-400 text-xl"/>
                         </div>
                         <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
                     </div>
@@ -62,14 +62,14 @@ export default function StudentContactsPage() {
             <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="bg-blue-100 p-3 rounded-full">
-                        <Icon className="text-blue-600 text-xl" />
+                        <Icon className="text-blue-600 text-xl"/>
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
                 </div>
 
                 <div className="space-y-3">
                     <div className="flex items-center gap-2">
-                        <FaUser className="text-gray-400 text-sm" />
+                        <FaUser className="text-gray-400 text-sm"/>
                         <span className="text-gray-900 font-medium">
               {person.firstName} {person.lastName || person.lastname}
             </span>
@@ -77,7 +77,7 @@ export default function StudentContactsPage() {
 
                     {person.email && (
                         <div className="flex items-center gap-2">
-                            <FaEnvelope className="text-gray-400 text-sm" />
+                            <FaEnvelope className="text-gray-400 text-sm"/>
                             <a
                                 href={`mailto:${person.email}`}
                                 className="text-blue-600 hover:text-blue-800 hover:underline break-all"
@@ -89,8 +89,9 @@ export default function StudentContactsPage() {
 
                     {person.phoneNumber && (
                         <div className="flex items-center gap-2">
-                            <FaPhone className="text-gray-400 text-sm" />
-                            <a href={`tel:${person.phoneNumber}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                            <FaPhone className="text-gray-400 text-sm"/>
+                            <a href={`tel:${person.phoneNumber}`}
+                               className="text-blue-600 hover:text-blue-800 hover:underline">
                                 {person.phoneNumber}
                             </a>
                         </div>
@@ -98,32 +99,23 @@ export default function StudentContactsPage() {
 
                     {showCompany && person.companyName && (
                         <div className="flex items-center gap-2">
-                            <FaBuilding className="text-gray-400 text-sm" />
+                            <FaBuilding className="text-gray-400 text-sm"/>
                             <span className="text-gray-700 font-medium">{person.companyName}</span>
                         </div>
                     )}
-
-                    {person.program && (
-                        <div className="flex items-center gap-2">
-                            <FaBriefcase className="text-gray-400 text-sm" />
-                            <span className="text-gray-700 font-medium">
-                                {t(person.program.replace("program.", ""))}
-        </span>
-                        </div>
-                    )}
-
-
+                    
                     {person.field && (
                         <div className="flex items-center gap-2">
-                            <FaBriefcase className="text-gray-400 text-sm" />
-                            <span className="text-gray-700">{person.field}</span>
+                            <FaBriefcase className="text-gray-400 text-sm"/>
+                            <span className="text-gray-700">{t(person.field)}</span>
                         </div>
                     )}
 
                     {isProfessor && person.department && (
                         <div className="flex items-center gap-2">
-                            <FaBriefcase className="text-gray-400 text-sm" />
-                            <span className="text-gray-700">{t('dashboardStudent.contacts.department')}: {person.department}</span>
+                            <FaBriefcase className="text-gray-400 text-sm"/>
+                            <span
+                                className="text-gray-700">{t('dashboardStudent.contacts.department')}: {person.department}</span>
                         </div>
                     )}
                 </div>
@@ -134,7 +126,7 @@ export default function StudentContactsPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <FaSpinner className="animate-spin text-blue-600 text-5xl" />
+                <FaSpinner className="animate-spin text-blue-600 text-5xl"/>
                 <span className="ml-4 text-blue-600 font-medium">{t('dashboardStudent.contacts.loading')}</span>
             </div>
         );
@@ -151,8 +143,10 @@ export default function StudentContactsPage() {
                 <div>
                     <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t('dashboardStudent.contacts.supportTeam')}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <ContactCard title={t('dashboardStudent.contacts.professor')} icon={FaUser} person={professor} isProfessor={true} />
-                        <ContactCard title={t('dashboardStudent.contacts.gestionnaire')} icon={FaUser} person={gestionnaire} />
+                        <ContactCard title={t('dashboardStudent.contacts.professor')} icon={FaUser} person={professor}
+                                     isProfessor={true}/>
+                        <ContactCard title={t('dashboardStudent.contacts.gestionnaire')} icon={FaUser}
+                                     person={gestionnaire}/>
                     </div>
                 </div>
 
@@ -171,7 +165,7 @@ export default function StudentContactsPage() {
                                 <ContactCard
                                     key={employeur.id || index}
                                     title={`${t('dashboardStudent.contacts.employeur')} ${employeurs.length > 1 ? index + 1 : ''}`}
-                                     icon={FaBuilding}
+                                    icon={FaBuilding}
                                     person={employeur}
                                     showCompany={true}
                                 />
@@ -183,7 +177,7 @@ export default function StudentContactsPage() {
 
             <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-blue-800 text-sm">
-                    <strong>{t('dashboardStudent.contacts.infoReadonlyTitle', { defaultValue: 'Information:' })}</strong> {t('dashboardStudent.contacts.infoReadonly', { defaultValue: 'Ces informations sont en lecture seule.' })}
+                    <strong>{t('dashboardStudent.contacts.infoReadonlyTitle', {defaultValue: 'Information:'})}</strong> {t('dashboardStudent.contacts.infoReadonly', {defaultValue: 'Ces informations sont en lecture seule.'})}
                 </p>
             </div>
         </div>

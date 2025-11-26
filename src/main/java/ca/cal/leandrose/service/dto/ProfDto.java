@@ -2,11 +2,12 @@ package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Prof;
 import ca.cal.leandrose.model.auth.Role;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Map;
-
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class ProfDto extends UserDTO {
   private String employeeNumber;
@@ -61,4 +62,3 @@ public class ProfDto extends UserDTO {
     return new ProfDto();
   }
 }
-

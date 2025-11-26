@@ -1,10 +1,9 @@
 package ca.cal.leandrose.repository;
 
 import ca.cal.leandrose.model.Convocation;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ConvocationRepository extends JpaRepository<Convocation, Long> {
 

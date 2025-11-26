@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from 'react-router-dom';
-import {getOfferCandidatures, previewOfferPdf, getEmployeurOffers} from '../../api/apiEmployeur.jsx';
+import React, {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
+import {useNavigate} from 'react-router-dom';
+import {getEmployeurOffers, getOfferCandidatures, previewOfferPdf} from '../../api/apiEmployeur.jsx';
 import PdfViewer from '../PdfViewer.jsx';
 
-export default function InternshipOffersList({ selectedTerm }) {
-    const { t } = useTranslation();
+export default function InternshipOffersList({selectedTerm}) {
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const [offers, setOffers] = useState([]);
     const [filteredOffers, setFilteredOffers] = useState([]);
@@ -72,15 +72,16 @@ export default function InternshipOffersList({ selectedTerm }) {
     useEffect(() => {
         if (!filteredOffers || filteredOffers.length === 0) return;
         let cancelled = false;
+
         async function loadCounts() {
             setLoadingCounts(true);
             const entries = await Promise.all(filteredOffers.map(async (o) => {
                 try {
                     const list = await getOfferCandidatures(o.id);
                     const preview = list.slice(0, 3).map(c => [c.studentFirstName, c.studentLastName].filter(Boolean).join(' ') || c.studentName || '?');
-                    return [o.id, { count: list.length, preview }];
+                    return [o.id, {count: list.length, preview}];
                 } catch {
-                    return [o.id, { count: 0, preview: [] }];
+                    return [o.id, {count: 0, preview: []}];
                 }
             }));
             if (!cancelled) {
@@ -88,8 +89,11 @@ export default function InternshipOffersList({ selectedTerm }) {
                 setLoadingCounts(false);
             }
         }
+
         loadCounts();
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [filteredOffers]);
 
     const getStatusLabel = (status) => {
@@ -97,28 +101,32 @@ export default function InternshipOffersList({ selectedTerm }) {
 
         if (statusUpper === "PENDING" || statusUpper === "PENDING_VALIDATION") {
             return (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+                <span
+                    className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                     <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
                     {t("internshipOffersList.status.pendingapproval")}
                 </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
             return (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                <span
+                    className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
                     <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2"></span>
                     {t("internshipOffersList.status.published")}
                 </span>
             );
         } else if (statusUpper === "REJECTED") {
             return (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">
+                <span
+                    className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">
                     <span className="w-2 h-2 bg-red-500 rounded-full inline-block mr-2"></span>
                     {t("internshipOffersList.status.rejected")}
                 </span>
             );
         } else {
             return (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
+                <span
+                    className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
                     <span className="w-2 h-2 bg-gray-500 rounded-full inline-block mr-2"></span>
                     {statusUpper || t("internshipOffersList.status.unknown")}
                 </span>
@@ -271,12 +279,17 @@ export default function InternshipOffersList({ selectedTerm }) {
                             return (
                                 <tr key={offer.id}
                                     className={`hover:bg-gray-50 ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
-                                    {...(isClickable ? {onClick: (e) => { if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`); }} : {})}
+                                    {...(isClickable ? {
+                                        onClick: (e) => {
+                                            if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`);
+                                        }
+                                    } : {})}
                                 >
                                     <td className="px-6 py-4">
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0">
-                                                <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
+                                                <div
+                                                    className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
                                                     <span className="text-white text-sm font-bold">📋</span>
                                                 </div>
                                             </div>
@@ -303,14 +316,19 @@ export default function InternshipOffersList({ selectedTerm }) {
                                         {getStatusLabel(offer.status)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span title={preview} className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
+                                        <span title={preview}
+                                              className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
                                             {loadingCounts && !cData ? t('internshipOffersList.loading') : count}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2" onClick={(e)=> e.stopPropagation()}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2"
+                                        onClick={(e) => e.stopPropagation()}>
                                         {statusUpper === "REJECTED" && (
                                             <button
-                                                onClick={() => { setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment')); setShowCommentModal(true); }}
+                                                onClick={() => {
+                                                    setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment'));
+                                                    setShowCommentModal(true);
+                                                }}
                                                 className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
                                                 title={t('internshipOffersList.viewRejectionComment')}
                                             >
@@ -344,7 +362,8 @@ export default function InternshipOffersList({ selectedTerm }) {
 
                 {showCommentModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                        <div className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full max-h-[80vh] mx-4 overflow-hidden">
+                        <div
+                            className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full max-h-[80vh] mx-4 overflow-hidden">
                             <h2 className="text-lg font-semibold mb-4 text-red-700">
                                 {t('internshipOffersList.rejectionCommentTitle', 'Commentaire de rejet')}
                             </h2>

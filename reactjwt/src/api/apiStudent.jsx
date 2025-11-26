@@ -228,7 +228,7 @@ export async function updateStudentInfo(program, token = null) {
         const response = await fetch(`${API_BASE}/student/update-info`, {
             method: 'PUT',
             headers: getAuthHeaders(token),
-            body: JSON.stringify({ program })
+            body: JSON.stringify({program})
         });
 
         await handleApiResponse(response);

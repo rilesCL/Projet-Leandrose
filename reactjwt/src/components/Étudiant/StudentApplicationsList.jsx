@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { getMyCandidatures, getMyConvocations, acceptCandidatureByStudent, rejectCandidatureByStudent } from '../../api/apiStudent.jsx';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React, {useEffect, useState} from 'react';
+import {
+    acceptCandidatureByStudent,
+    getMyCandidatures,
+    getMyConvocations,
+    rejectCandidatureByStudent
+} from '../../api/apiStudent.jsx';
+import {useNavigate} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 
 export default function StudentApplicationsList() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const [candidatures, setCandidatures] = useState([]);
     const [convocations, setConvocations] = useState([]);
@@ -14,12 +19,12 @@ export default function StudentApplicationsList() {
     const [selectedConvocation, setSelectedConvocation] = useState(null);
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [selectedCandidatureForReject, setSelectedCandidatureForReject] = useState(null);
-    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+    const [toast, setToast] = useState({show: false, message: '', type: 'success'});
     const [activeTab, setActiveTab] = useState('ALL');
 
     const showToast = (message, type = 'success') => {
-        setToast({ show: true, message, type });
-        setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 4000);
+        setToast({show: true, message, type});
+        setTimeout(() => setToast({show: false, message: '', type: 'success'}), 4000);
     };
 
     const loadData = async () => {
@@ -44,11 +49,15 @@ export default function StudentApplicationsList() {
 
     useEffect(() => {
         let cancelled = false;
+
         async function fetchData() {
             await loadData();
         }
+
         if (!cancelled) fetchData();
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [t]);
 
     const handleAcceptCandidature = async (candidatureId) => {
@@ -104,7 +113,6 @@ export default function StudentApplicationsList() {
 
     const openConvocationModal = (candidature) => {
         const convocation = convocations.find(conv => conv.candidatureId === candidature.id);
-        console.log(convocation)
         setSelectedConvocation(convocation);
         setShowConvocationModal(true);
     };
@@ -119,7 +127,8 @@ export default function StudentApplicationsList() {
         const base = 'px-3 py-1 text-xs font-medium rounded-full border';
         switch (s) {
             case 'PENDING':
-                return <span className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("studentApplicationsList.status.PENDING")}</span>;
+                return <span
+                    className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("studentApplicationsList.status.PENDING")}</span>;
             case 'CONVENED':
                 return (
                     <button
@@ -130,11 +139,14 @@ export default function StudentApplicationsList() {
                     </button>
                 );
             case 'ACCEPTEDBYEMPLOYEUR':
-                return <span className={`${base} bg-purple-100 text-purple-800 border-purple-200`}>{t("studentApplicationsList.status.ACCEPTEDBYEMPLOYEUR")}</span>;
+                return <span
+                    className={`${base} bg-purple-100 text-purple-800 border-purple-200`}>{t("studentApplicationsList.status.ACCEPTEDBYEMPLOYEUR")}</span>;
             case 'ACCEPTED':
-                return <span className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("studentApplicationsList.status.ACCEPTED")}</span>;
+                return <span
+                    className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("studentApplicationsList.status.ACCEPTED")}</span>;
             case 'REJECTED':
-                return <span className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("studentApplicationsList.status.REJECTED")}</span>;
+                return <span
+                    className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("studentApplicationsList.status.REJECTED")}</span>;
             default:
                 return <span className={`${base} bg-gray-100 text-gray-800 border-gray-200`}>{s}</span>;
         }
@@ -165,22 +177,47 @@ export default function StudentApplicationsList() {
     const counts = getCounts();
 
     const tabs = [
-        { key: 'ALL', label: t("studentApplicationsList.tabs.all"), count: counts.ALL, color: 'text-gray-700' },
-        { key: 'ACCEPTEDBYEMPLOYEUR', label: t("studentApplicationsList.tabs.awaiting"), count: counts.ACCEPTEDBYEMPLOYEUR, color: 'text-purple-700' },
-        { key: 'PENDING', label: t("studentApplicationsList.tabs.pending"), count: counts.PENDING, color: 'text-yellow-700' },
-        { key: 'CONVENED', label: t("studentApplicationsList.tabs.convened"), count: counts.CONVENED, color: 'text-blue-700' },
-        { key: 'ACCEPTED', label: t("studentApplicationsList.tabs.accepted"), count: counts.ACCEPTED, color: 'text-green-700' },
-        { key: 'REJECTED', label: t("studentApplicationsList.tabs.rejected"), count: counts.REJECTED, color: 'text-red-700' },
+        {key: 'ALL', label: t("studentApplicationsList.tabs.all"), count: counts.ALL, color: 'text-gray-700'},
+        {
+            key: 'ACCEPTEDBYEMPLOYEUR',
+            label: t("studentApplicationsList.tabs.awaiting"),
+            count: counts.ACCEPTEDBYEMPLOYEUR,
+            color: 'text-purple-700'
+        },
+        {
+            key: 'PENDING',
+            label: t("studentApplicationsList.tabs.pending"),
+            count: counts.PENDING,
+            color: 'text-yellow-700'
+        },
+        {
+            key: 'CONVENED',
+            label: t("studentApplicationsList.tabs.convened"),
+            count: counts.CONVENED,
+            color: 'text-blue-700'
+        },
+        {
+            key: 'ACCEPTED',
+            label: t("studentApplicationsList.tabs.accepted"),
+            count: counts.ACCEPTED,
+            color: 'text-green-700'
+        },
+        {
+            key: 'REJECTED',
+            label: t("studentApplicationsList.tabs.rejected"),
+            count: counts.REJECTED,
+            color: 'text-red-700'
+        },
     ];
 
     if (loading) {
         return (
             <div className="bg-white shadow rounded-lg p-6">
-                <div className="animate-pulse h-4 bg-gray-200 w-1/3 mb-4 rounded" />
+                <div className="animate-pulse h-4 bg-gray-200 w-1/3 mb-4 rounded"/>
                 <div className="space-y-2">
-                    <div className="h-3 bg-gray-200 rounded" />
-                    <div className="h-3 bg-gray-200 rounded w-5/6" />
-                    <div className="h-3 bg-gray-200 rounded w-4/6" />
+                    <div className="h-3 bg-gray-200 rounded"/>
+                    <div className="h-3 bg-gray-200 rounded w-5/6"/>
+                    <div className="h-3 bg-gray-200 rounded w-4/6"/>
                 </div>
             </div>
         );
@@ -200,7 +237,9 @@ export default function StudentApplicationsList() {
     if (!candidatures.length) {
         return (
             <div className="bg-white shadow rounded-lg p-6 text-center">
-                <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center text-2xl">📄</div>
+                <div
+                    className="mx-auto mb-4 h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center text-2xl">📄
+                </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">{t("studentApplicationsList.noApplicationsTitle")}</h3>
                 <p className="text-gray-600 mb-4">{t("studentApplicationsList.noApplicationsText")}</p>
             </div>
@@ -213,7 +252,7 @@ export default function StudentApplicationsList() {
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-medium text-gray-900">{t("studentApplicationsList.title")}</h3>
                     <p className="text-sm text-gray-600">
-                        {t("studentApplicationsList.count", { count: candidatures.length })}
+                        {t("studentApplicationsList.count", {count: candidatures.length})}
                     </p>
                 </div>
 
@@ -235,9 +274,12 @@ export default function StudentApplicationsList() {
                                     </option>
                                 ))}
                             </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            <div
+                                className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                     viewBox="0 0 20 20">
+                                    <path
+                                        d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                                 </svg>
                             </div>
                         </div>
@@ -246,9 +288,12 @@ export default function StudentApplicationsList() {
 
                 {filteredCandidatures.length === 0 ? (
                     <div className="px-6 py-12 text-center">
-                        <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                            <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <div
+                            className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                            <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                         </div>
                         <h3 className="text-sm font-medium text-gray-900 mb-1">
@@ -311,13 +356,18 @@ export default function StudentApplicationsList() {
             </div>
 
             {showRejectModal && selectedCandidatureForReject && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={closeRejectModal}>
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full relative" onClick={(e) => e.stopPropagation()}>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                     onClick={closeRejectModal}>
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full relative"
+                         onClick={(e) => e.stopPropagation()}>
                         <div className="bg-red-50 rounded-t-lg px-6 py-4 border-b border-red-100">
                             <div className="flex items-center gap-3">
-                                <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                <div
+                                    className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                     </svg>
                                 </div>
                                 <div>
@@ -347,23 +397,28 @@ export default function StudentApplicationsList() {
                             </div>
 
                             <div className="flex justify-end space-x-2">
-                                <button onClick={closeRejectModal} className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">{t("studentApplicationsList.rejectModal.cancel")}</button>
-                                <button onClick={confirmRejectCandidature} className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">{t("studentApplicationsList.actions.reject")}</button>
+                                <button onClick={closeRejectModal}
+                                        className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">{t("studentApplicationsList.rejectModal.cancel")}</button>
+                                <button onClick={confirmRejectCandidature}
+                                        className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">{t("studentApplicationsList.actions.reject")}</button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
             {showConvocationModal && (
-                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50' onClick={closeConvocationModal}>
-                    <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative' onClick={(e) => e.stopPropagation()}>
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+                     onClick={closeConvocationModal}>
+                    <div className='bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative'
+                         onClick={(e) => e.stopPropagation()}>
                         <button
                             type='button'
                             onClick={closeConvocationModal}
                             className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors'
                         >
                             <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2}
+                                      d='M6 18L18 6M6 6l12 12'/>
                             </svg>
                         </button>
 
@@ -381,8 +436,10 @@ export default function StudentApplicationsList() {
 
                                 <div className='space-y-3'>
                                     <div className='flex items-start'>
-                                        <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                        <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none'
+                                             stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2}
+                                                  d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/>
                                         </svg>
                                         <div className='flex-1'>
                                             <p className='text-xs text-gray-500 uppercase font-medium'>{t('studentApplicationsList.convocationModal.date')}</p>
@@ -391,9 +448,12 @@ export default function StudentApplicationsList() {
                                     </div>
 
                                     <div className='flex items-start'>
-                                        <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
-                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
+                                        <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none'
+                                             stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2}
+                                                  d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'/>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2}
+                                                  d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'/>
                                         </svg>
                                         <div className='flex-1'>
                                             <p className='text-xs text-gray-500 uppercase font-medium'>{t('studentApplicationsList.convocationModal.location')}</p>
@@ -403,8 +463,10 @@ export default function StudentApplicationsList() {
 
                                     {selectedConvocation.message && (
                                         <div className='flex items-start'>
-                                            <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' />
+                                            <svg className='w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0' fill='none'
+                                                 stroke='currentColor' viewBox='0 0 24 24'>
+                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2}
+                                                      d='M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z'/>
                                             </svg>
                                             <div className='flex-1'>
                                                 <p className='text-xs text-gray-500 uppercase font-medium mb-2'>{t('studentApplicationsList.convocationModal.message')}</p>

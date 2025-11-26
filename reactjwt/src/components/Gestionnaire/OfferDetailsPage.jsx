@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getOfferDetails, previewOfferPdf } from "../../api/apiGestionnaire.jsx";
-import { useTranslation } from "react-i18next";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {getOfferDetails, previewOfferPdf} from "../../api/apiGestionnaire.jsx";
+import {useTranslation} from "react-i18next";
 import PdfViewer from "../PdfViewer.jsx";
 
 export default function OfferDetailsPage() {
-    const { id } = useParams();
-    const { t } = useTranslation();
+    const {id} = useParams();
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [offer, setOffer] = useState(null);
@@ -33,10 +33,10 @@ export default function OfferDetailsPage() {
                 setError(t("pendingOffers.errors.serverError") + err);
             } finally {
                 setLoading(false);
-                console.log(offer)
 
             }
         }
+
         loadOffer();
     }, [id, t]);
 
@@ -119,7 +119,6 @@ export default function OfferDetailsPage() {
                     </button>
                 </div>
             </div>
-
 
 
             {selectedPdfUrl && (

@@ -1,12 +1,11 @@
-
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { getCandidaturesAcceptees, previewCv } from "../../api/apiGestionnaire.jsx";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
+import {getCandidaturesAcceptees, previewCv} from "../../api/apiGestionnaire.jsx";
 import PdfViewer from "../PdfViewer.jsx";
 
-export default function EntentesStagePage({ selectedTerm }) {
-    const { t } = useTranslation();
+export default function EntentesStagePage({selectedTerm}) {
+    const {t} = useTranslation();
     const [candidatures, setCandidatures] = useState([]);
     const [filteredCandidatures, setFilteredCandidatures] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -90,7 +89,7 @@ export default function EntentesStagePage({ selectedTerm }) {
 
             {filteredCandidatures.length === 0 ? (
                 <p className="text-sm text-gray-600">
-                    {selectedTerm 
+                    {selectedTerm
                         ? t("ententesStagePage.noApplicationsForTerm", {
                             term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}`
                         })
@@ -139,7 +138,8 @@ export default function EntentesStagePage({ selectedTerm }) {
                                     )}
                                 </div>
 
-                                <div className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
+                                <div
+                                    className="flex flex-col md:flex-row items-start md:items-center space-y-2 md:space-y-0 md:space-x-2">
                                     {cv && (
                                         <button
                                             onClick={() => handlePreviewCv(cv.id)}

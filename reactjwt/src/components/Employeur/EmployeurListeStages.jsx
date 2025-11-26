@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Link} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {
+    FaCheck,
+    FaClock,
     FaEye,
+    FaFileAlt,
     FaSignature,
     FaSort,
-    FaSortUp,
     FaSortDown,
-    FaFileAlt,
+    FaSortUp,
     FaTimes,
-    FaClock,
-    FaUser,
-    FaCheck
+    FaUser
 } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
-import { getCurrentUser } from "../../api/apiSignature.jsx";
-import { getEmployeurEntentes, previewEmployeurEntentePdf } from "../../api/apiEmployeur.jsx";
+import {getCurrentUser} from "../../api/apiSignature.jsx";
+import {getEmployeurEntentes, previewEmployeurEntentePdf} from "../../api/apiEmployeur.jsx";
 
-export default function EmployeurListeStages({ selectedTerm }) {
+export default function EmployeurListeStages({selectedTerm}) {
     const [ententes, setEntentes] = useState([]);
     const [filteredEntentes, setFilteredEntentes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,8 +25,8 @@ export default function EmployeurListeStages({ selectedTerm }) {
     const {t} = useTranslation();
     const [sortDirection, setSortDirection] = useState("desc");
     const [pdfToPreview, setPdfToPreview] = useState(null);
-    const [toast, setToast] = useState({ show: false, message: '', type: '' });
-    const [signatureModal, setSignatureModal] = useState({ show: false, entente: null });
+    const [toast, setToast] = useState({show: false, message: '', type: ''});
+    const [signatureModal, setSignatureModal] = useState({show: false, entente: null});
 
     useEffect(() => {
         if (!selectedTerm || !ententes.length) {
@@ -36,8 +36,6 @@ export default function EmployeurListeStages({ selectedTerm }) {
 
         const filtered = ententes.filter(entente => {
             const offer = entente.internshipOffer;
-            console.log("entente: ", entente);
-            console.log("offre: ", offer);
             if (!offer || !offer.schoolTerm) return false;
 
             const termParts = offer.schoolTerm.trim().split(/\s+/);
@@ -55,7 +53,7 @@ export default function EmployeurListeStages({ selectedTerm }) {
     }, []);
 
     const showToast = (message, type = 'error') => {
-        setToast({ show: true, message, type });
+        setToast({show: true, message, type});
     };
 
     const fetchAgreements = async () => {
@@ -63,7 +61,7 @@ export default function EmployeurListeStages({ selectedTerm }) {
             const token = sessionStorage.getItem("accessToken");
             const userData = await getCurrentUser(token);
             const allEntentes = await getEmployeurEntentes(token);
-            const employerEntentes = allEntentes.filter(entente =>{
+            const employerEntentes = allEntentes.filter(entente => {
                     const employeurEmail = entente.internshipOffer?.employeurDto?.email;
                     return employeurEmail === userData.email;
                 }
@@ -95,7 +93,7 @@ export default function EmployeurListeStages({ selectedTerm }) {
     };
 
     const handleStatusClick = (entente) => {
-        setSignatureModal({ show: true, entente });
+        setSignatureModal({show: true, entente});
     };
 
     const getSignatureStatus = (entente) => {
@@ -194,12 +192,14 @@ export default function EmployeurListeStages({ selectedTerm }) {
             );
         }
 
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
+        return <span
+            className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
     };
 
     const getSortIcon = (field) => {
-        if (sortField !== field) return <FaSort className="text-gray-400" />;
-        return sortDirection === "asc" ? <FaSortUp className="text-indigo-600" /> : <FaSortDown className="text-indigo-600" />;
+        if (sortField !== field) return <FaSort className="text-gray-400"/>;
+        return sortDirection === "asc" ? <FaSortUp className="text-indigo-600"/> :
+            <FaSortDown className="text-indigo-600"/>;
     };
 
     const formatDate = (dateString) => {
@@ -245,15 +245,16 @@ export default function EmployeurListeStages({ selectedTerm }) {
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {toast.show && (
-                    <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
-                        toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-                    }`}>
+                    <div
+                        className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+                            toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+                        }`}>
                         <span>{toast.message}</span>
                         <button
-                            onClick={() => setToast({ show: false, message: '', type: '' })}
+                            onClick={() => setToast({show: false, message: '', type: ''})}
                             className="text-white hover:text-gray-200 transition-colors"
                         >
-                            <FaTimes className="text-lg" />
+                            <FaTimes className="text-lg"/>
                         </button>
                     </div>
                 )}
@@ -266,10 +267,10 @@ export default function EmployeurListeStages({ selectedTerm }) {
                                     {t("ententeStage.model.stage_signatures")}
                                 </h3>
                                 <button
-                                    onClick={() => setSignatureModal({ show: false, entente: null })}
+                                    onClick={() => setSignatureModal({show: false, entente: null})}
                                     className="text-gray-400 hover:text-gray-600 transition-colors"
                                 >
-                                    <FaTimes className="text-xl" />
+                                    <FaTimes className="text-xl"/>
                                 </button>
                             </div>
 
@@ -279,17 +280,19 @@ export default function EmployeurListeStages({ selectedTerm }) {
                                     return (
                                         <>
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.employeur.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("ententeStage.model.employer")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("ententeStage.model.employer")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
                                                     {signatures.employeur.signed ? (
@@ -303,17 +306,19 @@ export default function EmployeurListeStages({ selectedTerm }) {
                                             </div>
 
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.etudiant.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("ententeStage.model.student")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("ententeStage.model.student")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
                                                     {signatures.etudiant.signed ? (
@@ -327,17 +332,19 @@ export default function EmployeurListeStages({ selectedTerm }) {
                                             </div>
 
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.gestionnaire.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("ententeStage.model.manager")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("ententeStage.model.manager")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
                                                     {signatures.gestionnaire.signed ? (
@@ -356,7 +363,7 @@ export default function EmployeurListeStages({ selectedTerm }) {
 
                             <div className="mt-6 flex justify-end">
                                 <button
-                                    onClick={() => setSignatureModal({ show: false, entente: null })}
+                                    onClick={() => setSignatureModal({show: false, entente: null})}
                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                 >
                                     {t("ententeStage.model.close")}
@@ -378,8 +385,9 @@ export default function EmployeurListeStages({ selectedTerm }) {
                 {sortedEntentes.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-8 text-center">
                         <div className="max-w-md mx-auto">
-                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <FaFileAlt className="text-2xl text-gray-400" />
+                            <div
+                                className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <FaFileAlt className="text-2xl text-gray-400"/>
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
                                 {selectedTerm ? t("ententeStage.noEntenteForTerm") : t("ententeStage.noneStagetitle")}
@@ -470,7 +478,7 @@ export default function EmployeurListeStages({ selectedTerm }) {
                                                     onClick={() => handleViewPdf(entente.id)}
                                                     className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
                                                 >
-                                                    <FaEye className="text-sm" />
+                                                    <FaEye className="text-sm"/>
                                                     <span>{t("ententeStage.actions.look")}</span>
                                                 </button>
                                                 {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasEmployerSigned(entente) && (
@@ -478,7 +486,7 @@ export default function EmployeurListeStages({ selectedTerm }) {
                                                         to={`/dashboard/employeur/ententes/${entente.id}/signer`}
                                                         className="text-green-600 hover:text-green-900 flex items-center space-x-1"
                                                     >
-                                                        <FaSignature className="text-sm" />
+                                                        <FaSignature className="text-sm"/>
                                                         <span>{t("ententeStage.actions.sign")}</span>
                                                     </Link>
                                                 )}

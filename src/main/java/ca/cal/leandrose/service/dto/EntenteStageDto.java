@@ -1,14 +1,13 @@
 package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Map;
 
 @Data
 @Builder
@@ -71,7 +70,8 @@ public class EntenteStageDto {
                 .durationInWeeks(offer.getDurationInWeeks())
                 .address(offer.getAddress())
                 .remuneration(offer.getRemuneration())
-                    .schoolTerm(offer.getSchoolTerm() != null ? offer.getSchoolTerm().getTermAsString() : null)
+                .schoolTerm(
+                    offer.getSchoolTerm() != null ? offer.getSchoolTerm().getTermAsString() : null)
                 .status(offer.getStatus().name())
                 .employeurId(offer.getEmployeur() != null ? offer.getEmployeur().getId() : null)
                 .companyName(offer.getCompanyName())
@@ -91,7 +91,7 @@ public class EntenteStageDto {
         .dateDebut(offer.getStartDate())
         .duree(offer.getDurationInWeeks())
         .remuneration(offer.getRemuneration())
-            .schoolTerm(offer.getSchoolTerm() != null ? offer.getSchoolTerm().getTermAsString() : null)
+        .schoolTerm(offer.getSchoolTerm() != null ? offer.getSchoolTerm().getTermAsString() : null)
         .lieu(offer.getAddress())
         .contactEntreprise(offer.getEmployeurEmail())
         .dateCreation(entente.getDateCreation())

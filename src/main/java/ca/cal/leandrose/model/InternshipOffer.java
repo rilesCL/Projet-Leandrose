@@ -1,8 +1,8 @@
 package ca.cal.leandrose.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDate;
+import lombok.*;
 
 @Entity
 @Data
@@ -45,14 +45,6 @@ public class InternshipOffer {
 
   @Column private String rejectionComment;
 
-  public enum Status {
-    PENDING_VALIDATION,
-    PUBLISHED,
-    ASSIGNED,
-    ARCHIVED,
-    REJECTED
-  }
-
   public Long getEmployeurId() {
     return employeur != null ? employeur.getId() : null;
   }
@@ -74,7 +66,16 @@ public class InternshipOffer {
         ? employeur.getCredentials().getEmail()
         : null;
   }
-  public String getTerm(){
-      return (schoolTerm != null) ? schoolTerm.getTermAsString() : null;
+
+  public String getTerm() {
+    return (schoolTerm != null) ? schoolTerm.getTermAsString() : null;
+  }
+
+  public enum Status {
+    PENDING_VALIDATION,
+    PUBLISHED,
+    ASSIGNED,
+    ARCHIVED,
+    REJECTED
   }
 }

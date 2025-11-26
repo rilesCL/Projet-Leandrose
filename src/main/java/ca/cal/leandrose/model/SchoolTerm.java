@@ -3,27 +3,19 @@ package ca.cal.leandrose.model;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import java.time.LocalDate;
+import java.time.Month;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.time.Month;
 
 @Embeddable
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class SchoolTerm {
-  public enum Season {
-    WINTER,
-    SUMMER,
-    FALL
-  }
-
   @Enumerated(EnumType.STRING)
   private Season season;
-
   private int year;
 
   public static SchoolTerm getNextTerm() {
@@ -89,6 +81,12 @@ public class SchoolTerm {
   }
 
   public String getTermAsString() {
-    return (getSeason() != null)? getSeason().toString() + " " + getYear():null;
+    return (getSeason() != null)? getSeason() + " " + getYear():null;
+  }
+
+  public enum Season {
+    WINTER,
+    SUMMER,
+    FALL
   }
 }

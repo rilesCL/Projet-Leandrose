@@ -1,11 +1,11 @@
 package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Candidature;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor

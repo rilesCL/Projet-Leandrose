@@ -3,8 +3,8 @@ import {getApprovedOffers, getRejectedOffers} from "../../api/apiGestionnaire.js
 import {Link, useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 
-export default function OffersPage({ selectedTerm }) {
-    const { t } = useTranslation()
+export default function OffersPage({selectedTerm}) {
+    const {t} = useTranslation()
     const [offers, setOffers] = useState([]);
     const [filteredOffers, setFilteredOffers] = useState([]);
     const [filter, setFilter] = useState("approved");
@@ -23,6 +23,7 @@ export default function OffersPage({ selectedTerm }) {
                 setError(t("pendingOffers.errors.serverError"));
             }
         }
+
         loadOffers();
     }, [filter, t]);
 
@@ -57,7 +58,7 @@ export default function OffersPage({ selectedTerm }) {
                     <button
                         onClick={() => setFilter("approved")}
                         className={`px-3 py-1 rounded ${
-                            filter === "approved" ? "bg-green-600 text-white shadow-md" 
+                            filter === "approved" ? "bg-green-600 text-white shadow-md"
                                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                         }`}
                     >
@@ -66,7 +67,7 @@ export default function OffersPage({ selectedTerm }) {
                     <button
                         onClick={() => setFilter("rejected")}
                         className={`px-3 py-1 rounded ${
-                            filter === "rejected" ? "bg-red-600 text-white shadow-md" 
+                            filter === "rejected" ? "bg-red-600 text-white shadow-md"
                                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                         }`}
                     >
@@ -88,9 +89,9 @@ export default function OffersPage({ selectedTerm }) {
                     {filteredOffers.length === 0 ? (
                         <tr>
                             <td colSpan="3" className="border px-4 py-8 text-center text-gray-500">
-                                {selectedTerm 
-                                    ? t("pendingOffers.noOffersForTerm", { 
-                                        term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}` 
+                                {selectedTerm
+                                    ? t("pendingOffers.noOffersForTerm", {
+                                        term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}`
                                     })
                                     : t("pendingOffers.noOffers")
                                 }
@@ -98,7 +99,7 @@ export default function OffersPage({ selectedTerm }) {
                         </tr>
                     ) : (
                         filteredOffers.map((offer) => (
-                            <tr key={offer.id} >
+                            <tr key={offer.id}>
                                 <td className="border px-4 py-2">{offer.description}</td>
                                 <td className="border px-4 py-2">{offer.companyName}</td>
                                 <td className="border px-4 py-2">

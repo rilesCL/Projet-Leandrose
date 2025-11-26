@@ -2,11 +2,12 @@ package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.auth.Role;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Map;
-
+@EqualsAndHashCode(callSuper = false)
 @Data
 public class EmployeurDto extends UserDTO {
   private String companyName;

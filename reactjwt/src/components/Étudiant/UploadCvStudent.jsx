@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { uploadStudentCv } from "../../api/apiStudent.jsx";
+import React, {useState} from "react";
+import {useTranslation} from "react-i18next";
+import {uploadStudentCv} from "../../api/apiStudent.jsx";
 
 const MAX_FILE_SIZE_MB = 5;
 const BYTES_IN_MB = 1024 * 1024;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * BYTES_IN_MB;
 
 export default function UploadCvStudent() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [pdfFile, setPdfFile] = useState(null);
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
@@ -25,7 +25,7 @@ export default function UploadCvStudent() {
         } else if (pdfFile.type !== "application/pdf" && !pdfFile.name.toLowerCase().endsWith(".pdf")) {
             e.pdfFile = t("uploadCvStudent.errors.format");
         } else if (pdfFile.size > MAX_FILE_SIZE_BYTES) {
-            e.pdfFile = t("uploadCvStudent.errors.size", { max: MAX_FILE_SIZE_MB });
+            e.pdfFile = t("uploadCvStudent.errors.size", {max: MAX_FILE_SIZE_MB});
         }
         setErrors(e);
         return Object.keys(e).length === 0;
@@ -35,11 +35,11 @@ export default function UploadCvStudent() {
         const file = e.target.files?.[0] || null;
         if (!file) {
             setPdfFile(null);
-            setErrors(prev => ({ ...prev, pdfFile: undefined }));
+            setErrors(prev => ({...prev, pdfFile: undefined}));
             return;
         }
         setPdfFile(file);
-        setErrors(prev => ({ ...prev, pdfFile: undefined }));
+        setErrors(prev => ({...prev, pdfFile: undefined}));
     }
 
     async function handleSubmit(evt) {
@@ -117,7 +117,7 @@ export default function UploadCvStudent() {
                                         </div>
                                     ) : (
                                         <div className="text-gray-500">
-                                            {t("uploadCvStudent.noFileSelected", { max: MAX_FILE_SIZE_MB })}
+                                            {t("uploadCvStudent.noFileSelected", {max: MAX_FILE_SIZE_MB})}
                                         </div>
                                     )}
                                 </div>
@@ -137,7 +137,8 @@ export default function UploadCvStudent() {
                             >
                                 {submitting ? (
                                     <>
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <div
+                                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                         {t("uploadCvStudent.submitting")}
                                     </>
                                 ) : (
@@ -165,11 +166,13 @@ export default function UploadCvStudent() {
                             >
                                 <div className="flex items-center">
                                     {serverMessageType === "success" ? (
-                                        <div className="h-4 w-4 mr-2 rounded-full bg-green-600 flex items-center justify-center">
+                                        <div
+                                            className="h-4 w-4 mr-2 rounded-full bg-green-600 flex items-center justify-center">
                                             <span className="text-white text-xs font-bold">✓</span>
                                         </div>
                                     ) : (
-                                        <div className="h-4 w-4 mr-2 rounded-full bg-red-600 flex items-center justify-center">
+                                        <div
+                                            className="h-4 w-4 mr-2 rounded-full bg-red-600 flex items-center justify-center">
                                             <span className="text-white text-xs font-bold">!</span>
                                         </div>
                                     )}

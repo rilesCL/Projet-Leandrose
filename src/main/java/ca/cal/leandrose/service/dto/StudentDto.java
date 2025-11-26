@@ -2,11 +2,12 @@ package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.model.auth.Role;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Map;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class StudentDto extends UserDTO {
   private String studentNumber;

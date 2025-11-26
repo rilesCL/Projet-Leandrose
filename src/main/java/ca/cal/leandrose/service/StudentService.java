@@ -10,14 +10,13 @@ import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.GestionnaireDto;
 import ca.cal.leandrose.service.dto.ProfDto;
 import ca.cal.leandrose.service.dto.StudentDto;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -122,18 +121,19 @@ public class StudentService {
                   return studentEntenteId != null && studentEntenteId.equals(studentId);
                 })
             .filter(entente -> entente.getProf() != null)
-            .sorted((e1, e2) -> {
-              if (e1.getDateModification() == null && e2.getDateModification() == null) {
-                return 0;
-              }
-              if (e1.getDateModification() == null) {
-                return 1;
-              }
-              if (e2.getDateModification() == null) {
-                return -1;
-              }
-              return e2.getDateModification().compareTo(e1.getDateModification());
-            })
+            .sorted(
+                (e1, e2) -> {
+                  if (e1.getDateModification() == null && e2.getDateModification() == null) {
+                    return 0;
+                  }
+                  if (e1.getDateModification() == null) {
+                    return 1;
+                  }
+                  if (e2.getDateModification() == null) {
+                    return -1;
+                  }
+                  return e2.getDateModification().compareTo(e1.getDateModification());
+                })
             .collect(Collectors.toList());
 
     return ententes.stream()
@@ -156,18 +156,19 @@ public class StudentService {
                   return studentEntenteId != null && studentEntenteId.equals(studentId);
                 })
             .filter(entente -> entente.getGestionnaire() != null)
-            .sorted((e1, e2) -> {
-              if (e1.getDateModification() == null && e2.getDateModification() == null) {
-                return 0;
-              }
-              if (e1.getDateModification() == null) {
-                return 1;
-              }
-              if (e2.getDateModification() == null) {
-                return -1;
-              }
-              return e2.getDateModification().compareTo(e1.getDateModification());
-            })
+            .sorted(
+                (e1, e2) -> {
+                  if (e1.getDateModification() == null && e2.getDateModification() == null) {
+                    return 0;
+                  }
+                  if (e1.getDateModification() == null) {
+                    return 1;
+                  }
+                  if (e2.getDateModification() == null) {
+                    return -1;
+                  }
+                  return e2.getDateModification().compareTo(e1.getDateModification());
+                })
             .collect(Collectors.toList());
 
     return ententes.stream()

@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { getEligibleEvaluations, checkExistingEvaluation, previewEvaluationPdf, checkTeacherAssigned } from '../../api/apiEmployeur';
+import React, {useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
+import {
+    checkExistingEvaluation,
+    checkTeacherAssigned,
+    getEligibleEvaluations,
+    previewEvaluationPdf
+} from '../../api/apiEmployeur';
 import PdfViewer from '../PdfViewer.jsx';
 
-export default function EvaluationsList({ selectedTerm }) {
+export default function EvaluationsList({selectedTerm}) {
     const [eligibleAgreements, setEligibleAgreements] = useState([]);
     const [filteredAgreements, setFilteredAgreements] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -58,7 +63,7 @@ export default function EvaluationsList({ selectedTerm }) {
                         teacherAssignmentMap[key] = teacherCheck.teacherAssigned;
                     } catch (error) {
                         console.error(t("evaluationList.errors.checking_evaluation") + `${agreement.studentId}`, error)
-                        statusMap[key] = { exists: false };
+                        statusMap[key] = {exists: false};
                         teacherAssignmentMap[key] = false;
                     }
                 }
@@ -141,7 +146,8 @@ export default function EvaluationsList({ selectedTerm }) {
                                             <h3 className="text-xl font-semibold text-gray-900">
                                                 {agreement.studentFirstName} {agreement.studentLastName}
                                             </h3>
-                                            <span className="text-xs font-medium uppercase tracking-wide bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
+                                            <span
+                                                className="text-xs font-medium uppercase tracking-wide bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">
                                                 {t(agreement.studentProgram)}
                                             </span>
                                         </div>
@@ -150,16 +156,21 @@ export default function EvaluationsList({ selectedTerm }) {
                                         </p>
                                         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                                             <span className="flex items-center gap-1">
-                                                <span className="font-medium text-gray-700">{t("ententeStage.student")}:</span>
+                                                <span
+                                                    className="font-medium text-gray-700">{t("ententeStage.student")}:</span>
                                                 {agreement.companyName}
                                             </span>
                                         </div>
 
                                         {hasEvaluation && evaluation && (
                                             <div className="mt-2">
-                                                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 text-green-700 text-sm font-medium">
-                                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                <div
+                                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 text-green-700 text-sm font-medium">
+                                                    <svg className="w-4 h-4 mr-1" fill="currentColor"
+                                                         viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd"
+                                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                              clipRule="evenodd"/>
                                                     </svg>
                                                     <span>{t("evaluationList.evaluation")} {evaluation.submitted ? t('evaluationList.submitted')
                                                         : t('evaluationList.draft_created')} - {new Date(evaluation.dateEvaluation).toLocaleDateString()}</span>
@@ -168,7 +179,8 @@ export default function EvaluationsList({ selectedTerm }) {
                                         )}
                                     </div>
 
-                                    <div className="flex flex-col items-start justify-center md:items-end md:justify-center gap-3">
+                                    <div
+                                        className="flex flex-col items-start justify-center md:items-end md:justify-center gap-3">
                                         {hasEvaluation ? (
                                             <button
                                                 onClick={() => handleViewPdf(agreement.studentId, agreement.offerId)}
@@ -178,7 +190,7 @@ export default function EvaluationsList({ selectedTerm }) {
                                             </button>
                                         ) : (
                                             <Link
-                                                to={isTeacherAssigned ? `/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`: '#'}
+                                                to={isTeacherAssigned ? `/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}` : '#'}
                                                 className={`inline-flex items-center justify-center px-4 py-2 rounded-md text-white text-sm font-medium shadow-sm transition ${
                                                     isTeacherAssigned
                                                         ? 'bg-blue-600 hover:bg-blue-700'

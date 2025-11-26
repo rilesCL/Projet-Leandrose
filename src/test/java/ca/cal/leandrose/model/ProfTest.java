@@ -1,9 +1,9 @@
 package ca.cal.leandrose.model;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import ca.cal.leandrose.model.auth.Role;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ProfTest {
 
@@ -58,4 +58,3 @@ class ProfTest {
     assertEquals("Mathématiques", prof.getDepartment());
   }
 }
-

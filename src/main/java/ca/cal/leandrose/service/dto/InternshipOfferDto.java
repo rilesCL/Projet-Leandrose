@@ -1,17 +1,17 @@
 package ca.cal.leandrose.service.dto;
 
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class InternshipOfferDto {
+  String rejectionComment;
   private Long id;
   private String description;
   private LocalDate startDate;
@@ -26,7 +26,6 @@ public class InternshipOfferDto {
   private String errorMessage;
   private LocalDate validationDate;
   private EmployeurDto employeurDto;
-  String rejectionComment;
 
   public InternshipOfferDto(
       Long id,
@@ -38,8 +37,7 @@ public class InternshipOfferDto {
       String status,
       EmployeurDto employeurDto,
       String pdfPath,
-      String schoolTerm
-      ) {
+      String schoolTerm) {
     this.id = id;
     this.description = description;
     this.startDate = startDate;

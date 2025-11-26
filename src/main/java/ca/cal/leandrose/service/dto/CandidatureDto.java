@@ -1,12 +1,11 @@
 package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Candidature;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -39,6 +38,7 @@ public class CandidatureDto {
                 .remuneration(candidature.getInternshipOffer().getRemuneration())
                 .companyName(candidature.getInternshipOffer().getCompanyName())
                 .employeurId(candidature.getInternshipOffer().getEmployeurId())
+                .schoolTerm(candidature.getInternshipOffer().getSchoolTerm().getTermAsString())
                 .build())
         .cv(CvDto.create(candidature.getCv()))
         .status(candidature.getStatus())

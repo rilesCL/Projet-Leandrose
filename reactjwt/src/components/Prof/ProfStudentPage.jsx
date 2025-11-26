@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
-import { fetchProfStudents, getProfMe } from "../../api/apiProf.jsx";
+import React, {useEffect, useMemo, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {FaSignOutAlt} from "react-icons/fa";
+import {fetchProfStudents, getProfMe} from "../../api/apiProf.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
 
 const STATUS_LABELS = {
@@ -58,7 +58,7 @@ export default function ProfStudentsPage() {
     const handleLogout = () => {
         sessionStorage.clear();
         localStorage.clear();
-        navigate("/login", { replace: true });
+        navigate("/login", {replace: true});
     };
 
     useEffect(() => {
@@ -158,7 +158,7 @@ export default function ProfStudentsPage() {
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"
                             >
-                                <FaSignOutAlt className="mr-1" />
+                                <FaSignOutAlt className="mr-1"/>
                                 <span className="hidden sm:inline">
                                     Déconnexion
                                 </span>
@@ -311,7 +311,8 @@ export default function ProfStudentsPage() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.stageStatus)}`}>
+                                                    <span
+                                                        className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.stageStatus)}`}>
                                                         {prettifyStatus(it.stageStatus)}
                                                     </span>
                                             </td>

@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Trash2, User } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { sendChatMessage, clearChatSession } from '../../api/apiGestionnaire.jsx';
+import React, {useEffect, useRef, useState} from 'react';
+import {Send, Trash2, User} from 'lucide-react';
+import {useTranslation} from 'react-i18next';
+import {clearChatSession, sendChatMessage} from '../../api/apiGestionnaire.jsx';
 
 function getAuthHeaders(contentType = "application/json") {
     const accessToken = sessionStorage.getItem("accessToken");
@@ -13,8 +13,8 @@ function getAuthHeaders(contentType = "application/json") {
     return headers;
 }
 
-export default function Chatbot({ isOpen = false, onToggle }) {
-    const { t } = useTranslation();
+export default function Chatbot({isOpen = false, onToggle}) {
+    const {t} = useTranslation();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -95,7 +95,7 @@ export default function Chatbot({ isOpen = false, onToggle }) {
     }, []);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
     };
 
     useEffect(() => {
@@ -184,7 +184,8 @@ export default function Chatbot({ isOpen = false, onToggle }) {
 
     return (
         <div className="fixed bottom-4 right-4 z-50">
-            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-96 h-[600px] flex flex-col overflow-hidden">
+            <div
+                className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-96 h-[600px] flex flex-col overflow-hidden">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4">
                     <div className="flex items-center justify-between">
@@ -201,7 +202,7 @@ export default function Chatbot({ isOpen = false, onToggle }) {
                                 className="p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
                                 title="Réinitialiser"
                             >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4"/>
                             </button>
                             {onToggle && (
                                 <button
@@ -235,7 +236,8 @@ export default function Chatbot({ isOpen = false, onToggle }) {
                                             : 'bg-gray-300 text-gray-700'
                                     }`}
                                 >
-                                    {message.role === 'user' ? <User className="w-4 h-4" /> : <span className="text-lg">🤖</span>}
+                                    {message.role === 'user' ? <User className="w-4 h-4"/> :
+                                        <span className="text-lg">🤖</span>}
                                 </div>
                                 <div
                                     className={`rounded-lg p-3 ${
@@ -265,15 +267,18 @@ export default function Chatbot({ isOpen = false, onToggle }) {
                             <div className="flex items-center space-x-2 bg-white rounded-lg p-3 shadow-sm">
                                 <span className="text-lg">🤖</span>
                                 <div className="flex space-x-1">
-                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                                         style={{animationDelay: '0ms'}}></div>
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                                         style={{animationDelay: '150ms'}}></div>
+                                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+                                         style={{animationDelay: '300ms'}}></div>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    <div ref={messagesEndRef} />
+                    <div ref={messagesEndRef}/>
                 </div>
 
                 {/* Suggested Questions */}
@@ -311,7 +316,7 @@ export default function Chatbot({ isOpen = false, onToggle }) {
                             disabled={!input.trim() || loading}
                             className="bg-blue-600 text-white rounded-lg px-4 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                         >
-                            <Send className="w-4 h-4" />
+                            <Send className="w-4 h-4"/>
                         </button>
                     </div>
                     <p className="text-xs text-gray-500 mt-1.5">

@@ -4,6 +4,9 @@ import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.model.SchoolTerm;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
+import java.io.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,10 +15,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @SpringBootApplication
 public class LeandrOseApplication {
@@ -36,8 +35,7 @@ public class LeandrOseApplication {
       CandidatureService candidatureService,
       ConvocationService convocationService,
       EntenteStageService ententeStageService,
-      ProfService profService,
-      ChatService chatService) {
+      ProfService profService) {
 
     return args -> {
       try {
@@ -49,13 +47,13 @@ public class LeandrOseApplication {
             "macolo",
             Program.COMPUTER_SCIENCE.getTranslationKey());
 
-            studentService.createStudent(
-                "Ghilas",
-                "Amr",
-                "ghil.amr@student.com",
-                "Password123",
-                "STU001",
-                Program.COMPUTER_SCIENCE.getTranslationKey());
+        studentService.createStudent(
+            "Ghilas",
+            "Amr",
+            "ghil.amr@student.com",
+            "Password123",
+            "STU001",
+            Program.COMPUTER_SCIENCE.getTranslationKey());
 
         studentService.createStudentwithTerm(
             "John",
@@ -93,8 +91,7 @@ public class LeandrOseApplication {
         CvDto cvDto = cvService.uploadCv(studentConvocation.getId(), cvFile);
         CvDto cvApproved = gestionnaireService.approveCv(cvDto.getId());
 
-        MultipartFile offerFile =
-            loadPdfFromResources("Offre_Stage_TechInnovation.pdf");
+        MultipartFile offerFile = loadPdfFromResources("Offre_Stage_TechInnovation.pdf");
         InternshipOfferDto offerDto =
             internshipOfferService.createOfferDto(
                 "Développeur Full-Stack Junior",
@@ -222,8 +219,7 @@ public class LeandrOseApplication {
         CvDto cvDtoEntente = cvService.uploadCv(studentEntente.getId(), cvFileEntente);
         CvDto cvApprovedEntente = gestionnaireService.approveCv(cvDtoEntente.getId());
 
-        MultipartFile offerFileEntente =
-            loadPdfFromResources("Offre_Stage_Solutions_Pro.pdf");
+        MultipartFile offerFileEntente = loadPdfFromResources("Offre_Stage_Solutions_Pro.pdf");
         InternshipOfferDto offerDtoEntente =
             internshipOfferService.createOfferDto(
                 "Stage en développement web",
@@ -247,26 +243,9 @@ public class LeandrOseApplication {
             candidatureService.acceptByStudent(
                 candidatureAcceptedEntente.getId(), studentEntente.getId());
 
-        EntenteStageDto ententeDto = new EntenteStageDto();
-        ententeDto.setCandidatureId(candidatureFullyAccepted.getId());
-        ententeDto.setDateDebut(offerApprovedEntente.getStartDate());
-        ententeDto.setDuree(offerApprovedEntente.getDurationInWeeks());
-        ententeDto.setLieu(offerApprovedEntente.getAddress());
-        ententeDto.setRemuneration(offerApprovedEntente.getRemuneration());
-        ententeDto.setMissionsObjectifs(
-            """
-                                L'étudiant(e) sera amené(e) à :
-                                - Développer des fonctionnalités web en utilisant React et Node.js
-                                - Participer aux revues de code et aux cérémonies Agile
-                                - Collaborer avec l'équipe de développement sur des projets clients
-                                - Améliorer ses compétences en développement full-stack
+          EntenteStageDto ententeDto = getEntenteStageDto(candidatureFullyAccepted, offerApprovedEntente);
 
-                                Objectifs d'apprentissage :
-                                - Maîtriser les frameworks modernes de développement web
-                                - Comprendre les méthodologies Agile en entreprise
-                                - Développer son autonomie et sa capacité à résoudre des problèmes""");
-
-        EntenteStageDto ententeCreated = ententeStageService.creerEntente(ententeDto);
+          EntenteStageDto ententeCreated = ententeStageService.creerEntente(ententeDto);
 
         StudentDto studentEntente2 =
             studentService.createStudent(
@@ -281,8 +260,7 @@ public class LeandrOseApplication {
         CvDto cvDtoEntente2 = cvService.uploadCv(studentEntente2.getId(), cvFileEntente2);
         CvDto cvApprovedEntente2 = gestionnaireService.approveCv(cvDtoEntente2.getId());
 
-        MultipartFile offerFileEntente2 =
-            loadPdfFromResources("Offre_Stage_Solutions_Pro_2.pdf");
+        MultipartFile offerFileEntente2 = loadPdfFromResources("Offre_Stage_Solutions_Pro_2.pdf");
         InternshipOfferDto offerDtoEntente2 =
             internshipOfferService.createOfferDto(
                 "Stage en développement mobile",
@@ -401,8 +379,7 @@ public class LeandrOseApplication {
         CvDto cvApprovedProf = gestionnaireService.approveCv(cvDtoProf.getId());
         System.out.println("✓ CV approuvé pour l'étudiant");
 
-        MultipartFile offerFileProf =
-            loadPdfFromResources("Offre_Stage_TechQuebec.pdf");
+        MultipartFile offerFileProf = loadPdfFromResources("Offre_Stage_TechQuebec.pdf");
         InternshipOfferDto offerDtoProf =
             internshipOfferService.createOfferDto(
                 "Développeur Java/Spring Boot",
@@ -498,8 +475,29 @@ public class LeandrOseApplication {
     };
   }
 
-  private MultipartFile loadPdfFromResources(String filename)
-      throws IOException {
+    private static EntenteStageDto getEntenteStageDto(CandidatureDto candidatureFullyAccepted, InternshipOfferDto offerApprovedEntente) {
+        EntenteStageDto ententeDto = new EntenteStageDto();
+        ententeDto.setCandidatureId(candidatureFullyAccepted.getId());
+        ententeDto.setDateDebut(offerApprovedEntente.getStartDate());
+        ententeDto.setDuree(offerApprovedEntente.getDurationInWeeks());
+        ententeDto.setLieu(offerApprovedEntente.getAddress());
+        ententeDto.setRemuneration(offerApprovedEntente.getRemuneration());
+        ententeDto.setMissionsObjectifs(
+            """
+                                L'étudiant(e) sera amené(e) à :
+                                - Développer des fonctionnalités web en utilisant React et Node.js
+                                - Participer aux revues de code et aux cérémonies Agile
+                                - Collaborer avec l'équipe de développement sur des projets clients
+                                - Améliorer ses compétences en développement full-stack
+
+                                Objectifs d'apprentissage :
+                                - Maîtriser les frameworks modernes de développement web
+                                - Comprendre les méthodologies Agile en entreprise
+                                - Développer son autonomie et sa capacité à résoudre des problèmes""");
+        return ententeDto;
+    }
+
+    private MultipartFile loadPdfFromResources(String filename) throws IOException {
     ClassPathResource resource = new ClassPathResource("test.pdf");
     try (InputStream inputStream = resource.getInputStream()) {
       byte[] pdfContent = inputStream.readAllBytes();

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { getPublishedOffers } from "../../api/apiStudent.jsx";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import React, {useEffect, useState} from "react";
+import {getPublishedOffers} from "../../api/apiStudent.jsx";
+import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
-export default function StudentInternshipOffersList({ studentInfo, onReregisterClick }) {
-    const { t } = useTranslation();
+export default function StudentInternshipOffersList({studentInfo, onReregisterClick}) {
+    const {t} = useTranslation();
     const navigate = useNavigate();
 
     const [offers, setOffers] = useState([]);
@@ -47,6 +47,7 @@ export default function StudentInternshipOffersList({ studentInfo, onReregisterC
                 setLoading(false);
             }
         }
+
         fetchOffers();
     }, [t]);
 
@@ -98,7 +99,8 @@ export default function StudentInternshipOffersList({ studentInfo, onReregisterC
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t("StudentInternshipOffersList.noOffersTitle")}</h3>
             <p className="text-red-600">{error}</p>
-            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{t("ApplicationsPage.retry")}</button>
+            <button onClick={() => window.location.reload()}
+                    className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{t("ApplicationsPage.retry")}</button>
         </div>
     );
 
@@ -144,8 +146,10 @@ export default function StudentInternshipOffersList({ studentInfo, onReregisterC
                                         </div>
                                     </div>
                                     <div className="ml-3">
-                                        <div className="text-sm font-medium text-gray-900 truncate max-w-xs">{offer.description || t("StudentInternshipOffersList.description")}</div>
-                                        <div className="text-sm text-gray-500">{offer.address || t("StudentInternshipOffersList.place")}</div>
+                                        <div
+                                            className="text-sm font-medium text-gray-900 truncate max-w-xs">{offer.description || t("StudentInternshipOffersList.description")}</div>
+                                        <div
+                                            className="text-sm text-gray-500">{offer.address || t("StudentInternshipOffersList.place")}</div>
                                     </div>
                                 </div>
                             </td>
@@ -155,7 +159,8 @@ export default function StudentInternshipOffersList({ studentInfo, onReregisterC
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{translateSchoolTerm(offer.schoolTerm) || "N/A"}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{offer.durationInWeeks} semaine{offer.durationInWeeks > 1 ? 's' : ''}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button onClick={() => navigate(`/dashboard/student/offers/${offer.id}`)} className="text-indigo-600 hover:text-indigo-900">{t("StudentInternshipOffersList.viewDetails")}</button>
+                                <button onClick={() => navigate(`/dashboard/student/offers/${offer.id}`)}
+                                        className="text-indigo-600 hover:text-indigo-900">{t("StudentInternshipOffersList.viewDetails")}</button>
                             </td>
                         </tr>
                     ))}

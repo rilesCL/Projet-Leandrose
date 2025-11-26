@@ -273,7 +273,7 @@
       "continueLater": "Consulter le tableau de bord sans réinscription",
       "updating": "Mise à jour..."
     }
-},
+  },
   "programsList": {
     "title": "Programmes Existants",
     "description": "Consultez tous les programmes académiques actuellement enregistrés dans le système.",
@@ -373,7 +373,6 @@
       "serverError": "Erreur lors de l'enregistrement."
     }
   },
-
   "studentEntentes": {
     "loading": "Chargement des ententes...",
     "error": "Erreur lors du chargement des ententes",
@@ -931,7 +930,7 @@
     "notRemunerated": "Non rémunéré",
     "signatures": "Signatures",
     "employer": "Employeur",
-    "employer_role" : " de l'employeur",
+    "employer_role": " de l'employeur",
     "manager": "Gestionnaire",
     "admin": "Administration",
     "manager_role": " du gestionnaire",
@@ -1002,7 +1001,6 @@
     "loading": "Chargement du formulaire d'évaluation...",
     "submittedSuccess": "Évaluation soumise avec succès!",
     "backToEvaluationsList": "Retour à la liste des évaluations",
-
     "productivity": {
       "title": "PRODUCTIVITÉ",
       "description": "Capacité d'optimiser son rendement au travail",
@@ -1019,7 +1017,7 @@
       "q2": "Respecter les normes de qualité de l'entreprise",
       "q3": "Faire preuve d'autonomie dans la vérification de son travail",
       "q4": "Rechercher des occasions de se perfectionner",
-      "q5" : "Faire une bonne analyse des problèmes rencontrés"
+      "q5": "Faire une bonne analyse des problèmes rencontrés"
     },
     "relationships": {
       "title": "QUALITÉS DES RELATIONS INTERPERSONNELLES",

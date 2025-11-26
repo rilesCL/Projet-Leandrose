@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import React, {useEffect, useState} from 'react';
+import {FaMoon, FaSun} from 'react-icons/fa';
 
 export default function ThemeToggle() {
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
@@ -28,9 +28,9 @@ export default function ThemeToggle() {
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
             {theme === 'dark' ? (
-                <FaSun className="text-yellow-500 text-xl" />
+                <FaSun className="text-yellow-500 text-xl"/>
             ) : (
-                <FaMoon className="text-gray-700 dark:text-gray-300 text-xl" />
+                <FaMoon className="text-gray-700 dark:text-gray-300 text-xl"/>
             )}
         </button>
     );

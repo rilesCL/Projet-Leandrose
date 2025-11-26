@@ -18,6 +18,7 @@ import lombok.Setter;
 public class Prof extends UserApp {
   @Column(unique = true, nullable = false)
   private String employeeNumber;
+
   private String nameCollege;
   private String address;
   private String fax_machine;

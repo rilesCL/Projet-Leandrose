@@ -1,29 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { FaEye, FaSignature, FaSort, FaSortUp, FaSortDown, FaFileAlt, FaTimes, FaCheck, FaClock, FaUser } from "react-icons/fa";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
+import {useTranslation} from "react-i18next";
+import {
+    FaCheck,
+    FaClock,
+    FaEye,
+    FaFileAlt,
+    FaSignature,
+    FaSort,
+    FaSortDown,
+    FaSortUp,
+    FaTimes,
+    FaUser
+} from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
-import { getCurrentUser } from "../../api/apiSignature.jsx";
-import { getStudentEntentes, previewStudentEntentePdf } from "../../api/apiStudent.jsx";
+import {getCurrentUser} from "../../api/apiSignature.jsx";
+import {getStudentEntentes, previewStudentEntentePdf} from "../../api/apiStudent.jsx";
 
 export default function StudentEntentesListe() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [ententes, setEntentes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortField, setSortField] = useState("dateCreation");
     const [sortDirection, setSortDirection] = useState("desc");
     const [pdfToPreview, setPdfToPreview] = useState(null);
-    const [toast, setToast] = useState({ show: false, message: '', type: '' });
-    const [signatureModal, setSignatureModal] = useState({ show: false, entente: null });
+    const [toast, setToast] = useState({show: false, message: '', type: ''});
+    const [signatureModal, setSignatureModal] = useState({show: false, entente: null});
 
     useEffect(() => {
         fetchAgreements();
     }, []);
 
     const showToast = (message, type = 'error') => {
-        setToast({ show: true, message, type });
+        setToast({show: true, message, type});
         setTimeout(() => {
-            setToast({ show: false, message: '', type: '' });
+            setToast({show: false, message: '', type: ''});
         }, 5000);
     };
 
@@ -63,7 +74,7 @@ export default function StudentEntentesListe() {
     };
 
     const handleStatusClick = (entente) => {
-        setSignatureModal({ show: true, entente });
+        setSignatureModal({show: true, entente});
     };
 
     const getSignatureStatus = (entente) => {
@@ -173,8 +184,9 @@ export default function StudentEntentesListe() {
     };
 
     const getSortIcon = (field) => {
-        if (sortField !== field) return <FaSort className="text-gray-400" />;
-        return sortDirection === "asc" ? <FaSortUp className="text-indigo-600" /> : <FaSortDown className="text-indigo-600" />;
+        if (sortField !== field) return <FaSort className="text-gray-400"/>;
+        return sortDirection === "asc" ? <FaSortUp className="text-indigo-600"/> :
+            <FaSortDown className="text-indigo-600"/>;
     };
 
     const formatDate = (dateString) => {
@@ -221,19 +233,20 @@ export default function StudentEntentesListe() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {toast.show && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 max-w-md ${
-                            toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                        }`}>
+                        <div
+                            className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 max-w-md ${
+                                toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                            }`}>
                             <span className="flex-1">{toast.message}</span>
                             <button
-                                onClick={() => setToast({ show: false, message: '', type: '' })}
+                                onClick={() => setToast({show: false, message: '', type: ''})}
                                 className={`p-1 rounded transition-colors ${
-                                    toast.type === 'success' 
-                                        ? 'bg-green-500 hover:bg-green-600' 
+                                    toast.type === 'success'
+                                        ? 'bg-green-500 hover:bg-green-600'
                                         : 'bg-red-500 hover:bg-red-600'
                                 }`}
                             >
-                                <FaTimes className="text-lg text-white" />
+                                <FaTimes className="text-lg text-white"/>
                             </button>
                         </div>
                     </div>
@@ -247,10 +260,10 @@ export default function StudentEntentesListe() {
                                     {t("studentEntentes.signatureStatus")}
                                 </h3>
                                 <button
-                                    onClick={() => setSignatureModal({ show: false, entente: null })}
+                                    onClick={() => setSignatureModal({show: false, entente: null})}
                                     className="text-gray-400 hover:text-gray-600 transition-colors"
                                 >
-                                    <FaTimes className="text-xl" />
+                                    <FaTimes className="text-xl"/>
                                 </button>
                             </div>
 
@@ -260,17 +273,19 @@ export default function StudentEntentesListe() {
                                     return (
                                         <>
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.employeur.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("studentEntentes.employer")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("studentEntentes.employer")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
                                                     {signatures.employeur.signed ? (
@@ -284,17 +299,19 @@ export default function StudentEntentesListe() {
                                             </div>
 
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.etudiant.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("studentEntentes.student")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("studentEntentes.student")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
                                                     {signatures.etudiant.signed ? (
@@ -308,17 +325,19 @@ export default function StudentEntentesListe() {
                                             </div>
 
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.gestionnaire.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("studentEntentes.manager")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("studentEntentes.manager")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
                                                     {signatures.gestionnaire.signed ? (
@@ -337,7 +356,7 @@ export default function StudentEntentesListe() {
 
                             <div className="mt-6 flex justify-end">
                                 <button
-                                    onClick={() => setSignatureModal({ show: false, entente: null })}
+                                    onClick={() => setSignatureModal({show: false, entente: null})}
                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                 >
                                     {t("studentEntentes.close")}
@@ -361,8 +380,9 @@ export default function StudentEntentesListe() {
                 {sortedEntentes.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-8 text-center">
                         <div className="max-w-md mx-auto">
-                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <FaFileAlt className="text-2xl text-gray-400" />
+                            <div
+                                className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <FaFileAlt className="text-2xl text-gray-400"/>
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
                                 {t("studentEntentes.noEntentes")}
@@ -434,7 +454,7 @@ export default function StudentEntentesListe() {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {entente.prof ? (
                                                 <div className="flex items-center space-x-2">
-                                                    <FaUser className="text-indigo-600" />
+                                                    <FaUser className="text-indigo-600"/>
                                                     <div>
                                                         <div className="text-sm font-medium text-gray-900">
                                                             {entente.prof.firstName} {entente.prof.lastName}
@@ -464,7 +484,7 @@ export default function StudentEntentesListe() {
                                                     onClick={() => handleViewPdf(entente.id)}
                                                     className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
                                                 >
-                                                    <FaEye className="text-sm" />
+                                                    <FaEye className="text-sm"/>
                                                     <span>{t("studentEntentes.viewPdf")}</span>
                                                 </button>
                                                 {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasStudentSigned(entente) && (
@@ -472,7 +492,7 @@ export default function StudentEntentesListe() {
                                                         to={`/dashboard/student/ententes/${entente.id}/signer`}
                                                         className="text-green-600 hover:text-green-900 flex items-center space-x-1"
                                                     >
-                                                        <FaSignature className="text-sm" />
+                                                        <FaSignature className="text-sm"/>
                                                         <span>{t("studentEntentes.sign")}</span>
                                                     </Link>
                                                 )}

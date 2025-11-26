@@ -53,8 +53,8 @@ async function handleFetch(url, options) {
 export async function verifyPassword(email, password) {
     return handleFetch(`${BASE_URL}/user/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.toLowerCase(), password }),
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email: email.toLowerCase(), password}),
     });
 }
 
@@ -87,6 +87,7 @@ export async function signAgreementStudent(ententeId, token) {
         },
     });
 }
+
 export async function signAgreementGS(ententeId, token) {
     return handleFetch(`${BASE_URL}/gestionnaire/ententes/${ententeId}/signer`, {
         method: "POST",
@@ -109,8 +110,7 @@ export async function signAgreement(ententeId, token, userRole = null) {
         return signAgreementStudent(ententeId, token);
     } else if (userRole == "GESTIONNAIRE") {
         return signAgreementGS(ententeId, token);
-    }
-    else {
+    } else {
         throw {
             status: 403,
             message: "Rôle non autorisé pour signer une entente"
@@ -121,7 +121,7 @@ export async function signAgreement(ententeId, token, userRole = null) {
 export async function login(email, password) {
     return handleFetch(`${BASE_URL}/user/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.toLowerCase(), password }),
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email: email.toLowerCase(), password}),
     });
 }

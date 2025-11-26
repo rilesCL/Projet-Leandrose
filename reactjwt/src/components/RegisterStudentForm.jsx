@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { registerStudent, fetchPrograms } from "../api/apiRegister.jsx";
-import { login, getCurrentUser } from "../api/apiSignature.jsx";
-import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
-import { FaArrowLeft } from "react-icons/fa";
+import React, {useEffect, useState} from "react";
+import {fetchPrograms, registerStudent} from "../api/apiRegister.jsx";
+import {getCurrentUser, login} from "../api/apiSignature.jsx";
+import {useNavigate} from "react-router";
+import {useTranslation} from "react-i18next";
+import {FaArrowLeft} from "react-icons/fa";
 import LanguageSelector from "./LanguageSelector.jsx";
 
 const initialState = {
@@ -39,7 +39,7 @@ function validate(values, t) {
 
 export default function RegisterEtudiant() {
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [form, setForm] = useState(initialState);
     const [errors, setErrors] = useState({});
     const [globalError, setGlobalError] = useState("");
@@ -64,10 +64,10 @@ export default function RegisterEtudiant() {
     }, [t]);
 
     const handleChange = (e) => {
-        const { id, value } = e.target;
-        setForm((prev) => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setForm((prev) => ({...prev, [id]: value}));
         setErrors((prev) => {
-            const clone = { ...prev };
+            const clone = {...prev};
             delete clone[id];
             return clone;
         });
@@ -145,19 +145,21 @@ export default function RegisterEtudiant() {
                 <div className="bg-white rounded-lg shadow-md p-6 md:p-10">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-2xl font-semibold text-gray-800">{t("registerEtudiant.title")}</h2>
-                        <LanguageSelector />
+                        <LanguageSelector/>
                     </div>
 
                     <p className="text-sm text-gray-500 mb-6">{t("registerEtudiant.subtitle")}</p>
 
                     {globalError && (
-                        <div role="alert" className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 p-3 rounded">
+                        <div role="alert"
+                             className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 p-3 rounded">
                             {globalError}
                         </div>
                     )}
 
                     {successMessage && (
-                        <div role="status" className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 p-3 rounded">
+                        <div role="status"
+                             className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 p-3 rounded">
                             {successMessage}
                         </div>
                     )}
@@ -254,8 +256,9 @@ export default function RegisterEtudiant() {
                                 </button>
                             </div>
                             <div className="text-sm text-gray-500">
-                                <button type="button" onClick={() => navigate("/register")} className="text-indigo-600 hover:underline">
-                                    <FaArrowLeft />
+                                <button type="button" onClick={() => navigate("/register")}
+                                        className="text-indigo-600 hover:underline">
+                                    <FaArrowLeft/>
                                 </button>
                             </div>
                         </div>
@@ -266,7 +269,7 @@ export default function RegisterEtudiant() {
     );
 }
 
-function InputField({ id, label, placeholder, value, onChange, error, type = "text", className = "" }) {
+function InputField({id, label, placeholder, value, onChange, error, type = "text", className = ""}) {
     const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
     return (
         <div className={className}>
@@ -286,7 +289,7 @@ function InputField({ id, label, placeholder, value, onChange, error, type = "te
     );
 }
 
-function SelectField({ id, label, value, onChange, error, options, loading, placeholder, className = "", t }) {
+function SelectField({id, label, value, onChange, error, options, loading, placeholder, className = "", t}) {
     const selectClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
     return (
         <div className={className}>

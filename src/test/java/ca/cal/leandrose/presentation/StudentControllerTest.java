@@ -1,5 +1,10 @@
 package ca.cal.leandrose.presentation;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.EntenteStage;
 import ca.cal.leandrose.model.InternshipOffer;
@@ -8,6 +13,8 @@ import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +24,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = StudentController.class)
 @ActiveProfiles("test")
@@ -916,8 +915,7 @@ class StudentControllerTest {
             1L, "John", "Doe", "john@example.com", ca.cal.leandrose.model.auth.Role.STUDENT);
 
     when(userAppService.getMe(anyString())).thenReturn(student);
-    when(studentService.getProfByStudentId(1L))
-        .thenThrow(new RuntimeException("Database error"));
+    when(studentService.getProfByStudentId(1L)).thenThrow(new RuntimeException("Database error"));
 
     mockMvc
         .perform(get("/student/prof").header("Authorization", "Bearer token"))
@@ -941,8 +939,7 @@ class StudentControllerTest {
             .build();
 
     when(userAppService.getMe(anyString())).thenReturn(student);
-    when(studentService.getGestionnaireByStudentId(1L))
-        .thenReturn(Optional.of(gestionnaireDto));
+    when(studentService.getGestionnaireByStudentId(1L)).thenReturn(Optional.of(gestionnaireDto));
 
     mockMvc
         .perform(get("/student/gestionnaire").header("Authorization", "Bearer token"))
@@ -1034,8 +1031,7 @@ class StudentControllerTest {
             .build();
 
     when(userAppService.getMe(anyString())).thenReturn(student);
-    when(studentService.getEmployeursByStudentId(1L))
-        .thenReturn(List.of(employeur1, employeur2));
+    when(studentService.getEmployeursByStudentId(1L)).thenReturn(List.of(employeur1, employeur2));
 
     mockMvc
         .perform(get("/student/employeurs").header("Authorization", "Bearer token"))

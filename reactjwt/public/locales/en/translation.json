@@ -273,7 +273,6 @@
       "updating": "Updating..."
     }
   },
-
   "studentEntentes": {
     "loading": "Loading agreements...",
     "error": "Error loading agreements",
@@ -1000,7 +999,6 @@
     "loading": "Loading evaluation form...",
     "submittedSuccess": "Evaluation submitted successfully!",
     "backToEvaluationsList": "Back to Evaluations List",
-
     "productivity": {
       "title": "PRODUCTIVITY",
       "description": "Ability to optimize work performance",
@@ -1017,7 +1015,7 @@
       "q2": "Respect company quality standards",
       "q3": "Work autonomously in verifying own work",
       "q4": "Seek opportunities for improvement",
-      "q5" : "To conduct a thorough analysis of the problems encountered"
+      "q5": "To conduct a thorough analysis of the problems encountered"
     },
     "relationships": {
       "title": "QUALITY OF INTERPERSONAL RELATIONSHIP",

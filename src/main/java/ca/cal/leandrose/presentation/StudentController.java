@@ -5,6 +5,11 @@ import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -13,12 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -32,34 +31,31 @@ public class StudentController {
   private final ConvocationService convocationService;
   private final EntenteStageService ententeStageService;
 
-
-
-    @GetMapping("/me")
-    public ResponseEntity<StudentDto> getCurrentStudent(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || authHeader.isBlank()) {
-            return ResponseEntity.status(401).build();
-        }
-        UserDTO me;
-        try {
-            me = userService.getMe(authHeader);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).build();
-        }
-        if (me == null) {
-            return ResponseEntity.status(401).build();
-        }
-        if (!"STUDENT".equals(me.getRole().name())) {
-            return ResponseEntity.status(403).build();
-        }
-        try {
-            StudentDto student = studentService.getStudentById(me.getId());
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(student);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).build();
-        }
+  @GetMapping("/me")
+  public ResponseEntity<StudentDto> getCurrentStudent(HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || authHeader.isBlank()) {
+      return ResponseEntity.status(401).build();
     }
-
+    UserDTO me;
+    try {
+      me = userService.getMe(authHeader);
+    } catch (Exception e) {
+      return ResponseEntity.status(401).build();
+    }
+    if (me == null) {
+      return ResponseEntity.status(401).build();
+    }
+    if (!"STUDENT".equals(me.getRole().name())) {
+      return ResponseEntity.status(403).build();
+    }
+    try {
+      StudentDto student = studentService.getStudentById(me.getId());
+      return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(student);
+    } catch (Exception e) {
+      return ResponseEntity.status(404).build();
+    }
+  }
 
   @PostMapping(value = "/cv")
   public ResponseEntity<CvDto> uploadCv(
@@ -426,9 +422,7 @@ public class StudentController {
       java.util.Optional<GestionnaireDto> gestionnaire =
           studentService.getGestionnaireByStudentId(me.getId());
       if (gestionnaire.isPresent()) {
-        return ResponseEntity.ok()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(gestionnaire.get());
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(gestionnaire.get());
       } else {
         return ResponseEntity.status(404).build();
       }

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { FaChevronDown } from 'react-icons/fa';
+import React, {useEffect, useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {FaChevronDown} from 'react-icons/fa';
 
-export default function TermSelector({ onTermChange }) {
-    const { t } = useTranslation();
+export default function TermSelector({onTermChange}) {
+    const {t} = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [selectedTerm, setSelectedTerm] = useState(null);
     const [availableTerms, setAvailableTerms] = useState([]);
@@ -55,29 +55,29 @@ export default function TermSelector({ onTermChange }) {
             season = 'FALL';
         }
 
-        return { season, year: currentYear };
+        return {season, year: currentYear};
     };
 
     const getNextTerm = (term) => {
-        const seasonOrder = { WINTER: 0, SUMMER: 1, FALL: 2 };
+        const seasonOrder = {WINTER: 0, SUMMER: 1, FALL: 2};
         const seasons = ['WINTER', 'SUMMER', 'FALL'];
 
         const currentIndex = seasonOrder[term.season];
         const nextIndex = (currentIndex + 1) % 3;
         const nextYear = nextIndex === 0 ? term.year + 1 : term.year;
 
-        return { season: seasons[nextIndex], year: nextYear };
+        return {season: seasons[nextIndex], year: nextYear};
     };
 
     const getPreviousTerm = (term) => {
-        const seasonOrder = { WINTER: 0, SUMMER: 1, FALL: 2 };
+        const seasonOrder = {WINTER: 0, SUMMER: 1, FALL: 2};
         const seasons = ['WINTER', 'SUMMER', 'FALL'];
 
         const currentIndex = seasonOrder[term.season];
         const prevIndex = (currentIndex - 1 + 3) % 3;
         const prevYear = currentIndex === 0 ? term.year - 1 : term.year;
 
-        return { season: seasons[prevIndex], year: prevYear };
+        return {season: seasons[prevIndex], year: prevYear};
     };
 
     const formatTerm = (term) => {

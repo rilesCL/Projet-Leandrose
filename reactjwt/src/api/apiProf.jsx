@@ -9,18 +9,18 @@ async function handleFetch(url, options = {}) {
         const data = text && ct.includes("application/json") ? JSON.parse(text) : text || null;
         if (!res.ok) {
             const msg = typeof data === "string" ? data : data?.error || `Erreur ${res.status}`;
-            throw { response: { data: msg } };
+            throw {response: {data: msg}};
         }
         return data ?? [];
     } catch (err) {
         if (err?.response) throw err;
-        throw { response: { data: err?.message || "Impossible de se connecter au serveur" } };
+        throw {response: {data: err?.message || "Impossible de se connecter au serveur"}};
     }
 }
 
 function authHeaders() {
     const token = sessionStorage.getItem("accessToken");
-    const h = { Accept: "application/json" };
+    const h = {Accept: "application/json"};
     if (token) h.Authorization = `Bearer ${token}`;
     return h;
 }
@@ -36,7 +36,7 @@ export async function fetchProfStudents(profId, params = {}) {
     q.set("asc", String(params.asc ?? true));
 
     const url = `${API_BASE}/prof/${profId}/etudiants?${q.toString()}`;
-    return handleFetch(url, { method: "GET", headers: authHeaders() });
+    return handleFetch(url, {method: "GET", headers: authHeaders()});
 }
 
 export async function getProfMe(token = null) {
@@ -56,7 +56,7 @@ export async function getProfMe(token = null) {
     const data = text && ct.includes("application/json") ? JSON.parse(text) : text || null;
     if (!res.ok) {
         const msg = typeof data === "string" ? data : data?.error || `Erreur ${res.status}`;
-        throw { response: { data: msg } };
+        throw {response: {data: msg}};
     }
     return data ?? null;
 }

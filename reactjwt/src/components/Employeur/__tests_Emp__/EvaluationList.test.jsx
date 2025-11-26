@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { I18nextProvider, initReactI18next } from 'react-i18next';
+import {render, screen} from '@testing-library/react';
+import {MemoryRouter} from 'react-router-dom';
+import {I18nextProvider, initReactI18next} from 'react-i18next';
 import i18n from 'i18next';
 import EvaluationList from '../EvaluationList.jsx';
 import * as apiEmployeur from '../../../api/apiEmployeur.jsx';
@@ -14,7 +14,7 @@ vi.mock('../../../api/apiEmployeur', () => ({
 
 vi.mock('../../PdfViewer.jsx', () => ({
     __esModule: true,
-    default: () => <div data-testid="pdf-viewer-mock" />
+    default: () => <div data-testid="pdf-viewer-mock"/>
 }));
 
 const mockedApi = vi.mocked(apiEmployeur);
@@ -64,7 +64,7 @@ const MockEvaluationList = () => {
     return (
         <I18nextProvider i18n={i18nInstance}>
             <MemoryRouter>
-                <EvaluationList />
+                <EvaluationList/>
             </MemoryRouter>
         </I18nextProvider>
     );
@@ -87,13 +87,13 @@ describe('EvaluationList', () => {
             }
         ]);
 
-        mockedApi.checkExistingEvaluation.mockResolvedValue({ exists: false });
+        mockedApi.checkExistingEvaluation.mockResolvedValue({exists: false});
 
-        mockedApi.checkTeacherAssigned.mockResolvedValue({ teacherAssigned: true });
+        mockedApi.checkTeacherAssigned.mockResolvedValue({teacherAssigned: true});
     });
 
     it('renders list title and card data', async () => {
-        render(<MockEvaluationList />);
+        render(<MockEvaluationList/>);
 
         expect(await screen.findByText('List of Evaluations')).toBeInTheDocument();
         expect(await screen.findByText('Laura Dupont')).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('EvaluationList', () => {
             }
         });
 
-        render(<MockEvaluationList />);
+        render(<MockEvaluationList/>);
 
         expect(await screen.findByText(/Evaluation Submitted/)).toBeInTheDocument();
         expect(screen.getByText('View PDF')).toBeInTheDocument();
@@ -121,7 +121,7 @@ describe('EvaluationList', () => {
     it('shows empty state when no agreements are returned', async () => {
         mockedApi.getEligibleEvaluations.mockResolvedValueOnce([]);
 
-        render(<MockEvaluationList />);
+        render(<MockEvaluationList/>);
 
         expect(await screen.findByText('No evaluations available at this time.')).toBeInTheDocument();
     });

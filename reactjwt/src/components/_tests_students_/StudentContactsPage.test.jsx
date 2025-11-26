@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { vi, describe, beforeEach, test, expect } from "vitest";
+import {render, screen, waitFor} from "@testing-library/react";
+import {beforeEach, describe, expect, test, vi} from "vitest";
 import StudentContactsPage from "../Étudiant/InfosContactPage.jsx";
 
 vi.mock("react-i18next", () => ({
@@ -71,9 +71,10 @@ describe("StudentContactsPage", () => {
     });
 
     test("affiche le loader pendant le chargement", () => {
-        global.fetch.mockImplementation(() => new Promise(() => {}));
+        global.fetch.mockImplementation(() => new Promise(() => {
+        }));
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         expect(screen.getByText("Chargement...")).toBeInTheDocument();
     });
@@ -93,7 +94,7 @@ describe("StudentContactsPage", () => {
                 json: async () => mockEmployeurs
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText("Mes contacts")).toBeInTheDocument();
@@ -120,7 +121,7 @@ describe("StudentContactsPage", () => {
                 json: async () => []
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText("marie.dupont@college.ca")).toBeInTheDocument();
@@ -144,7 +145,7 @@ describe("StudentContactsPage", () => {
                 json: async () => []
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             const noContactMessages = screen.getAllByText("Aucun contact disponible");
@@ -167,7 +168,7 @@ describe("StudentContactsPage", () => {
                 json: async () => []
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText("Aucun employeur disponible")).toBeInTheDocument();
@@ -189,7 +190,7 @@ describe("StudentContactsPage", () => {
                 json: async () => mockEmployeurs
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText("Tech Corp")).toBeInTheDocument();
@@ -214,7 +215,7 @@ describe("StudentContactsPage", () => {
                 json: async () => []
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText(/Département.*Informatique/)).toBeInTheDocument();
@@ -236,7 +237,7 @@ describe("StudentContactsPage", () => {
                 json: async () => mockEmployeurs
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText(/Employeurs.*\(2\)/)).toBeInTheDocument();
@@ -246,7 +247,7 @@ describe("StudentContactsPage", () => {
     test("gère les erreurs de fetch gracieusement", async () => {
         global.fetch.mockRejectedValue(new Error("Network error"));
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText("Mes contacts")).toBeInTheDocument();
@@ -271,7 +272,7 @@ describe("StudentContactsPage", () => {
                 json: async () => []
             });
 
-        render(<StudentContactsPage />);
+        render(<StudentContactsPage/>);
 
         await waitFor(() => {
             expect(screen.getByText("Ces informations sont en lecture seule.")).toBeInTheDocument();

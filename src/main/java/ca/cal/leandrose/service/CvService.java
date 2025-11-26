@@ -5,6 +5,10 @@ import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.service.dto.CvDto;
 import com.itextpdf.text.pdf.PdfReader;
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -13,16 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.*;
-import java.util.Optional;
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class CvService {
-
-  private final CvRepository cvRepository;
 
   private static final long KILOBYTE = 1024L;
   private static final long MEGABYTE = KILOBYTE * KILOBYTE;
@@ -30,7 +27,7 @@ public class CvService {
   private static final String DEFAULT_BASE_DIR = "uploads/cvs";
   private static final String PDF_EXTENSION = ".pdf";
   private static final String PDF_CONTENT_TYPE = "application/pdf";
-
+  private final CvRepository cvRepository;
   @Value("${app.cv.max-size-mb:" + DEFAULT_MAX_SIZE_MB + "}")
   private int maxSizeMb;
 

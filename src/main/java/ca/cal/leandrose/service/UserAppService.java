@@ -5,10 +5,9 @@ import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.security.JwtTokenProvider;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.*;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,8 +55,6 @@ public class UserAppService {
 
   private ProfDto getProfDto(Long id) {
     final Optional<Prof> profOptional = profRepository.findById(id);
-    return profOptional.isPresent()
-        ? ProfDto.create(profOptional.get())
-        : ProfDto.empty();
+    return profOptional.isPresent() ? ProfDto.create(profOptional.get()) : ProfDto.empty();
   }
 }

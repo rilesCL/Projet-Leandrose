@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import React, {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
 import PdfViewer from "../PdfViewer.jsx";
-import {previewStudentCv, getStudentCv} from "../../api/apiStudent.jsx";
+import {getStudentCv, previewStudentCv} from "../../api/apiStudent.jsx";
 
 export default function StudentCvList() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [cv, setCv] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -121,12 +121,14 @@ export default function StudentCvList() {
     const status = (cv.status || "").toString().toUpperCase();
     const statusLabel =
         status === "PENDING" || status === "PENDING_VALIDATION" ? (
-            <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
+            <span
+                className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
                 <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
                 {t("studentCvList.status.pendingapproval")}
             </span>
         ) : status === "APPROVED" || status === "APPROUVED" ? (
-            <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+            <span
+                className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
                 <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2"></span>
                 {t("studentCvList.status.approved")}
             </span>
@@ -136,7 +138,8 @@ export default function StudentCvList() {
                 {t("studentCvList.status.rejected")}
             </span>
         ) : (
-            <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
+            <span
+                className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
                 <span className="w-2 h-2 bg-gray-500 rounded-full inline-block mr-2"></span>
                 {t("studentCvList.status.unknown")}
             </span>
@@ -176,7 +179,8 @@ export default function StudentCvList() {
                                         </div>
                                     </div>
                                     <div className="ml-3">
-                                        <div className="text-sm font-medium text-gray-900">{getFileName(cv.pdfPath)}</div>
+                                        <div
+                                            className="text-sm font-medium text-gray-900">{getFileName(cv.pdfPath)}</div>
                                         <div className="text-sm text-gray-500">PDF</div>
                                     </div>
                                 </div>
@@ -239,7 +243,7 @@ export default function StudentCvList() {
                                     <div className="text-gray-800 overflow-auto max-h-[50vh]">
               <pre
                   className="text-sm whitespace-pre-wrap break-words m-0"
-                  style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+                  style={{wordBreak: "break-word", overflowWrap: "anywhere"}}
               >
                 {cv.rejectionComment || "Aucun commentaire fourni."}
               </pre>
