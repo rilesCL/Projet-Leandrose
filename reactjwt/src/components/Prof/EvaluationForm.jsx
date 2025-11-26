@@ -56,35 +56,16 @@ const EvaluationForm = () => {
 
     const [formData, setFormData] = useState({
         categories: {},
-        firstMonthsHours: "",
-        secondMonthsHours: "",
-        thirdMonthHours: "",
-        salaryHours: "",
         comments: "",
         preferredStage: "",
         capacity: "",
-        sameTraineeNextStage: null,
-        workShiftYesNo: null,
-        workShifts: [
-            { start: "", end: "" },
-            { start: "", end: "" },
-            { start: "", end: "" }
-        ]
+        sameTraineeNextStage: null
     });
 
     function normalizeYesNo(value) {
         if (value === "YES") return true;
         if (value === "NO") return false;
         return value;
-    }
-
-    const isInvalidNumber = (value) => {
-        if (value === null || value === undefined) return true;
-        if(typeof value === "string") value = value.trim()
-        if (value === "") return true
-
-        const num = Number(value)
-        return isNaN(num) || num < 0
     }
 
     const validateForm = () => {
@@ -104,7 +85,6 @@ const EvaluationForm = () => {
             }
         }
 
-
         if (!formData.preferredStage)
             newErrors.preferredStage = t('evaluation.validation.selectOption');
 
@@ -114,49 +94,6 @@ const EvaluationForm = () => {
         if (!formData.sameTraineeNextStage)
             newErrors.sameTraineeNextStage = t('evaluation.validation.selectOption');
 
-        if (!formData.workShiftYesNo)
-            newErrors.workShiftYesNo = t('evaluation.validation.selectOption');
-
-        if (formData.workShiftYesNo === "YES") {
-            newErrors.workShifts = [null, null, null]
-            for (let i = 0; i < 3; i++) {
-                const {start, end} = formData.workShifts[i];
-
-                if(!start || !end){
-                    newErrors.workShifts[i] = t('evaluation.validation.missingFields');
-                }
-            }
-            if (newErrors.workShifts.every(v => v === null)){
-                delete newErrors.workShifts;
-            }
-        }
-
-        if (formData.categories.conformity) {
-            if (!formData.firstMonthsHours || formData.firstMonthsHours.trim() === "") {
-                newErrors.firstMonthsHours = t('evaluation.validation.hoursRequired');
-            } else if (isInvalidNumber(formData.firstMonthsHours)) {
-                newErrors.firstMonthsHours = t('evaluation.validation.hoursInvalid');
-            }
-
-            if (!formData.secondMonthsHours || formData.secondMonthsHours.trim() === "") {
-                newErrors.secondMonthsHours = t('evaluation.validation.hoursRequired');
-            } else if (isInvalidNumber(formData.secondMonthsHours)) {
-                newErrors.secondMonthsHours = t('evaluation.validation.hoursInvalid');
-            }
-
-            if (!formData.thirdMonthHours || formData.thirdMonthHours.trim() === "") {
-                newErrors.thirdMonthHours = t('evaluation.validation.hoursRequired');
-            } else if (isInvalidNumber(formData.thirdMonthHours)) {
-                newErrors.thirdMonthHours = t('evaluation.validation.hoursInvalid');
-            }
-        }
-        if(formData.categories.general){
-            if (!formData.salaryHours || String(formData.salaryHours).trim() === "") {
-                newErrors.salaryHours = t('evaluation.validation.salaryRequired');
-            } else if (isInvalidNumber(formData.salaryHours)) {
-                newErrors.salaryHours = t('evaluation.validation.salaryInvalid');
-            }
-        }
         return newErrors;
     };
 
@@ -196,7 +133,6 @@ const EvaluationForm = () => {
 
         loadInfo();
     }, [studentId, offerId]);
-
 
     const clearCategoryQuestionError = (categoryKey, questionIndex) => {
         setErrors(prev => {
@@ -253,13 +189,7 @@ const EvaluationForm = () => {
 
         const normalizedForm = {
             ...formData,
-            sameTraineeNextStage: normalizeYesNo(formData.sameTraineeNextStage),
-            workShiftYesNo: normalizeYesNo(formData.workShiftYesNo),
-
-            workShifts: formData.workShifts.map(ws => ({
-                from: ws.start || null,
-                to: ws.end || null
-            }))
+            sameTraineeNextStage: normalizeYesNo(formData.sameTraineeNextStage)
         };
 
         const validationErrors = validateForm();
@@ -286,7 +216,7 @@ const EvaluationForm = () => {
             setSuccessMessage(t("evaluation.submittedSuccess"));
 
             setTimeout(() => {
-                navigate("/dashboard/prof/evaluations");
+                navigate("/dashboard/prof?tab=evaluations");
             }, 2000);
 
         } catch (err) {
@@ -297,11 +227,8 @@ const EvaluationForm = () => {
         }
     };
 
-
     if (loading) return <p>{t('evaluation.loading')}</p>;
     if (error && !info) return <p className="text-red-500">{error}</p>;
-
-
 
     return (
         <div className="max-w-4xl mx-auto p-6">
@@ -384,50 +311,9 @@ const EvaluationForm = () => {
                                     })}
                                 </div>
 
-                                {/* Salary field (general, question 2) */}
-                                {groupKey === "general" && index === 1 && (
-                                    <div className="mt-3 flex justify-center">
-                                        {errors?.salaryHours && (
-                                            <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                                                {errors.salaryHours}
-                                            </p>
-                                        )}
-                                        <input
-                                            type="number"
-                                            placeholder={t('evaluation.placeholders.salary')}
-                                            className="border px-2 py-1 rounded"
-                                            value={formData.salaryHours}
-                                            onChange={e => handleChange("salaryHours", e.target.value)}
-                                        />
-                                    </div>
-                                )}
-
                             </div>
                         );
                     })}
-
-                    {/* Hours for conformity */}
-                    {groupKey === "conformity" && (
-                        <div className="mt-6 flex flex-col gap-3 items-center validation-error">
-                            <label className="font-medium">{t('evaluation.placeholders.nbHoursWeek')}</label>
-                            {errors?.firstMonthsHours && errors?.secondMonthsHours && errors?.thirdMonthHours && (
-                                <p className="text-sm text-red-600 mt-1">{errors.firstMonthsHours}</p>
-                            )}
-                            <div className="flex gap-4">
-                                <input type="number" className="border p-1 rounded" placeholder={t('evaluation.placeholders.first_month')}
-                                       value={formData.firstMonthsHours}
-                                       onChange={e => handleChange("firstMonthsHours", e.target.value)} />
-                                <input type="number" className="border p-1 rounded" placeholder={t('evaluation.placeholders.second_month')}
-                                       value={formData.secondMonthsHours}
-                                       onChange={e => handleChange("secondMonthsHours", e.target.value)} />
-
-                                <input type="number" className="border p-1 rounded" placeholder={t('evaluation.placeholders.third_month')}
-                                       value={formData.thirdMonthHours}
-                                       onChange={e => handleChange("thirdMonthHours", e.target.value)} />
-
-                            </div>
-                        </div>
-                    )}
 
                 </section>
             ))}
@@ -546,93 +432,8 @@ const EvaluationForm = () => {
                     </div>
                 </div>
 
-                {/* Variable shifts */}
-                <div className="mb-6">
-                    {errors?.workShiftYesNo && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                            {errors.workShiftYesNo}
-                        </p>
-                    )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q3")}</p>
-                    <div className="flex gap-3 justify-center">
-                        {[{ value: "YES", label: t('evaluation.observations.yes') }, { value: "NO", label: t('evaluation.observations.no') }].map(opt => {
-                            const isSelected = formData.workShiftYesNo === opt.value;
-                            return (
-                                <label
-                                    key={opt.value}
-                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-orange-100 border-2 border-orange-300 text-orange-900 font-medium
-                                        ${isSelected ? "border-orange-700 ring-2 ring-orange-400 ring-offset-2 shadow-md" : ""}
-                                    `}
-                                >
-                                    <input
-                                        type="radio"
-                                        name="obs_variableShifts"
-                                        value={opt.value}
-                                        checked={isSelected}
-                                        onChange={e => handleChange("workShiftYesNo", e.target.value)}
-                                        className="mr-2"
-                                    />
-                                    {opt.label}
-                                </label>
-                            );
-                        })}
-                    </div>
-
-                    {formData.workShiftYesNo === "YES" && (
-                        <div className="validation-error mt-4 space-y-3">
-                            {errors?.workShiftYesNo && (
-                                <p className="text-sm text-red-600 mb-2 text-center">
-                                    {errors.workShiftYesNo}
-                                </p>
-
-                            )}
-                            {[1, 2, 3].map(index => {
-                                const idx = index - 1; // convert 1-based → 0-based
-
-                                return (
-                                    <div key={index} className="flex flex-col items-center gap-1">
-                                        <div className="flex gap-3 items-center justify-center">
-
-                                            <span>{t('evaluation.observations.from')}</span>
-
-                                            <input
-                                                type="time"
-                                                className="p-2 border rounded"
-                                                value={formData.workShifts[idx].start}
-                                                onChange={e => {
-                                                    const newShifts = [...formData.workShifts];
-                                                    newShifts[idx].start = e.target.value;
-                                                    setFormData({ ...formData, workShifts: newShifts });
-                                                }}
-                                            />
-
-                                            <span>{t('evaluation.observations.to')}</span>
-
-                                            <input
-                                                type="time"
-                                                className="p-2 border rounded"
-                                                value={formData.workShifts[idx].end}
-                                                onChange={e => {
-                                                    const newShifts = [...formData.workShifts];
-                                                    newShifts[idx].end = e.target.value;
-                                                    setFormData({ ...formData, workShifts: newShifts });
-                                                }}
-                                            />
-
-                                        </div>
-                                        {errors?.workShifts?.[idx] && (
-                                            <p className="text-sm text-red-600 text-center validation-error">
-                                                {errors.workShifts[idx]}
-                                            </p>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </div>
             </section>
+
             {successMessage && (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                     <div className="flex items-center">

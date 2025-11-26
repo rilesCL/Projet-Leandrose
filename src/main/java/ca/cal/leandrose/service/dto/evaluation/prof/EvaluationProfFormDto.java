@@ -8,10 +8,6 @@ import java.util.Map;
 
 public record EvaluationProfFormDto(
         Map<String, List<QuestionResponseTeacher>> categories,
-        Integer firstMonthsHours,
-        Integer secondMonthsHours,
-        Integer thirdMonthHours,
-        String salaryHours,
         Integer preferredStage,
         Integer capacity,
         Boolean sameTraineeNextStage,
@@ -20,7 +16,6 @@ public record EvaluationProfFormDto(
 ) implements EvaluationForm {
     @Override
     public Map<String, List<? extends IQuestionResponse>> getCategories() {
-        // Safe cast since QuestionResponseTeacher implements IQuestionResponse
         @SuppressWarnings("unchecked")
         Map<String, List<? extends IQuestionResponse>> result = (Map<String, List<? extends IQuestionResponse>>)
                 (Map<?, ?>) categories;

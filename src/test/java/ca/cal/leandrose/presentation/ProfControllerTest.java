@@ -156,10 +156,6 @@ class ProfControllerTest {
 
         return new EvaluationProfFormDto(
                 categories,           // categories
-                160,                  // firstMonthsHours
-                160,                  // secondMonthsHours
-                120,                  // thirdMonthHours
-                "$25/hour",           // salaryHours
                 4,                    // preferredStage (scale 1-5)
                 5,                    // capacity (scale 1-5)
                 true,                 // sameTraineeNextStage
@@ -468,7 +464,7 @@ class ProfControllerTest {
     void getEvaluationInfo_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(profDto);
         when(evaluationStagiaireService.getEvaluationInfoForTeacher(2L, 2L, 3L))
-                .thenReturn(new EvaluationTeacherInfoDto(null, null));
+                .thenReturn(new EvaluationTeacherInfoDto(null, null, null));
 
         mockMvc.perform(get("/prof/evaluations/info")
                         .header("Authorization", "Bearer token")

@@ -3,6 +3,7 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
+import ca.cal.leandrose.service.dto.ProfDto;
 import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
@@ -178,6 +179,7 @@ public class EvaluationStagiaireService {
         Student student = entente.getCandidature().getStudent();
         InternshipOffer internship = entente.getCandidature().getInternshipOffer();
         Employeur employeur = entente.getEmployeur();
+        Prof prof = entente.getProf();
 
         if (employeur == null)
             throw new IllegalStateException("Aucun employeur associé à cette ofre de stage");
@@ -191,8 +193,10 @@ public class EvaluationStagiaireService {
                 student.getFirstName() + " " + student.getLastName(),
                 internship.getStartDate()
         );
+        ProfDto profDto = ProfDto.create(prof);
 
-        return new EvaluationTeacherInfoDto(entrepriseTeacherDto, studentTeacherDto);
+
+        return new EvaluationTeacherInfoDto(entrepriseTeacherDto, studentTeacherDto, profDto);
     }
 
     public EvaluationStagiaireDto generateEvaluationPdfByEmployer(Long evaluationId, EvaluationEmployerFormData formData, String langage){
@@ -400,7 +404,8 @@ public class EvaluationStagiaireService {
                 e.getStudent().getFirstName() + " " + e.getStudent().getLastName(),
                 e.getInternshipOffer().getStartDate()
         );
+        ProfDto prof = ProfDto.create(e.getProfesseur());
 
-        return new EvaluationTeacherInfoDto(entreprise, student);
+        return new EvaluationTeacherInfoDto(entreprise, student, prof);
     }
 }

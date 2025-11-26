@@ -92,15 +92,8 @@ public class ProfController {
             @RequestBody EvaluationProfFormDto formData,
             @RequestHeader(value = "Accept-Language", defaultValue = "fr") String language) {
 
-        System.out.println("=== PROF CONTROLLER DEBUG ===");
-        System.out.println("Request URI: " + request.getRequestURI());
-        System.out.println("Request URL: " + request.getRequestURL());
-        System.out.println("FormData: " + formData);
-        System.out.println("Authorization header present: " + (request.getHeader("Authorization") != null));
-
         try {
             UserDTO me = userService.getMe(request.getHeader("Authorization"));
-            System.out.println("User authenticated: " + me.getRole().name());
             if (!me.getRole().name().equals("PROF")) {
                 return ResponseEntity.status(403).build();
             }
