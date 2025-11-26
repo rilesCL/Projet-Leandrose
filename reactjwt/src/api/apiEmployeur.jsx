@@ -228,3 +228,24 @@ export async function getEmployeurOffers(token = null) {
     return await res.json();
 }
 
+export async function disableOffer(offerId, token){
+    const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/disable`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+            ...authHeaders(token)
+        }
+    })
+    return res.json();
+}
+export async function enableOffer(offerId, token){
+    const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/enable`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+            ...authHeaders(token)
+        }
+    })
+    return res.json();
+}
+

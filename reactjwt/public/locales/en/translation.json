@@ -373,7 +373,15 @@
       "unauthorized": "You must be logged in to view your offers.",
       "forbidden": "You do not have the necessary permissions.",
       "serverError": "Unable to connect to the server. Check your internet connection."
-    }
+    },
+    "yes": "Yes",
+    "ok": "OK",
+    "info": "Information",
+    "disable": "Disable",
+    "enable": "Enable",
+    "confirmDisable": "Are you sure you want to disable this offer?",
+    "confirmEnable": "Do you want to reactivate this offer?",
+    "enableNotAllowed": "This offer cannot be enabled because the start date has already passed"
   },
   "uploadStageEmployeur": {
     "title": "Publish an internship offer",

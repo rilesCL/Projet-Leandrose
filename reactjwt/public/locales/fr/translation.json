@@ -336,7 +336,15 @@
       "unauthorized": "Vous devez être connecté pour voir vos offres.",
       "forbidden": "Vous n'avez pas les permissions nécessaires.",
       "serverError": "Impossible de se connecter au serveur. Vérifiez votre connexion internet."
-    }
+    },
+    "yes": "Oui",
+    "ok": "OK",
+    "info": "Information",
+    "disable": "Désactiver",
+    "enable": "Activer",
+    "confirmDisable": "Êtes-vous sûr de vouloir désactiver cette offre ?",
+    "confirmEnable": "Est-ce que vous voulez réactiver cettre offre?",
+    "enableNotAllowed": "Cette offre ne peut être activée car la date de début est déjà passée."
   },
   "uploadStageEmployeur": {
     "title": "Publier une offre de stage",

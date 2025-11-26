@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {useNavigate} from 'react-router-dom';
-import {getEmployeurOffers, getOfferCandidatures, previewOfferPdf} from '../../api/apiEmployeur.jsx';
+import {
+    disableOffer,
+    enableOffer,
+    getEmployeurOffers,
+    getOfferCandidatures,
+    previewOfferPdf
+} from '../../api/apiEmployeur.jsx';
 import PdfViewer from '../PdfViewer.jsx';
 
 export default function InternshipOffersList({selectedTerm}) {
@@ -17,6 +23,12 @@ export default function InternshipOffersList({selectedTerm}) {
     const [currentComment, setCurrentComment] = useState("");
     const [showPdfModal, setShowPdfModal] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [onConfirm, setOnConfirm] = useState(null);
+
+    const [infoMessage, setInfoMessage] = useState(null);
 
     useEffect(() => {
         if (!selectedTerm || !offers.length) {
@@ -160,6 +172,59 @@ export default function InternshipOffersList({selectedTerm}) {
     const handleCreateOffer = () => {
         navigate('/dashboard/employeur/createOffer');
     };
+    const confirmAction = (message, callback) => {
+        setConfirmMessage(message);
+        setOnConfirm(() => callback);
+        setShowConfirmModal(true);
+    };
+
+    const handleDisableOffer = async (offerId) => {
+        confirmAction(
+            t("internshipOffersList.confirmDisable"),
+            async () => {
+                try {
+                    const token = sessionStorage.getItem("accessToken");
+                    await disableOffer(offerId, token);
+                    setOffers(prev =>
+                        prev.map(o =>
+                            o.id === offerId ? { ...o, status: "DISABLED" } : o
+                        )
+                    );
+                } catch (err) {
+                    setInfoMessage(err.response?.data || t("internshipOffersList.errors.serverError"));
+                }
+            }
+        );
+    }
+    const handleEnableOffer = async (offer) => {
+        const startDate = new Date(offer.startDate)
+        const today = new Date()
+        today.setHours(0,0,0,0)
+
+        if (startDate < today) {
+            setInfoMessage(
+                t("internshipOffersList.enableNotAllowed")
+            );
+            return;
+        }
+
+        confirmAction(
+            t("internshipOffersList.confirmEnable"),
+            async () => {
+                try {
+                    const token = sessionStorage.getItem("accessToken");
+                    await enableOffer(offer.id, token);
+                    setOffers(prev =>
+                        prev.map(o =>
+                            o.id === offer.id ? { ...o, status: "PUBLISHED" } : o
+                        )
+                    );
+                } catch (err) {
+                    setInfoMessage(err.response?.data || t("internshipOffersList.errors.serverError"));
+                }
+            }
+        );
+    }
 
     if (loading) {
         return (
@@ -342,6 +407,21 @@ export default function InternshipOffersList({selectedTerm}) {
                                         >
                                             <span className="mr-1">👁 {t("previewPdf.preview")}</span>
                                         </button>
+                                        {statusUpper === "PUBLISHED" || statusUpper === "APPROVED" ? (
+                                            <button
+                                                onClick={() => handleDisableOffer(offer.id)}
+                                                className="inline-flex items-center px-3 py-1 border text-sm rounded-md text-gray-700 bg-red-300 hover:bg-red-200"
+                                            >
+                                                🔒 {t("internshipOffersList.disable")}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleEnableOffer(offer)}
+                                                className="inline-flex items-center px-3 py-1 border text-sm rounded-md text-green-700 bg-green-100 hover:bg-green-200"
+                                            >
+                                                🔓 {t("internshipOffersList.enable")}
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             );
@@ -394,6 +474,59 @@ export default function InternshipOffersList({selectedTerm}) {
                     </div>
                 )}
             </div>
+            {showConfirmModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+                        <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                            {t("internshipOffersList.confirm", "Confirmation")}
+                        </h2>
+
+                        <p className="text-gray-700 mb-6 whitespace-pre-line">
+                            {confirmMessage}
+                        </p>
+
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => setShowConfirmModal(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                {t("common.cancel", "Cancel")}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowConfirmModal(false);
+                                    onConfirm && onConfirm();
+                                }}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                            >
+                                {t("internshipOffersList.yes", "Yes")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {infoMessage && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+                        <h2 className="text-lg font-semibold mb-4 text-indigo-700">
+                            {t("internshipOffersList.info")}
+                        </h2>
+
+                        <p className="text-gray-700 mb-6 whitespace-pre-line">
+                            {infoMessage}
+                        </p>
+
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setInfoMessage(null)}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                            >
+                                {t("internshipOffersList.ok")}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {showPdfModal && (
                 <PdfViewer
