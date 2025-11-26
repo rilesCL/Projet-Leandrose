@@ -103,7 +103,7 @@ export default function StudentContactsPage() {
                             <span className="text-gray-700 font-medium">{person.companyName}</span>
                         </div>
                     )}
-                    
+
                     {person.field && (
                         <div className="flex items-center gap-2">
                             <FaBriefcase className="text-gray-400 text-sm"/>
