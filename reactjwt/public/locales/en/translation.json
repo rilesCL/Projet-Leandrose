@@ -515,7 +515,9 @@
       "serverError": "Error loading offers",
       "commentRequired": "You must write a comment before rejecting an offer",
       "download": "Error downloading the offer"
-    }
+    },
+    "noOffers": "No offers available",
+    "noOffersForTerm": "No offers for the {{term}} term"
   },
   "studentApplicationsList": {
     "acceptSuccess": "You have accepted the offer",
@@ -769,7 +771,8 @@
     "createEntente": "Create agreement",
     "ententeAlreadyCreated": "Agreement already created",
     "notDefined": "—",
-    "previewError": "Unable to open CV"
+    "previewError": "Unable to open CV",
+    "noApplicationsForTerm": "No accepted applications for the {{term}} term"
   },
   "common": {
     "cancel": "Cancel"

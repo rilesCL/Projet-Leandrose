@@ -516,7 +516,9 @@
       "serverError": "Erreur lors du chargement des offres",
       "commentRequired": "Il faut écrire un commentaire avant de rejeter l'offre",
       "download": "Erreur lors du téléchargement de l'offre"
-    }
+    },
+    "noOffers": "Aucune offre disponible",
+    "noOffersForTerm": "Aucune offre pour la session {{term}}"
   },
   "studentApplicationsList": {
     "acceptSuccess": "Vous avez accepté l'offre",
@@ -771,7 +773,8 @@
     "createEntente": "Créer entente",
     "ententeAlreadyCreated": "Entente déjà créée",
     "notDefined": "—",
-    "previewError": "Impossible d'ouvrir le CV"
+    "previewError": "Impossible d'ouvrir le CV",
+    "noApplicationsForTerm": "Aucune candidature acceptée pour la session {{term}}"
   },
   "common": {
     "cancel": "Annuler"

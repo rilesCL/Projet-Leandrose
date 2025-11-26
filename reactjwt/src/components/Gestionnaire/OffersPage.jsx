@@ -3,14 +3,13 @@ import {getApprovedOffers, getRejectedOffers} from "../../api/apiGestionnaire.js
 import {Link, useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 
-export default function OffersPage() {
+export default function OffersPage({ selectedTerm }) {
     const { t } = useTranslation()
     const [offers, setOffers] = useState([]);
+    const [filteredOffers, setFilteredOffers] = useState([]);
     const [filter, setFilter] = useState("approved");
     const [error, setError] = useState("");
     const navigate = useNavigate()
-
-
 
     useEffect(() => {
         async function loadOffers() {
@@ -25,7 +24,26 @@ export default function OffersPage() {
             }
         }
         loadOffers();
-    }, [filter]);
+    }, [filter, t]);
+
+    useEffect(() => {
+        if (!selectedTerm || !offers.length) {
+            setFilteredOffers(offers);
+            return;
+        }
+
+        const filtered = offers.filter(offer => {
+            if (!offer.schoolTerm) return false;
+
+            const termParts = offer.schoolTerm.trim().split(/\s+/);
+            const offerSeason = termParts[0]?.toUpperCase();
+            const offerYear = parseInt(termParts[1]);
+
+            return offerSeason === selectedTerm.season && offerYear === selectedTerm.year;
+        });
+
+        setFilteredOffers(filtered);
+    }, [selectedTerm, offers]);
 
     return (
         <div className="bg-gray-50 flex items-center justify-center">
@@ -67,20 +85,33 @@ export default function OffersPage() {
                     </tr>
                     </thead>
                     <tbody>
-                    {offers.map((offer) => (
-                        <tr key={offer.id} >
-                            <td className="border px-4 py-2">{offer.description}</td>
-                            <td className="border px-4 py-2">{offer.companyName}</td>
-                            <td className="border px-4 py-2">
-                                <Link
-                                    to={`/dashboard/gestionnaire/offers/${offer.id}`}
-                                    className="text-blue-600 font-medium hover:underline"
-                                >
-                                    {t("offerPagesDetails.details")}
-                                </Link>
+                    {filteredOffers.length === 0 ? (
+                        <tr>
+                            <td colSpan="3" className="border px-4 py-8 text-center text-gray-500">
+                                {selectedTerm 
+                                    ? t("pendingOffers.noOffersForTerm", { 
+                                        term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}` 
+                                    })
+                                    : t("pendingOffers.noOffers")
+                                }
                             </td>
                         </tr>
-                    ))}
+                    ) : (
+                        filteredOffers.map((offer) => (
+                            <tr key={offer.id} >
+                                <td className="border px-4 py-2">{offer.description}</td>
+                                <td className="border px-4 py-2">{offer.companyName}</td>
+                                <td className="border px-4 py-2">
+                                    <Link
+                                        to={`/dashboard/gestionnaire/offers/${offer.id}`}
+                                        className="text-blue-600 font-medium hover:underline"
+                                    >
+                                        {t("offerPagesDetails.details")}
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))
+                    )}
                     </tbody>
                 </table>
 

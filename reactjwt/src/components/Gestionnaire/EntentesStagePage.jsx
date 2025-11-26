@@ -5,9 +5,10 @@ import { useTranslation } from "react-i18next";
 import { getCandidaturesAcceptees, previewCv } from "../../api/apiGestionnaire.jsx";
 import PdfViewer from "../PdfViewer.jsx";
 
-export default function EntentesStagePage() {
+export default function EntentesStagePage({ selectedTerm }) {
     const { t } = useTranslation();
     const [candidatures, setCandidatures] = useState([]);
+    const [filteredCandidatures, setFilteredCandidatures] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [cvToPreview, setCvToPreview] = useState(null);
@@ -35,6 +36,26 @@ export default function EntentesStagePage() {
 
         fetchData();
     }, [navigate]);
+
+    useEffect(() => {
+        if (!selectedTerm || !candidatures.length) {
+            setFilteredCandidatures(candidatures);
+            return;
+        }
+
+        const filtered = candidatures.filter(candidature => {
+            const offer = candidature.internshipOffer;
+            if (!offer || !offer.schoolTerm) return false;
+
+            const termParts = offer.schoolTerm.trim().split(/\s+/);
+            const offerSeason = termParts[0]?.toUpperCase();
+            const offerYear = parseInt(termParts[1]);
+
+            return offerSeason === selectedTerm.season && offerYear === selectedTerm.year;
+        });
+
+        setFilteredCandidatures(filtered);
+    }, [selectedTerm, candidatures]);
 
     const handlePreviewCv = async (cvId) => {
         try {
@@ -67,13 +88,18 @@ export default function EntentesStagePage() {
                 {t("ententesStagePage.title")}
             </h2>
 
-            {candidatures.length === 0 ? (
+            {filteredCandidatures.length === 0 ? (
                 <p className="text-sm text-gray-600">
-                    {t("ententesStagePage.noApplications")}
+                    {selectedTerm 
+                        ? t("ententesStagePage.noApplicationsForTerm", {
+                            term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}`
+                        })
+                        : t("ententesStagePage.noApplications")
+                    }
                 </p>
             ) : (
                 <div className="space-y-6">
-                    {candidatures.map((c) => {
+                    {filteredCandidatures.map((c) => {
                         const student = c.student || {};
                         const offer = c.internshipOffer || {};
                         const cv = c.cv || null;

@@ -21,8 +21,9 @@ import {
     attribuerProf
 } from "../../api/apiGestionnaire.jsx";
 
-export default function GestionnaireListeEntentes() {
+export default function GestionnaireListeEntentes({ selectedTerm }) {
     const [ententes, setEntentes] = useState([]);
+    const [filteredEntentes, setFilteredEntentes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortField, setSortField] = useState("dateCreation");
     const {t, i18n} = useTranslation();
@@ -39,6 +40,26 @@ export default function GestionnaireListeEntentes() {
     useEffect(() => {
         fetchAgreements(setEntentes, setLoading, showToast, t);
     }, [t]);
+
+    useEffect(() => {
+        if (!selectedTerm || !ententes.length) {
+            setFilteredEntentes(ententes);
+            return;
+        }
+
+        const filtered = ententes.filter(entente => {
+            const offer = entente.internshipOffer;
+            if (!offer || !offer.schoolTerm) return false;
+
+            const termParts = offer.schoolTerm.trim().split(/\s+/);
+            const offerSeason = termParts[0]?.toUpperCase();
+            const offerYear = parseInt(termParts[1]);
+
+            return offerSeason === selectedTerm.season && offerYear === selectedTerm.year;
+        });
+
+        setFilteredEntentes(filtered);
+    }, [selectedTerm, ententes]);
 
     const showToast = (message, type = 'error') => {
         setToast({ show: true, message, type });
@@ -141,7 +162,7 @@ export default function GestionnaireListeEntentes() {
     };
 
     const getSortedEntentes = () => {
-        return [...ententes].sort((a, b) => {
+        return [...filteredEntentes].sort((a, b) => {
             let aValue = a[sortField];
             let bValue = b[sortField];
 
@@ -488,10 +509,18 @@ export default function GestionnaireListeEntentes() {
                                 <FaFileAlt className="text-2xl text-gray-400" />
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                {t("ententeStage.noneStagetitle")}
+                                {selectedTerm 
+                                    ? t("ententeStage.noEntenteForTerm") 
+                                    : t("ententeStage.noneStagetitle")
+                                }
                             </h3>
                             <p className="text-gray-500 mb-6">
-                                {t("ententeStage.noneStagedescription")}
+                                {selectedTerm
+                                    ? t("ententeStage.noEntenteForTermDescription", {
+                                        term: `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}`
+                                    })
+                                    : t("ententeStage.noneStagedescription")
+                                }
                             </p>
                         </div>
                     </div>

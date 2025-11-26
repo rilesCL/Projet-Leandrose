@@ -10,6 +10,7 @@ import LanguageSelector from "../LanguageSelector.jsx";
 import GestionnaireListeEntentes from "./GestionnaireListeEntentes.jsx";
 import Chatbot from "./Chatbot.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
+import TermSelector from "../TermSelector.jsx";
 import { getGestionnaireMe } from "../../api/apiGestionnaire.jsx";
 
 export default function DashBoardGestionnaire() {
@@ -17,6 +18,7 @@ export default function DashBoardGestionnaire() {
     const { t } = useTranslation();
     const [userName, setUserName] = useState("");
     const [chatbotOpen, setChatbotOpen] = useState(false);
+    const [selectedTerm, setSelectedTerm] = useState(null);
 
     const [section, setSection] = useState(() => {
         const params = new URLSearchParams(window.location.search);
@@ -29,6 +31,10 @@ export default function DashBoardGestionnaire() {
         sessionStorage.clear();
         localStorage.clear();
         navigate("/login", { replace: true });
+    };
+
+    const handleTermChange = (term) => {
+        setSelectedTerm(term);
     };
 
     useEffect(() => {
@@ -73,6 +79,7 @@ export default function DashBoardGestionnaire() {
     {t("appName")}
 </span>
                     <div className="flex items-center gap-4">
+                        <TermSelector onTermChange={handleTermChange} />
                         <button
                             onClick={() => setChatbotOpen(!chatbotOpen)}
                             className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 border-2 text-xl ${
@@ -129,18 +136,18 @@ export default function DashBoardGestionnaire() {
 
                     {section === 'offers' && (
                         <div className="transition-opacity duration-300 ease-in-out">
-                            <OffersPage />
+                            <OffersPage selectedTerm={selectedTerm} />
                         </div>
                     )}
 
                     {section === 'applications-accepted' && (
                         <div className="transition-opacity duration-300 ease-in-out">
-                            <EntentesStagePage />
+                            <EntentesStagePage selectedTerm={selectedTerm} />
                         </div>
                     )}
                     {section === 'ententes' && (
                         <div className="transition-opacity duration-300 ease-in-out">
-                            <GestionnaireListeEntentes />
+                            <GestionnaireListeEntentes selectedTerm={selectedTerm} />
                         </div>
                     )}
                 </div>
