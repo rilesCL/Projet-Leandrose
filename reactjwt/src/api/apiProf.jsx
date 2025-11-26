@@ -29,12 +29,34 @@ export async function fetchProfStudents(profId, params = {}) {
     const q = new URLSearchParams();
     if (params.name) q.set("nom", params.name);
     if (params.company) q.set("entreprise", params.company);
-    if (params.dateFrom) q.set("dateFrom", params.dateFrom);           // yyyy-mm-dd
-    if (params.dateTo) q.set("dateTo", params.dateTo);                 // yyyy-mm-dd
-    if (params.evaluationStatus) q.set("evaluationStatus", params.evaluationStatus); // A_FAIRE|EN_COURS|TERMINEE
-    q.set("sortBy", params.sortBy || "name");                          // name|date|company
+    if (params.dateFrom) q.set("dateFrom", params.dateFrom);
+    if (params.dateTo) q.set("dateTo", params.dateTo);
+    if (params.evaluationStatus) q.set("evaluationStatus", params.evaluationStatus);
+    q.set("sortBy", params.sortBy || "name");
     q.set("asc", String(params.asc ?? true));
 
     const url = `${API_BASE}/prof/${profId}/etudiants?${q.toString()}`;
     return handleFetch(url, { method: "GET", headers: authHeaders() });
+}
+
+export async function getProfMe(token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+    const res = await fetch(`${API_BASE}/user/me`, {
+        method: 'GET',
+        headers
+    });
+    const ct = res.headers.get("content-type") || "";
+    const text = await res.text();
+    const data = text && ct.includes("application/json") ? JSON.parse(text) : text || null;
+    if (!res.ok) {
+        const msg = typeof data === "string" ? data : data?.error || `Erreur ${res.status}`;
+        throw { response: { data: msg } };
+    }
+    return data ?? null;
 }

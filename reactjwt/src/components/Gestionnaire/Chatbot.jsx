@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Trash2, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { sendChatMessage, clearChatSession } from '../../api/apiGestionnaire.jsx';
 
 function getAuthHeaders(contentType = "application/json") {
     const accessToken = sessionStorage.getItem("accessToken");
@@ -115,34 +116,8 @@ export default function Chatbot({ isOpen = false, onToggle }) {
         setLoading(true);
 
         try {
-            // Utiliser la fonction getAuthHeaders existante
-            const headers = {
-                ...getAuthHeaders(),
-                'X-Session-Id': sessionId
-            };
-
-            console.log('🔐 Headers envoyés:', headers); // Debug
-
-            const response = await fetch('http://localhost:8080/gestionnaire/chatclient', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ query: input })
-            });
-
-            console.log('📡 Response status:', response.status); // Debug
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Non authentifié. Veuillez vous reconnecter.');
-                }
-                if (response.status === 403) {
-                    throw new Error('Accès refusé. Vous devez être gestionnaire.');
-                }
-                throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log('✅ Response data:', data); // Debug
+            const token = sessionStorage.getItem("accessToken");
+            const data = await sendChatMessage(input, sessionId, token);
 
             // Nettoyer les astérisques et remplacer les clés par les valeurs traduites
             let cleanContent = data.response.replace(/^\s*\*\s+/gm, '').trim();
@@ -172,12 +147,8 @@ export default function Chatbot({ isOpen = false, onToggle }) {
         if (!sessionId) return;
 
         try {
-            const headers = getAuthHeaders();
-
-            await fetch(`http://localhost:8080/gestionnaire/chatclient/session/${sessionId}`, {
-                method: 'DELETE',
-                headers: headers
-            });
+            const token = sessionStorage.getItem("accessToken");
+            await clearChatSession(sessionId, token);
 
             const newSessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             setSessionId(newSessionId);

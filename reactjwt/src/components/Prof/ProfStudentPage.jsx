@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSignOutAlt } from "react-icons/fa";
-import { fetchProfStudents } from "../../api/apiProf.jsx";
+import { fetchProfStudents, getProfMe } from "../../api/apiProf.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
 
 const STATUS_LABELS = {
@@ -70,15 +70,7 @@ export default function ProfStudentsPage() {
         }
         (async () => {
             try {
-                const res = await fetch("http://localhost:8080/user/me", {
-                    method: "GET",
-                    headers: {
-                        Accept: "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!res.ok) throw new Error("Impossible de récupérer le profil.");
-                const me = await res.json();
+                const me = await getProfMe(token);
                 if (me?.role !== "PROF") {
                     throw new Error("Accès refusé : rôle PROF requis.");
                 }

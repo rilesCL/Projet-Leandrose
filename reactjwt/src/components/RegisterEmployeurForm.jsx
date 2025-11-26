@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { registerEmployeur, fetchPrograms } from "../api/apiRegister.jsx";
+import { login, getCurrentUser } from "../api/apiSignature.jsx";
 import { FaArrowLeft } from "react-icons/fa";
 import LanguageSelector from "./LanguageSelector.jsx";
 
@@ -86,19 +87,11 @@ export default function RegisterEmployeur() {
             setForm(initialState);
 
             setTimeout(async () => {
-                const loginRes = await fetch("http://localhost:8080/user/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email: form.email, password: form.password })
-                });
-                const loginData = await loginRes.json();
+                const loginData = await login(form.email, form.password);
                 sessionStorage.setItem("accessToken", loginData.accessToken);
                 sessionStorage.setItem("tokenType", loginData.tokenType || "BEARER");
 
-                const meRes = await fetch("http://localhost:8080/user/me", {
-                    headers: { Authorization: `Bearer ${loginData.accessToken}` }
-                });
-                const userData = await meRes.json();
+                const userData = await getCurrentUser(loginData.accessToken);
 
                 switch (userData.role) {
                     case "STUDENT":

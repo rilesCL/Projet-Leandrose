@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaEye, FaSignature, FaSort, FaSortUp, FaSortDown, FaFileAlt, FaTimes, FaCheck, FaClock, FaUser } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
+import { getCurrentUser } from "../../api/apiSignature.jsx";
+import { getStudentEntentes, previewStudentEntentePdf } from "../../api/apiStudent.jsx";
 
 export default function StudentEntentesListe() {
     const { t } = useTranslation();
@@ -28,33 +30,13 @@ export default function StudentEntentesListe() {
     const fetchAgreements = async () => {
         try {
             const token = sessionStorage.getItem("accessToken");
-
-            const userResponse = await fetch('http://localhost:8080/user/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+            const userData = await getCurrentUser(token);
+            const allEntentes = await getStudentEntentes(token);
+            const studentEntentes = allEntentes.filter(entente => {
+                const studentEmail = entente.student?.email;
+                return studentEmail === userData.email;
             });
-
-            if (userResponse.ok) {
-                const userData = await userResponse.json();
-
-                const ententesResponse = await fetch('http://localhost:8080/student/ententes', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (ententesResponse.ok) {
-                    const allEntentes = await ententesResponse.json();
-                    const studentEntentes = allEntentes.filter(entente => {
-                        const studentEmail = entente.student?.email;
-                        return studentEmail === userData.email;
-                    });
-                    setEntentes(studentEntentes);
-                }
-            }
+            setEntentes(studentEntentes);
         } catch (error) {
             console.error("Error fetching agreements:", error);
             showToast(t("studentEntentes.error"));
@@ -66,29 +48,17 @@ export default function StudentEntentesListe() {
     const handleViewPdf = async (ententeId) => {
         try {
             const token = sessionStorage.getItem("accessToken");
-
-            const response = await fetch(`http://localhost:8080/student/ententes/${ententeId}/pdf`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    showToast(t("studentEntentes.pdfNotFound"));
-                } else if (response.status === 403) {
-                    showToast(t("studentEntentes.accessDenied"));
-                } else {
-                    showToast(t("studentEntentes.pdfLoadError"));
-                }
-                return;
-            }
-
-            const blob = await response.blob();
+            const blob = await previewStudentEntentePdf(ententeId, token);
             setPdfToPreview(blob);
         } catch (error) {
             console.error("Erreur lors de la visualisation du PDF:", error);
-            showToast(t("studentEntentes.pdfViewError"));
+            if (error.message && error.message.includes("404")) {
+                showToast(t("studentEntentes.pdfNotFound"));
+            } else if (error.message && error.message.includes("403")) {
+                showToast(t("studentEntentes.accessDenied"));
+            } else {
+                showToast(t("studentEntentes.pdfViewError"));
+            }
         }
     };
 

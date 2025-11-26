@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaUser, FaBuilding, FaEnvelope, FaPhone, FaBriefcase, FaSpinner } from 'react-icons/fa';
+import { getStudentProf, getStudentGestionnaire, getStudentEmployeurs } from '../../api/apiStudent.jsx';
 
 export default function StudentContactsPage() {
     const { t } = useTranslation();
@@ -17,27 +18,23 @@ export default function StudentContactsPage() {
         try {
             setLoading(true);
             const token = sessionStorage.getItem('accessToken');
-            const headers = {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            };
 
-            const [profResponse, gestionnaireResponse, employeursResponse] = await Promise.allSettled([
-                fetch('http://localhost:8080/student/prof', { method: 'GET', headers }),
-                fetch('http://localhost:8080/student/gestionnaire', { method: 'GET', headers }),
-                fetch('http://localhost:8080/student/employeurs', { method: 'GET', headers })
+            const [profResult, gestionnaireResult, employeursResult] = await Promise.allSettled([
+                getStudentProf(token),
+                getStudentGestionnaire(token),
+                getStudentEmployeurs(token)
             ]);
 
-            if (profResponse.status === 'fulfilled' && profResponse.value.ok) {
-                setProfessor(await profResponse.value.json());
+            if (profResult.status === 'fulfilled' && profResult.value) {
+                setProfessor(profResult.value);
             }
 
-            if (gestionnaireResponse.status === 'fulfilled' && gestionnaireResponse.value.ok) {
-                setGestionnaire(await gestionnaireResponse.value.json());
+            if (gestionnaireResult.status === 'fulfilled' && gestionnaireResult.value) {
+                setGestionnaire(gestionnaireResult.value);
             }
 
-            if (employeursResponse.status === 'fulfilled' && employeursResponse.value.ok) {
-                setEmployeurs(await employeursResponse.value.json());
+            if (employeursResult.status === 'fulfilled' && employeursResult.value) {
+                setEmployeurs(Array.isArray(employeursResult.value) ? employeursResult.value : []);
             }
         } catch (err) {
             console.error('Error:', err);

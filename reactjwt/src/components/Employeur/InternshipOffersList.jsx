@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
-import {getOfferCandidatures, previewOfferPdf} from '../../api/apiEmployeur.jsx';
+import {getOfferCandidatures, previewOfferPdf, getEmployeurOffers} from '../../api/apiEmployeur.jsx';
 import PdfViewer from '../PdfViewer.jsx';
-
-const API_BASE = 'http://localhost:8080';
 
 export default function InternshipOffersList({ selectedTerm }) {
     const { t } = useTranslation();
@@ -59,25 +57,8 @@ export default function InternshipOffersList({ selectedTerm }) {
 
             try {
                 const token = sessionStorage.getItem("accessToken");
-                const response = await fetch(`${API_BASE}/employeur/offers`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.status === 401) {
-                    setError(t("internshipOffersList.errors.unauthorized"));
-                } else if (response.status === 403) {
-                    setError(t("internshipOffersList.errors.forbidden"));
-                } else if (!response.ok) {
-                    const errorText = await response.text();
-                    setError(errorText || `${t("internshipOffersList.errorTitle")} ${response.status}: ${response.statusText}`);
-                } else {
-                    const data = await response.json();
-                    setOffers(Array.isArray(data) ? data : []);
-                }
+                const data = await getEmployeurOffers(token);
+                setOffers(Array.isArray(data) ? data : []);
             } catch (err) {
                 setError(t("internshipOffersList.errors.serverError"));
             } finally {

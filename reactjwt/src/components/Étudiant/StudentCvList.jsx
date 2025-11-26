@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PdfViewer from "../PdfViewer.jsx";
-import {previewStudentCv} from "../../api/apiStudent.jsx";
+import {previewStudentCv, getStudentCv} from "../../api/apiStudent.jsx";
 
 export default function StudentCvList() {
     const { t } = useTranslation();
@@ -21,31 +21,15 @@ export default function StudentCvList() {
             setError(null);
             try {
                 const token = sessionStorage.getItem("accessToken");
-                const response = await fetch("http://localhost:8080/student/cv", {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    signal,
-                });
-
-                if (response.status === 404) {
-                    setCv(null);
-                } else if (response.status === 401) {
-                    setError(t("studentCvList.unauthorized"));
-                } else if (response.status === 403) {
-                    setError(t("studentCvList.forbidden"));
-                } else if (!response.ok) {
-                    const errorText = await response.text();
-                    setError(errorText || t("studentCvList.serverError"));
-                } else {
-                    const data = await response.json();
-                    setCv(data || null);
-                }
+                const data = await getStudentCv(token);
+                setCv(data || null);
             } catch (err) {
                 if (err.name !== "AbortError") {
-                    setError(t("studentCvList.serverError"));
+                    if (err.message && err.message.includes("404")) {
+                        setCv(null);
+                    } else {
+                        setError(t("studentCvList.serverError"));
+                    }
                 }
             } finally {
                 setLoading(false);

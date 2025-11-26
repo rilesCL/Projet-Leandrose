@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "./LanguageSelector.jsx";
+import { login, getCurrentUser } from "../api/apiSignature.jsx";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -52,43 +53,23 @@ const Login = () => {
     const fetchLogin = async () => {
         setIsSubmitting(true);
         try {
-            const response = await fetch("http://localhost:8080/user/login", {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify({
-                    email: formData.email.toLowerCase(),
-                    password: formData.password,
-                }),
-            });
-
-            if (!response.ok) {
-                switch (response.status) {
-                    case 401:
-                        setWarnings({
-                            email: t("login.errors.invalidCredentials"),
-                            password: t("login.errors.invalidCredentials"),
-                        });
-                        break;
-                    case 404:
-                        setWarnings({ email: t("login.errors.userNotFound"), password: "" });
-                        break;
-                    default:
-                        setWarnings({ email: t("login.errors.connectionError"), password: "" });
-                }
-                return;
-            }
-
-            const data = await response.json();
+            const data = await login(formData.email, formData.password);
 
             sessionStorage.setItem("accessToken", data.accessToken);
             sessionStorage.setItem("tokenType", data.tokenType || "BEARER");
 
             await fetchUserInfo(data.accessToken);
         } catch (error) {
-            setWarnings({ email: t("login.errors.serverError"), password: "" });
+            if (error.status === 401) {
+                setWarnings({
+                    email: t("login.errors.invalidCredentials"),
+                    password: t("login.errors.invalidCredentials"),
+                });
+            } else if (error.status === 404) {
+                setWarnings({ email: t("login.errors.userNotFound"), password: "" });
+            } else {
+                setWarnings({ email: t("login.errors.connectionError"), password: "" });
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -96,39 +77,27 @@ const Login = () => {
 
     const fetchUserInfo = async (token) => {
         try {
-            const response = await fetch("http://localhost:8080/user/me", {
-                method: "GET",
-                headers: {
-                    Accept: "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const userData = await getCurrentUser(token);
 
-            if (response.ok) {
-                const userData = await response.json();
+            sessionStorage.setItem("email", userData.email);
+            if (userData.id) sessionStorage.setItem("userId", userData.id);
+            if (userData.role) sessionStorage.setItem("role", userData.role);
 
-                sessionStorage.setItem("email", userData.email);
-                if (userData.id) sessionStorage.setItem("userId", userData.id);
-                if (userData.role) sessionStorage.setItem("role", userData.role);
-
-                switch (userData.role) {
-                    case "STUDENT":
-                        navigate("/dashboard/student");
-                        break;
-                    case "EMPLOYEUR":
-                        navigate("/dashboard/employeur");
-                        break;
-                    case "GESTIONNAIRE":
-                        navigate("/dashboard/gestionnaire");
-                        break;
-                    case "PROF":
-                        navigate("/prof/etudiants");
-                        break;
-                    default:
-                        navigate("/dashboard");
-                }
-            } else {
-                navigate("/dashboard");
+            switch (userData.role) {
+                case "STUDENT":
+                    navigate("/dashboard/student");
+                    break;
+                case "EMPLOYEUR":
+                    navigate("/dashboard/employeur");
+                    break;
+                case "GESTIONNAIRE":
+                    navigate("/dashboard/gestionnaire");
+                    break;
+                case "PROF":
+                    navigate("/prof/etudiants");
+                    break;
+                default:
+                    navigate("/dashboard");
             }
         } catch (error) {
             navigate("/dashboard");

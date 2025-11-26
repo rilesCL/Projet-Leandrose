@@ -181,6 +181,45 @@ export async function checkExistingEvaluation(studentId, offerId, token = null) 
     return await res.json();
 }
 
+export async function getEmployeurMe(token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+    const res = await handleFetch(`${API_BASE}/user/me`, {
+        method: 'GET',
+        headers
+    });
+    return await res.json();
+}
 
+export async function getEmployeurEntentes(token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/ententes`, {
+        method: 'GET',
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
 
+export async function previewEmployeurEntentePdf(ententeId, token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const headers = {};
+    if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+    const res = await handleFetch(`${API_BASE}/employeur/ententes/${ententeId}/pdf`, {
+        method: 'GET',
+        headers
+    });
+    return await res.blob();
+}
+
+export async function getEmployeurOffers(token = null) {
+    const res = await handleFetch(`${API_BASE}/employeur/offers`, {
+        method: 'GET',
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
 

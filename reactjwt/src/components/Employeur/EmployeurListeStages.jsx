@@ -14,6 +14,8 @@ import {
     FaCheck
 } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
+import { getCurrentUser } from "../../api/apiSignature.jsx";
+import { getEmployeurEntentes, previewEmployeurEntentePdf } from "../../api/apiEmployeur.jsx";
 
 export default function EmployeurListeStages({ selectedTerm }) {
     const [ententes, setEntentes] = useState([]);
@@ -59,34 +61,14 @@ export default function EmployeurListeStages({ selectedTerm }) {
     const fetchAgreements = async () => {
         try {
             const token = sessionStorage.getItem("accessToken");
-
-            const userResponse = await fetch('http://localhost:8080/user/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+            const userData = await getCurrentUser(token);
+            const allEntentes = await getEmployeurEntentes(token);
+            const employerEntentes = allEntentes.filter(entente =>{
+                    const employeurEmail = entente.internshipOffer?.employeurDto?.email;
+                    return employeurEmail === userData.email;
                 }
-            });
-
-            if (userResponse.ok) {
-                const userData = await userResponse.json();
-
-                const ententesResponse = await fetch('http://localhost:8080/employeur/ententes', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (ententesResponse.ok) {
-                    const allEntentes = await ententesResponse.json();
-                    const employerEntentes = allEntentes.filter(entente =>{
-                            const employeurEmail = entente.internshipOffer?.employeurDto?.email;
-                            return employeurEmail === userData.email;
-                        }
-                    );
-                    setEntentes(employerEntentes);
-                }
-            }
+            );
+            setEntentes(employerEntentes);
         } catch (error) {
             console.error(t("ententeStage.errors_fetching_agreements"), error);
             showToast(t("ententeStage.errors.loading_agreements"));
@@ -98,29 +80,17 @@ export default function EmployeurListeStages({ selectedTerm }) {
     const handleViewPdf = async (ententeId) => {
         try {
             const token = sessionStorage.getItem("accessToken");
-
-            const response = await fetch(`http://localhost:8080/employeur/ententes/${ententeId}/pdf`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    showToast(t("ententeStage.errors.pdf_agreementNotFound"));
-                } else if (response.status === 403) {
-                    showToast(t("ententeStage.errors.pdf_unauthorized"));
-                } else {
-                    showToast(t("ententeStage.errors.pdf_loading_agreements"));
-                }
-                return;
-            }
-
-            const blob = await response.blob();
+            const blob = await previewEmployeurEntentePdf(ententeId, token);
             setPdfToPreview(blob);
         } catch (error) {
             console.error(t("ententeStage.errors.pdf_viewing"), error);
-            showToast(t("ententeStage.errors.pdf_unable_view"));
+            if (error.message && error.message.includes("404")) {
+                showToast(t("ententeStage.errors.pdf_agreementNotFound"));
+            } else if (error.message && error.message.includes("403")) {
+                showToast(t("ententeStage.errors.pdf_unauthorized"));
+            } else {
+                showToast(t("ententeStage.errors.pdf_unable_view"));
+            }
         }
     };
 
@@ -397,19 +367,11 @@ export default function EmployeurListeStages({ selectedTerm }) {
                 )}
 
                 <div className="mb-8">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">{t("ententeStage.title")}</h1>
-                            <p className="text-gray-600 mt-2">
-                                {t("ententeStage.description")}
-                            </p>
-                        </div>
-                        <Link
-                            to="/dashboard/employeur"
-                            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
-                        >
-                            ← {t("ententeStage.back")}
-                        </Link>
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">{t("ententeStage.title")}</h1>
+                        <p className="text-gray-600 mt-2">
+                            {t("ententeStage.description")}
+                        </p>
                     </div>
                 </div>
 

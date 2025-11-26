@@ -237,3 +237,99 @@ export async function updateStudentInfo(program, token = null) {
         throw new Error(error.message || 'Erreur lors de la mise à jour des informations');
     }
 }
+
+export async function getStudentMe(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/me`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération des informations');
+    }
+}
+
+export async function getStudentEntentes(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/ententes`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération des ententes');
+    }
+}
+
+export async function previewStudentEntentePdf(ententeId, token = null) {
+    try {
+        const accessToken = token || sessionStorage.getItem("accessToken");
+        const headers = {};
+        if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+        const response = await fetch(`${API_BASE}/student/ententes/${ententeId}/pdf`, {
+            method: "GET",
+            headers,
+        });
+
+        await handleApiResponse(response);
+        return await response.blob();
+    } catch (error) {
+        throw new Error(error.message || "Erreur lors du chargement du PDF");
+    }
+}
+
+export async function getStudentProf(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/prof`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        if (response.status === 404) {
+            return null;
+        }
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération du professeur');
+    }
+}
+
+export async function getStudentGestionnaire(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/gestionnaire`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        if (response.status === 404) {
+            return null;
+        }
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération du gestionnaire');
+    }
+}
+
+export async function getStudentEmployeurs(token = null) {
+    try {
+        const response = await fetch(`${API_BASE}/student/employeurs`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        await handleApiResponse(response);
+        return await response.json();
+    } catch (error) {
+        throw new Error(error.message || 'Erreur lors de la récupération des employeurs');
+    }
+}

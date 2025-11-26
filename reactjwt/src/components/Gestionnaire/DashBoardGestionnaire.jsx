@@ -10,6 +10,7 @@ import LanguageSelector from "../LanguageSelector.jsx";
 import GestionnaireListeEntentes from "./GestionnaireListeEntentes.jsx";
 import Chatbot from "./Chatbot.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
+import { getGestionnaireMe } from "../../api/apiGestionnaire.jsx";
 
 export default function DashBoardGestionnaire() {
     const navigate = useNavigate();
@@ -38,15 +39,8 @@ export default function DashBoardGestionnaire() {
                 return;
             }
             try {
-                const res = await fetch('http://localhost:8080/user/me', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setUserName(data.firstName || "");
-                } else {
-                    navigate("/login");
-                }
+                const data = await getGestionnaireMe(token);
+                setUserName(data.firstName || "");
             } catch (error) {
                 console.error("User fetch error:", error);
                 navigate("/login");

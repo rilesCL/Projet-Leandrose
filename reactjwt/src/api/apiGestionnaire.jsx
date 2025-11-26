@@ -182,3 +182,69 @@ export async function attribuerProf(ententeId, profId) {
     });
     return await handleJsonResponse(res);
 }
+
+export async function getGestionnaireMe(token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+    const res = await fetch('http://localhost:8080/user/me', {
+        method: 'GET',
+        headers
+    });
+    return await handleJsonResponse(res);
+}
+
+export async function getAllEntentes(token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+    const res = await fetch('http://localhost:8080/gestionnaire/ententes', {
+        method: 'GET',
+        headers
+    });
+    return await handleJsonResponse(res);
+}
+
+export async function sendChatMessage(query, sessionId, token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const tokenType = (sessionStorage.getItem("tokenType") || "BEARER").toUpperCase();
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-Session-Id': sessionId
+    };
+    if (accessToken) {
+        headers['Authorization'] = tokenType.startsWith("BEARER") ? `Bearer ${accessToken}` : accessToken;
+    }
+    const res = await fetch('http://localhost:8080/gestionnaire/chatclient', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ query })
+    });
+    return await handleJsonResponse(res);
+}
+
+export async function clearChatSession(sessionId, token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const tokenType = (sessionStorage.getItem("tokenType") || "BEARER").toUpperCase();
+    const headers = {};
+    if (accessToken) {
+        headers['Authorization'] = tokenType.startsWith("BEARER") ? `Bearer ${accessToken}` : accessToken;
+    }
+    const res = await fetch(`http://localhost:8080/gestionnaire/chatclient/session/${sessionId}`, {
+        method: 'DELETE',
+        headers
+    });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `HTTP error ${res.status}`);
+    }
+    return res;
+}

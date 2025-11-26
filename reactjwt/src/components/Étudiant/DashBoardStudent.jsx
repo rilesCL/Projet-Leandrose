@@ -7,7 +7,7 @@ import LanguageSelector from "../LanguageSelector.jsx";
 import StudentInternshipOffersList from "./StudentInternshipOffersList.jsx";
 import StudentApplicationsList from './StudentApplicationsList.jsx';
 import StudentEntentesListe from "./StudentEntentesListe.jsx";
-import {updateStudentInfo} from "../../api/apiStudent.jsx";
+import {updateStudentInfo, getStudentMe} from "../../api/apiStudent.jsx";
 import {fetchPrograms} from "../../api/apiRegister.jsx";
 import InfosContactPage from "./InfosContactPage.jsx";
 import ThemeToggle from '../ThemeToggle.jsx';
@@ -65,28 +65,21 @@ export default function DashBoardStudent() {
                 return;
             }
             try {
-                const res = await fetch('http://localhost:8080/student/me', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setUserName(data.firstName || "");
-                    setStudentInfo(data);
+                const data = await getStudentMe(token);
+                setUserName(data.firstName || "");
+                setStudentInfo(data);
 
-                    if (data.expired) {
-                        setShowReregistrationModal(true);
-                        setSelectedProgram(
-                            typeof data.program === "object" ? data.program.translationKey : data.program || ""
-                        );
-                        try {
-                            const programsList = await fetchPrograms();
-                            setPrograms(programsList);
-                        } catch (error) {
-                            console.error("Error loading programs:", error);
-                        }
+                if (data.expired) {
+                    setShowReregistrationModal(true);
+                    setSelectedProgram(
+                        typeof data.program === "object" ? data.program.translationKey : data.program || ""
+                    );
+                    try {
+                        const programsList = await fetchPrograms();
+                        setPrograms(programsList);
+                    } catch (error) {
+                        console.error("Error loading programs:", error);
                     }
-                } else {
-                    navigate("/login");
                 }
             } catch (error) {
                 navigate("/login");

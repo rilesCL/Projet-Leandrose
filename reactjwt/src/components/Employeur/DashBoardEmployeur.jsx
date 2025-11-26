@@ -8,6 +8,7 @@ import EmployeurListeStages from "./EmployeurListeStages.jsx";
 import EvaluationList from "./EvaluationList.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
 import TermSelector from "../TermSelector.jsx";
+import { getEmployeurMe } from "../../api/apiEmployeur.jsx";
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate();
@@ -41,17 +42,8 @@ export default function DashBoardEmployeur() {
                 return;
             }
             try {
-                const res = await fetch('http://localhost:8080/user/me', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setUserName(data.firstName || "");
-                } else {
-                    navigate("/login");
-                }
+                const data = await getEmployeurMe(token);
+                setUserName(data.firstName || "");
             } catch (error) {
                 console.error("User fetch error:", error);
                 navigate("/login");

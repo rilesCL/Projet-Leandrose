@@ -101,23 +101,21 @@ export default function EvaluationsList({ selectedTerm }) {
     );
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">{t("evaluationList.title")}</h1>
-                    <p className="text-gray-600 mt-2">
-                        {t("evaluationList.subtitle")}
-                    </p>
-                </div>
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">{t("evaluationList.title")}</h1>
+                <p className="text-gray-600 mt-2">
+                    {t("evaluationList.subtitle")}
+                </p>
             </div>
 
             {eligibleAgreements.length === 0 ? (
-                <div className="text-center py-8">
-                    <p className="text-gray-500">{t("evaluationList.no_evaluations")}</p>
+                <div className="bg-white rounded-lg shadow p-8 text-center">
+                    <p className="text-gray-500 text-lg">{t("evaluationList.no_evaluations")}</p>
                 </div>
             ) : filteredAgreements.length === 0 ? (
-                <div className="text-center py-8">
-                    <p className="text-gray-500">
+                <div className="bg-white rounded-lg shadow p-8 text-center">
+                    <p className="text-gray-500 text-lg">
                         {t("evaluationList.no_evaluations_for_term", {
                             term: selectedTerm ? `${t(`terms.${selectedTerm.season}`)} ${selectedTerm.year}` : ''
                         })}
