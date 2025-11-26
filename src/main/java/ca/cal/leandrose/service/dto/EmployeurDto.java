@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 public class EmployeurDto extends UserDTO {
   private String companyName;
   private String field;
+  private String phoneNumber;
   private Map<String, String> error;
 
   @Builder
@@ -22,10 +23,12 @@ public class EmployeurDto extends UserDTO {
       String email,
       Role role,
       String companyName,
-      String field) {
+      String field,
+      String phoneNumber) {
     super(id, firstName, lastname, email, role);
     this.companyName = companyName;
     this.field = field;
+    this.phoneNumber = phoneNumber;
   }
 
   public EmployeurDto() {}
@@ -39,6 +42,7 @@ public class EmployeurDto extends UserDTO {
         .role(employeur.getRole())
         .companyName(employeur.getCompanyName())
         .field(employeur.getField())
+        .phoneNumber(employeur.getPhoneNumber())
         .build();
   }
 

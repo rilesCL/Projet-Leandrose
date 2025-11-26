@@ -39,7 +39,6 @@ export async function uploadStageEmployeur(offer, pdfFile, token = null) {
     const res = await handleFetch(url, {method: "POST", headers, body: formData});
     return res.json();
 }
-
 export async function getOfferCandidatures(offerId, token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/candidatures`, {headers: authHeaders(token)});
     return res.json();
@@ -122,7 +121,6 @@ export async function generateEvaluationPdf(studentId, offerId, formData, token 
 
 export async function previewEvaluationPdf(evaluationId, formData = null, token = null) {
     if (formData) {
-        // Preview with current form data (not saved)
         const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/preview-pdf`, {
             method: 'POST',
             headers: {
@@ -139,14 +137,12 @@ export async function previewEvaluationPdf(evaluationId, formData = null, token 
         return await res.blob();
     }
 }
-
 export async function getEligibleEvaluations(token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/eligible`, {
         headers: authHeaders(token)
     });
     return await res.json();
 }
-
 export async function getEvaluationInfo(studentId, offerId, token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/info?studentId=${studentId}&offerId=${offerId}`, {
         headers: authHeaders(token)
@@ -178,7 +174,6 @@ export async function generateEvaluationPdfWithId(evaluationId, formData, token 
     });
     return await res.json();
 }
-
 export async function checkExistingEvaluation(studentId, offerId, token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
         headers: authHeaders(token)

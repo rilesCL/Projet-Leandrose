@@ -136,12 +136,10 @@ const EvaluationForm = () => {
                     throw new Error(t("evaluation.errors.missing_studentId_Or_offerId"));
                 }
                 const existingCheck = await checkExistingEvaluation(studentId, offerId);
-                if (existingCheck.exists) {
-                    setError(t('evaluation.errors.evaluation_exists'));
-                    setTimeout(() => {
-                        navigate('/dashboard/employeur/evaluations');
-                    }, 3000);
-                    return;
+                let evalId =null
+                if (existingCheck.exists && existingCheck.evaluation) {
+                    evalId = existingCheck.evaluation.id
+                    setEvaluationId(evalId)
                 }
                 const evaluationInfo = await getEvaluationInfo(studentId, offerId);
                 setStudent({
@@ -272,13 +270,21 @@ const EvaluationForm = () => {
         setErrors({});
         setSubmitting(true);
         try {
-            const createResponse = await createEvaluation(studentId, offerId);
-            const evalId = createResponse.evaluationId || createResponse.id || createResponse;
+            let evalId
+            const existingCheck = await checkExistingEvaluation(studentId, offerId)
+
+            if (existingCheck.exists && existingCheck.evaluation) {
+                evalId = existingCheck.evaluation.id;
+            } else {
+                const createResponse = await createEvaluation(studentId, offerId);
+                evalId = createResponse.evaluationId || createResponse.id || createResponse;
+            }
             if (!evalId) {
                 throw new Error(t("evaluation.errors.evaluationId_received"));
             }
             setEvaluationId(evalId);
             await new Promise(resolve => setTimeout(resolve, 500));
+            console.log("EvaluationId: ", evalId)
             await generateEvaluationPdfWithId(evalId, formData);
             setSubmitted(true);
             setSuccessMessage(t("evaluation.submittedSuccess"));
@@ -313,7 +319,7 @@ const EvaluationForm = () => {
                     </h2>
                     <p className="text-red-700 mb-4">{error}</p>
                     <button
-                        onClick={() => navigate('/dashboard/employeur/evaluations')}
+                        onClick={() => navigate('/dashboard/employeur')}
                         className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                     >
                         {t('evaluation.backToEvaluationsList')}
@@ -329,7 +335,7 @@ const EvaluationForm = () => {
                 <div className="mb-4">
                     <button
                         type="button"
-                        onClick={() => navigate('/dashboard/employeur/evaluations')}
+                        onClick={() => navigate('/dashboard/employeur')}
                         className="inline-flex items-center gap-2 rounded-md border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                     >
                         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none">
