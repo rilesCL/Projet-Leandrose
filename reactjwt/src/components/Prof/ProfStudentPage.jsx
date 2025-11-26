@@ -145,24 +145,24 @@ export default function ProfStudentsPage() {
         <div>
             <div className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-6">
                         {t("profStudentsPage.page.students")}
                     </h1>
 
                     {/* Filters */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 p-6 mb-6 border border-gray-200 dark:border-gray-700">
+                    <div className="bg-white rounded-lg shadow p-6 mb-6 border border-gray-200">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <input
                                 type="text"
                                 placeholder={t("profStudentsPage.filters.studentName") || "Nom de l'étudiant"}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                             <select
                                 value={evaluationStatus}
                                 onChange={(e) => setEvaluationStatus(e.target.value)}
-                                className="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             >
                                 <option value="">{t("profStudentsPage.filters.evaluationStatus") || "Statut d'évaluation"}</option>
                                 <option value="A_FAIRE">{t("profStudentsPage.status.toDo") || "À faire"}</option>
@@ -174,7 +174,7 @@ export default function ProfStudentsPage() {
                         <div className="flex gap-3">
                             <button
                                 onClick={resetFilters}
-                                className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
                             >
                                 {t("profStudentsPage.buttons.reset") || "Réinitialiser"}
                             </button>
@@ -183,46 +183,46 @@ export default function ProfStudentsPage() {
 
                     {/* Messages */}
                     {errorMsg && (
-                        <div className="mb-6 p-4 border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded-lg">
+                        <div className="mb-6 p-4 border border-red-300 bg-red-50 text-red-800 rounded-lg">
                             {errorMsg}
                         </div>
                     )}
 
                     {/* Table */}
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-900 overflow-hidden border border-gray-200 dark:border-gray-700">
+                    <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-sm">
-                                <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                                <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
                                     <th
-                                        className="text-left px-6 py-3 text-gray-700 dark:text-gray-200 font-semibold whitespace-nowrap cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-600 transition"
+                                        className="text-left px-6 py-3 text-gray-700 font-semibold whitespace-nowrap cursor-pointer select-none hover:bg-gray-100 transition"
                                         onClick={onClickSortStudent}
                                         title={t("profStudentsPage.table.sortByName")}
                                     >
                                         {t("profStudentsPage.table.student")}{" "}
-                                        <span className="inline-block text-indigo-600 dark:text-indigo-400">
+                                        <span className="inline-block text-indigo-600">
                         {sortBy === "name" ? sortedIcon : ""}
                       </span>
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 dark:text-gray-200 font-semibold">
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
                                         {t("profStudentsPage.table.company")}
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 dark:text-gray-200 font-semibold">
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
                                         {t("profStudentsPage.table.dates")}
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 dark:text-gray-200 font-semibold">
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
                                         {t("profStudentsPage.table.stageStatus")}
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 dark:text-gray-200 font-semibold">
+                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
                                         {t("profStudentsPage.table.evaluationStatus")}
                                     </th>
                                 </tr>
                                 </thead>
 
-                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody className="divide-y divide-gray-200">
                                 {loading && (
                                     <tr>
-                                        <td className="px-6 py-8 text-center text-gray-500 dark:text-gray-400" colSpan={5}>
+                                        <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
                                             {t("profStudentsPage.messages.loading")}
                                         </td>
                                     </tr>
@@ -230,7 +230,7 @@ export default function ProfStudentsPage() {
 
                                 {!loading && rows.length === 0 && (
                                     <tr>
-                                        <td className="px-6 py-8 text-center text-gray-500 dark:text-gray-400" colSpan={5}>
+                                        <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
                                             {t("profStudentsPage.messages.noStudents")}
                                         </td>
                                     </tr>
@@ -238,20 +238,20 @@ export default function ProfStudentsPage() {
 
                                 {!loading &&
                                     rows.map((it) => (
-                                        <tr key={it.ententeId} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                        <tr key={it.ententeId} className="hover:bg-gray-50 transition">
                                             <td className="px-6 py-4">
-                                                <div className="font-semibold text-gray-900 dark:text-white">
+                                                <div className="font-semibold text-gray-900">
                                                     {`${it.studentLastName ?? ""} ${it.studentFirstName ?? ""}`.trim()}
                                                 </div>
-                                                <div className="text-xs text-gray-500 dark:text-gray-400">{it.offerTitle}</div>
+                                                <div className="text-xs text-gray-500">{it.offerTitle}</div>
                                             </td>
-                                            <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
-                                                {it.companyName || <span className="text-gray-400 dark:text-gray-500">—</span>}
+                                            <td className="px-6 py-4 text-gray-700">
+                                                {it.companyName || <span className="text-gray-400">—</span>}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="text-sm text-gray-700 dark:text-gray-300">
+                                                <div className="text-sm text-gray-700">
                                                     {it.startDate || "—"}{" "}
-                                                    {it.endDate ? <span className="text-gray-500 dark:text-gray-400">→ {it.endDate}</span> : null}
+                                                    {it.endDate ? <span className="text-gray-500">→ {it.endDate}</span> : null}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
