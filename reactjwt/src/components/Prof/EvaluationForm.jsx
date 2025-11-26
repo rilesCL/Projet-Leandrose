@@ -25,31 +25,31 @@ const EvaluationForm = () => {
 
     const teacherEvaluationTemplate = {
         conformity: {
-            title: t('evaluation.conformity.title'),
-            description: t('evaluation.conformity.description'),
+            title: t('studentProfile.conformity.title'),
+            description: t('studentProfile.conformity.description'),
             questions: [
-                t('evaluation.conformity.q1'),
-                t('evaluation.conformity.q2'),
-                t('evaluation.conformity.q3'),
+                t('studentProfile.conformity.q1'),
+                t('studentProfile.conformity.q2'),
+                t('studentProfile.conformity.q3'),
             ]
         },
         environment: {
-            title: t('evaluation.environment.title'),
-            description: t('evaluation.environment.description'),
+            title: t('studentProfile.environment.title'),
+            description: t('studentProfile.environment.description'),
             questions: [
-                t('evaluation.environment.q1'),
-                t('evaluation.environment.q2'),
+                t('studentProfile.environment.q1'),
+                t('studentProfile.environment.q2'),
             ]
         },
         general: {
-            title: t('evaluation.general.title'),
-            description: t('evaluation.general.description'),
+            title: t('studentProfile.general.title'),
+            description: t('studentProfile.general.description'),
             questions: [
-                t('evaluation.general.q1'),
-                t('evaluation.general.q2'),
-                t('evaluation.general.q3'),
-                t('evaluation.general.q4'),
-                t('evaluation.general.q5'),
+                t('studentProfile.general.q1'),
+                t('studentProfile.general.q2'),
+                t('studentProfile.general.q3'),
+                t('studentProfile.general.q4'),
+                t('studentProfile.general.q5'),
             ]
         }
     };
@@ -241,24 +241,24 @@ const EvaluationForm = () => {
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h2 className="text-xl font-semibold mb-4">{t('evaluation.companyInfo')}</h2>
 
-                <p><strong>{t('evaluation.name')}</strong> {info?.entrepriseTeacherDto.companyName}</p>
-                <p><strong>{t('evaluation.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}</p>
-                <p><strong>{t('evaluation.address')}</strong> {info?.entrepriseTeacherDto.address}</p>
-                <p><strong>{t('evaluation.email')}</strong> {info?.entrepriseTeacherDto.email}</p>
+                <p><strong>{t('studentProfile.name')}</strong> {info?.entrepriseTeacherDto.companyName}</p>
+                <p><strong>{t('studentProfile.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}</p>
+                <p><strong>{t('studentProfile.address')}</strong> {info?.entrepriseTeacherDto.address}</p>
+                <p><strong>{t('studentProfile.email')}</strong> {info?.entrepriseTeacherDto.email}</p>
             </section>
 
             {/* Student Info */}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h2 className="text-xl font-semibold mb-4">{t('evaluation.studentInfo')}</h2>
-                <p><strong>{t('evaluation.name')}</strong> {info?.studentTeacherDto.fullname}</p>
-                <p><strong>{t('evaluation.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
+                <p><strong>{t('studentProfile.name')}</strong> {info?.studentTeacherDto.fullname}</p>
+                <p><strong>{t('studentProfile.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
             </section>
 
             {/* Question Groups */}
             {Object.entries(teacherEvaluationTemplate).map(([groupKey, group]) => (
                 <section key={groupKey} className="mb-8 p-4 border rounded-lg">
 
-                    <h3 className="text-lg font-semibold mb-4">{t(`evaluation.${groupKey}.title`)}</h3>
+                    <h3 className="text-lg font-semibold mb-4">{t(`studentProfile.${groupKey}.title`)}</h3>
 
                     {group.questions.map((q, index) => {
                         const ratingErrors = errors?.categories?.[groupKey]?.[index]
@@ -320,7 +320,7 @@ const EvaluationForm = () => {
 
             {/* OBSERVATIONS GÉNÉRALES */}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold mb-4">{t("evaluation.observations.title")}</h3>
+                <h3 className="text-lg font-semibold mb-4">{t("studentProfile.observations.title")}</h3>
 
                 {/* Preferred stage */}
                 <div className="mb-6">
@@ -329,10 +329,10 @@ const EvaluationForm = () => {
                             {errors.preferredStage}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q1")}</p>
+                    <p className="font-medium mb-2">{t("studentProfile.observations.q1")}</p>
                     <div className="flex flex-wrap justify-center gap-3">
-                        {[{ value: "1", label: t('evaluation.observations.first_intern')},
-                            { value: "2", label: t('evaluation.observations.second_intern') }].map(
+                        {[{ value: "1", label: t('studentProfile.observations.first_intern')},
+                            { value: "2", label: t('studentProfile.observations.second_intern') }].map(
                             opt => {
                                 const isSelected = formData.preferredStage === opt.value;
                                 return (
@@ -366,13 +366,13 @@ const EvaluationForm = () => {
                             {errors.capacity}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q2")}</p>
+                    <p className="font-medium mb-2">{t("studentProfile.observations.q2")}</p>
                     <div className="flex flex-wrap justify-center gap-3">
                         {[
-                            { value: "1", label: t('evaluation.observations.stage1') },
-                            { value: "2", label: t('evaluation.observations.stage2') },
-                            { value: "3", label: t('evaluation.observations.stage3') },
-                            { value: "4", label: t('evaluation.observations.stage4') }
+                            { value: "1", label: t('studentProfile.observations.stage1') },
+                            { value: "2", label: t('studentProfile.observations.stage2') },
+                            { value: "3", label: t('studentProfile.observations.stage3') },
+                            { value: "4", label: t('studentProfile.observations.stage4') }
                         ].map(opt => {
                             const isSelected = formData.capacity === opt.value;
                             return (
@@ -405,9 +405,9 @@ const EvaluationForm = () => {
                             {errors.sameTraineeNextStage}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("evaluation.observations.q3")}</p>
+                    <p className="font-medium mb-2">{t("studentProfile.observations.q3")}</p>
                     <div className="flex justify-center gap-3">
-                        {[{ value: "YES", label: t('evaluation.observations.yes') }, { value: "NO", label: t('evaluation.observations.no') }].map(opt => {
+                        {[{ value: "YES", label: t('studentProfile.observations.yes') }, { value: "NO", label: t('studentProfile.observations.no') }].map(opt => {
                             const isSelected = formData.sameTraineeNextStage === opt.value;
                             return (
                                 <label
