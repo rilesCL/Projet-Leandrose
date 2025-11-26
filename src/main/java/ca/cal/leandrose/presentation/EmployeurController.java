@@ -636,4 +636,38 @@ public class EmployeurController {
     }
     return me;
   }
+  @PutMapping("/offers/{offerId}/disable")
+  public ResponseEntity<?> disableOffer(HttpServletRequest request, @PathVariable Long offerId){
+      UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+      if (!me.getRole().name().equals("EMPLOYEUR")) {
+          return ResponseEntity.status(403).build();
+      }
+
+      try{
+          return ResponseEntity.ok(
+                  internshipOfferService.disableOffer(me.getId(), offerId)
+          );
+      }
+      catch(Exception e){
+          return ResponseEntity.badRequest().body(e.getMessage());
+      }
+  }
+    @PutMapping("/offers/{offerId}/enable")
+    public ResponseEntity<?> enableOffer(HttpServletRequest request, @PathVariable Long offerId){
+        UserDTO me = userService.getMe(request.getHeader("Authorization"));
+
+        if (!me.getRole().name().equals("EMPLOYEUR")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try{
+            return ResponseEntity.ok(
+                    internshipOfferService.enableOffer(me.getId(), offerId)
+            );
+        }
+        catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

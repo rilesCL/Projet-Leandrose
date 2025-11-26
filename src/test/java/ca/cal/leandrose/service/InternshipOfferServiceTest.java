@@ -1,8 +1,7 @@
 package ca.cal.leandrose.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import ca.cal.leandrose.model.Employeur;
@@ -226,5 +225,47 @@ class InternshipOfferServiceTest {
     assertEquals("PUBLISHED", result.getStatus());
     assertEquals("123 Main St.", result.getAddress());
     assertEquals(12, result.getDurationInWeeks());
+  }
+
+  @Test
+  void disableOffer_success_changeStatus(){
+      InternshipOffer offer = new InternshipOffer();
+      offer.setId(10L);
+      offer.setStatus(InternshipOffer.Status.PUBLISHED);
+      offer.setEmployeur(employeur);
+
+      when(internshipOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+      when(internshipOfferRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+      InternshipOfferDto result = internshipOfferService.disableOffer(1L, 10L);
+      assertEquals("DISABLED", result.getStatus());
+  }
+
+  @Test
+  void enableOffer_beforeStartDate_success(){
+      InternshipOffer offer = new InternshipOffer();
+      offer.setStartDate(LocalDate.now().plusDays(10));
+      offer.setStatus(InternshipOffer.Status.DISABLED);
+      offer.setEmployeur(employeur);
+
+      when(internshipOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+      when(internshipOfferRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+      InternshipOfferDto result =  internshipOfferService.enableOffer(1L, 10L);
+      System.out.println("result: " + result);
+      assertEquals("PUBLISHED", result.getStatus());
+  }
+
+  @Test
+  void enableOffer_afterStartDate_throwsException(){
+      InternshipOffer offer = new InternshipOffer();
+      offer.setStartDate(LocalDate.now().minusDays(1));
+      offer.setStatus(InternshipOffer.Status.DISABLED);
+      offer.setEmployeur(employeur);
+
+      when(internshipOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+      RuntimeException ex = assertThrows(RuntimeException.class, () ->
+              internshipOfferService.enableOffer(1L, 10L));
+      assertEquals("Impossible de réactiver une offre dont la date de début est expiré", ex.getMessage());
   }
 }

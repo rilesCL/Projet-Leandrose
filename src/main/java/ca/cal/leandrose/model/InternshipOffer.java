@@ -76,6 +76,7 @@ public class InternshipOffer {
     PUBLISHED,
     ASSIGNED,
     ARCHIVED,
-    REJECTED
+    REJECTED,
+    DISABLED
   }
 }

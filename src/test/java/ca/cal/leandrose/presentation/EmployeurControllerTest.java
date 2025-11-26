@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -650,5 +651,14 @@ class EmployeurControllerTest {
                         .param("studentId", "2")
                         .param("offerId", "3"))
                 .andExpect(status().isForbidden());
+    }
+    @Test
+    void disableOffer_success_returnOk() throws Exception{
+      when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+      when(internshipOfferService.disableOffer(1L, 100L)).thenReturn(internshipOfferDto);
+
+      mockMvc.perform(put("/employeur/offers/100/disable")
+              .header("Authorization", "Bearer token"))
+              .andExpect(status().isOk());
     }
 }

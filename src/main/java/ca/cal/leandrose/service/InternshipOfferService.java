@@ -151,4 +151,35 @@ public class InternshipOfferService {
 
     return new SchoolTerm(season, year);
   }
+
+  @Transactional
+    public InternshipOfferDto disableOffer(Long employerId, Long offerId){
+      return setOfferStatus(employerId, offerId, false);
+  }
+
+  @Transactional
+    public InternshipOfferDto enableOffer(Long employerId, Long offerId){
+      return setOfferStatus(employerId, offerId, true);
+  }
+
+  @Transactional
+    public InternshipOfferDto setOfferStatus(Long employerId, Long offerId, boolean enable){
+      InternshipOffer offer = internshipOfferRepository.findById(offerId)
+              .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+      if(!offer.getEmployeur().getId().equals(employerId)){
+          throw new RuntimeException("Vous n'êtes pas autorisé à modifier cette offre");
+      }
+
+      if(enable){
+          if(offer.getStartDate().isBefore(LocalDate.now())){
+              throw new RuntimeException("Impossible de réactiver une offre dont la date de début est expiré");
+          }
+          offer.setStatus(InternshipOffer.Status.PUBLISHED);
+      }
+      else{
+          offer.setStatus(InternshipOffer.Status.DISABLED);
+      }
+      InternshipOffer saved = internshipOfferRepository.save(offer);
+      return InternshipOfferMapper.toDto(saved);
+  }
 }
