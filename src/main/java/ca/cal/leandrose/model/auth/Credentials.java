@@ -18,6 +18,7 @@ import java.util.Collections;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Data
 public final class Credentials implements UserDetails {
 
   @Column(unique = true, nullable = false)

@@ -17,6 +17,7 @@ import lombok.Setter;
 public class Employeur extends UserApp {
   private String companyName;
   private String field;
+  private String phoneNumber;
 
   @Builder
   public Employeur(
@@ -26,7 +27,8 @@ public class Employeur extends UserApp {
       String email,
       String password,
       String companyName,
-      String field) {
+      String field,
+      String phoneNumber) {
     super(
         id,
         firstName,
@@ -34,5 +36,6 @@ public class Employeur extends UserApp {
         Credentials.builder().email(email).password(password).role(Role.EMPLOYEUR).build());
     this.companyName = companyName;
     this.field = field;
+    this.phoneNumber = phoneNumber;
   }
 }

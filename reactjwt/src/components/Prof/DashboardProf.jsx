@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import LanguageSelector from "../LanguageSelector.jsx";
 import ProfStudentsPage from "./ProfStudentPage.jsx";
 import EvaluationsList from "../Employeur/EvaluationList.jsx";
+import {t} from "i18next";
 
 export default function DashboardProf() {
     const navigate = useNavigate();
@@ -85,6 +86,12 @@ export default function DashboardProf() {
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
                             <LanguageSelector />
+                            <button
+                                onClick={() => navigate("/profil")}
+                                className="text-sm text-gray-600 hover:text-indigo-600"
+                            >
+                                {t("profile.menu") || "Mon profil"}
+                            </button>
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"

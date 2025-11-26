@@ -1040,6 +1040,91 @@
       "welcome_nextInternship": "L'ENTREPRISE AIMERAIT ACCUEILLIR CET ÉLÈVE POUR SON PROCHAIN STAGE",
       "technical_training": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?"
     },
+    "submitEvaluation": "Soumettre l'évaluation"
+  },
+  "profile": {
+    "menu": "Mon profil"
+  },
+  "userProfile": {
+    "title": "Mon profil",
+    "subtitle": "Modifiez vos informations de compte.",
+    "loading": "Chargement du profil…",
+    "nameSection": {
+      "title": "Prénom / Nom",
+      "firstName": "Prénom",
+      "lastName": "Nom"
+    },
+    "emailSection": {
+      "title": "Email",
+      "cannotBeChanged": "L'adresse courriel ne peut pas être modifiée."
+    },
+    "phoneSection": {
+      "title": "Téléphone",
+      "current": "Numéro de téléphone actuel",
+      "label": "Numéro de téléphone",
+      "placeholder": "Entrez votre numéro de téléphone"
+    },
+    "passwordSection": {
+      "title": "Mot de passe",
+      "newPasswordLabel": "Nouveau mot de passe (optionnel)",
+      "newPasswordPlaceholder": "Nouveau mot de passe",
+      "confirmPasswordLabel": "Nouveau mot de passe (confirmer)",
+      "confirmPasswordPlaceholder": "Confirmer le nouveau mot de passe"
+    },
+    "currentPasswordSection": {
+      "label": "Mot de passe actuel",
+      "placeholder": "Entrez votre mot de passe actuel pour confirmer",
+      "helpText": "Requis pour enregistrer toute modification de votre profil."
+    },
+    "buttons": {
+      "back": "Retour",
+      "save": "Sauvegarder",
+      "saving": "Enregistrement…"
+    },
+    "success": {
+      "updateSuccess": "Profil mis à jour avec succès !"
+    },
+    "errors": {
+      "loadFailed": "Erreur lors du chargement du profil.",
+      "currentPasswordRequired": "Vous devez entrer votre mot de passe actuel.",
+      "passwordMismatch": "La confirmation du mot de passe ne correspond pas.",
+      "updateFailed": "Mot de passe incorrect ou erreur de mise à jour."
+    }
+  },
+  "studentProfile": {
+    "title": "Mon profil",
+    "professor": {
+      "title": "Mon professeur",
+      "loading": "Chargement du professeur...",
+      "notFound": "Aucun professeur assigné",
+      "notFoundDescription": "Aucun professeur n'a été assigné à votre stage pour le moment.",
+      "employeeNumber": "Numéro d'employé",
+      "nameCollege": "Collège",
+      "department": "Département",
+      "address": "Adresse",
+      "fax": "Télécopieur",
+      "error": "Erreur lors du chargement du professeur",
+      "errorDescription": "Impossible de charger les informations de votre professeur."
+    },
+    "gestionnaire": {
+      "title": "Mon gestionnaire de stage",
+      "loading": "Chargement du gestionnaire...",
+      "notFound": "Aucun gestionnaire assigné",
+      "notFoundDescription": "Aucun gestionnaire n'a été assigné à votre stage pour le moment.",
+      "phoneNumber": "Numéro de téléphone",
+      "error": "Erreur lors du chargement du gestionnaire",
+      "errorDescription": "Impossible de charger les informations de votre gestionnaire de stage."
+    },
+    "employeurs": {
+      "title": "Mes employeurs",
+      "loading": "Chargement des employeurs...",
+      "noEmployeurs": "Aucun employeur",
+      "noEmployeursDescription": "Vous n'avez pas encore d'employeurs associés à vos stages.",
+      "companyName": "Nom de l'entreprise",
+      "field": "Secteur d'activité",
+      "error": "Erreur lors du chargement des employeurs",
+      "errorDescription": "Impossible de charger la liste de vos employeurs."
+    },
     "submitEvaluation": "Soumettre l'évaluation",
     "conformity": {
       "title": "Conformité",
@@ -1092,6 +1177,48 @@
       "no": "Non",
       "from": "De",
       "to": "à"
+    }
+  },
+  "profStudentsPage": {
+    "page": {
+      "students": "Mes étudiants"
+    },
+    "filters": {
+      "studentName": "Nom de l'étudiant",
+      "company": "Entreprise",
+      "from": "De",
+      "to": "À",
+      "evaluationStatus": "Statut évaluation"
+    },
+    "buttons": {
+      "search": "Rechercher",
+      "reset": "Réinitialiser"
+    },
+    "table": {
+      "student": "Étudiant",
+      "company": "Entreprise",
+      "dates": "Début / Fin",
+      "stageStatus": "Statut stage",
+      "evaluationStatus": "Statut évaluation",
+      "sortByName": "Trier par nom"
+    },
+    "status": {
+      "toDo": "À faire",
+      "inProgress": "En cours",
+      "finished": "Terminée"
+    },
+    "messages": {
+      "loading": "Chargement…",
+      "noStudents": "Aucun étudiant à afficher."
+    },
+    "auth": {
+      "notAuthenticated": "Non authentifié. Veuillez vous connecter.",
+      "fetchProfileError": "Impossible de récupérer le profil.",
+      "profRoleRequired": "Accès refusé : rôle PROF requis.",
+      "error": "Erreur d'authentification."
+    },
+    "errors": {
+      "loadingError": "Erreur lors du chargement."
     }
   }
 }

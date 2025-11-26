@@ -110,8 +110,10 @@ public class SecurityConfiguration {
                     .requestMatchers("/gestionnaire/**")
                     .hasAuthority("GESTIONNAIRE")
                         .requestMatchers(GET, "/prof/**").hasAnyAuthority("PROF", "GESTIONNAIRE")
-                    .requestMatchers("/user/me")
-                    .permitAll()
+                        .requestMatchers(POST, "/user/verify-password")
+                        .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
+                        .requestMatchers(PUT, "/user/me")
+                        .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
                     .anyRequest()
                     .denyAll())
         .sessionManagement(
