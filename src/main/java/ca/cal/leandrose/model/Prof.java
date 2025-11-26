@@ -18,10 +18,12 @@ import lombok.Setter;
 public class Prof extends UserApp {
   @Column(unique = true, nullable = false)
   private String employeeNumber;
+
   private String nameCollege;
   private String address;
   private String fax_machine;
   private String department;
+  private String phoneNumber;
 
   @Builder
   public Prof(
@@ -34,7 +36,8 @@ public class Prof extends UserApp {
       String nameCollege,
       String address,
       String fax_machine,
-      String department) {
+      String department,
+      String phoneNumber) {
     super(
         id,
         firstName,
@@ -45,5 +48,6 @@ public class Prof extends UserApp {
     this.address = address;
     this.fax_machine = fax_machine;
     this.department = department;
+    this.phoneNumber = phoneNumber;
   }
 }

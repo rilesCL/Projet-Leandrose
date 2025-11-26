@@ -1,5 +1,8 @@
 package ca.cal.leandrose.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.EntenteStageRepository;
 import ca.cal.leandrose.repository.StudentRepository;
@@ -8,6 +11,9 @@ import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.GestionnaireDto;
 import ca.cal.leandrose.service.dto.ProfDto;
 import ca.cal.leandrose.service.dto.StudentDto;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -15,14 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class StudentServiceTest {
 
@@ -140,7 +138,8 @@ class StudentServiceTest {
             .field("IT")
             .build();
 
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
     InternshipOffer offer =
         InternshipOffer.builder()
             .id(1L)
@@ -190,7 +189,8 @@ class StudentServiceTest {
     // Arrange
     Long studentId = 1L;
     Student student = Student.builder().id(studentId).build();
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
     InternshipOffer offer =
         InternshipOffer.builder().id(1L).status(InternshipOffer.Status.PUBLISHED).build();
     Candidature candidature =
@@ -264,7 +264,8 @@ class StudentServiceTest {
             .employeeNumber("EMP002")
             .build();
 
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
     InternshipOffer offer =
         InternshipOffer.builder().id(1L).status(InternshipOffer.Status.PUBLISHED).build();
     Candidature candidature =
@@ -330,7 +331,8 @@ class StudentServiceTest {
             .companyName("TechCorp")
             .build();
 
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
     InternshipOffer offer =
         InternshipOffer.builder()
             .id(1L)
@@ -376,7 +378,8 @@ class StudentServiceTest {
   void testGetGestionnaireByStudentId_NoGestionnaire_ReturnsEmpty() {
     Long studentId = 1L;
     Student student = Student.builder().id(studentId).build();
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
     InternshipOffer offer =
         InternshipOffer.builder().id(1L).status(InternshipOffer.Status.PUBLISHED).build();
     Candidature candidature =
@@ -438,7 +441,8 @@ class StudentServiceTest {
             .field("Software")
             .build();
 
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
     InternshipOffer offer1 =
         InternshipOffer.builder()
             .id(1L)
@@ -523,7 +527,8 @@ class StudentServiceTest {
             .field("IT")
             .build();
 
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
     InternshipOffer offer1 =
         InternshipOffer.builder()
             .id(1L)

@@ -4,22 +4,20 @@ import ca.cal.leandrose.security.exception.InvalidJwtTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.util.Date;
-
 @Component
 public class JwtTokenProvider {
-  @Value("${application.security.jwt.expiration}")
-  private int expirationInMs;
-
   @Value("${application.security.jwt.secret-key}")
   private final String jwtSecret =
       "2B7E151628AED2A6ABF7158809CF4F3C2B7E151628AED2A6ABF7158809CF4F3C";
+  @Value("${application.security.jwt.expiration}")
+  private int expirationInMs;
 
   public String generateToken(Authentication authentication) {
     long nowMillis = System.currentTimeMillis();

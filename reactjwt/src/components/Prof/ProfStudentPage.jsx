@@ -1,22 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
-import { fetchProfStudents, getProfMe } from "../../api/apiProf.jsx";
-import ThemeToggle from "../ThemeToggle.jsx";
+import { fetchProfStudents } from "../../api/apiProf.jsx";
+import { t } from "i18next";
 
 const STATUS_LABELS = {
-    // stage
-    EN_COURS: "En cours",
-    TERMINE: "Terminé",
-    // évaluation
-    A_FAIRE: "À faire",
-    EN_COURS_EVAL: "En cours",
-    TERMINEE: "Terminée",
+    EN_COURS: "profStudentsPage.status.inProgress",
+    TERMINE: "profStudentsPage.status.finished",
+    A_FAIRE: "profStudentsPage.status.toDo",
+    EN_COURS_EVAL: "profStudentsPage.status.inProgress",
+    TERMINEE: "profStudentsPage.status.finished",
 };
 
 function prettifyStatus(value) {
     if (!value) return "";
-    if (STATUS_LABELS[value]) return STATUS_LABELS[value];
+    if (STATUS_LABELS[value]) return t(STATUS_LABELS[value]);
     return value
         .toString()
         .split("_")
@@ -64,20 +61,28 @@ export default function ProfStudentsPage() {
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");
         if (!token) {
-            setErrorMsg("Non authentifié. Veuillez vous connecter.");
+            setErrorMsg(t("profStudentsPage.auth.notAuthenticated"));
             setLoading(false);
             return;
         }
         (async () => {
             try {
-                const me = await getProfMe(token);
+                const res = await fetch("http://localhost:8080/user/me", {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!res.ok) throw new Error(t("profStudentsPage.auth.fetchProfileError"));
+                const me = await res.json();
                 if (me?.role !== "PROF") {
-                    throw new Error("Accès refusé : rôle PROF requis.");
+                    throw new Error(t("profStudentsPage.auth.profRoleRequired"));
                 }
                 setProfId(me.id);
                 setUserName(me.firstName || "");
             } catch (e) {
-                setErrorMsg(e.message || "Erreur d'authentification.");
+                setErrorMsg(e.message || t("profStudentsPage.auth.error"));
             } finally {
                 setLoading(false);
             }
@@ -101,7 +106,7 @@ export default function ProfStudentsPage() {
             setRows(Array.isArray(data) ? data : []);
             setFirstLoadDone(true);
         } catch (err) {
-            setErrorMsg(err?.response?.data || "Erreur lors du chargement.");
+            setErrorMsg(err?.response?.data || t("profStudentsPage.errors.loadingError"));
         } finally {
             setLoading(false);
         }
@@ -137,68 +142,39 @@ export default function ProfStudentsPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-            <header className="bg-white shadow">
-                <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center">
-                            <span className="text-xl font-bold text-indigo-600">
-                                LeandrOSE
-                            </span>
-                        </div>
-
-                        <nav
-                            className="flex items-center space-x-4"
-                            aria-label="Navigation principale"
-                        >
-                            <span className="text-gray-700">
-                                Bienvenue, {userName}
-                            </span>
-                            <ThemeToggle/>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center text-gray-600 hover:text-red-600 transition"
-                            >
-                                <FaSignOutAlt className="mr-1" />
-                                <span className="hidden sm:inline">
-                                    Déconnexion
-                                </span>
-                            </button>
-                        </nav>
-                    </div>
-                </div>
-            </header>
-
             <div className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-6">Mes étudiants</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-6">
+                        {t("profStudentsPage.page.students")}
+                    </h1>
 
-                    {/* Filtres */}
+                    {/* Filters */}
                     <div className="bg-white rounded-lg shadow p-6 mb-6">
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
                             <input
                                 type="text"
-                                placeholder="Nom de l'étudiant"
+                                placeholder={t("profStudentsPage.filters.studentName")}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                             <input
                                 type="text"
-                                placeholder="Entreprise"
+                                placeholder={t("profStudentsPage.filters.company")}
                                 value={company}
                                 onChange={(e) => setCompany(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                             <input
                                 type="date"
-                                placeholder="De"
+                                placeholder={t("profStudentsPage.filters.from")}
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                             <input
                                 type="date"
-                                placeholder="À"
+                                placeholder={t("profStudentsPage.filters.to")}
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
@@ -208,10 +184,10 @@ export default function ProfStudentsPage() {
                                 onChange={(e) => setEvaluationStatus(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             >
-                                <option value="">Statut évaluation</option>
-                                <option value="A_FAIRE">À faire</option>
-                                <option value="EN_COURS">En cours</option>
-                                <option value="TERMINEE">Terminée</option>
+                                <option value="">{t("profStudentsPage.filters.evaluationStatus")}</option>
+                                <option value="A_FAIRE">{t("profStudentsPage.status.toDo")}</option>
+                                <option value="EN_COURS">{t("profStudentsPage.status.inProgress")}</option>
+                                <option value="TERMINEE">{t("profStudentsPage.status.finished")}</option>
                             </select>
                         </div>
 
@@ -221,13 +197,13 @@ export default function ProfStudentsPage() {
                                 disabled={loading || !profId}
                                 className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                             >
-                                Rechercher
+                                {t("profStudentsPage.buttons.search")}
                             </button>
                             <button
                                 onClick={resetFilters}
                                 className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
                             >
-                                Réinitialiser
+                                {t("profStudentsPage.buttons.reset")}
                             </button>
                         </div>
                     </div>
@@ -239,7 +215,7 @@ export default function ProfStudentsPage() {
                         </div>
                     )}
 
-                    {/* Tableau */}
+                    {/* Table */}
                     <div className="bg-white rounded-lg shadow overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-sm">
@@ -248,24 +224,24 @@ export default function ProfStudentsPage() {
                                     <th
                                         className="text-left px-6 py-3 text-gray-700 font-semibold whitespace-nowrap cursor-pointer select-none hover:bg-gray-100 transition"
                                         onClick={onClickSortStudent}
-                                        title="Trier par nom"
+                                        title={t("profStudentsPage.table.sortByName")}
                                     >
-                                        Étudiant{" "}
+                                        {t("profStudentsPage.table.student")}{" "}
                                         <span className="inline-block text-indigo-600">
-                                                {sortBy === "name" ? sortedIcon : ""}
-                                            </span>
+                        {sortBy === "name" ? sortedIcon : ""}
+                      </span>
                                     </th>
                                     <th className="text-left px-6 py-3 text-gray-700 font-semibold">
-                                        Entreprise
+                                        {t("profStudentsPage.table.company")}
                                     </th>
                                     <th className="text-left px-6 py-3 text-gray-700 font-semibold">
-                                        Début / Fin
+                                        {t("profStudentsPage.table.dates")}
                                     </th>
                                     <th className="text-left px-6 py-3 text-gray-700 font-semibold">
-                                        Statut stage
+                                        {t("profStudentsPage.table.stageStatus")}
                                     </th>
                                     <th className="text-left px-6 py-3 text-gray-700 font-semibold">
-                                        Statut évaluation
+                                        {t("profStudentsPage.table.evaluationStatus")}
                                     </th>
                                 </tr>
                                 </thead>
@@ -274,7 +250,7 @@ export default function ProfStudentsPage() {
                                 {loading && (
                                     <tr>
                                         <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
-                                            Chargement…
+                                            {t("profStudentsPage.messages.loading")}
                                         </td>
                                     </tr>
                                 )}
@@ -282,17 +258,14 @@ export default function ProfStudentsPage() {
                                 {!loading && rows.length === 0 && (
                                     <tr>
                                         <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
-                                            Aucun étudiant à afficher.
+                                            {t("profStudentsPage.messages.noStudents")}
                                         </td>
                                     </tr>
                                 )}
 
                                 {!loading &&
                                     rows.map((it) => (
-                                        <tr
-                                            key={it.ententeId}
-                                            className="hover:bg-gray-50 transition"
-                                        >
+                                        <tr key={it.ententeId} className="hover:bg-gray-50 transition">
                                             <td className="px-6 py-4">
                                                 <div className="font-semibold text-gray-900">
                                                     {`${it.studentLastName ?? ""} ${it.studentFirstName ?? ""}`.trim()}
@@ -305,24 +278,22 @@ export default function ProfStudentsPage() {
                                             <td className="px-6 py-4">
                                                 <div className="text-sm text-gray-700">
                                                     {it.startDate || "—"}{" "}
-                                                    {it.endDate ? (
-                                                        <span className="text-gray-500">→ {it.endDate}</span>
-                                                    ) : null}
+                                                    {it.endDate ? <span className="text-gray-500">→ {it.endDate}</span> : null}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.stageStatus)}`}>
-                                                        {prettifyStatus(it.stageStatus)}
-                                                    </span>
+                          <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.stageStatus)}`}
+                          >
+                            {prettifyStatus(it.stageStatus)}
+                          </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                    <span
-                                                        className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(
-                                                            it.evaluationStatus
-                                                        )}`}
-                                                    >
-                                                        {prettifyStatus(it.evaluationStatus)}
-                                                    </span>
+                          <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.evaluationStatus)}`}
+                          >
+                            {prettifyStatus(it.evaluationStatus)}
+                          </span>
                                             </td>
                                         </tr>
                                     ))}

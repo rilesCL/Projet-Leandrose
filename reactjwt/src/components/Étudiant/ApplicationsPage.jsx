@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { getMyCandidatures } from "../../api/apiStudent.jsx";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import React, {useEffect, useState} from "react";
+import {getMyCandidatures} from "../../api/apiStudent.jsx";
+import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 export default function ApplicationsPage() {
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const [candidatures, setCandidatures] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -39,9 +39,12 @@ export default function ApplicationsPage() {
         const statusUpper = (status || "").toUpperCase();
         const base = "px-3 py-1 text-xs font-medium rounded-full border";
 
-        if (statusUpper === "PENDING") return <span className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("ApplicationsPage.statusPending")}</span>;
-        if (statusUpper === "ACCEPTED") return <span className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("ApplicationsPage.statusAccepted")}</span>;
-        if (statusUpper === "REJECTED") return <span className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("ApplicationsPage.statusRejected")}</span>;
+        if (statusUpper === "PENDING") return <span
+            className={`${base} bg-yellow-100 text-yellow-800 border-yellow-200`}>{t("ApplicationsPage.statusPending")}</span>;
+        if (statusUpper === "ACCEPTED") return <span
+            className={`${base} bg-green-100 text-green-800 border-green-200`}>{t("ApplicationsPage.statusAccepted")}</span>;
+        if (statusUpper === "REJECTED") return <span
+            className={`${base} bg-red-100 text-red-800 border-red-200`}>{t("ApplicationsPage.statusRejected")}</span>;
         return <span className={`${base} bg-gray-100 text-gray-800 border-gray-200`}>{statusUpper}</span>;
     };
 
@@ -57,7 +60,8 @@ export default function ApplicationsPage() {
         return (
             <div className="bg-white shadow rounded-lg p-8 text-center">
                 <p className="text-red-600">{error}</p>
-                <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-red-600 text-white rounded">{t("ApplicationsPage.retry")}</button>
+                <button onClick={() => window.location.reload()}
+                        className="mt-4 px-4 py-2 bg-red-600 text-white rounded">{t("ApplicationsPage.retry")}</button>
             </div>
         );
     }
@@ -72,7 +76,8 @@ export default function ApplicationsPage() {
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">{t("ApplicationsPage.noApplicationsTitle")}</h3>
                 <p className="text-gray-600 mb-4">{t("ApplicationsPage.noApplicationsText")}</p>
-                <button onClick={() => navigate('/dashboard/student')} className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">{t("ApplicationsPage.viewOffers")}</button>
+                <button onClick={() => navigate('/dashboard/student')}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">{t("ApplicationsPage.viewOffers")}</button>
             </div>
         );
     }
@@ -81,7 +86,7 @@ export default function ApplicationsPage() {
         <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900">{t("ApplicationsPage.myApplications")}</h3>
-                <p className="text-sm text-gray-600">{t("ApplicationsPage.applicationsCount", { count: candidatures.length })}</p>
+                <p className="text-sm text-gray-600">{t("ApplicationsPage.applicationsCount", {count: candidatures.length})}</p>
             </div>
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -102,7 +107,8 @@ export default function ApplicationsPage() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(candidature.applicationDate)}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(candidature.status)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button onClick={() => navigate(`/dashboard/student/offers/${candidature.offerId}`)} className="text-indigo-600 hover:text-indigo-900">{t("ApplicationsPage.viewOffer")}</button>
+                                <button onClick={() => navigate(`/dashboard/student/offers/${candidature.offerId}`)}
+                                        className="text-indigo-600 hover:text-indigo-900">{t("ApplicationsPage.viewOffer")}</button>
                             </td>
                         </tr>
                     ))}

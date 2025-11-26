@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { verifyPassword, getCurrentUser, signAgreement } from "../api/apiSignature";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {getCurrentUser, signAgreement, verifyPassword} from "../api/apiSignature";
 import {useTranslation} from "react-i18next";
 
 export default function SignerEntentePage() {
-    const { id } = useParams();
+    const {id} = useParams();
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -24,7 +24,6 @@ export default function SignerEntentePage() {
 
             try {
                 const userData = await getCurrentUser(token);
-                console.log("👤 User data:", userData);
                 setUserInfo(userData);
 
                 if (userData.email) {
@@ -52,7 +51,6 @@ export default function SignerEntentePage() {
                 throw new Error("Impossible de trouver votre email. Veuillez vous reconnecter.");
             }
 
-            console.log("🔐 Verifying password for:", email);
             const loginData = await verifyPassword(email, password);
 
             if (!loginData.accessToken) {
@@ -60,14 +58,11 @@ export default function SignerEntentePage() {
             }
 
             const newToken = loginData.accessToken;
-            console.log("✅ New token received");
 
             const verifiedUser = await getCurrentUser(newToken);
-            console.log("✅ User verified:", verifiedUser);
 
             sessionStorage.setItem('accessToken', newToken);
 
-            console.log(`📝 Signing as ${verifiedUser.role} for entente ${id}`);
             await signAgreement(id, newToken, verifiedUser.role);
 
             setSuccess(t("signerEntente.success"));
@@ -92,7 +87,7 @@ export default function SignerEntentePage() {
 
     const getDashboardPath = () => {
         if (userInfo?.role === "EMPLOYEUR") {
-            return "/dashboard/employeur/ententes";
+            return "/dashboard/employeur?tab=ententes";
         } else if (userInfo?.role === "STUDENT") {
             return "/dashboard/student?tab=ententes";
         } else if (userInfo?.role === "GESTIONNAIRE") {
@@ -112,7 +107,7 @@ export default function SignerEntentePage() {
                     <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                         <p className="text-sm text-blue-700 text-center">
                             {t("signerEntente.connect_as")} <strong>{userInfo.firstName} {userInfo.lastName}</strong>
-                            <br />
+                            <br/>
                             <span className="text-xs">{t("signerEntente.role." + userInfo.role)}</span>
                         </p>
                     </div>
@@ -157,9 +152,12 @@ export default function SignerEntentePage() {
                     >
                         {loading ? (
                             <span className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor"
+                                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
                                 {t("signerEntente.loading")}
                             </span>

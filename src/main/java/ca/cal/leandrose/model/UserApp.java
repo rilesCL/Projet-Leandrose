@@ -3,10 +3,9 @@ package ca.cal.leandrose.model;
 import ca.cal.leandrose.model.auth.Credentials;
 import ca.cal.leandrose.model.auth.Role;
 import jakarta.persistence.*;
+import java.util.Collection;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

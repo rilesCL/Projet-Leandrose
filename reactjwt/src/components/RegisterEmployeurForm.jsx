@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
-import { registerEmployeur, fetchPrograms } from "../api/apiRegister.jsx";
-import { login, getCurrentUser } from "../api/apiSignature.jsx";
-import { FaArrowLeft } from "react-icons/fa";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router";
+import {useTranslation} from "react-i18next";
+import {fetchPrograms, registerEmployeur} from "../api/apiRegister.jsx";
+import {getCurrentUser, login} from "../api/apiSignature.jsx";
+import {FaArrowLeft} from "react-icons/fa";
 import LanguageSelector from "./LanguageSelector.jsx";
 
 const initialState = {
@@ -36,7 +36,7 @@ function validate(values, t) {
 
 export default function RegisterEmployeur() {
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [form, setForm] = useState(initialState);
     const [errors, setErrors] = useState({});
     const [globalError, setGlobalError] = useState("");
@@ -61,10 +61,10 @@ export default function RegisterEmployeur() {
     }, [t]);
 
     const handleChange = (e) => {
-        const { id, value } = e.target;
-        setForm((prev) => ({ ...prev, [id]: value }));
+        const {id, value} = e.target;
+        setForm((prev) => ({...prev, [id]: value}));
         setErrors((prev) => {
-            const clone = { ...prev };
+            const clone = {...prev};
             delete clone[id];
             return clone;
         });
@@ -136,29 +136,39 @@ export default function RegisterEmployeur() {
                 <div className="bg-white rounded-lg shadow-md p-6 md:p-10">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-2xl font-semibold text-gray-800">{t("registerEmployeur.title")}</h2>
-                        <LanguageSelector />
+                        <LanguageSelector/>
                     </div>
 
                     <p className="text-sm text-gray-500 mb-6">{t("registerEmployeur.subtitle")}</p>
 
                     {globalError && (
-                        <div role="alert" className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 p-3 rounded">
+                        <div role="alert"
+                             className="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 p-3 rounded">
                             {globalError}
                         </div>
                     )}
 
                     {successMessage && (
-                        <div role="status" className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 p-3 rounded">
+                        <div role="status"
+                             className="mb-4 text-sm text-green-700 bg-green-50 border border-green-100 p-3 rounded">
                             {successMessage}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} noValidate>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField id="firstName" label={t("registerEmployeur.firstName")} placeholder={t("registerEmployeur.placeholders.firstName")} value={form.firstName} onChange={handleChange} error={errors.firstName} />
-                            <InputField id="lastName" label={t("registerEmployeur.lastName")} placeholder={t("registerEmployeur.placeholders.lastName")} value={form.lastName} onChange={handleChange} error={errors.lastName} />
-                            <InputField id="companyName" label={t("registerEmployeur.companyName")} placeholder={t("registerEmployeur.placeholders.companyName")} value={form.companyName} onChange={handleChange} error={errors.companyName} />
-                            <InputField id="email" label={t("registerEmployeur.email")} placeholder={t("registerEmployeur.placeholders.email")} value={form.email} onChange={handleChange} error={errors.email} type="email" />
+                            <InputField id="firstName" label={t("registerEmployeur.firstName")}
+                                        placeholder={t("registerEmployeur.placeholders.firstName")}
+                                        value={form.firstName} onChange={handleChange} error={errors.firstName}/>
+                            <InputField id="lastName" label={t("registerEmployeur.lastName")}
+                                        placeholder={t("registerEmployeur.placeholders.lastName")} value={form.lastName}
+                                        onChange={handleChange} error={errors.lastName}/>
+                            <InputField id="companyName" label={t("registerEmployeur.companyName")}
+                                        placeholder={t("registerEmployeur.placeholders.companyName")}
+                                        value={form.companyName} onChange={handleChange} error={errors.companyName}/>
+                            <InputField id="email" label={t("registerEmployeur.email")}
+                                        placeholder={t("registerEmployeur.placeholders.email")} value={form.email}
+                                        onChange={handleChange} error={errors.email} type="email"/>
                             <SelectField
                                 id="field"
                                 className="md:col-span-2"
@@ -171,8 +181,13 @@ export default function RegisterEmployeur() {
                                 placeholder={t("registerEmployeur.placeholders.field")}
                                 t={t}
                             />
-                            <InputField id="password" label={t("registerEmployeur.password")} placeholder={t("registerEmployeur.placeholders.password")} value={form.password} onChange={handleChange} error={errors.password} type="password" />
-                            <InputField id="confirmPassword" label={t("registerEmployeur.confirmPassword")} placeholder={t("registerEmployeur.placeholders.confirmPassword")} value={form.confirmPassword} onChange={handleChange} error={errors.confirmPassword} type="password" />
+                            <InputField id="password" label={t("registerEmployeur.password")}
+                                        placeholder={t("registerEmployeur.placeholders.password")} value={form.password}
+                                        onChange={handleChange} error={errors.password} type="password"/>
+                            <InputField id="confirmPassword" label={t("registerEmployeur.confirmPassword")}
+                                        placeholder={t("registerEmployeur.placeholders.confirmPassword")}
+                                        value={form.confirmPassword} onChange={handleChange}
+                                        error={errors.confirmPassword} type="password"/>
                         </div>
 
                         <div className="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -194,7 +209,8 @@ export default function RegisterEmployeur() {
                                 </button>
                             </div>
                             <div className="text-sm text-gray-500">
-                                <button type="button" onClick={() => navigate("/register")} className="text-indigo-600 hover:underline"><FaArrowLeft></FaArrowLeft></button>
+                                <button type="button" onClick={() => navigate("/register")}
+                                        className="text-indigo-600 hover:underline"><FaArrowLeft></FaArrowLeft></button>
                             </div>
                         </div>
                     </form>
@@ -204,23 +220,26 @@ export default function RegisterEmployeur() {
     );
 }
 
-function InputField({ id, label, placeholder, value, onChange, error, type = "text", className = "" }) {
+function InputField({id, label, placeholder, value, onChange, error, type = "text", className = ""}) {
     const inputClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
     return (
         <div className={className}>
             <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
-            <input id={id} type={type} value={value} onChange={onChange} className={inputClass} placeholder={placeholder} aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} />
+            <input id={id} type={type} value={value} onChange={onChange} className={inputClass}
+                   placeholder={placeholder} aria-invalid={!!error}
+                   aria-describedby={error ? `${id}-error` : undefined}/>
             {error && <p id={`${id}-error`} role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
         </div>
     );
 }
 
-function SelectField({ id, label, value, onChange, error, options, loading, placeholder, className = "", t }) {
+function SelectField({id, label, value, onChange, error, options, loading, placeholder, className = "", t}) {
     const selectClass = `mt-1 block w-full rounded-md shadow-sm border ${error ? "border-red-500" : "border-gray-300"} focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2`;
     return (
         <div className={className}>
             <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
-            <select id={id} value={value} onChange={onChange} className={selectClass} aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} disabled={loading}>
+            <select id={id} value={value} onChange={onChange} className={selectClass} aria-invalid={!!error}
+                    aria-describedby={error ? `${id}-error` : undefined} disabled={loading}>
                 <option value="">{loading ? t("registerEmployeur.loadingPrograms") : placeholder}</option>
                 {options.map((program) => (
                     <option key={program.code} value={program.code}>

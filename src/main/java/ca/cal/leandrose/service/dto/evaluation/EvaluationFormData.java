@@ -11,6 +11,4 @@ public record EvaluationFormData(
         Boolean discussedWithTrainee,
         Integer supervisionHours,
         String welcomeNextInternship,
-        Boolean technicalTrainingSufficient
-) {
-}
+        Boolean technicalTrainingSufficient) {}

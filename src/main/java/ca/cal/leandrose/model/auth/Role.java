@@ -9,14 +9,14 @@ public enum Role {
   STUDENT("ROLE_STUDENT"),
   PROF("ROLE_PROF");
 
-  private final String string;
-  private final Set<Role> managedRoles = new HashSet<>();
-
   static {
     GESTIONNAIRE.managedRoles.add(EMPLOYEUR);
     GESTIONNAIRE.managedRoles.add(STUDENT);
     GESTIONNAIRE.managedRoles.add(PROF);
   }
+
+  private final String string;
+  private final Set<Role> managedRoles = new HashSet<>();
 
   Role(String string) {
     this.string = string;

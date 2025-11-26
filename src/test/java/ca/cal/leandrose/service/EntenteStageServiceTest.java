@@ -1,27 +1,26 @@
 package ca.cal.leandrose.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.repository.EntenteStageRepository;
 import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.EntenteStageDto;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EntenteStageServiceTest {
@@ -784,37 +783,42 @@ class EntenteStageServiceTest {
           ententeStageService.telechargerPDF(1L);
         });
   }
-    @Test
-    void getEtudiantsPourProf_BasicMappingAndFilters() {
 
-        Prof prof = Prof.builder().id(1L).firstName("Marie").lastName("Beauchamp").email("prof@test.com").password("x").build();
-        entente.setProf(prof);
+  @Test
+  void getEtudiantsPourProf_BasicMappingAndFilters() {
 
-        when(ententeRepository.findAllByProf_Id(1L)).thenReturn(List.of(entente));
+    Prof prof =
+        Prof.builder()
+            .id(1L)
+            .firstName("Marie")
+            .lastName("Beauchamp")
+            .email("prof@test.com")
+            .password("x")
+            .build();
+    entente.setProf(prof);
 
-        var list = ententeStageService.getEtudiantsPourProf(
-                1L, null, null, null, null, null, "name", true
-        );
+    when(ententeRepository.findAllByProf_Id(1L)).thenReturn(List.of(entente));
 
-        assertEquals(1, list.size());
-        var item = list.get(0);
-        assertEquals(entente.getId(), item.getEntenteId());
-        assertEquals(student.getId(), item.getStudentId());
-        assertEquals(student.getFirstName(), item.getStudentFirstName());
-        assertEquals(student.getLastName(), item.getStudentLastName());
-        assertEquals("TechCorp", item.getCompanyName());
-        assertEquals("Stage développement", item.getOfferTitle());
+    var list =
+        ententeStageService.getEtudiantsPourProf(1L, null, null, null, null, null, "name", true);
 
-        var list2 = ententeStageService.getEtudiantsPourProf(
-                1L, "Joh", null, null, null, null, "name", true
-        );
-        assertEquals(1, list2.size());
+    assertEquals(1, list.size());
+    var item = list.get(0);
+    assertEquals(entente.getId(), item.getEntenteId());
+    assertEquals(student.getId(), item.getStudentId());
+    assertEquals(student.getFirstName(), item.getStudentFirstName());
+    assertEquals(student.getLastName(), item.getStudentLastName());
+    assertEquals("TechCorp", item.getCompanyName());
+    assertEquals("Stage développement", item.getOfferTitle());
 
-        var list3 = ententeStageService.getEtudiantsPourProf(
-                1L, "ZZZ", null, null, null, null, "name", true
-        );
-        assertEquals(0, list3.size());
+    var list2 =
+        ententeStageService.getEtudiantsPourProf(1L, "Joh", null, null, null, null, "name", true);
+    assertEquals(1, list2.size());
 
-        verify(ententeRepository, times(3)).findAllByProf_Id(1L);
-    }
+    var list3 =
+        ententeStageService.getEtudiantsPourProf(1L, "ZZZ", null, null, null, null, "name", true);
+    assertEquals(0, list3.size());
+
+    verify(ententeRepository, times(3)).findAllByProf_Id(1L);
+  }
 }

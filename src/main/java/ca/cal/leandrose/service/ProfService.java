@@ -4,14 +4,13 @@ import ca.cal.leandrose.model.Prof;
 import ca.cal.leandrose.repository.ProfRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.ProfDto;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,9 +85,6 @@ public class ProfService {
 
   @Transactional(readOnly = true)
   public List<ProfDto> getAllProfs() {
-    return profRepository.findAll().stream()
-        .map(ProfDto::create)
-        .collect(Collectors.toList());
+    return profRepository.findAll().stream().map(ProfDto::create).collect(Collectors.toList());
   }
 }
-

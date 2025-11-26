@@ -1,5 +1,10 @@
 package ca.cal.leandrose.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.model.Gestionnaire;
 import ca.cal.leandrose.model.InternshipOffer;
@@ -8,22 +13,16 @@ import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireServiceTest {

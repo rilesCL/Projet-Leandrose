@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { I18nextProvider, initReactI18next } from 'react-i18next';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {MemoryRouter} from 'react-router-dom';
+import {I18nextProvider, initReactI18next} from 'react-i18next';
 import i18n from 'i18next';
 import DashBoardEmployeur from '../DashBoardEmployeur.jsx';
 
@@ -86,14 +86,14 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-const MockDashBoardEmployeur = ({ initialTab = '' } = {}) => {
+const MockDashBoardEmployeur = ({initialTab = ''} = {}) => {
     const i18nInstance = buildTestI18n();
     const searchParams = initialTab ? `?tab=${initialTab}` : '';
 
     return (
         <I18nextProvider i18n={i18nInstance}>
             <MemoryRouter initialEntries={[`/dashboard/employeur${searchParams}`]}>
-                <DashBoardEmployeur />
+                <DashBoardEmployeur/>
             </MemoryRouter>
         </I18nextProvider>
     );
@@ -107,7 +107,7 @@ describe('DashBoardEmployeur', () => {
 
         global.fetch.mockResolvedValue({
             ok: true,
-            json: async () => ({ firstName: 'Jean', lastName: 'Dupuis' })
+            json: async () => ({firstName: 'Jean', lastName: 'Dupuis'})
         });
 
         sessionStorage.setItem('accessToken', 'fake-token-123');
@@ -119,7 +119,7 @@ describe('DashBoardEmployeur', () => {
 
     describe('Initial Render and Authentication', () => {
         it('renders dashboard with user name when authenticated', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             expect(await screen.findByText(/Welcome Jean!/)).toBeInTheDocument();
             expect(screen.getByText('Internship Platform')).toBeInTheDocument();
@@ -129,7 +129,7 @@ describe('DashBoardEmployeur', () => {
         it('redirects to login when no token is present', async () => {
             sessionStorage.clear();
 
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith('/login');
@@ -142,7 +142,7 @@ describe('DashBoardEmployeur', () => {
                 status: 401
             });
 
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith('/login');
@@ -150,7 +150,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('calls user API with correct authorization header', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await waitFor(() => {
                 expect(global.fetch).toHaveBeenCalledWith(
@@ -167,7 +167,7 @@ describe('DashBoardEmployeur', () => {
 
     describe('Tab Navigation', () => {
         it('renders all three tabs', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -177,7 +177,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('displays offers section by default', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -187,7 +187,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('switches to ententes section when clicked', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -200,7 +200,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('switches to evaluations section when clicked', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -213,7 +213,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('applies active styling to selected tab', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -236,7 +236,7 @@ describe('DashBoardEmployeur', () => {
 
     describe('URL Parameter Handling', () => {
         it('loads offers tab when tab parameter is "offers"', async () => {
-            render(<MockDashBoardEmployeur initialTab="offers" />);
+            render(<MockDashBoardEmployeur initialTab="offers"/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -244,7 +244,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('loads ententes tab when tab parameter is "ententes"', async () => {
-            render(<MockDashBoardEmployeur initialTab="ententes" />);
+            render(<MockDashBoardEmployeur initialTab="ententes"/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -252,7 +252,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('loads evaluations tab when tab parameter is "evaluations"', async () => {
-            render(<MockDashBoardEmployeur initialTab="evaluations" />);
+            render(<MockDashBoardEmployeur initialTab="evaluations"/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -260,7 +260,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('defaults to offers tab when invalid tab parameter is provided', async () => {
-            render(<MockDashBoardEmployeur initialTab="invalid" />);
+            render(<MockDashBoardEmployeur initialTab="invalid"/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -270,7 +270,7 @@ describe('DashBoardEmployeur', () => {
 
     describe('Logout Functionality', () => {
         it('clears storage and navigates to login on logout', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -279,13 +279,13 @@ describe('DashBoardEmployeur', () => {
 
             expect(sessionStorage.length).toBe(0);
             expect(localStorage.length).toBe(0);
-            expect(mockNavigate).toHaveBeenCalledWith('/login', { replace: true });
+            expect(mockNavigate).toHaveBeenCalledWith('/login', {replace: true});
         });
     });
 
     describe('Header Components', () => {
         it('renders language selector', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -293,7 +293,7 @@ describe('DashBoardEmployeur', () => {
         });
 
         it('renders logout button with icon', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 
@@ -307,9 +307,10 @@ describe('DashBoardEmployeur', () => {
         it('handles fetch error gracefully', async () => {
             global.fetch.mockRejectedValueOnce(new Error('Network error'));
 
-            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {
+            });
 
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await waitFor(() => {
                 expect(mockNavigate).toHaveBeenCalledWith('/login');
@@ -321,7 +322,7 @@ describe('DashBoardEmployeur', () => {
 
     describe('Responsive Design', () => {
         it('renders with responsive classes', async () => {
-            render(<MockDashBoardEmployeur />);
+            render(<MockDashBoardEmployeur/>);
 
             await screen.findByText(/Welcome Jean!/);
 

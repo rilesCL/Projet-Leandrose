@@ -5,14 +5,14 @@ import ca.cal.leandrose.model.auth.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @DiscriminatorValue("G")
 @Getter
 @NoArgsConstructor
+@Data
 public class Gestionnaire extends UserApp {
   @Column(unique = true, nullable = false)
   private String phoneNumber;

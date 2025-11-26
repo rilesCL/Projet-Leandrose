@@ -9,14 +9,13 @@ import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -132,5 +131,4 @@ public class GestionnaireService {
   public List<ProgramDto> getAllPrograms() {
     return Arrays.stream(Program.values()).map(ProgramDto::fromEnum).toList();
   }
-
 }

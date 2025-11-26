@@ -1,27 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Link} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {
-    FaEye,
-    FaSignature,
-    FaSort,
-    FaSortUp,
-    FaSortDown,
-    FaFileAlt,
-    FaTimes,
     FaCheck,
     FaClock,
+    FaEye,
+    FaFileAlt,
+    FaSignature,
+    FaSort,
+    FaSortDown,
+    FaSortUp,
+    FaTimes,
     FaUser
 } from "react-icons/fa";
 import PdfViewer from "../PdfViewer.jsx";
-import {
-    fetchAgreements,
-    previewEntentePdf,
-    getAllProfs,
-    attribuerProf
-} from "../../api/apiGestionnaire.jsx";
+import {attribuerProf, fetchAgreements, getAllProfs, previewEntentePdf} from "../../api/apiGestionnaire.jsx";
 
-export default function GestionnaireListeEntentes({ selectedTerm }) {
+export default function GestionnaireListeEntentes({selectedTerm}) {
     const [ententes, setEntentes] = useState([]);
     const [filteredEntentes, setFilteredEntentes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -29,9 +24,9 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
     const {t, i18n} = useTranslation();
     const [sortDirection, setSortDirection] = useState("desc");
     const [pdfToPreview, setPdfToPreview] = useState(null);
-    const [toast, setToast] = useState({ show: false, message: '', type: '' });
-    const [signatureModal, setSignatureModal] = useState({ show: false, entente: null });
-    const [profModal, setProfModal] = useState({ show: false, entente: null });
+    const [toast, setToast] = useState({show: false, message: '', type: ''});
+    const [signatureModal, setSignatureModal] = useState({show: false, entente: null});
+    const [profModal, setProfModal] = useState({show: false, entente: null});
     const [profs, setProfs] = useState([]);
     const [selectedProf, setSelectedProf] = useState(null);
     const [loadingProfs, setLoadingProfs] = useState(false);
@@ -62,26 +57,24 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
     }, [selectedTerm, ententes]);
 
     const showToast = (message, type = 'error') => {
-        setToast({ show: true, message, type });
+        setToast({show: true, message, type});
         setTimeout(() => {
-            setToast({ show: false, message: '', type: '' });
+            setToast({show: false, message: '', type: ''});
         }, 5000);
     };
 
     const handleOpenProfModal = async (entente) => {
-        setProfModal({ show: true, entente });
+        setProfModal({show: true, entente});
         setSelectedProf(null);
         setLoadingProfs(true);
         try {
-            console.log("Chargement des professeurs...");
             const profsData = await getAllProfs();
-            console.log("Professeurs chargés:", profsData);
             setProfs(Array.isArray(profsData) ? profsData : []);
         } catch (error) {
             console.error("Erreur détaillée lors du chargement des professeurs:", error);
             const errorMessage = error.message || error.toString();
             showToast(`${t("ententeStage.errors.loading_profs")}: ${errorMessage}`);
-            setProfModal({ show: false, entente: null });
+            setProfModal({show: false, entente: null});
         } finally {
             setLoadingProfs(false);
         }
@@ -94,10 +87,11 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
         try {
             await attribuerProf(profModal.entente.id, selectedProf);
             showToast(t("ententeStage.prof_attributed") || "Professeur attribué avec succès", 'success');
-            setProfModal({ show: false, entente: null });
+            setProfModal({show: false, entente: null});
             setSelectedProf(null);
             // Recharger les ententes
-            await fetchAgreements(setEntentes, () => {}, showToast, t);
+            await fetchAgreements(setEntentes, () => {
+            }, showToast, t);
         } catch (error) {
             console.error("Erreur lors de l'attribution du professeur:", error);
             showToast(error.message || t("ententeStage.errors.attributing_prof") || "Erreur lors de l'attribution du professeur");
@@ -125,7 +119,7 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
     };
 
     const handleStatusClick = (entente) => {
-        setSignatureModal({ show: true, entente });
+        setSignatureModal({show: true, entente});
     };
 
     const getSignatureStatus = (entente) => {
@@ -224,12 +218,14 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
             );
         }
 
-        return <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
+        return <span
+            className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
     };
 
     const getSortIcon = (field) => {
-        if (sortField !== field) return <FaSort className="text-gray-400" />;
-        return sortDirection === "asc" ? <FaSortUp className="text-indigo-600" /> : <FaSortDown className="text-indigo-600" />;
+        if (sortField !== field) return <FaSort className="text-gray-400"/>;
+        return sortDirection === "asc" ? <FaSortUp className="text-indigo-600"/> :
+            <FaSortDown className="text-indigo-600"/>;
     };
 
     const formatDate = (dateString) => {
@@ -276,19 +272,20 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {toast.show && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 max-w-md ${
-                            toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                        }`}>
+                        <div
+                            className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 max-w-md ${
+                                toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                            }`}>
                             <span className="flex-1">{toast.message}</span>
                             <button
-                                onClick={() => setToast({ show: false, message: '', type: '' })}
+                                onClick={() => setToast({show: false, message: '', type: ''})}
                                 className={`p-1 rounded transition-colors ${
-                                    toast.type === 'success' 
-                                        ? 'bg-green-500 hover:bg-green-600' 
+                                    toast.type === 'success'
+                                        ? 'bg-green-500 hover:bg-green-600'
                                         : 'bg-red-500 hover:bg-red-600'
                                 }`}
                             >
-                                <FaTimes className="text-lg text-white" />
+                                <FaTimes className="text-lg text-white"/>
                             </button>
                         </div>
                     </div>
@@ -302,10 +299,10 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                     {t("ententeStage.model.stage_signatures")}
                                 </h3>
                                 <button
-                                    onClick={() => setSignatureModal({ show: false, entente: null })}
+                                    onClick={() => setSignatureModal({show: false, entente: null})}
                                     className="text-gray-400 hover:text-gray-600 transition-colors"
                                 >
-                                    <FaTimes className="text-xl" />
+                                    <FaTimes className="text-xl"/>
                                 </button>
                             </div>
 
@@ -315,17 +312,19 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                     return (
                                         <>
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.employeur.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("ententeStage.model.employer")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("ententeStage.model.employer")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
                                                     {signatures.employeur.signed ? (
@@ -339,17 +338,19 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                             </div>
 
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.etudiant.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("ententeStage.model.student")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("ententeStage.model.student")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
                                                     {signatures.etudiant.signed ? (
@@ -363,17 +364,19 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                             </div>
 
                                             <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                <div
+                                                    className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
                                                     {signatures.gestionnaire.signed ? (
-                                                        <FaCheck className="text-xl" />
+                                                        <FaCheck className="text-xl"/>
                                                     ) : (
-                                                        <FaClock className="text-xl" />
+                                                        <FaClock className="text-xl"/>
                                                     )}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400" />
-                                                        <span className="font-medium text-gray-900">{t("ententeStage.model.manager")}</span>
+                                                        <FaUser className="text-gray-400"/>
+                                                        <span
+                                                            className="font-medium text-gray-900">{t("ententeStage.model.manager")}</span>
                                                     </div>
                                                     <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
                                                     {signatures.gestionnaire.signed ? (
@@ -392,7 +395,7 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
 
                             <div className="mt-6 flex justify-end">
                                 <button
-                                    onClick={() => setSignatureModal({ show: false, entente: null })}
+                                    onClick={() => setSignatureModal({show: false, entente: null})}
                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                 >
                                     {t("ententeStage.model.close")}
@@ -410,10 +413,10 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                     {t("ententeStage.model.assign_prof_title") || "Attribuer un professeur"}
                                 </h3>
                                 <button
-                                    onClick={() => setProfModal({ show: false, entente: null })}
+                                    onClick={() => setProfModal({show: false, entente: null})}
                                     className="text-gray-400 hover:text-gray-600 transition-colors"
                                 >
-                                    <FaTimes className="text-xl" />
+                                    <FaTimes className="text-xl"/>
                                 </button>
                             </div>
 
@@ -425,7 +428,8 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
 
                             {loadingProfs ? (
                                 <div className="flex justify-center py-8">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                    <div
+                                        className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                                 </div>
                             ) : (
                                 <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -445,7 +449,8 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                                 }`}
                                             >
                                                 <div className="flex items-center space-x-3">
-                                                    <FaUser className={`${selectedProf === prof.id ? 'text-indigo-600' : 'text-gray-400'}`} />
+                                                    <FaUser
+                                                        className={`${selectedProf === prof.id ? 'text-indigo-600' : 'text-gray-400'}`}/>
                                                     <div>
                                                         <div className="font-medium text-gray-900">
                                                             {prof.firstName} {prof.lastName}
@@ -470,7 +475,7 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
 
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
-                                    onClick={() => setProfModal({ show: false, entente: null })}
+                                    onClick={() => setProfModal({show: false, entente: null})}
                                     className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                                     disabled={attributing}
                                 >
@@ -482,7 +487,8 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                                 >
                                     {attributing && (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                        <div
+                                            className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                                     )}
                                     <span>{t("ententeStage.model.assign") || "Attribuer"}</span>
                                 </button>
@@ -505,12 +511,13 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                 {sortedEntentes.length === 0 ? (
                     <div className="bg-white rounded-lg shadow p-8 text-center">
                         <div className="max-w-md mx-auto">
-                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <FaFileAlt className="text-2xl text-gray-400" />
+                            <div
+                                className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <FaFileAlt className="text-2xl text-gray-400"/>
                             </div>
                             <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                {selectedTerm 
-                                    ? t("ententeStage.noEntenteForTerm") 
+                                {selectedTerm
+                                    ? t("ententeStage.noEntenteForTerm")
                                     : t("ententeStage.noneStagetitle")
                                 }
                             </h3>
@@ -594,7 +601,7 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {entente.prof ? (
                                                 <div className="flex items-center space-x-2">
-                                                    <FaUser className="text-indigo-600" />
+                                                    <FaUser className="text-indigo-600"/>
                                                     <div>
                                                         <div className="text-sm font-medium text-gray-900">
                                                             {entente.prof.firstName} {entente.prof.lastName}
@@ -624,7 +631,7 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                                     onClick={() => handleViewPdf(entente.id)}
                                                     className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
                                                 >
-                                                    <FaEye className="text-sm" />
+                                                    <FaEye className="text-sm"/>
                                                     <span>{t("ententeStage.actions.look")}</span>
                                                 </button>
                                                 {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasManagerSigned(entente) && (
@@ -632,7 +639,7 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                                         to={`/dashboard/gestionnaire/ententes/${entente.id}/signer`}
                                                         className="text-green-600 hover:text-green-900 flex items-center space-x-1"
                                                     >
-                                                        <FaSignature className="text-sm" />
+                                                        <FaSignature className="text-sm"/>
                                                         <span>{t("ententeStage.actions.sign")}</span>
                                                     </Link>
                                                 )}
@@ -641,7 +648,7 @@ export default function GestionnaireListeEntentes({ selectedTerm }) {
                                                         onClick={() => handleOpenProfModal(entente)}
                                                         className="text-purple-600 hover:text-purple-900 flex items-center space-x-1"
                                                     >
-                                                        <FaUser className="text-sm" />
+                                                        <FaUser className="text-sm"/>
                                                         <span>{t("ententeStage.actions.assign_prof") || "Attribuer Prof"}</span>
                                                     </button>
                                                 )}

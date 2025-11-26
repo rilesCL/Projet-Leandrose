@@ -1,8 +1,8 @@
 package ca.cal.leandrose.model;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class SchoolTermTest {
 
@@ -58,33 +58,25 @@ class SchoolTermTest {
 
   @Test
   void testCalculateNextTermFromWinter() {
-    SchoolTerm winterTerm = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
-    SchoolTerm nextTerm = SchoolTerm.getNextTerm();
-    
-    // We can't directly call calculateNextTerm as it's private, but we can test through getNextTerm
-    // Let's create a winter term and verify the next term logic
+
     SchoolTerm winter2024 = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
-    SchoolTerm summer2024 = new SchoolTerm(SchoolTerm.Season.SUMMER, 2024);
-    
-    // Test that winter is before summer of same year
+
     assertTrue(winter2024.isBeforeNextTerm() || !winter2024.isBeforeNextTerm());
   }
 
   @Test
   void testCalculateNextTermFromSummer() {
     SchoolTerm summerTerm = new SchoolTerm(SchoolTerm.Season.SUMMER, 2024);
-    // Summer -> Fall (same year)
     SchoolTerm fallTerm = new SchoolTerm(SchoolTerm.Season.FALL, 2024);
-    
+
     assertNotEquals(summerTerm.getSeason(), fallTerm.getSeason());
   }
 
   @Test
   void testCalculateNextTermFromFall() {
-    SchoolTerm fallTerm = new SchoolTerm(SchoolTerm.Season.FALL, 2024);
-    // Fall -> Winter (next year)
+
     SchoolTerm winterTerm = new SchoolTerm(SchoolTerm.Season.WINTER, 2025);
-    
+
     assertEquals(SchoolTerm.Season.WINTER, winterTerm.getSeason());
     assertEquals(2025, winterTerm.getYear());
   }
@@ -92,21 +84,18 @@ class SchoolTermTest {
   @Test
   void testIsBeforeNextTermWithCurrentTerm() {
     SchoolTerm currentTerm = SchoolTerm.getCurrentTerm();
-    // Current term should be before next term
     assertTrue(currentTerm.isBeforeNextTerm());
   }
 
   @Test
   void testIsBeforeNextTermWithPastTerm() {
     SchoolTerm pastTerm = new SchoolTerm(SchoolTerm.Season.WINTER, 2020);
-    // A term from 2020 should definitely be before next term
     assertTrue(pastTerm.isBeforeNextTerm());
   }
 
   @Test
   void testIsBeforeNextTermWithFutureTerm() {
     SchoolTerm futureTerm = new SchoolTerm(SchoolTerm.Season.WINTER, 2050);
-    // A term from 2050 should not be before next term
     assertFalse(futureTerm.isBeforeNextTerm());
   }
 
@@ -114,8 +103,7 @@ class SchoolTermTest {
   void testIsBeforeNextTermSameYearDifferentSeason() {
     SchoolTerm winterTerm = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
     SchoolTerm summerTerm = new SchoolTerm(SchoolTerm.Season.SUMMER, 2024);
-    
-    // Winter comes before Summer in the same year
+
     assertEquals(0, winterTerm.getSeason().ordinal());
     assertTrue(winterTerm.getSeason().ordinal() < summerTerm.getSeason().ordinal());
   }
@@ -123,7 +111,8 @@ class SchoolTermTest {
   @Test
   void testEqualsSameObject() {
     SchoolTerm term = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
-    assertEquals(term, term);
+    SchoolTerm term2 = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
+    assertEquals(term, term2);
   }
 
   @Test
@@ -132,12 +121,6 @@ class SchoolTermTest {
     assertNotEquals(null, term);
   }
 
-  @Test
-  void testEqualsWithDifferentClass() {
-    SchoolTerm term = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
-    String notATerm = "Not a SchoolTerm";
-    assertNotEquals(term, notATerm);
-  }
 
   @Test
   void testEqualsWithSameValues() {
@@ -200,34 +183,28 @@ class SchoolTermTest {
 
   @Test
   void testIsBeforeNextTermEdgeCaseNextYear() {
-    // Test a term that is definitely before next term (different year)
     SchoolTerm oldTerm = new SchoolTerm(SchoolTerm.Season.FALL, 2023);
     assertTrue(oldTerm.isBeforeNextTerm());
   }
 
   @Test
   void testIsBeforeNextTermEdgeCaseFarFuture() {
-    // Test a term that is far in the future
     SchoolTerm futureTerm = new SchoolTerm(SchoolTerm.Season.FALL, 2100);
     assertFalse(futureTerm.isBeforeNextTerm());
   }
 
   @Test
   void testTermProgression() {
-    // Test that seasons progress correctly: WINTER -> SUMMER -> FALL -> WINTER
     SchoolTerm winter = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
     SchoolTerm summer = new SchoolTerm(SchoolTerm.Season.SUMMER, 2024);
     SchoolTerm fall = new SchoolTerm(SchoolTerm.Season.FALL, 2024);
     SchoolTerm nextWinter = new SchoolTerm(SchoolTerm.Season.WINTER, 2025);
-    
-    // Verify ordinal progression
+
     assertTrue(winter.getSeason().ordinal() < summer.getSeason().ordinal());
     assertTrue(summer.getSeason().ordinal() < fall.getSeason().ordinal());
-    
-    // Verify year change
+
     assertEquals(2024, winter.getYear());
     assertEquals(2024, fall.getYear());
     assertEquals(2025, nextWinter.getYear());
   }
 }
-

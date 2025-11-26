@@ -34,7 +34,7 @@ async function handleFetch(url, options) {
         if (!res.ok) {
             let errorMessage = typeof data === "string" ? data : data?.error || JSON.stringify(data);
             console.error("Error message:", errorMessage);
-            throw { response: { data: errorMessage || `Erreur ${res.status}: ${res.statusText}` } };
+            throw {response: {data: errorMessage || `Erreur ${res.status}: ${res.statusText}`}};
         }
 
         console.log("Successful response data:", data);
@@ -42,14 +42,14 @@ async function handleFetch(url, options) {
     } catch (error) {
         console.error("Fetch caught error:", error);
         if (error.response) throw error;
-        throw { response: { data: error.message || "Impossible de se connecter au serveur" } };
+        throw {response: {data: error.message || "Impossible de se connecter au serveur"}};
     }
 }
 
 export async function registerEmployeur(employeur) {
     return handleFetch(`${BASE_URL}/employeur`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(employeur),
     });
 }
@@ -57,7 +57,7 @@ export async function registerEmployeur(employeur) {
 export async function registerStudent(student) {
     return handleFetch(`${BASE_URL}/student`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(student),
     });
 }
@@ -65,6 +65,6 @@ export async function registerStudent(student) {
 export async function fetchPrograms() {
     return handleFetch(`${BASE_URL}/programs`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {"Content-Type": "application/json"},
     });
 }

@@ -1,22 +1,21 @@
 package ca.cal.leandrose.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import ca.cal.leandrose.model.Cv;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.service.dto.CvDto;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

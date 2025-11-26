@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import {
-    getPendingOffers,
-    approveOffer,
-    rejectOffer,
-    previewOfferPdf
-} from "../../api/apiGestionnaire.jsx";
+import React, {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
+import {approveOffer, getPendingOffers, previewOfferPdf, rejectOffer} from "../../api/apiGestionnaire.jsx";
 import PdfViewer from "../PdfViewer.jsx";
 
 export default function PendingOffersPage() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [pendingOffers, setPendingOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
-    const [rejectModal, setRejectModal] = useState({ open: false, id: null, comment: "", error: null });
+    const [rejectModal, setRejectModal] = useState({open: false, id: null, comment: "", error: null});
 
     useEffect(() => {
         async function fetchOffers() {
@@ -38,28 +33,32 @@ export default function PendingOffersPage() {
         const statusUpper = (status || "").toUpperCase();
         if (statusUpper === "PENDING" || statusUpper === "PENDING_VALIDATION") {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.pendingapproval")}
                 </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.approved")}
                 </span>
             );
         } else if (statusUpper === "REJECTED") {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.rejected")}
                 </span>
             );
         } else {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-gray-500 rounded-full mr-2"></span>
                     {t("pendingOffers.status.unknown")}
                 </span>
@@ -77,18 +76,18 @@ export default function PendingOffersPage() {
     };
 
     const openRejectModal = (offerId) => {
-        setRejectModal({ open: true, id: offerId, comment: "", error: null });
+        setRejectModal({open: true, id: offerId, comment: "", error: null});
     };
 
     const closeRejectModal = () => {
-        setRejectModal({ open: false, id: null, comment: "", error: null });
+        setRejectModal({open: false, id: null, comment: "", error: null});
     };
 
     const confirmReject = async () => {
-        const { id, comment } = rejectModal;
+        const {id, comment} = rejectModal;
         const trimmed = (comment || "").trim();
         if (!trimmed) {
-            setRejectModal((prev) => ({ ...prev, error: "commentRequired" }));
+            setRejectModal((prev) => ({...prev, error: "commentRequired"}));
             return;
         }
         try {
@@ -119,7 +118,7 @@ export default function PendingOffersPage() {
         <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900">{t("pendingOffers.title")}</h3>
-                <p className="text-sm text-gray-600">{t("pendingOffers.subtitle", { count: pendingOffers.length })}</p>
+                <p className="text-sm text-gray-600">{t("pendingOffers.subtitle", {count: pendingOffers.length})}</p>
             </div>
 
             <div className="overflow-x-auto">
@@ -145,7 +144,8 @@ export default function PendingOffersPage() {
                         <tr key={offer.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4">
                                 <div className="flex items-center space-x-3 min-w-[200px]">
-                                    <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center flex-shrink-0">
+                                    <div
+                                        className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center flex-shrink-0">
                                         <span className="text-white text-sm font-bold">📋</span>
                                     </div>
                                     <div className="text-sm font-medium text-gray-900 truncate">
@@ -205,13 +205,13 @@ export default function PendingOffersPage() {
                             <p className="text-sm text-gray-700">{t("pendingOffers.commentPlaceholder")}</p>
                             <textarea
                                 value={rejectModal.comment}
-                                onChange={(e) => setRejectModal((prev) => ({ ...prev, comment: e.target.value }))}
+                                onChange={(e) => setRejectModal((prev) => ({...prev, comment: e.target.value}))}
                                 maxLength={250}
                                 className={`w-full h-28 border rounded p-2 resize-none ${rejectModal.error ? "border-red-500" : ""}`}
                             />
                             <div className="flex justify-between items-center">
                                 {rejectModal.error && (
-                                    <p className="text-xs text-red-600">{t(`pendingOffers.errors.${rejectModal.error}`, { defaultValue: "Commentaire requis" })}</p>
+                                    <p className="text-xs text-red-600">{t(`pendingOffers.errors.${rejectModal.error}`, {defaultValue: "Commentaire requis"})}</p>
                                 )}
                                 <p className="text-xs text-gray-500 ml-auto">
                                     {rejectModal.comment.length}/100

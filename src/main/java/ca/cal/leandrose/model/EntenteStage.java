@@ -1,14 +1,12 @@
 package ca.cal.leandrose.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -29,9 +27,7 @@ public class EntenteStage {
   @JoinColumn(name = "prof_id")
   private Prof prof;
 
-  @ManyToOne
-  @JoinColumn
-  private Gestionnaire gestionnaire;
+  @ManyToOne @JoinColumn private Gestionnaire gestionnaire;
 
   @Column(columnDefinition = "TEXT", nullable = false)
   private String missionsObjectifs;
@@ -50,12 +46,6 @@ public class EntenteStage {
   private LocalDateTime dateSignatureEtudiant;
   private LocalDateTime dateSignatureEmployeur;
   private LocalDateTime dateSignatureGestionnaire;
-
-  public enum StatutEntente {
-    BROUILLON,
-    EN_ATTENTE_SIGNATURE,
-    VALIDEE
-  }
 
   public InternshipOffer getOffer() {
     return candidature.getInternshipOffer();
@@ -84,5 +74,11 @@ public class EntenteStage {
 
   public LocalDate getStartDate() {
     return getOffer().getStartDate();
+  }
+
+  public enum StatutEntente {
+    BROUILLON,
+    EN_ATTENTE_SIGNATURE,
+    VALIDEE
   }
 }

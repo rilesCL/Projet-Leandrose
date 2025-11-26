@@ -2,16 +2,18 @@ package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.model.auth.Role;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Map;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class StudentDto extends UserDTO {
   private String studentNumber;
   private String program;
   private String internshipTerm;
+  private String phoneNumber;
   private Map<String, String> error;
   private boolean isExpired;
 
@@ -25,11 +27,13 @@ public class StudentDto extends UserDTO {
       String studentNumber,
       String program,
       String internshipTerm,
+      String phoneNumber,
       boolean isExpired) {
     super(id, firstName, lastName, email, role);
     this.studentNumber = studentNumber;
     this.program = program;
     this.internshipTerm = internshipTerm;
+    this.phoneNumber = phoneNumber;
     this.isExpired = isExpired;
   }
 
@@ -51,6 +55,7 @@ public class StudentDto extends UserDTO {
         .studentNumber(student.getStudentNumber())
         .program(student.getProgram())
         .internshipTerm(student.getTermAsString())
+        .phoneNumber(student.getPhoneNumber())
         .isExpired(isExpired)
         .build();
   }

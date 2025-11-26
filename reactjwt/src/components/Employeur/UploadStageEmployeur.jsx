@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { uploadStageEmployeur } from "../../api/apiEmployeur.jsx";
-import { useTranslation } from "react-i18next";
+import React, {useState} from "react";
+import {uploadStageEmployeur} from "../../api/apiEmployeur.jsx";
+import {useTranslation} from "react-i18next";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -14,8 +14,8 @@ const MIN_REMUNERATION = 0;
 const MAX_DESCRIPTION_LENGTH = 100;
 const DATE_REGEX = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\d{4})$/;
 
-export default function UploadStageEmployeur({ employeurId }) {
-    const { t } = useTranslation();
+export default function UploadStageEmployeur({employeurId}) {
+    const {t} = useTranslation();
     const [description, setDescription] = useState("");
     const [startDate, setStartDate] = useState("");
     const [duration, setDuration] = useState("");
@@ -24,14 +24,14 @@ export default function UploadStageEmployeur({ employeurId }) {
     const [pdfFile, setPdfFile] = useState(null);
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
-    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+    const [toast, setToast] = useState({show: false, message: '', type: 'success'});
 
     const navigateToDashboard = () => {
         window.location.href = '/dashboard/employeur';
     };
 
     const closeToast = () => {
-        setToast({ show: false, message: '', type: 'success' });
+        setToast({show: false, message: '', type: 'success'});
     };
 
     function validateFields() {
@@ -39,7 +39,7 @@ export default function UploadStageEmployeur({ employeurId }) {
         if (!description.trim()) {
             e.description = t("uploadStageEmployeur.errors.description");
         } else if (description.trim().length > MAX_DESCRIPTION_LENGTH) {
-            e.description = t("uploadStageEmployeur.errors.descriptionTooLong", { max: MAX_DESCRIPTION_LENGTH });
+            e.description = t("uploadStageEmployeur.errors.descriptionTooLong", {max: MAX_DESCRIPTION_LENGTH});
         }
 
         if (!startDate.trim()) {
@@ -90,27 +90,28 @@ export default function UploadStageEmployeur({ employeurId }) {
         const file = e.target.files?.[0] || null;
         if (!file) {
             setPdfFile(null);
-            setErrors(prev => ({ ...prev, pdfFile: undefined }));
+            setErrors(prev => ({...prev, pdfFile: undefined}));
             return;
         }
         const fileName = file.name.toLowerCase();
         if (file.type !== "application/pdf" && !fileName.endsWith(".pdf")) {
-            setErrors(prev => ({ ...prev, pdfFile: t("uploadStageEmployeur.errors.pdfFormat") }));
+            setErrors(prev => ({...prev, pdfFile: t("uploadStageEmployeur.errors.pdfFormat")}));
             setPdfFile(null);
             return;
         }
         if (file.size > MAX_FILE_SIZE_BYTES) {
-            setErrors(prev => ({ ...prev, pdfFile: t("uploadStageEmployeur.errors.pdfSize") }));
+            setErrors(prev => ({...prev, pdfFile: t("uploadStageEmployeur.errors.pdfSize")}));
             setPdfFile(null);
             return;
         }
         setPdfFile(file);
-        setErrors(prev => ({ ...prev, pdfFile: undefined }));
+        setErrors(prev => ({...prev, pdfFile: undefined}));
     }
 
     function clearFile() {
         setPdfFile(null);
     }
+
     async function handleSubmit(evt) {
         evt.preventDefault();
         if (!validateFields()) return;
@@ -165,6 +166,7 @@ export default function UploadStageEmployeur({ employeurId }) {
             setSubmitting(false);
         }
     }
+
     const isFormDisabled = toast.show && toast.type === 'success';
 
     return (
@@ -196,7 +198,8 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     disabled={isFormDisabled}
                                     className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none ${errors.description ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"} ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                                 />
-                                {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+                                {errors.description &&
+                                    <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -236,7 +239,8 @@ export default function UploadStageEmployeur({ employeurId }) {
                                         wrapperClassName="w-full"
                                         calendarClassName="shadow-lg"
                                     />
-                                    {errors.startDate && <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>}
+                                    {errors.startDate &&
+                                        <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>}
                                 </div>
                                 <div>
                                     <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
@@ -287,7 +291,8 @@ export default function UploadStageEmployeur({ employeurId }) {
                                         disabled={isFormDisabled}
                                         className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition ${errors.remuneration ? "border-red-400 bg-red-50" : "border-gray-300 bg-white"} ${isFormDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                                     />
-                                    {errors.remuneration && <p className="mt-1 text-sm text-red-600">{errors.remuneration}</p>}
+                                    {errors.remuneration &&
+                                        <p className="mt-1 text-sm text-red-600">{errors.remuneration}</p>}
                                 </div>
                             </div>
 
@@ -296,23 +301,28 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     {t("uploadStageEmployeur.pdfDocument")}
                                 </label>
                                 <div className="mt-1 flex items-center gap-3">
-                                    <label htmlFor="pdfFile" className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${isFormDisabled ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"}`}>
+                                    <label htmlFor="pdfFile"
+                                           className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${isFormDisabled ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 cursor-pointer"}`}>
                                         {t("uploadStageEmployeur.choosePdf")}
                                     </label>
-                                    <input id="pdfFile" type="file" accept="application/pdf" onChange={handleFileChange} disabled={isFormDisabled} className="hidden" />
+                                    <input id="pdfFile" type="file" accept="application/pdf" onChange={handleFileChange}
+                                           disabled={isFormDisabled} className="hidden"/>
                                     <div className="flex-1 text-sm text-gray-700">
                                         {pdfFile ? (
                                             <div className="flex items-center justify-between gap-3">
                                                 <div className="truncate">
                                                     <span className="font-medium">{pdfFile.name}</span>
-                                                    <span className="ml-2 text-gray-500 text-xs">({(pdfFile.size / BYTES_IN_MB).toFixed(2)} MB)</span>
+                                                    <span
+                                                        className="ml-2 text-gray-500 text-xs">({(pdfFile.size / BYTES_IN_MB).toFixed(2)} MB)</span>
                                                 </div>
-                                                <button type="button" onClick={clearFile} disabled={isFormDisabled} className={`text-sm text-red-600 ${isFormDisabled ? "opacity-50 cursor-not-allowed" : "hover:underline"}`}>
+                                                <button type="button" onClick={clearFile} disabled={isFormDisabled}
+                                                        className={`text-sm text-red-600 ${isFormDisabled ? "opacity-50 cursor-not-allowed" : "hover:underline"}`}>
                                                     {t("uploadStageEmployeur.remove")}
                                                 </button>
                                             </div>
                                         ) : (
-                                            <div className="text-gray-500">{t("uploadStageEmployeur.noFileSelected")}</div>
+                                            <div
+                                                className="text-gray-500">{t("uploadStageEmployeur.noFileSelected")}</div>
                                         )}
                                     </div>
                                 </div>
@@ -325,7 +335,8 @@ export default function UploadStageEmployeur({ employeurId }) {
                                     disabled={submitting || isFormDisabled}
                                     className={`inline-flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${(submitting || isFormDisabled) ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition`}
                                 >
-                                    {submitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
+                                    {submitting && <div
+                                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
                                     {submitting ? t("uploadStageEmployeur.submitting") : t("uploadStageEmployeur.submit")}
                                 </button>
 
@@ -343,14 +354,16 @@ export default function UploadStageEmployeur({ employeurId }) {
             </div>
 
             {toast.show && (
-                <div className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
                     {toast.type === 'success' ? (
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
                         </svg>
                     ) : (
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     )}
                     <span className="font-medium">{toast.message}</span>
@@ -360,7 +373,8 @@ export default function UploadStageEmployeur({ employeurId }) {
                         aria-label="Close"
                     >
                         <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>

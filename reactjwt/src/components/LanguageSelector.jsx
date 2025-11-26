@@ -1,8 +1,8 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 
-const LanguageSelector = ({ className = "w-32" }) => {
-    const { i18n } = useTranslation();
+const LanguageSelector = ({className = "w-32"}) => {
+    const {i18n} = useTranslation();
 
     const handleLanguageChange = (e) => {
         const newLang = e.target.value;

@@ -3,45 +3,17 @@ package ca.cal.leandrose.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 @Service
 public class ChatService {
 
-    @Value("${google.ai.api-key}")
-    private String apiKey;
-
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper;
-
-    private final GestionnaireService gestionnaireService;
-    private final InternshipOfferService internshipOfferService;
-    private final EntenteStageService ententeService;
-
-    private final Map<String, List<Map<String, Object>>> conversationHistory = new ConcurrentHashMap<>();
     private static final int MAX_HISTORY_SIZE = 20;
-
-    public ChatService(GestionnaireService gestionnaireService,
-                       InternshipOfferService internshipOfferService,
-                       EntenteStageService ententeService) {
-        this.gestionnaireService = gestionnaireService;
-        this.internshipOfferService = internshipOfferService;
-        this.ententeService = ententeService;
-
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
-        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        this.objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-
-        System.out.println("✅ ChatService initialisé avec ObjectMapper configuré pour les dates");
-    }
-
     private static final String SYSTEM_CONTEXT = """
             Tu es un assistant IA spécialisé pour aider avec l'application LeandrOSE de gestion de stages.
             
@@ -78,6 +50,29 @@ public class ChatService {
             - Pour les listes longues, résume les informations principales
             - Ne fournis que les informations demandées
             """;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper;
+    private final GestionnaireService gestionnaireService;
+    private final InternshipOfferService internshipOfferService;
+    private final EntenteStageService ententeService;
+    private final Map<String, List<Map<String, Object>>> conversationHistory = new ConcurrentHashMap<>();
+    @Value("${google.ai.api-key}")
+    private String apiKey;
+
+    public ChatService(GestionnaireService gestionnaireService,
+                       InternshipOfferService internshipOfferService,
+                       EntenteStageService ententeService) {
+        this.gestionnaireService = gestionnaireService;
+        this.internshipOfferService = internshipOfferService;
+        this.ententeService = ententeService;
+
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        this.objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        System.out.println("✅ ChatService initialisé avec ObjectMapper configuré pour les dates");
+    }
 
     private List<Map<String, Object>> getFunctionDeclarations() {
         return List.of(

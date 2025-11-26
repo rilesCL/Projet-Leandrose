@@ -40,26 +40,26 @@ async function handleBlobResponse(response) {
 
 export async function getCandidaturesAcceptees() {
     const url = `${API_BASE}/ententes/candidatures/accepted`;
-    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "GET", headers: getAuthHeaders()});
     return await handleJsonResponse(res);
 }
 
 export async function previewCv(cvId) {
     const url = `${API_BASE}/cv/${cvId}/download`;
-    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "GET", headers: getAuthHeaders()});
     return await handleBlobResponse(res);
 }
 
 
 export async function getPendingCvs() {
     const url = `${API_BASE}/cvs/pending`;
-    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "GET", headers: getAuthHeaders()});
     return await handleJsonResponse(res);
 }
 
 export async function approveCv(cvId) {
     const url = `${API_BASE}/cv/${cvId}/approve`;
-    const res = await fetch(url, { method: "POST", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "POST", headers: getAuthHeaders()});
     return await handleJsonResponse(res);
 }
 
@@ -75,7 +75,7 @@ export async function rejectCv(cvId, comment) {
 }
 
 async function fetchWithAuthJson(url) {
-    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "GET", headers: getAuthHeaders()});
     return await handleJsonResponse(res);
 }
 
@@ -97,7 +97,7 @@ export async function getPendingOffers() {
 
 export async function approveOffer(offerId) {
     const url = `${API_BASE}/offers/${offerId}/approve`;
-    const res = await fetch(url, { method: "POST", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "POST", headers: getAuthHeaders()});
     return await handleJsonResponse(res);
 }
 
@@ -106,14 +106,14 @@ export async function rejectOffer(offerId, comment) {
     const res = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({comment}),
     });
     return await handleJsonResponse(res);
 }
 
 export async function previewOfferPdf(offerId) {
     const url = `${API_BASE}/offers/${offerId}/pdf`;
-    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "GET", headers: getAuthHeaders()});
     return await handleBlobResponse(res);
 }
 
@@ -163,13 +163,13 @@ export async function fetchAgreements(setEntentes, setLoading, showToast, t) {
 
 export async function previewEntentePdf(ententeId) {
     const url = `${API_BASE}/ententes/${ententeId}/telecharger`;
-    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "GET", headers: getAuthHeaders()});
     return await handleBlobResponse(res);
 }
 
 export async function getAllProfs() {
     const url = `${API_BASE}/profs`;
-    const res = await fetch(url, { method: "GET", headers: getAuthHeaders() });
+    const res = await fetch(url, {method: "GET", headers: getAuthHeaders()});
     return await handleJsonResponse(res);
 }
 
@@ -178,7 +178,7 @@ export async function attribuerProf(ententeId, profId) {
     const res = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ profId }),
+        body: JSON.stringify({profId}),
     });
     return await handleJsonResponse(res);
 }
@@ -226,7 +226,7 @@ export async function sendChatMessage(query, sessionId, token = null) {
     const res = await fetch('http://localhost:8080/gestionnaire/chatclient', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ query })
+        body: JSON.stringify({query})
     });
     return await handleJsonResponse(res);
 }

@@ -1,36 +1,32 @@
 package ca.cal.leandrose.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.SchoolTerm;
 import ca.cal.leandrose.model.auth.Credentials;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.EmployeurDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
-import org.junit.jupiter.api.*;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockMultipartFile;
-
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
+import org.junit.jupiter.api.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 class InternshipOfferServiceTest {
@@ -105,7 +101,7 @@ class InternshipOfferServiceTest {
     // Act
     InternshipOfferDto result =
         internshipOfferService.createOfferDto(
-            "Stage en Java", LocalDate.now(), 12, "123 rue Tech", 1000f, employeurDto,pdfFile);
+            "Stage en Java", LocalDate.now(), 12, "123 rue Tech", 1000f, employeurDto, pdfFile);
 
     // Assert
     assertThat(result).isNotNull();
@@ -229,5 +225,47 @@ class InternshipOfferServiceTest {
     assertEquals("PUBLISHED", result.getStatus());
     assertEquals("123 Main St.", result.getAddress());
     assertEquals(12, result.getDurationInWeeks());
+  }
+
+  @Test
+  void disableOffer_success_changeStatus(){
+      InternshipOffer offer = new InternshipOffer();
+      offer.setId(10L);
+      offer.setStatus(InternshipOffer.Status.PUBLISHED);
+      offer.setEmployeur(employeur);
+
+      when(internshipOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+      when(internshipOfferRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+      InternshipOfferDto result = internshipOfferService.disableOffer(1L, 10L);
+      assertEquals("DISABLED", result.getStatus());
+  }
+
+  @Test
+  void enableOffer_beforeStartDate_success(){
+      InternshipOffer offer = new InternshipOffer();
+      offer.setStartDate(LocalDate.now().plusDays(10));
+      offer.setStatus(InternshipOffer.Status.DISABLED);
+      offer.setEmployeur(employeur);
+
+      when(internshipOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+      when(internshipOfferRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+      InternshipOfferDto result =  internshipOfferService.enableOffer(1L, 10L);
+      System.out.println("result: " + result);
+      assertEquals("PUBLISHED", result.getStatus());
+  }
+
+  @Test
+  void enableOffer_afterStartDate_throwsException(){
+      InternshipOffer offer = new InternshipOffer();
+      offer.setStartDate(LocalDate.now().minusDays(1));
+      offer.setStatus(InternshipOffer.Status.DISABLED);
+      offer.setEmployeur(employeur);
+
+      when(internshipOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+      RuntimeException ex = assertThrows(RuntimeException.class, () ->
+              internshipOfferService.enableOffer(1L, 10L));
+      assertEquals("Impossible de réactiver une offre dont la date de début est expiré", ex.getMessage());
   }
 }

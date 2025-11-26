@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import InternshipOffersList from "./InternshipOffersList.jsx";
-import { useNavigate, useLocation } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
-import { useTranslation } from "react-i18next";
+import {useLocation, useNavigate} from "react-router-dom";
+import {FaSignOutAlt} from "react-icons/fa";
+import {useTranslation} from "react-i18next";
 import LanguageSelector from "../LanguageSelector.jsx";
 import EmployeurListeStages from "./EmployeurListeStages.jsx";
 import EvaluationList from "./EvaluationList.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
 import TermSelector from "../TermSelector.jsx";
-import { getEmployeurMe } from "../../api/apiEmployeur.jsx";
+import {getEmployeurMe} from "../../api/apiEmployeur.jsx";
 
 export default function DashBoardEmployeur() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { t, i18n } = useTranslation();
+    const {t, i18n} = useTranslation();
     const [userName, setUserName] = useState("");
     const [selectedTerm, setSelectedTerm] = useState(null);
 
@@ -27,7 +27,7 @@ export default function DashBoardEmployeur() {
     const handleLogout = () => {
         sessionStorage.clear();
         localStorage.clear();
-        navigate("/login", { replace: true });
+        navigate("/login", {replace: true});
     };
 
     const handleTermChange = (term) => {
@@ -52,7 +52,7 @@ export default function DashBoardEmployeur() {
         fetchUserInfo();
     }, [navigate]);
 
-    const Btn = ({ target, children }) => (
+    const Btn = ({target, children}) => (
         <button
             onClick={() => setSection(target)}
             className={`relative flex-1 min-w-[140px] px-6 py-3.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out ${
@@ -84,14 +84,21 @@ export default function DashBoardEmployeur() {
                             className="flex items-center space-x-4"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
-                            <TermSelector onTermChange={handleTermChange} />
+                            <TermSelector onTermChange={handleTermChange}/>
                             <ThemeToggle/>
                             <LanguageSelector/>
+                            <button
+                                onClick={() => navigate("/profil")}
+                                className="text-sm text-gray-600 hover:text-indigo-600"
+                            >
+                                {t("profile.menu") || "Mon profil"}
+                            </button>
+
                             <button
                                 onClick={handleLogout}
                                 className="flex items-center text-gray-600 hover:text-red-600 transition"
                             >
-                                <FaSignOutAlt className="mr-1" />
+                                <FaSignOutAlt className="mr-1"/>
                                 <span className="hidden sm:inline">
                                     {t("dashboardEmployeur.logout")}
                                 </span>
@@ -110,7 +117,6 @@ export default function DashBoardEmployeur() {
                         {t("dashboardEmployeur.description")}
                     </p>
 
-                    {/* Tab Navigation */}
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-2.5 mb-6">
                         <div className="flex flex-wrap gap-2">
                             <Btn target="offers">
@@ -125,22 +131,21 @@ export default function DashBoardEmployeur() {
                         </div>
                     </div>
 
-                    {/* Content Sections */}
                     {section === 'offers' && (
                         <div className="space-y-8">
-                            <InternshipOffersList selectedTerm={selectedTerm} />
+                            <InternshipOffersList selectedTerm={selectedTerm}/>
                         </div>
                     )}
 
                     {section === 'ententes' && (
                         <div className="space-y-8">
-                            <EmployeurListeStages selectedTerm={selectedTerm} />
+                            <EmployeurListeStages selectedTerm={selectedTerm}/>
                         </div>
                     )}
 
                     {section === 'evaluations' && (
                         <div className="space-y-8">
-                            <EvaluationList selectedTerm={selectedTerm} />
+                            <EvaluationList selectedTerm={selectedTerm}/>
                         </div>
                     )}
                 </div>

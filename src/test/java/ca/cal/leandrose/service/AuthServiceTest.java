@@ -1,10 +1,15 @@
 package ca.cal.leandrose.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.Gestionnaire;
 import ca.cal.leandrose.model.Student;
 import ca.cal.leandrose.security.JwtTokenProvider;
 import ca.cal.leandrose.service.dto.LoginDTO;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,12 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class AuthServiceTest {
 

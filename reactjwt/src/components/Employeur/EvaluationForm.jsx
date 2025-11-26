@@ -1,18 +1,18 @@
 // Path: src/components/EvaluationForm.jsx
 
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {useNavigate, useParams} from 'react-router-dom';
 import {
+    checkExistingEvaluation,
     createEvaluation,
-    getEvaluationInfo,
     generateEvaluationPdfWithId,
-    checkExistingEvaluation
+    getEvaluationInfo
 } from '../../api/apiEmployeur';
 
 const EvaluationForm = () => {
-    const { t } = useTranslation();
-    const { studentId, offerId } = useParams();
+    const {t} = useTranslation();
+    const {studentId, offerId} = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -136,12 +136,10 @@ const EvaluationForm = () => {
                     throw new Error(t("evaluation.errors.missing_studentId_Or_offerId"));
                 }
                 const existingCheck = await checkExistingEvaluation(studentId, offerId);
-                if (existingCheck.exists) {
-                    setError(t('evaluation.errors.evaluation_exists'));
-                    setTimeout(() => {
-                        navigate('/dashboard/employeur/evaluations');
-                    }, 3000);
-                    return;
+                let evalId =null
+                if (existingCheck.exists && existingCheck.evaluation) {
+                    evalId = existingCheck.evaluation.id
+                    setEvaluationId(evalId)
                 }
                 const evaluationInfo = await getEvaluationInfo(studentId, offerId);
                 setStudent({
@@ -185,12 +183,12 @@ const EvaluationForm = () => {
     const clearCategoryQuestionError = (categoryKey, questionIndex) => {
         setErrors(prev => {
             if (!prev?.categories || !prev.categories[categoryKey]) return prev;
-            const catCopy = { ...prev.categories[categoryKey] };
+            const catCopy = {...prev.categories[categoryKey]};
             delete catCopy[questionIndex];
-            const categoriesCopy = { ...prev.categories, [categoryKey]: catCopy };
+            const categoriesCopy = {...prev.categories, [categoryKey]: catCopy};
             // cleanup si vide
             if (Object.keys(catCopy).length === 0) delete categoriesCopy[categoryKey];
-            const newPrev = { ...prev, categories: categoriesCopy };
+            const newPrev = {...prev, categories: categoriesCopy};
             if (!newPrev.categories || Object.keys(newPrev.categories).length === 0) {
                 delete newPrev.categories;
             }
@@ -205,7 +203,7 @@ const EvaluationForm = () => {
             categories: {
                 ...prev.categories,
                 [categoryKey]: prev.categories[categoryKey].map((question, idx) =>
-                    idx === questionIndex ? { ...question, [field]: value } : question
+                    idx === questionIndex ? {...question, [field]: value} : question
                 )
             }
         }));
@@ -230,7 +228,7 @@ const EvaluationForm = () => {
         }));
         setErrors(prev => {
             if (!prev) return prev;
-            const copy = { ...prev };
+            const copy = {...prev};
             if (copy[field]) delete copy[field];
             if (Object.keys(copy).length === 0) return {};
             return copy;
@@ -262,7 +260,7 @@ const EvaluationForm = () => {
             setTimeout(() => {
                 const el = document.querySelector('.validation-error');
                 if (el && typeof el.scrollIntoView === 'function') {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.scrollIntoView({behavior: 'smooth', block: 'center'});
                 }
             }, 50);
             return;
@@ -272,13 +270,21 @@ const EvaluationForm = () => {
         setErrors({});
         setSubmitting(true);
         try {
-            const createResponse = await createEvaluation(studentId, offerId);
-            const evalId = createResponse.evaluationId || createResponse.id || createResponse;
+            let evalId
+            const existingCheck = await checkExistingEvaluation(studentId, offerId)
+
+            if (existingCheck.exists && existingCheck.evaluation) {
+                evalId = existingCheck.evaluation.id;
+            } else {
+                const createResponse = await createEvaluation(studentId, offerId);
+                evalId = createResponse.evaluationId || createResponse.id || createResponse;
+            }
             if (!evalId) {
                 throw new Error(t("evaluation.errors.evaluationId_received"));
             }
             setEvaluationId(evalId);
             await new Promise(resolve => setTimeout(resolve, 500));
+            console.log("EvaluationId: ", evalId)
             await generateEvaluationPdfWithId(evalId, formData);
             setSubmitted(true);
             setSuccessMessage(t("evaluation.submittedSuccess"));
@@ -313,7 +319,7 @@ const EvaluationForm = () => {
                     </h2>
                     <p className="text-red-700 mb-4">{error}</p>
                     <button
-                        onClick={() => navigate('/dashboard/employeur/evaluations')}
+                        onClick={() => navigate('/dashboard/employeur')}
                         className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                     >
                         {t('evaluation.backToEvaluationsList')}
@@ -325,18 +331,20 @@ const EvaluationForm = () => {
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-8">
-            {/* Header Section */}
             <div className="mb-8">
                 <div className="mb-4">
                     <button
                         type="button"
-                        onClick={() => navigate('/dashboard/employeur/evaluations')}
+                        onClick={() => navigate('/dashboard/employeur')}
                         className="inline-flex items-center gap-2 rounded-md border border-blue-100 bg-white px-4 py-2 text-sm font-medium text-blue-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                     >
                         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="none">
-                            <line x1="11" y1="5" x2="6" y2="10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                            <line x1="6" y1="10" x2="11" y2="15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                            <line x1="6" y1="10" x2="16" y2="10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                            <line x1="11" y1="5" x2="6" y2="10" stroke="currentColor" strokeWidth="1.6"
+                                  strokeLinecap="round"/>
+                            <line x1="6" y1="10" x2="11" y2="15" stroke="currentColor" strokeWidth="1.6"
+                                  strokeLinecap="round"/>
+                            <line x1="6" y1="10" x2="16" y2="10" stroke="currentColor" strokeWidth="1.6"
+                                  strokeLinecap="round"/>
                         </svg>
                         {t('evaluation.backToEvaluationsList')}
                     </button>
@@ -394,14 +402,12 @@ const EvaluationForm = () => {
                 </div>
             </div>
 
-            {/* Instructions */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                 <p className="text-blue-700 italic text-sm">
                     {t('evaluation.instructions')}
                 </p>
             </div>
 
-            {/* Evaluation Form */}
             <div className="space-y-6">
                 {Object.entries(evaluationTemplate).map(([categoryKey, category]) => (
                     <div key={categoryKey} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
@@ -476,7 +482,6 @@ const EvaluationForm = () => {
                                             })}
                                         </div>
 
-                                        {/* Affichage de l'erreur de la note pour cette question */}
                                         {ratingError && (
                                             <p className="validation-error text-sm text-red-600 mb-2">{ratingError}</p>
                                         )}
@@ -510,13 +515,11 @@ const EvaluationForm = () => {
                     />
                 </div>
 
-                {/* Global Assessment Section with Unified Radio Buttons */}
                 <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
                         {t('evaluation.globalAssessment.title')}
                     </h2>
 
-                    {/* Global Assessment Options */}
                     <div className="mb-6">
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.question')}
@@ -574,13 +577,11 @@ const EvaluationForm = () => {
                             })}
                         </div>
 
-                        {/* Erreur pour globalAssessment */}
                         {errors.globalAssessment && (
                             <p className="validation-error text-sm text-red-600 mb-2">{errors.globalAssessment}</p>
                         )}
                     </div>
 
-                    {/* Global Appreciation */}
                     <div className="mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             {t('evaluation.globalAssessment.specify')}
@@ -639,13 +640,11 @@ const EvaluationForm = () => {
                             })}
                         </div>
 
-                        {/* Erreur pour discussion avec stagiaire */}
-                            {errors.discussedWithTrainee && (
-                                <p className="validation-error text-sm text-red-600 mt-1">{errors.discussedWithTrainee}</p>
-                            )}
+                        {errors.discussedWithTrainee && (
+                            <p className="validation-error text-sm text-red-600 mt-1">{errors.discussedWithTrainee}</p>
+                        )}
                     </div>
 
-                    {/* Supervision Hours */}
                     <div className="mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             {t('evaluation.globalAssessment.supervision_hours')}
@@ -663,7 +662,6 @@ const EvaluationForm = () => {
                         )}
                     </div>
 
-                    {/* Welcome Next Internship */}
                     <div className="mb-6">
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.welcome_nextInternship')}
@@ -719,7 +717,6 @@ const EvaluationForm = () => {
                         )}
                     </div>
 
-                    {/* Technical Training Sufficient */}
                     <div className="mb-6">
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.technical_training')}
@@ -763,22 +760,21 @@ const EvaluationForm = () => {
                             })}
                         </div>
 
-                        {/* Erreur pour discussion avec stagiaire */}
                         {errors.technicalTrainingSufficient && (
                             <p className="validation-error text-sm text-red-600 mt-1">{errors.technicalTrainingSufficient}</p>
                         )}
                     </div>
                 </div>
 
-                {/* Server / submit error message (reste en bas pour les erreurs non-validation) */}
                 {error && student && (
                     <div className="bg-red-50 border border-red-300 rounded-xl p-4 shadow-sm">
                         <div className="flex items-start">
                             <div className="flex-shrink-0 mt-1">
-                                <svg className="h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="15" y1="9" x2="9" y2="15" />
-                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                <svg className="h-6 w-6 text-red-500" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
                                 </svg>
                             </div>
                             <div className="ml-3 flex-1">
@@ -787,15 +783,16 @@ const EvaluationForm = () => {
                                 </h3>
                                 <p className="text-sm text-red-700">{error}</p>
                             </div>
-                            {/* Close button */}
                             <button
                                 onClick={() => setError(null)}
                                 className="ml-4 text-red-400 hover:text-red-600 transition-colors"
                                 aria-label="Fermer le message d’erreur"
                             >
                                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
-                                    <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                    <line x1="15" y1="5" x2="5" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                    <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="2"
+                                          strokeLinecap="round"/>
+                                    <line x1="15" y1="5" x2="5" y2="15" stroke="currentColor" strokeWidth="2"
+                                          strokeLinecap="round"/>
                                 </svg>
                             </button>
                         </div>
@@ -807,8 +804,9 @@ const EvaluationForm = () => {
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
                                 <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <circle cx="10" cy="10" r="8" />
-                                    <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <circle cx="10" cy="10" r="8"/>
+                                    <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2"
+                                              strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                             </div>
                             <div className="ml-3">
@@ -820,7 +818,6 @@ const EvaluationForm = () => {
                     </div>
                 )}
 
-                {/* Action Buttons */}
                 <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
                     <button
                         type="button"

@@ -1,18 +1,33 @@
 package ca.cal.leandrose.presentation;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
-import ca.cal.leandrose.service.dto.evaluation.CreateEvaluationRequest;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationFormData;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationInfoDto;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationStagiaireDto;
+import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +36,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.BeanOverride;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,9 +76,10 @@ class EmployeurControllerTest {
 
 
   private EvaluationStagiaireDto evaluationDto;
-  private EvaluationFormData formData;
+  private EvaluationEmployerFormData formData;
   private EmployeurDto employeurDto;
   private StudentDto studentDto;
+  private ProfDto profDto;
   private MockHttpServletRequest request;
   private InternshipOfferDto internshipOfferDto;
 
@@ -77,6 +88,17 @@ class EmployeurControllerTest {
   void setUp(){
       request = new MockHttpServletRequest();
       objectMapper = new ObjectMapper();
+      profDto = ProfDto.builder()
+              .id(2L)
+              .firstName("Jean")
+              .lastName("Dupont")
+              .email("prof@gmail.com")
+              .employeeNumber("dakdadas")
+              .nameCollege("College Mainsonneuve")
+              .address("Rue Debois")
+              .fax_machine("437893434")
+              .department("Informatique")
+              .build();
 
       employeurDto =  EmployeurDto.builder()
               .id(1L)
@@ -105,13 +127,48 @@ class EmployeurControllerTest {
                       .build();
 
       evaluationDto = new EvaluationStagiaireDto(
-              3L, LocalDate.now(), 2L, 1L,  100L,"/path/to/pdf", false
+              3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", null, true, false
       );
-      formData = new EvaluationFormData(
-              Map.of(), "General comment", 2, "Global appreciation",
-              true, 10, "YES", true
-      );
+      formData  = createEvaluationEmployerFormData();
   }
+
+    private EvaluationEmployerFormData createEvaluationEmployerFormData() {
+        // Create sample questions and responses using the record
+        EmployerQuestionResponse question1 = new EmployerQuestionResponse(
+                "Very good performance",  // comment
+                true,                     // checked
+                "Excellent"               // rating
+        );
+
+        EmployerQuestionResponse question2 = new EmployerQuestionResponse(
+                "Satisfactory work",      // comment
+                true,                     // checked
+                "Good"                    // rating
+        );
+
+        EmployerQuestionResponse question3 = new EmployerQuestionResponse(
+                "Needs improvement",      // comment
+                false,                    // checked
+                "Average"                 // rating
+        );
+
+        // Create categories map
+        Map<String, List<EmployerQuestionResponse>> categories = new HashMap<>();
+        categories.put("Technical Skills", Arrays.asList(question1, question2));
+        categories.put("Professionalism", Arrays.asList(question1, question3));
+        categories.put("Communication", Arrays.asList(question2));
+
+        return new EvaluationEmployerFormData(
+                categories,
+                "Excellent intern, would hire again",  // generalComment
+                5,                                     // globalAssessment
+                "Outstanding performance",             // globalAppreciation
+                true,                                  // discussedWithTrainee
+                20,                                    // supervisionHours
+                "Yes, definitely",                     // welcomeNextInternship
+                true                                   // technicalTrainingSufficient
+        );
+    }
 
   private CandidatureDto createCandidatureDto(
       Long id, Long employeurId, String studentFirstName, String studentLastName) {
@@ -376,8 +433,8 @@ class EmployeurControllerTest {
     @Test
     void createEvaluation_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.isEvaluationEligible(1L, 2L, 100L)).thenReturn(true);
-        when(evaluationStagiaireService.createEvaluation(1L, 2L, 100L)).thenReturn(evaluationDto);
+        when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 100L)).thenReturn(true);
+        when(evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 100L)).thenReturn(evaluationDto);
 
         CreateEvaluationRequest createRequest = new CreateEvaluationRequest(2L, 100L);
 
@@ -404,7 +461,7 @@ class EmployeurControllerTest {
     @Test
     void createEvaluation_notEligible_returnsBadRequest() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.isEvaluationEligible(1L, 2L, 3L)).thenReturn(false);
+        when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 3L)).thenReturn(false);
 
         CreateEvaluationRequest createRequest = new CreateEvaluationRequest(2L, 3L);
 
@@ -418,8 +475,8 @@ class EmployeurControllerTest {
     @Test
     void createEvaluation_serviceException_returnsBadRequest() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.isEvaluationEligible(1L, 2L, 3L)).thenReturn(true);
-        when(evaluationStagiaireService.createEvaluation(1L, 2L, 3L))
+        when(evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER ,1L, 2L, 3L)).thenReturn(true);
+        when(evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L))
                 .thenThrow(new RuntimeException("Evaluation error"));
 
         CreateEvaluationRequest createRequest = new CreateEvaluationRequest(2L, 3L);
@@ -434,9 +491,13 @@ class EmployeurControllerTest {
     @Test
     void generateEvaluationPdf_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
-        when(evaluationStagiaireService.generateEvaluationPdf(anyLong(), any(), anyString()))
-                .thenReturn(evaluationDto);
+
+        EvaluationStagiaireDto evaluationWithPdf = evaluationDto;
+
+        when(evaluationStagiaireService.generateEvaluationPdfByEmployer(eq(1L), any(), eq("fr")))
+                .thenReturn(evaluationWithPdf);
 
         mockMvc.perform(post("/employeur/evaluations/1/generate-pdf")
                         .header("Authorization", "Bearer token")
@@ -459,7 +520,8 @@ class EmployeurControllerTest {
 
     @Test
     void generateEvaluationPdf_notOwner_returnsForbidden() throws Exception {
-        EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 100L, null, false);
+        EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 2L,
+                100L, null, null, false, false);
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(otherEvaluation);
@@ -477,7 +539,7 @@ class EmployeurControllerTest {
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
-        when(evaluationStagiaireService.getEvaluationPdf(1L)).thenReturn(pdfBytes);
+        when(evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER)).thenReturn(pdfBytes);
 
         mockMvc.perform(get("/employeur/evaluations/1/pdf")
                         .header("Authorization", "Bearer token"))
@@ -489,7 +551,7 @@ class EmployeurControllerTest {
     void getEvaluationPdf_notFound_returnsNotFound() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
-        when(evaluationStagiaireService.getEvaluationPdf(1L))
+        when(evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER))
                 .thenThrow(new RuntimeException("PDF not found"));
 
         mockMvc.perform(get("/employeur/evaluations/1/pdf")
@@ -550,7 +612,8 @@ class EmployeurControllerTest {
 
 
         EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(
-                1L, LocalDate.now(), 2L, 1L, 100L, null, false
+                1L, LocalDate.now(), 2L, 1L, 2L, 100L,
+                null, null, false, false
         );
 
         when(userAppService.getMe(anyString())).thenReturn(differentEmployeur);
@@ -575,7 +638,7 @@ class EmployeurControllerTest {
     @Test
     void getEligibleEvaluations_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.getEligibleEvaluations(1L)).thenReturn(List.of());
+        when(evaluationStagiaireService.getEligibleEvaluations(CreatorTypeEvaluation.EMPLOYER, 1L)).thenReturn(List.of());
 
         mockMvc.perform(get("/employeur/evaluations/eligible")
                         .header("Authorization", "Bearer token"))
@@ -594,8 +657,8 @@ class EmployeurControllerTest {
     @Test
     void getEvaluationInfo_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L))
-                .thenReturn(new EvaluationInfoDto(null, null));
+        when(evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L))
+                .thenReturn(new EvaluationEmployerInfoDto(null, null));
 
         mockMvc.perform(get("/employeur/evaluations/info")
                         .header("Authorization", "Bearer token")
@@ -607,7 +670,7 @@ class EmployeurControllerTest {
     @Test
     void getEvaluationInfo_serviceException_returnsBadRequest() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
-        when(evaluationStagiaireService.getEvaluationInfo(1L, 2L, 3L))
+        when(evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L))
                 .thenThrow(new RuntimeException("Evaluation not allowed"));
 
         mockMvc.perform(get("/employeur/evaluations/info")
@@ -652,5 +715,23 @@ class EmployeurControllerTest {
                         .param("studentId", "2")
                         .param("offerId", "3"))
                 .andExpect(status().isForbidden());
+    }
+    @Test
+    void disableOffer_success_returnOk() throws Exception{
+      when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+      when(internshipOfferService.disableOffer(1L, 100L)).thenReturn(internshipOfferDto);
+
+      mockMvc.perform(put("/employeur/offers/100/disable")
+              .header("Authorization", "Bearer token"))
+              .andExpect(status().isOk());
+    }
+    @Test
+    void enableOffer_success_returnOk() throws Exception{
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.enableOffer(1L, 100L)).thenReturn(internshipOfferDto);
+
+        mockMvc.perform(put("/employeur/offers/100/enable")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk());
     }
 }

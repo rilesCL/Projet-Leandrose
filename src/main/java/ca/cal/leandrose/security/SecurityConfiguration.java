@@ -1,5 +1,7 @@
 package ca.cal.leandrose.security;
 
+import static org.springframework.http.HttpMethod.*;
+
 import ca.cal.leandrose.repository.UserAppRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +23,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import static org.springframework.http.HttpMethod.*;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -42,14 +42,16 @@ public class SecurityConfiguration {
             auth ->
                 auth.requestMatchers(POST, "/user/login", "/api/register/**")
                     .permitAll()
+                        .requestMatchers(GET, "/user/me/role")
+                        .permitAll()
                     .requestMatchers(GET, "/api/register/programs")
                     .permitAll()
                     .requestMatchers(GET, "/gestionnaire/**")
                     .hasAuthority("GESTIONNAIRE")
-                        .requestMatchers(POST, "/gestionnaire/**")
-                        .hasAuthority("GESTIONNAIRE")
-                        .requestMatchers(DELETE, "/gestionnaire/chatclient/**")
-                        .hasAuthority("GESTIONNAIRE")
+                    .requestMatchers(POST, "/gestionnaire/**")
+                    .hasAuthority("GESTIONNAIRE")
+                    .requestMatchers(DELETE, "/gestionnaire/chatclient/**")
+                    .hasAuthority("GESTIONNAIRE")
                     .requestMatchers(POST, "/student/**")
                     .hasAuthority("STUDENT")
                     .requestMatchers(GET, "/student/**")
@@ -61,6 +63,22 @@ public class SecurityConfiguration {
                     .hasAuthority("STUDENT")
                     .requestMatchers(POST, "/employeur/**")
                     .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(POST, "/employeur/evaluations")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(POST, "/employeur/evaluations/generate-pdf")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(GET, "/employeur/evaluations")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(GET, "/employeur/evaluations/*")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(GET, "/employeur/evaluations/*/pdf")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(GET, "/employeur/evaluations/eligible")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(GET, "/employeur/evaluations/info")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(GET, "/employeur/evaluations/check-existing")
+                    .hasAuthority("EMPLOYEUR")
                         .requestMatchers(POST, "/employeur/evaluations").hasAuthority("EMPLOYEUR")
                         .requestMatchers(POST, "/employeur/evaluations/generate-pdf").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/employeur/evaluations").hasAuthority("EMPLOYEUR")
@@ -69,10 +87,21 @@ public class SecurityConfiguration {
                         .requestMatchers(GET, "/employeur/evaluations/eligible").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/employeur/evaluations/info").hasAuthority("EMPLOYEUR")
                         .requestMatchers(GET, "/employeur/evaluations/check-existing").hasAuthority("EMPLOYEUR")
+                    .requestMatchers(POST, "/prof/**")
+                    .hasAuthority("PROF")
+                        .requestMatchers(POST, "/prof/evaluations").hasAuthority("PROF")
+                        .requestMatchers(POST, "/prof/evaluations/*/generate-pdf").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/*").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/*/pdf").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/eligible").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/info").hasAuthority("PROF")
+                        .requestMatchers(GET, "/prof/evaluations/check-existing").hasAuthority("PROF")
                     .requestMatchers(POST, "/employer/ententes/*/signer")
                     .hasAuthority("EMPLOYEUR")
                     .requestMatchers(PUT, "/employeur/**")
-                    .hasAuthority("EMPLOYEUR").requestMatchers(PUT, "/student/**")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(PUT, "/student/**")
                     .hasAuthority("STUDENT")
                     .requestMatchers(GET, "/employeur/**")
                     .hasAuthority("EMPLOYEUR")
@@ -101,9 +130,15 @@ public class SecurityConfiguration {
                     .hasAuthority("EMPLOYEUR")
                     .requestMatchers("/gestionnaire/**")
                     .hasAuthority("GESTIONNAIRE")
-                        .requestMatchers(GET, "/prof/**").hasAnyAuthority("PROF", "GESTIONNAIRE")
+                    .requestMatchers(GET, "/prof/**")
+                    .hasAnyAuthority("PROF", "GESTIONNAIRE")
                     .requestMatchers("/user/me")
                     .permitAll()
+                        .requestMatchers(GET, "/prof/**").hasAnyAuthority("PROF", "GESTIONNAIRE")
+                        .requestMatchers(POST, "/user/verify-password")
+                        .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
+                        .requestMatchers(PUT, "/user/me")
+                        .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
                     .anyRequest()
                     .denyAll())
         .sessionManagement(

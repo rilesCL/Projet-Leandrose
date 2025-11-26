@@ -7,7 +7,7 @@ import LanguageSelector from "../LanguageSelector.jsx";
 import StudentInternshipOffersList from "./StudentInternshipOffersList.jsx";
 import StudentApplicationsList from './StudentApplicationsList.jsx';
 import StudentEntentesListe from "./StudentEntentesListe.jsx";
-import {updateStudentInfo, getStudentMe} from "../../api/apiStudent.jsx";
+import {getStudentMe, updateStudentInfo} from "../../api/apiStudent.jsx";
 import {fetchPrograms} from "../../api/apiRegister.jsx";
 import InfosContactPage from "./InfosContactPage.jsx";
 import ThemeToggle from '../ThemeToggle.jsx';
@@ -208,6 +208,12 @@ export default function DashBoardStudent() {
                     <div className="flex items-center gap-4">
                         <ThemeToggle/>
                         <LanguageSelector/>
+                        <button
+                            onClick={() => navigate("/profil")}
+                            className="text-sm text-gray-600 hover:text-indigo-600"
+                        >
+                            {t("profile.menu") || "Mon profil"}
+                        </button>
                         <button
                             onClick={handleLogout}
                             className="flex items-center text-gray-600 hover:text-red-600 text-sm"

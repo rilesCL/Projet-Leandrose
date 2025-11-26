@@ -1,5 +1,7 @@
 package ca.cal.leandrose.service;
 
+import static ca.cal.leandrose.service.mapper.InternshipOfferMapper.toDto;
+
 import ca.cal.leandrose.model.Employeur;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.Program;
@@ -11,11 +13,6 @@ import ca.cal.leandrose.service.dto.InternshipOfferDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import com.itextpdf.text.pdf.PdfReader;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,17 +20,18 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-
-import static ca.cal.leandrose.service.mapper.InternshipOfferMapper.toDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class InternshipOfferService {
 
+  private static final String BASE_UPLOAD_DIR = "uploads/offers/";
   private final InternshipOfferRepository internshipOfferRepository;
   private final EmployeurRepository employeurRepository;
-
-  private static final String BASE_UPLOAD_DIR = "uploads/offers/";
 
   @Transactional
   public InternshipOfferDto createOfferDto(
@@ -120,23 +118,20 @@ public class InternshipOfferService {
   }
 
   public List<InternshipOfferDto> getPublishedOffersForStudents(String program, String schoolTerm) {
-      if (Arrays.stream(Program.values())
-              .anyMatch(p -> p.getTranslationKey().equals(program))) {
-          SchoolTerm term = parseSchoolTerm(schoolTerm);
+    if (Arrays.stream(Program.values()).anyMatch(p -> p.getTranslationKey().equals(program))) {
+      SchoolTerm term = parseSchoolTerm(schoolTerm);
 
-          return internshipOfferRepository.findPublishedByProgram(program).stream()
-                  .filter(
-                          offer ->
-                                  offer.getSchoolTerm() != null
-                                          && offer.getSchoolTerm().getSeason() == term.getSeason()
-                                          && offer.getSchoolTerm().getYear() == term.getYear())
-                  .map(InternshipOfferMapper::toDto)
-                  .toList();
-      }
-      else {
-            throw new IllegalArgumentException("Invalid program: " + program);
-      }
-
+      return internshipOfferRepository.findPublishedByProgram(program).stream()
+          .filter(
+              offer ->
+                  offer.getSchoolTerm() != null
+                      && offer.getSchoolTerm().getSeason() == term.getSeason()
+                      && offer.getSchoolTerm().getYear() == term.getYear())
+          .map(InternshipOfferMapper::toDto)
+          .toList();
+    } else {
+      throw new IllegalArgumentException("Invalid program: " + program);
+    }
   }
 
   private SchoolTerm parseSchoolTerm(String termString) {
@@ -157,4 +152,34 @@ public class InternshipOfferService {
     return new SchoolTerm(season, year);
   }
 
+  @Transactional
+    public InternshipOfferDto disableOffer(Long employerId, Long offerId){
+      return setOfferStatus(employerId, offerId, false);
+  }
+
+  @Transactional
+    public InternshipOfferDto enableOffer(Long employerId, Long offerId){
+      return setOfferStatus(employerId, offerId, true);
+  }
+
+  @Transactional
+    public InternshipOfferDto setOfferStatus(Long employerId, Long offerId, boolean enable){
+      InternshipOffer offer = internshipOfferRepository.findById(offerId)
+              .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+      if(!offer.getEmployeur().getId().equals(employerId)){
+          throw new RuntimeException("Vous n'êtes pas autorisé à modifier cette offre");
+      }
+
+      if(enable){
+          if(offer.getStartDate().isBefore(LocalDate.now())){
+              throw new RuntimeException("Impossible de réactiver une offre dont la date de début est expiré");
+          }
+          offer.setStatus(InternshipOffer.Status.PUBLISHED);
+      }
+      else{
+          offer.setStatus(InternshipOffer.Status.DISABLED);
+      }
+      InternshipOffer saved = internshipOfferRepository.save(offer);
+      return InternshipOfferMapper.toDto(saved);
+  }
 }

@@ -1,15 +1,14 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import LanguageSelector from "./LanguageSelector.jsx";
-import { login, getCurrentUser } from "../api/apiSignature.jsx";
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
+import {getCurrentUser, login} from "../api/apiSignature.jsx";
 
 const Login = () => {
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const {t, i18n} = useTranslation();
 
-    const [formData, setFormData] = useState({ email: "", password: "" });
-    const [warnings, setWarnings] = useState({ email: "", password: "" });
+    const [formData, setFormData] = useState({email: "", password: ""});
+    const [warnings, setWarnings] = useState({email: "", password: ""});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const validateEmail = () => {
@@ -21,7 +20,7 @@ const Login = () => {
 
     const validateUser = () => {
         let isValid = true;
-        const w = { ...warnings };
+        const w = {...warnings};
 
         if (!validateEmail()) {
             w.email = t("login.errors.emailInvalid");
@@ -38,9 +37,9 @@ const Login = () => {
     };
 
     const handleChanges = (e) => {
-        const { name, value } = e.target;
-        setWarnings({ ...warnings, [name]: "" });
-        setFormData({ ...formData, [name]: value.trim() });
+        const {name, value} = e.target;
+        setWarnings({...warnings, [name]: ""});
+        setFormData({...formData, [name]: value.trim()});
     };
 
     const handleSubmit = (e) => {
@@ -66,9 +65,9 @@ const Login = () => {
                     password: t("login.errors.invalidCredentials"),
                 });
             } else if (error.status === 404) {
-                setWarnings({ email: t("login.errors.userNotFound"), password: "" });
+                setWarnings({email: t("login.errors.userNotFound"), password: ""});
             } else {
-                setWarnings({ email: t("login.errors.connectionError"), password: "" });
+                setWarnings({email: t("login.errors.connectionError"), password: ""});
             }
         } finally {
             setIsSubmitting(false);
@@ -83,22 +82,22 @@ const Login = () => {
             if (userData.id) sessionStorage.setItem("userId", userData.id);
             if (userData.role) sessionStorage.setItem("role", userData.role);
 
-            switch (userData.role) {
-                case "STUDENT":
-                    navigate("/dashboard/student");
-                    break;
-                case "EMPLOYEUR":
-                    navigate("/dashboard/employeur");
-                    break;
-                case "GESTIONNAIRE":
-                    navigate("/dashboard/gestionnaire");
-                    break;
-                case "PROF":
-                    navigate("/prof/etudiants");
-                    break;
-                default:
-                    navigate("/dashboard");
-            }
+                switch (userData.role) {
+                    case "STUDENT":
+                        navigate("/dashboard/student");
+                        break;
+                    case "EMPLOYEUR":
+                        navigate("/dashboard/employeur");
+                        break;
+                    case "GESTIONNAIRE":
+                        navigate("/dashboard/gestionnaire");
+                        break;
+                    case "PROF":
+                        navigate("/dashboard/prof");
+                        break;
+                    default:
+                        navigate("/dashboard");
+                }
         } catch (error) {
             navigate("/dashboard");
         }

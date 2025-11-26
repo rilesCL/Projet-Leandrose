@@ -5,12 +5,12 @@ async function handleFetch(url, options = {}) {
         const res = await fetch(url, options);
         if (!res.ok) {
             const errorText = await res.text();
-            throw { response: { data: errorText || `Erreur ${res.status}: ${res.statusText}` } };
+            throw {response: {data: errorText || `Erreur ${res.status}: ${res.statusText}`}};
         }
         return res;
     } catch (error) {
         if (error && error.response) throw error;
-        throw { response: { data: error?.message || "Impossible de se connecter au serveur" } };
+        throw {response: {data: error?.message || "Impossible de se connecter au serveur"}};
     }
 }
 
@@ -23,11 +23,11 @@ function authHeaders(token = null) {
 }
 
 export async function uploadStageEmployeur(offer, pdfFile, token = null) {
-    if (!pdfFile) throw { response: { data: "Fichier PDF manquant" } };
+    if (!pdfFile) throw {response: {data: "Fichier PDF manquant"}};
 
     const url = `${API_BASE}/employeur/offers`;
     const formData = new FormData();
-    const offerBlob = new Blob([JSON.stringify(offer)], { type: "application/json" });
+    const offerBlob = new Blob([JSON.stringify(offer)], {type: "application/json"});
     formData.append("offer", offerBlob);
     formData.append("pdfFile", pdfFile);
 
@@ -36,11 +36,11 @@ export async function uploadStageEmployeur(offer, pdfFile, token = null) {
     const tokenType = (sessionStorage.getItem("tokenType") || "BEARER").toUpperCase();
     if (accessToken) headers["Authorization"] = tokenType.startsWith("BEARER") ? `Bearer ${accessToken}` : accessToken;
 
-    const res = await handleFetch(url, { method: "POST", headers, body: formData });
+    const res = await handleFetch(url, {method: "POST", headers, body: formData});
     return res.json();
 }
 export async function getOfferCandidatures(offerId, token = null) {
-    const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/candidatures`, { headers: authHeaders(token) });
+    const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/candidatures`, {headers: authHeaders(token)});
     return res.json();
 }
 
@@ -52,7 +52,7 @@ export async function previewCandidateCv(candidatureId, token = null) {
 }
 
 export async function createConvocation(candidatureId, convocationData, token = null) {
-    const headers = { "Content-Type": "application/json", ...authHeaders(token) };
+    const headers = {"Content-Type": "application/json", ...authHeaders(token)};
     const res = await handleFetch(`${API_BASE}/employeur/candidatures/${candidatureId}/convocations`, {
         method: "POST",
         headers,
@@ -84,10 +84,10 @@ export async function previewOfferPdf(offerId, token = null) {
     return await res.blob();
 }
 
-export async function createEvaluation (studentId, offerId, token = null) {
+export async function createEvaluation(studentId, offerId, token = null) {
     const url = `${API_BASE}/employeur/evaluations`;
     console.log('Calling URL:', url);
-    console.log('With data:', { studentId, internshipOfferId: offerId });
+    console.log('With data:', {studentId, internshipOfferId: offerId});
 
 
     const res = await handleFetch(url, {
@@ -103,7 +103,7 @@ export async function createEvaluation (studentId, offerId, token = null) {
     return responseData
 }
 
-export async function generateEvaluationPdf (studentId, offerId, formData, token = null)  {
+export async function generateEvaluationPdf(studentId, offerId, formData, token = null) {
     const res = await handleFetch(`${API_BASE}/employeur/evaluations/generate-pdf`, {
         method: 'POST',
         headers: {
@@ -119,9 +119,8 @@ export async function generateEvaluationPdf (studentId, offerId, formData, token
     return await res.json()
 }
 
-export async function previewEvaluationPdf (evaluationId, formData = null, token = null) {
+export async function previewEvaluationPdf(evaluationId, formData = null, token = null) {
     if (formData) {
-        // Preview with current form data (not saved)
         const res = await handleFetch(`${API_BASE}/employeur/evaluations/${evaluationId}/preview-pdf`, {
             method: 'POST',
             headers: {
@@ -150,7 +149,8 @@ export async function getEvaluationInfo(studentId, offerId, token = null) {
     });
     return await res.json();
 }
-export async function checkTeacherAssigned(studentId, offerId, token = null){
+
+export async function checkTeacherAssigned(studentId, offerId, token = null) {
     const res = await handleFetch(
         `${API_BASE}/employeur/evaluations/check-teacher-assigned?studentId=${studentId}&offerId=${offerId}`, {
             method: 'GET',
@@ -221,5 +221,26 @@ export async function getEmployeurOffers(token = null) {
         headers: authHeaders(token)
     });
     return await res.json();
+}
+
+export async function disableOffer(offerId, token){
+    const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/disable`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+            ...authHeaders(token)
+        }
+    })
+    return res.json();
+}
+export async function enableOffer(offerId, token){
+    const res = await handleFetch(`${API_BASE}/employeur/offers/${offerId}/enable`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+            ...authHeaders(token)
+        }
+    })
+    return res.json();
 }
 

@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { vi, describe, beforeEach, test, expect } from "vitest";
+import {fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {beforeEach, describe, expect, test, vi} from "vitest";
+import DashBoardStudent from "../Étudiant/DashBoardStudent.jsx";
 
 vi.mock("react-i18next", () => ({
     useTranslation: () => ({
@@ -71,8 +72,6 @@ vi.mock("../../api/apiRegister.jsx", () => ({
     fetchPrograms: vi.fn()
 }));
 
-import DashBoardStudent from "../Étudiant/DashBoardStudent.jsx";
-
 const mockStudentData = {
     firstName: "Alice",
     lastName: "Tremblay",
@@ -104,12 +103,12 @@ describe("DashBoardStudent", () => {
         Storage.prototype.clear = vi.fn();
         global.fetch = vi.fn();
         delete window.location;
-        window.location = { search: "", reload: vi.fn() };
+        window.location = {search: "", reload: vi.fn()};
     });
 
     test("redirige vers login si pas de token", async () => {
         Storage.prototype.getItem = vi.fn(() => null);
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(mockNavigate).toHaveBeenCalledWith("/login");
         });
@@ -120,7 +119,7 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText(/Bienvenue.*Alice/)).toBeInTheDocument();
         });
@@ -131,7 +130,7 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText(/Informatique/)).toBeInTheDocument();
         });
@@ -143,11 +142,11 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Bienvenue Alice!")).toBeInTheDocument();
         });
-        const cvButton = screen.getByRole("button", { name: /Mon CV/i });
+        const cvButton = screen.getByRole("button", {name: /Mon CV/i});
         fireEvent.click(cvButton);
         await waitFor(() => {
             expect(screen.getByText("Student CV List Component")).toBeInTheDocument();
@@ -159,7 +158,7 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Offres de stage")).toBeInTheDocument();
         });
@@ -174,24 +173,24 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Bienvenue Alice!")).toBeInTheDocument();
         });
-        const logoutButton = screen.getByRole("button", { name: /Déconnexion/i });
+        const logoutButton = screen.getByRole("button", {name: /Déconnexion/i});
         fireEvent.click(logoutButton);
         expect(Storage.prototype.clear).toHaveBeenCalled();
-        expect(mockNavigate).toHaveBeenCalledWith("/login", { replace: true });
+        expect(mockNavigate).toHaveBeenCalledWith("/login", {replace: true});
     });
 
     test("affiche le modal de réinscription si étudiant expiré", async () => {
-        const { fetchPrograms } = await import("../../api/apiRegister.jsx");
+        const {fetchPrograms} = await import("../../api/apiRegister.jsx");
         fetchPrograms.mockResolvedValue(mockPrograms);
         global.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockExpiredStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Réinscription requise")).toBeInTheDocument();
         });
@@ -199,17 +198,17 @@ describe("DashBoardStudent", () => {
     });
 
     test("permet de fermer le modal de réinscription", async () => {
-        const { fetchPrograms } = await import("../../api/apiRegister.jsx");
+        const {fetchPrograms} = await import("../../api/apiRegister.jsx");
         fetchPrograms.mockResolvedValue(mockPrograms);
         global.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockExpiredStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Réinscription requise")).toBeInTheDocument();
         });
-        const continueLaterButton = screen.getByRole("button", { name: /Continuer plus tard/i });
+        const continueLaterButton = screen.getByRole("button", {name: /Continuer plus tard/i});
         fireEvent.click(continueLaterButton);
         await waitFor(() => {
             expect(screen.queryByText("Réinscription requise")).not.toBeInTheDocument();
@@ -217,21 +216,21 @@ describe("DashBoardStudent", () => {
     });
 
     test("gère la réinscription avec succès", async () => {
-        const { fetchPrograms } = await import("../../api/apiRegister.jsx");
-        const { updateStudentInfo } = await import("../../api/apiStudent.jsx");
+        const {fetchPrograms} = await import("../../api/apiRegister.jsx");
+        const {updateStudentInfo} = await import("../../api/apiStudent.jsx");
         fetchPrograms.mockResolvedValue(mockPrograms);
         updateStudentInfo.mockResolvedValue(mockStudentData);
         global.fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockExpiredStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Réinscription requise")).toBeInTheDocument();
         });
         const select = screen.getByRole("combobox");
-        fireEvent.change(select, { target: { value: "programs.COMPUTER_SCIENCE" } });
-        const confirmButton = screen.getByRole("button", { name: /Me réinscrire maintenant/i });
+        fireEvent.change(select, {target: {value: "programs.COMPUTER_SCIENCE"}});
+        const confirmButton = screen.getByRole("button", {name: /Me réinscrire maintenant/i});
         fireEvent.click(confirmButton);
         await waitFor(() => {
             expect(updateStudentInfo).toHaveBeenCalledWith("programs.COMPUTER_SCIENCE");
@@ -244,7 +243,7 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Student CV List Component")).toBeInTheDocument();
         });
@@ -255,11 +254,11 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Bienvenue Alice!")).toBeInTheDocument();
         });
-        const applicationsButton = screen.getByRole("button", { name: /Mes candidatures/i });
+        const applicationsButton = screen.getByRole("button", {name: /Mes candidatures/i});
         fireEvent.click(applicationsButton);
         await waitFor(() => {
             expect(screen.getByText("Student Applications List Component")).toBeInTheDocument();
@@ -271,11 +270,11 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Bienvenue Alice!")).toBeInTheDocument();
         });
-        const ententesButton = screen.getByRole("button", { name: /Ententes/i });
+        const ententesButton = screen.getByRole("button", {name: /Ententes/i});
         fireEvent.click(ententesButton);
         await waitFor(() => {
             expect(screen.getByText("Student Ententes Liste Component")).toBeInTheDocument();
@@ -287,11 +286,11 @@ describe("DashBoardStudent", () => {
             ok: true,
             json: async () => mockStudentData
         });
-        render(<DashBoardStudent />);
+        render(<DashBoardStudent/>);
         await waitFor(() => {
             expect(screen.getByText("Bienvenue Alice!")).toBeInTheDocument();
         });
-        const contactsButton = screen.getByRole("button", { name: /Mes contacts/i });
+        const contactsButton = screen.getByRole("button", {name: /Mes contacts/i});
         fireEvent.click(contactsButton);
         await waitFor(() => {
             expect(screen.getByText("Infos Contact Page Component")).toBeInTheDocument();

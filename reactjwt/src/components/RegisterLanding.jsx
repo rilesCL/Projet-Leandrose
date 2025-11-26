@@ -1,12 +1,12 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 import LanguageSelector from "./LanguageSelector.jsx";
 
 
 export default function RegisterLanding() {
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const {t, i18n} = useTranslation();
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -17,13 +17,15 @@ export default function RegisterLanding() {
                 </header>
 
                 <div className="flex justify-end mb-6">
-                    <LanguageSelector />
+                    <LanguageSelector/>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-indigo-500">
+                    <div
+                        className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-indigo-500">
                         <div className="text-center mb-6">
-                            <div className="mx-auto w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <div
+                                className="mx-auto w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
                                 <span className="text-4xl">🎓</span>
                             </div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -57,9 +59,11 @@ export default function RegisterLanding() {
                         </button>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-indigo-500">
+                    <div
+                        className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow border-2 border-transparent hover:border-indigo-500">
                         <div className="text-center mb-6">
-                            <div className="mx-auto w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                            <div
+                                className="mx-auto w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
                                 <span className="text-4xl">💼</span>
                             </div>
                             <h2 className="text-2xl font-bold text-gray-800 mb-2">

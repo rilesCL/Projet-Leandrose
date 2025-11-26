@@ -5,11 +5,10 @@ import ca.cal.leandrose.model.Convocation;
 import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.repository.ConvocationRepository;
 import ca.cal.leandrose.service.dto.ConvocationDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

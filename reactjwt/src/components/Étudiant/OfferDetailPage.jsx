@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getOfferDetails, applyToOffer, getStudentCv, getMyCandidatures, previewOfferPdfStudent } from "../../api/apiStudent.jsx";
-import { useTranslation } from "react-i18next";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {
+    applyToOffer,
+    getMyCandidatures,
+    getOfferDetails,
+    getStudentCv,
+    previewOfferPdfStudent
+} from "../../api/apiStudent.jsx";
+import {useTranslation} from "react-i18next";
 import PdfViewer from "../PdfViewer.jsx";
 
 export default function OfferDetailPage() {
-    const { t } = useTranslation();
-    const { offerId } = useParams();
+    const {t} = useTranslation();
+    const {offerId} = useParams();
     const navigate = useNavigate();
 
     const [offer, setOffer] = useState(null);
@@ -42,7 +48,6 @@ export default function OfferDetailPage() {
             try {
                 const offerData = await getOfferDetails(offerId);
                 setOffer(offerData);
-                console.log(offerData);
 
                 const cvData = await getStudentCv();
                 setCv(cvData);
@@ -164,7 +169,7 @@ export default function OfferDetailPage() {
                             </h3>
                             <p className="mt-1 text-gray-900">
                                 {offer.durationInWeeks}{" "}
-                                {t("OfferDetailPage.week", { count: offer.durationInWeeks })}
+                                {t("OfferDetailPage.week", {count: offer.durationInWeeks})}
                             </p>
                         </div>
 
@@ -283,7 +288,7 @@ export default function OfferDetailPage() {
             </div>
 
             {previewPdfFile && (
-                <PdfViewer file={previewPdfFile} onClose={() => setPreviewPdfFile(null)} />
+                <PdfViewer file={previewPdfFile} onClose={() => setPreviewPdfFile(null)}/>
             )}
         </div>
     );

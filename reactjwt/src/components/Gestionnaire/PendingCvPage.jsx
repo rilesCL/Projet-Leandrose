@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { approveCv, rejectCv, getPendingCvs, previewCv } from "../../api/apiGestionnaire.jsx";
+import React, {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
+import {approveCv, getPendingCvs, previewCv, rejectCv} from "../../api/apiGestionnaire.jsx";
 import PdfViewer from "../PdfViewer.jsx";
 
 export default function PendingCvPage() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [pendingCvs, setPendingCvs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
 
-    const [rejectModal, setRejectModal] = useState({ open: false, id: null, comment: "", error: null });
+    const [rejectModal, setRejectModal] = useState({open: false, id: null, comment: "", error: null});
 
     useEffect(() => {
         async function fetchCvs() {
@@ -40,18 +40,18 @@ export default function PendingCvPage() {
     };
 
     const openRejectModal = (cvId) => {
-        setRejectModal({ open: true, id: cvId, comment: "", error: null });
+        setRejectModal({open: true, id: cvId, comment: "", error: null});
     };
 
     const closeRejectModal = () => {
-        setRejectModal({ open: false, id: null, comment: "", error: null });
+        setRejectModal({open: false, id: null, comment: "", error: null});
     };
 
     const confirmReject = async () => {
-        const { id, comment } = rejectModal;
+        const {id, comment} = rejectModal;
         const trimmed = (comment || "").trim();
         if (!trimmed) {
-            setRejectModal((prev) => ({ ...prev, error: "commentRequired" }));
+            setRejectModal((prev) => ({...prev, error: "commentRequired"}));
             return;
         }
         try {
@@ -83,7 +83,7 @@ export default function PendingCvPage() {
             <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900">{t("pendingCvList.title")}</h3>
                 <p className="text-sm text-gray-600">
-                    {t("pendingCvList.subtitle", { count: pendingCvs.length })}
+                    {t("pendingCvList.subtitle", {count: pendingCvs.length})}
                 </p>
             </div>
 
@@ -159,12 +159,12 @@ export default function PendingCvPage() {
                             <p className="text-sm text-gray-700">{t("pendingCvList.commentPlaceholder")}</p>
                             <textarea
                                 value={rejectModal.comment}
-                                onChange={(e) => setRejectModal((prev) => ({ ...prev, comment: e.target.value }))}
+                                onChange={(e) => setRejectModal((prev) => ({...prev, comment: e.target.value}))}
                                 maxLength={250}
                                 className={`w-full h-28 border rounded p-2 resize-none ${rejectModal.error ? "border-red-500" : ""}`}
                             />
                             {rejectModal.error && (
-                                <p className="text-xs text-red-600">{t(`pendingCvList.errors.${rejectModal.error}`, { defaultValue: "Commentaire requis" })}</p>
+                                <p className="text-xs text-red-600">{t(`pendingCvList.errors.${rejectModal.error}`, {defaultValue: "Commentaire requis"})}</p>
                             )}
                             <p className="text-xs text-gray-500 ml-auto">
                                 {rejectModal.comment.length}/100

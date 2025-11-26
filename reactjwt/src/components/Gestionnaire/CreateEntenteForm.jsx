@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { FaArrowLeft } from "react-icons/fa";
-import { creerEntente, getCandidaturesAcceptees } from "../../api/apiGestionnaire.jsx";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useSearchParams} from "react-router-dom";
+import {useTranslation} from "react-i18next";
+import {FaArrowLeft} from "react-icons/fa";
+import {creerEntente, getCandidaturesAcceptees} from "../../api/apiGestionnaire.jsx";
 
 export default function CreateEntenteForm() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const candidatureIdFromUrl = searchParams.get("candidatureId");
@@ -43,9 +43,9 @@ export default function CreateEntenteForm() {
     }, [navigate, t]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+        const {name, value} = e.target;
+        setFormData(prev => ({...prev, [name]: value}));
+        if (errors[name]) setErrors(prev => ({...prev, [name]: null}));
     };
 
     const validateForm = () => {
@@ -106,11 +106,8 @@ export default function CreateEntenteForm() {
                 missionsObjectifs: formData.missionsObjectifs.trim()
             };
 
-            console.log("📤 Payload envoyé au backend:", JSON.stringify(payload, null, 2));
-
             const result = await creerEntente(payload);
 
-            console.log("📥 Réponse du backend:", result);
 
             if (result.error) {
                 setError(result.error.message || t("createEntenteForm.createError"));
@@ -143,7 +140,7 @@ export default function CreateEntenteForm() {
                 onClick={handleCancel}
                 className="mb-4 flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
             >
-                <FaArrowLeft className="mr-2" />
+                <FaArrowLeft className="mr-2"/>
                 <span>{t("createEntenteForm.back")}</span>
             </button>
 

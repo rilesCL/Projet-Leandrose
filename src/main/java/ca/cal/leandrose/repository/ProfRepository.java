@@ -12,7 +12,7 @@ public interface ProfRepository extends JpaRepository<Prof, Long> {
       "select case when count(p) > 0 then true else false end from Prof p where p.credentials.email = :email")
   boolean existsByEmail(@Param("email") String email);
 
-  @Query("select case when count(p) > 0 then true else false end from Prof p where p.employeeNumber = :employeeNumber")
+  @Query(
+      "select case when count(p) > 0 then true else false end from Prof p where p.employeeNumber = :employeeNumber")
   boolean existsByEmployeeNumber(@Param("employeeNumber") String employeeNumber);
 }
-
