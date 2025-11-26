@@ -661,4 +661,13 @@ class EmployeurControllerTest {
               .header("Authorization", "Bearer token"))
               .andExpect(status().isOk());
     }
+    @Test
+    void enableOffer_success_returnOk() throws Exception{
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.enableOffer(1L, 100L)).thenReturn(internshipOfferDto);
+
+        mockMvc.perform(put("/employeur/offers/100/enable")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk());
+    }
 }
