@@ -461,6 +461,8 @@ public class LeandrOseApplication {
 
         if (ententeValidee.getStatut().toString().equals("VALIDEE")) {
           System.out.println("✓ L'entente est VALIDEE - Prêt pour attribution d'un prof!");
+          ententeStageService.attribuerProf(ententeValidee.getId(), prof1.getId());
+          System.out.println(prof1.getFirstName() + " " + prof1.getLastName() + " a été attributé");
 
         } else {
           System.err.println(

@@ -18,6 +18,7 @@ import lombok.Setter;
 public class Student extends UserApp {
   private String studentNumber;
   private String program;
+  private String phoneNumber;
 
   @Embedded private SchoolTerm internshipTerm;
 
@@ -30,7 +31,8 @@ public class Student extends UserApp {
       String password,
       String studentNumber,
       String program,
-      SchoolTerm internshipTerm) {
+      SchoolTerm internshipTerm,
+      String phoneNumber) {
     super(
         id,
         firstName,
@@ -39,6 +41,7 @@ public class Student extends UserApp {
     this.studentNumber = studentNumber;
     this.program = program;
     this.internshipTerm = internshipTerm != null ? internshipTerm : SchoolTerm.getNextTerm();
+    this.phoneNumber = phoneNumber;
   }
 
   public String getTermAsString() {

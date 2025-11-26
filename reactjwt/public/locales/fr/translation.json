@@ -978,7 +978,14 @@
       "discussedRequired": "Veuillez indiquer si l'évaluation a été discutée avec le stagiaire.",
       "supervisionHoursRequired": "Veuillez entrer le nombre d'heures de supervision (valeur numérique requise).",
       "welcomeNextInternshipRequired": "Veuillez indiquer si vous seriez prêt à accueillir un autre stagiaire.",
-      "technicalTrainingRequired": "Veuillez indiquer si la formation technique reçue par le stagiaire était suffisante."
+      "technicalTrainingRequired": "Veuillez indiquer si la formation technique reçue par le stagiaire était suffisante.",
+      "selectOption": "Veuillez choisir un option",
+      "missingFields": "Veuillez remplir les champs suivants",
+      "hoursRequired": "Les heures pour les trois sont requis",
+      "salaryRequired": "Le salaire est requis",
+      "hoursInvalid": "Les heures doivent être un nombre valide et non négatif",
+      "salaryInvalid": "Le salaire doit être un nombre valide et non négatif"
+
     },
     "errors": {
       "missing_studentId_Or_offerId": "Carte d'étudiant ou numéro d'offre manquant",
@@ -1068,5 +1075,184 @@
       "technical_training": "La formation technique du stagiaire était-elle suffisante pour accomplir le mandat de stage?"
     },
     "submitEvaluation": "Soumettre l'évaluation"
+  },
+  "profile": {
+    "menu": "Mon profil"
+  },
+  "userProfile": {
+    "title": "Mon profil",
+    "subtitle": "Modifiez vos informations de compte.",
+    "loading": "Chargement du profil…",
+    "nameSection": {
+      "title": "Prénom / Nom",
+      "firstName": "Prénom",
+      "lastName": "Nom"
+    },
+    "emailSection": {
+      "title": "Email",
+      "cannotBeChanged": "L'adresse courriel ne peut pas être modifiée."
+    },
+    "phoneSection": {
+      "title": "Téléphone",
+      "current": "Numéro de téléphone actuel",
+      "label": "Numéro de téléphone",
+      "placeholder": "Entrez votre numéro de téléphone"
+    },
+    "passwordSection": {
+      "title": "Mot de passe",
+      "newPasswordLabel": "Nouveau mot de passe (optionnel)",
+      "newPasswordPlaceholder": "Nouveau mot de passe",
+      "confirmPasswordLabel": "Nouveau mot de passe (confirmer)",
+      "confirmPasswordPlaceholder": "Confirmer le nouveau mot de passe"
+    },
+    "currentPasswordSection": {
+      "label": "Mot de passe actuel",
+      "placeholder": "Entrez votre mot de passe actuel pour confirmer",
+      "helpText": "Requis pour enregistrer toute modification de votre profil."
+    },
+    "buttons": {
+      "back": "Retour",
+      "save": "Sauvegarder",
+      "saving": "Enregistrement…"
+    },
+    "success": {
+      "updateSuccess": "Profil mis à jour avec succès !"
+    },
+    "errors": {
+      "loadFailed": "Erreur lors du chargement du profil.",
+      "currentPasswordRequired": "Vous devez entrer votre mot de passe actuel.",
+      "passwordMismatch": "La confirmation du mot de passe ne correspond pas.",
+      "updateFailed": "Mot de passe incorrect ou erreur de mise à jour."
+    }
+  },
+  "studentProfile": {
+    "title": "Mon profil",
+    "professor": {
+      "title": "Mon professeur",
+      "loading": "Chargement du professeur...",
+      "notFound": "Aucun professeur assigné",
+      "notFoundDescription": "Aucun professeur n'a été assigné à votre stage pour le moment.",
+      "employeeNumber": "Numéro d'employé",
+      "nameCollege": "Collège",
+      "department": "Département",
+      "address": "Adresse",
+      "fax": "Télécopieur",
+      "error": "Erreur lors du chargement du professeur",
+      "errorDescription": "Impossible de charger les informations de votre professeur."
+    },
+    "gestionnaire": {
+      "title": "Mon gestionnaire de stage",
+      "loading": "Chargement du gestionnaire...",
+      "notFound": "Aucun gestionnaire assigné",
+      "notFoundDescription": "Aucun gestionnaire n'a été assigné à votre stage pour le moment.",
+      "phoneNumber": "Numéro de téléphone",
+      "error": "Erreur lors du chargement du gestionnaire",
+      "errorDescription": "Impossible de charger les informations de votre gestionnaire de stage."
+    },
+    "employeurs": {
+      "title": "Mes employeurs",
+      "loading": "Chargement des employeurs...",
+      "noEmployeurs": "Aucun employeur",
+      "noEmployeursDescription": "Vous n'avez pas encore d'employeurs associés à vos stages.",
+      "companyName": "Nom de l'entreprise",
+      "field": "Secteur d'activité",
+      "error": "Erreur lors du chargement des employeurs",
+      "errorDescription": "Impossible de charger la liste de vos employeurs."
+    },
+    "submitEvaluation": "Soumettre l'évaluation",
+    "conformity": {
+      "title": "Conformité",
+      "description": "Conformité du milieu de stage",
+      "q1": "Les tâches confiées au stagiaire sont conformes aux tâches annoncées.",
+      "q2": "Des mesures d’accueil facilitent l’intégration du nouveau stagiaire.",
+      "q3": "Le temps consacré à l’encadrement est suffisant."
+    },
+    "environment": {
+      "title": "Environement",
+      "description": "Environement du travail",
+      "q1": "L’environnement respecte les normes d’hygiène et de sécurité.",
+      "q2": "Le climat de travail est agréable."
+    },
+    "general": {
+      "title": "Géneral",
+      "description": "Géneral",
+      "q1": "Le milieu de stage est accessible en transport en commun.",
+      "q2": "Le salaire offert est intéressant pour le stagiaire.",
+      "q3": "La communication avec le superviseur facilite le bon déroulement.",
+      "q4": "L’équipement fourni est adéquat.",
+      "q5": "Le volume de travail est acceptable."
+    },
+    "name": "Nom: ",
+    "contact_person": "Contact: ",
+    "address": "Adresse: ",
+    "email": "Courriel: ",
+    "internStartDate": "Date du stage",
+    "intern": "Stage",
+    "placeholders": {
+      "nbHoursWeek": "Préciser le nombre d'heures par semaine",
+      "first_month": "Premier mois",
+      "second_month": "Deuxième mois",
+      "third_month" : "Troisième mois",
+      "salary": "Préciser le salaire "
+    },
+    "observations": {
+      "title": "Observations générales",
+      "q1": "Ce milieu est à privilégier pour le :",
+      "q2": "Ce milieu est ouvert à accueillir :",
+      "q3": "Ce milieu désire accueillir le même stagiaire pour un prochain stage :",
+      "q4": "Ce milieu offre des quarts de travail variables :",
+      "first_intern": "Premier stage",
+      "second_intern": "Deuxième stage",
+      "stage1": "Un stagiaire",
+      "stage2": "Deux stagiaires",
+      "stage3": "Trois stagiaires",
+      "stage4": "Plus de trois",
+      "yes": "Oui",
+      "no": "Non",
+      "from": "De",
+      "to": "à"
+    }
+  },
+  "profStudentsPage": {
+    "page": {
+      "students": "Mes étudiants"
+    },
+    "filters": {
+      "studentName": "Nom de l'étudiant",
+      "company": "Entreprise",
+      "from": "De",
+      "to": "À",
+      "evaluationStatus": "Statut évaluation"
+    },
+    "buttons": {
+      "search": "Rechercher",
+      "reset": "Réinitialiser"
+    },
+    "table": {
+      "student": "Étudiant",
+      "company": "Entreprise",
+      "dates": "Début / Fin",
+      "stageStatus": "Statut stage",
+      "evaluationStatus": "Statut évaluation",
+      "sortByName": "Trier par nom"
+    },
+    "status": {
+      "toDo": "À faire",
+      "inProgress": "En cours",
+      "finished": "Terminée"
+    },
+    "messages": {
+      "loading": "Chargement…",
+      "noStudents": "Aucun étudiant à afficher."
+    },
+    "auth": {
+      "notAuthenticated": "Non authentifié. Veuillez vous connecter.",
+      "fetchProfileError": "Impossible de récupérer le profil.",
+      "profRoleRequired": "Accès refusé : rôle PROF requis.",
+      "error": "Erreur d'authentification."
+    },
+    "errors": {
+      "loadingError": "Erreur lors du chargement."
+    }
   }
 }
