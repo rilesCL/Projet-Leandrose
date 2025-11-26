@@ -80,7 +80,7 @@ const EvaluationForm = () => {
                     if (!newErrors.categories[categoryKey]) newErrors.categories[categoryKey] = {};
 
                     newErrors.categories[categoryKey][i] =
-                        `${t('evaluation.validation.missingRating')} - ${t(`evaluation.${categoryKey}.title`)} Q${i + 1}`;
+                        `${t('evaluation.validation.missingRating')} - ${t(`studentProfile.${categoryKey}.title`)} Q${i + 1}`;
                 }
             }
         }
@@ -227,38 +227,38 @@ const EvaluationForm = () => {
         }
     };
 
-    if (loading) return <p>{t('evaluation.loading')}</p>;
-    if (error && !info) return <p className="text-red-500">{error}</p>;
+    if (loading) return <p className="text-gray-900 dark:text-gray-100">{t('evaluation.loading')}</p>;
+    if (error && !info) return <p className="text-red-500 dark:text-red-400">{error}</p>;
 
     return (
         <div className="max-w-4xl mx-auto p-6">
 
-            <h1 className="text-3xl font-bold text-center mb-8">
+            <h1 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-gray-100">
                 {t('evaluation.title')}
             </h1>
 
             {/* Company Info */}
-            <section className="mb-8 p-4 border rounded-lg bg-gray-50">
-                <h2 className="text-xl font-semibold mb-4">{t('evaluation.companyInfo')}</h2>
+            <section className="mb-8 p-4 border dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">{t('evaluation.companyInfo')}</h2>
 
-                <p><strong>{t('studentProfile.name')}</strong> {info?.entrepriseTeacherDto.companyName}</p>
-                <p><strong>{t('studentProfile.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}</p>
-                <p><strong>{t('studentProfile.address')}</strong> {info?.entrepriseTeacherDto.address}</p>
-                <p><strong>{t('studentProfile.email')}</strong> {info?.entrepriseTeacherDto.email}</p>
+                <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-gray-100">{t('studentProfile.name')}</strong> {info?.entrepriseTeacherDto.companyName}</p>
+                <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-gray-100">{t('studentProfile.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}</p>
+                <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-gray-100">{t('studentProfile.address')}</strong> {info?.entrepriseTeacherDto.address}</p>
+                <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-gray-100">{t('studentProfile.email')}</strong> {info?.entrepriseTeacherDto.email}</p>
             </section>
 
             {/* Student Info */}
-            <section className="mb-8 p-4 border rounded-lg bg-gray-50">
-                <h2 className="text-xl font-semibold mb-4">{t('evaluation.studentInfo')}</h2>
-                <p><strong>{t('studentProfile.name')}</strong> {info?.studentTeacherDto.fullname}</p>
-                <p><strong>{t('studentProfile.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
+            <section className="mb-8 p-4 border dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">{t('evaluation.studentInfo')}</h2>
+                <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-gray-100">{t('studentProfile.name')}</strong> {info?.studentTeacherDto.fullname}</p>
+                <p className="text-gray-700 dark:text-gray-300"><strong className="text-gray-900 dark:text-gray-100">{t('studentProfile.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
             </section>
 
             {/* Question Groups */}
             {Object.entries(teacherEvaluationTemplate).map(([groupKey, group]) => (
-                <section key={groupKey} className="mb-8 p-4 border rounded-lg">
+                <section key={groupKey} className="mb-8 p-4 border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
 
-                    <h3 className="text-lg font-semibold mb-4">{t(`studentProfile.${groupKey}.title`)}</h3>
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">{t(`studentProfile.${groupKey}.title`)}</h3>
 
                     {group.questions.map((q, index) => {
                         const ratingErrors = errors?.categories?.[groupKey]?.[index]
@@ -266,10 +266,10 @@ const EvaluationForm = () => {
                         return (
                             <div key={index} className="mb-6">
 
-                                <p className="mb-3">{q}</p>
+                                <p className="mb-3 text-gray-700 dark:text-gray-300">{q}</p>
 
                                 {ratingErrors && (
-                                    <p className="validation-error text-sm text-red-600 mb-2">{ratingErrors}</p>
+                                    <p className="validation-error text-sm text-red-600 dark:text-red-400 mb-2">{ratingErrors}</p>
                                 )}
                                 {/* Rating Buttons */}
                                 <div className="flex flex-wrap justify-center gap-3">
@@ -288,11 +288,11 @@ const EvaluationForm = () => {
                                                 className={`
                                                     flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
                                                     border-2 font-semibold
-                                                    ${option.value === "EXCELLENT" ? "bg-green-400 border-green-600" : ""}
-                                                    ${option.value === "TRES_BIEN" ? "bg-green-200 border-green-400" : ""}
-                                                    ${option.value === "SATISFAISANT" ? "bg-orange-200 border-orange-400" : ""}
-                                                    ${option.value === "A_AMELIORER" ? "bg-red-400 border-red-600" : ""}
-                                                    ${isSelected ? "ring-2 ring-black shadow-lg" : ""}
+                                                    ${option.value === "EXCELLENT" ? "bg-green-400 dark:bg-green-600 border-green-600 dark:border-green-500 text-gray-900 dark:text-gray-100" : ""}
+                                                    ${option.value === "TRES_BIEN" ? "bg-green-200 dark:bg-green-700 border-green-400 dark:border-green-500 text-gray-900 dark:text-gray-100" : ""}
+                                                    ${option.value === "SATISFAISANT" ? "bg-orange-200 dark:bg-orange-700 border-orange-400 dark:border-orange-500 text-gray-900 dark:text-gray-100" : ""}
+                                                    ${option.value === "A_AMELIORER" ? "bg-red-400 dark:bg-red-600 border-red-600 dark:border-red-500 text-gray-900 dark:text-gray-100" : ""}
+                                                    ${isSelected ? "ring-2 ring-black dark:ring-white shadow-lg" : ""}
                                                 `}
                                             >
                                                 <input
@@ -319,17 +319,17 @@ const EvaluationForm = () => {
             ))}
 
             {/* OBSERVATIONS GÉNÉRALES */}
-            <section className="mb-8 p-4 border rounded-lg bg-gray-50">
-                <h3 className="text-lg font-semibold mb-4">{t("studentProfile.observations.title")}</h3>
+            <section className="mb-8 p-4 border dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">{t("studentProfile.observations.title")}</h3>
 
                 {/* Preferred stage */}
                 <div className="mb-6">
                     {errors?.preferredStage && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 dark:text-red-400 mb-2 text-center">
                             {errors.preferredStage}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("studentProfile.observations.q1")}</p>
+                    <p className="font-medium mb-2 text-gray-700 dark:text-gray-300">{t("studentProfile.observations.q1")}</p>
                     <div className="flex flex-wrap justify-center gap-3">
                         {[{ value: "1", label: t('studentProfile.observations.first_intern')},
                             { value: "2", label: t('studentProfile.observations.second_intern') }].map(
@@ -339,8 +339,8 @@ const EvaluationForm = () => {
                                     <label
                                         key={opt.value}
                                         className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                            bg-blue-100 border-2 border-blue-300 text-blue-900 font-medium
-                                            ${isSelected ? "border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md" : ""}
+                                            bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-300 dark:border-blue-600 text-blue-900 dark:text-blue-200 font-medium
+                                            ${isSelected ? "border-blue-600 dark:border-blue-400 ring-2 ring-blue-400 dark:ring-blue-500 ring-offset-2 dark:ring-offset-gray-800 shadow-md" : ""}
                                         `}
                                     >
                                         <input
@@ -362,11 +362,11 @@ const EvaluationForm = () => {
                 {/* Capacity */}
                 <div className="mb-6">
                     {errors?.capacity && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 dark:text-red-400 mb-2 text-center">
                             {errors.capacity}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("studentProfile.observations.q2")}</p>
+                    <p className="font-medium mb-2 text-gray-700 dark:text-gray-300">{t("studentProfile.observations.q2")}</p>
                     <div className="flex flex-wrap justify-center gap-3">
                         {[
                             { value: "1", label: t('studentProfile.observations.stage1') },
@@ -379,8 +379,8 @@ const EvaluationForm = () => {
                                 <label
                                     key={opt.value}
                                     className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-purple-100 border-2 border-purple-300 text-purple-900 font-medium
-                                        ${isSelected ? "border-purple-700 ring-2 ring-purple-400 ring-offset-2 shadow-md" : ""}
+                                        bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-300 dark:border-purple-600 text-purple-900 dark:text-purple-200 font-medium
+                                        ${isSelected ? "border-purple-700 dark:border-purple-400 ring-2 ring-purple-400 dark:ring-purple-500 ring-offset-2 dark:ring-offset-gray-800 shadow-md" : ""}
                                     `}
                                 >
                                     <input
@@ -401,11 +401,11 @@ const EvaluationForm = () => {
                 {/* Same trainee again */}
                 <div className="mb-6">
                     {errors?.sameTraineeNextStage && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
+                        <p className="validation-error text-sm text-red-600 dark:text-red-400 mb-2 text-center">
                             {errors.sameTraineeNextStage}
                         </p>
                     )}
-                    <p className="font-medium mb-2">{t("studentProfile.observations.q3")}</p>
+                    <p className="font-medium mb-2 text-gray-700 dark:text-gray-300">{t("studentProfile.observations.q3")}</p>
                     <div className="flex justify-center gap-3">
                         {[{ value: "YES", label: t('studentProfile.observations.yes') }, { value: "NO", label: t('studentProfile.observations.no') }].map(opt => {
                             const isSelected = formData.sameTraineeNextStage === opt.value;
@@ -413,8 +413,8 @@ const EvaluationForm = () => {
                                 <label
                                     key={opt.value}
                                     className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-green-100 border-2 border-green-300 text-green-900 font-medium
-                                        ${isSelected ? "border-green-700 ring-2 ring-green-400 ring-offset-2 shadow-md" : ""}
+                                        bg-green-100 dark:bg-green-900/30 border-2 border-green-300 dark:border-green-600 text-green-900 dark:text-green-200 font-medium
+                                        ${isSelected ? "border-green-700 dark:border-green-400 ring-2 ring-green-400 dark:ring-green-500 ring-offset-2 dark:ring-offset-gray-800 shadow-md" : ""}
                                     `}
                                 >
                                     <input
@@ -435,16 +435,16 @@ const EvaluationForm = () => {
             </section>
 
             {successMessage && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4">
                     <div className="flex items-center">
                         <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                            <svg className="h-5 w-5 text-green-400 dark:text-green-500" viewBox="0 0 20 20" fill="currentColor">
                                 <circle cx="10" cy="10" r="8" />
                                 <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-green-800">
+                            <p className="text-sm font-medium text-green-800 dark:text-green-200">
                                 {successMessage}
                             </p>
                         </div>
@@ -452,7 +452,7 @@ const EvaluationForm = () => {
                 </div>
             )}
 
-            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <button
                     type="button"
                     onClick={handleSubmit}

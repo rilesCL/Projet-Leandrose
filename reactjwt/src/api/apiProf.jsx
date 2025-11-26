@@ -48,7 +48,8 @@ export async function fetchProfStudents(profId, params = {}) {
     q.set("asc", String(params.asc ?? true));
 
     const url = `${API_BASE}/prof/${profId}/etudiants?${q.toString()}`;
-    return handleFetch(url, {method: "GET", headers: authHeaders()});
+    const res = await handleFetch(url, {method: "GET", headers: authHeaders()});
+    return await res.json();
 }
 
 export async function getProfMe(token = null) {
