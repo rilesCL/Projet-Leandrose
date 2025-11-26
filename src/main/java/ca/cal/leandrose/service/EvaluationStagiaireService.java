@@ -5,6 +5,7 @@ import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EntrepriseTeacherDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationProfFormDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
@@ -123,7 +124,7 @@ public class EvaluationStagiaireService {
 
         return mapToDto(evaluation);
     }
-    public EvaluationInfoDto getEvaluationInfoForEmployer(Long employeurId, Long studentId, Long internshipOfferId) {
+    public EvaluationEmployerInfoDto getEvaluationInfoForEmployer(Long employeurId, Long studentId, Long internshipOfferId) {
         boolean isEligible = isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, employeurId, studentId, internshipOfferId);
         EvaluationStagiaire eval =
                 evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(studentId, internshipOfferId)
@@ -155,7 +156,7 @@ public class EvaluationStagiaireService {
                 internship.getCompanyName()
         );
 
-        return new EvaluationInfoDto(studentInfo, internshipInfo);
+        return new EvaluationEmployerInfoDto(studentInfo, internshipInfo);
     }
 
     public EvaluationTeacherInfoDto getEvaluationInfoForTeacher(Long profId, Long studentId, Long internshipOfferId){
@@ -172,7 +173,7 @@ public class EvaluationStagiaireService {
                         .orElse(null);
 
         if (eval != null && eval.isSubmittedByProfessor()) {
-            throw new IllegalStateException("L'évaluation professeur a déjà été complétée");
+            throw new IllegalStateException("le profeseur a déjà complété cette formulaire");
         }
         Student student = entente.getCandidature().getStudent();
         InternshipOffer internship = entente.getCandidature().getInternshipOffer();

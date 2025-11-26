@@ -8,7 +8,6 @@ import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.dto.evaluation.CreateEvaluationRequest;
 import ca.cal.leandrose.service.dto.evaluation.CreatorTypeEvaluation;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationInfoDto;
 import ca.cal.leandrose.service.dto.evaluation.EvaluationStagiaireDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationProfFormDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;

@@ -1,7 +1,6 @@
 package ca.cal.leandrose.presentation;
 
 import ca.cal.leandrose.model.Candidature;
-import ca.cal.leandrose.model.EvaluationStagiaire;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
@@ -10,6 +9,7 @@ import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -643,7 +643,7 @@ class EmployeurControllerTest {
     void getEvaluationInfo_success_returnsOk() throws Exception {
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L))
-                .thenReturn(new EvaluationInfoDto(null, null));
+                .thenReturn(new EvaluationEmployerInfoDto(null, null));
 
         mockMvc.perform(get("/employeur/evaluations/info")
                         .header("Authorization", "Bearer token")

@@ -5,6 +5,7 @@ import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -565,7 +566,7 @@ public class EmployeurController {
         }
 
         try {
-            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfoForEmployer(
+            EvaluationEmployerInfoDto info = evaluationStagiaireService.getEvaluationInfoForEmployer(
                     me.getId(), studentId, offerId);
             return ResponseEntity.ok(info);
         } catch (Exception e) {
