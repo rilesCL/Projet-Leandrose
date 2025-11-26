@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface EvaluationStagiaireRepository extends JpaRepository<EvaluationStagiaire, Long> {
 
     List<EvaluationStagiaire> findByEmployeurId(Long employeurId);
+    List<EvaluationStagiaire> findByProfesseurId(Long professeurId);
     List<EvaluationStagiaire> findByStudentId(Long studentId);
     Optional<EvaluationStagiaire> findByStudentIdAndInternshipOfferId(Long studentId, Long internshipOfferId);
 

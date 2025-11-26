@@ -1,5 +1,6 @@
 package ca.cal.leandrose.service.dto.evaluation;
 
+
 import java.time.LocalDate;
 
 public record EvaluationStagiaireDto(
@@ -7,8 +8,11 @@ public record EvaluationStagiaireDto(
         LocalDate dateEvaluation,
         Long studentId,
         Long employeurId,
+        Long professeurId,
         Long internshipOfferId,
-        String pdfFilePath,
-        boolean submitted
+        String employerPdfPath,
+        String professorPdfPath,
+        boolean submittedByEmployer,
+        boolean submittedByProfessor
 ) {
 }

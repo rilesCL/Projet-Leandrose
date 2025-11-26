@@ -957,7 +957,13 @@
       "discussedRequired": "Please indicate if this evaluation was discussed with the trainee",
       "supervisionHoursRequired": "Please enter the number of supervision hours",
       "welcomeNextInternshipRequired": "Please indicate if you would welcome another intern",
-      "technicalTrainingRequired": "Please indicate if the technical training was sufficient"
+      "technicalTrainingRequired": "Please indicate if the technical training was sufficient",
+      "selectOption": "Please select an option",
+      "missingFields": "Please fill up the following fields",
+      "hoursRequired": "The hours for all three fields are required",
+      "salaryRequired": "The salary is required",
+      "hoursInvalid": "Hours must be a valid non-negative number",
+      "salaryInvalid": "Salary must be a valid non-negative number"
     },
     "errors": {
       "missing_studentId_Or_offerId": "Missing student ID or offer number",
@@ -1048,5 +1054,184 @@
       "technical_training": "Was the intern's technical training sufficient to fulfill the internship mandate?"
     },
     "submitEvaluation": "Submit Evaluation"
+  },
+  "profile": {
+    "menu": "My Profile"
+  },
+  "userProfile": {
+    "title": "My Profile",
+    "subtitle": "Edit your account information.",
+    "loading": "Loading profile…",
+    "nameSection": {
+      "title": "First Name / Last Name",
+      "firstName": "First Name",
+      "lastName": "Last Name"
+    },
+    "emailSection": {
+      "title": "Email",
+      "cannotBeChanged": "The email address cannot be changed."
+    },
+    "phoneSection": {
+      "title": "Phone",
+      "current": "Current phone number",
+      "label": "Phone number",
+      "placeholder": "Enter your phone number"
+    },
+    "passwordSection": {
+      "title": "Password",
+      "newPasswordLabel": "New password (optional)",
+      "newPasswordPlaceholder": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "confirmPasswordPlaceholder": "Confirm the new password"
+    },
+    "currentPasswordSection": {
+      "label": "Current password",
+      "placeholder": "Enter your current password to confirm",
+      "helpText": "Required to save any changes to your profile."
+    },
+    "buttons": {
+      "back": "Back",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "success": {
+      "updateSuccess": "Profile updated successfully!"
+    },
+    "errors": {
+      "loadFailed": "Error loading profile.",
+      "currentPasswordRequired": "You must enter your current password.",
+      "passwordMismatch": "Password confirmation does not match.",
+      "updateFailed": "Incorrect password or update error."
+    }
+  },
+  "studentProfile": {
+    "title": "My Profile",
+    "professor": {
+      "title": "My Professor",
+      "loading": "Loading professor...",
+      "notFound": "No professor assigned",
+      "notFoundDescription": "No professor has been assigned to your internship yet.",
+      "employeeNumber": "Employee number",
+      "nameCollege": "College",
+      "department": "Department",
+      "address": "Address",
+      "fax": "Fax",
+      "error": "Error loading professor",
+      "errorDescription": "Unable to load your professor information."
+    },
+    "gestionnaire": {
+      "title": "My Internship Manager",
+      "loading": "Loading manager...",
+      "notFound": "No manager assigned",
+      "notFoundDescription": "No manager has been assigned to your internship yet.",
+      "phoneNumber": "Phone number",
+      "error": "Error loading manager",
+      "errorDescription": "Unable to load your internship manager information."
+    },
+    "employeurs": {
+      "title": "My Employers",
+      "loading": "Loading employers...",
+      "noEmployeurs": "No employers",
+      "noEmployeursDescription": "You don't have any employers associated with your internships yet.",
+      "companyName": "Company name",
+      "field": "Industry",
+      "error": "Error loading employers",
+      "errorDescription": "Unable to load your employers list."
+    },
+    "submitEvaluation": "Submit Evaluation",
+    "conformity": {
+      "title": "Conformity",
+      "description": "Conformity of the internship environment",
+      "q1": "The tasks assigned to the intern are in line with the advertised tasks.",
+      "q2": "Reception measures facilitate the integration of the new intern.",
+      "q3": "The time devoted to supervision is sufficient."
+    },
+    "environment": {
+      "title": "Environment",
+      "description": "Work environment",
+      "q1": "The environment complies with hygiene and safety standards.",
+      "q2": "The working environment is pleasant."
+    },
+    "general": {
+      "title": "General",
+      "description": "General",
+      "q1": "The internship location is accessible by public transport.",
+      "q2": "The salary offered is attractive for the intern.",
+      "q3": "Communication with the supervisor facilitates the smooth running of the process.",
+      "q4": "The equipment provided is adequate.",
+      "q5": "The workload is acceptable."
+    },
+    "name": "Name: ",
+    "contact_person": "Contact: ",
+    "address": "Adress: ",
+    "email": "Email: ",
+    "internStartDate": "Date of the course: ",
+    "intern": "Internship",
+    "placeholders": {
+      "nbHoursWeek": "Specify the number of hours per week",
+      "first_month": "First month",
+      "second_month": "Second month",
+      "third_month" : "Third month",
+      "salary": "Specify the hourly wage"
+    },
+    "observations": {
+      "title": "General Observation",
+      "q1": "This environment is preferable for :",
+      "q2": "This environment is open to welcoming :",
+      "q3": "This organization wishes to welcome the same intern for a future internship:",
+      "q4": "This environment offers variable shifts:",
+      "first_intern": "First intern",
+      "second_intern": "Second intern",
+      "stage1": "One intern",
+      "stage2": "Two interns",
+      "stage3": "Three interns",
+      "stage4": "More than three",
+      "yes": "Yes",
+      "no": "No",
+      "from": "From",
+      "to": "to"
+    }
+  },
+  "profStudentsPage": {
+    "page": {
+      "students": "My Students"
+    },
+    "filters": {
+      "studentName": "Student Name",
+      "company": "Company",
+      "from": "From",
+      "to": "To",
+      "evaluationStatus": "Evaluation Status"
+    },
+    "buttons": {
+      "search": "Search",
+      "reset": "Reset"
+    },
+    "table": {
+      "student": "Student",
+      "company": "Company",
+      "dates": "Start / End",
+      "stageStatus": "Internship Status",
+      "evaluationStatus": "Evaluation Status",
+      "sortByName": "Sort by Name"
+    },
+    "status": {
+      "toDo": "To Do",
+      "inProgress": "In Progress",
+      "finished": "Finished"
+    },
+    "messages": {
+      "loading": "Loading…",
+      "noStudents": "No students to display."
+    },
+    "auth": {
+      "notAuthenticated": "Not authenticated. Please log in.",
+      "fetchProfileError": "Unable to fetch profile.",
+      "profRoleRequired": "Access denied: PROF role required.",
+      "error": "Authentication error."
+    },
+    "errors": {
+      "loadingError": "Error while loading."
+    }
   }
 }

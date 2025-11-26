@@ -4,6 +4,8 @@ import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -421,7 +423,7 @@ public class EmployeurController {
         }
 
         try{
-            boolean isEligible = evaluationStagiaireService.isEvaluationEligible(me.getId(),
+            boolean isEligible = evaluationStagiaireService.isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, me.getId(),
                     createRequest.studentId(), createRequest.internshipOfferId());
 
             if (!isEligible){
@@ -429,7 +431,7 @@ public class EmployeurController {
                         new EvaluationResponsesDto(null, "Evaluation not allowed - agreement not validated or not found")
                 );
             }
-            EvaluationStagiaireDto response = evaluationStagiaireService.createEvaluation(
+            EvaluationStagiaireDto response = evaluationStagiaireService.createEvaluationByEmployer(
                     me.getId(), createRequest.studentId(), createRequest.internshipOfferId()
             );
             return ResponseEntity.ok(response);
@@ -444,7 +446,7 @@ public class EmployeurController {
     public ResponseEntity<?> generateEvaluationPdf(
             HttpServletRequest request,
             @PathVariable Long evaluationId,
-            @RequestBody EvaluationFormData formData,
+            @RequestBody EvaluationEmployerFormData formData,
             @RequestHeader(value = "Accept-Language", defaultValue = "fr") String language) {
 
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
@@ -460,9 +462,10 @@ public class EmployeurController {
             }
 
             String lang = language.startsWith("en") ? "en" : "fr";
-            EvaluationStagiaireDto updatedEvaluation = evaluationStagiaireService.generateEvaluationPdf(evaluationId, formData, lang);
+            EvaluationStagiaireDto updatedEvaluation =
+                    evaluationStagiaireService.generateEvaluationPdfByEmployer(evaluationId, formData, lang);
 
-            return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.pdfFilePath(), "PDF généré avec succès"));
+            return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.employerPdfPath(), "PDF généré avec succès"));
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -490,7 +493,7 @@ public class EmployeurController {
                 return ResponseEntity.status(403).build();
             }
 
-            byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId);
+            byte[] pdfBytes = evaluationStagiaireService.getEvaluationPdf(evaluationId, CreatorTypeEvaluation.EMPLOYER);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"evaluation_" + evaluationId + ".pdf\"")
@@ -546,7 +549,7 @@ public class EmployeurController {
             return ResponseEntity.status(403).build();
         }
 
-        List<EligibleEvaluationDto> eligibleEvaluations = evaluationStagiaireService.getEligibleEvaluations(me.getId());
+        List<EligibleEvaluationDto> eligibleEvaluations = evaluationStagiaireService.getEligibleEvaluations(CreatorTypeEvaluation.EMPLOYER, me.getId());
         return ResponseEntity.ok(eligibleEvaluations);
     }
 
@@ -563,7 +566,7 @@ public class EmployeurController {
         }
 
         try {
-            EvaluationInfoDto info = evaluationStagiaireService.getEvaluationInfo(
+            EvaluationEmployerInfoDto info = evaluationStagiaireService.getEvaluationInfoForEmployer(
                     me.getId(), studentId, offerId);
             return ResponseEntity.ok(info);
         } catch (Exception e) {

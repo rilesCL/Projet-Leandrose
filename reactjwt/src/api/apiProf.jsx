@@ -4,25 +4,37 @@ const API_BASE = "http://localhost:8080"; // <— sans slash final
 async function handleFetch(url, options = {}) {
     try {
         const res = await fetch(url, options);
-        const ct = res.headers.get("content-type") || "";
-        const text = await res.text();
-        const data = text && ct.includes("application/json") ? JSON.parse(text) : text || null;
         if (!res.ok) {
-            const msg = typeof data === "string" ? data : data?.error || `Erreur ${res.status}`;
-            throw { response: { data: msg } };
+            const errorText = await res.text();
+            throw { response: { data: errorText || `Erreur ${res.status}: ${res.statusText}` } };
         }
-        return data ?? [];
-    } catch (err) {
-        if (err?.response) throw err;
-        throw { response: { data: err?.message || "Impossible de se connecter au serveur" } };
+        return res;
+    } catch (error) {
+        if (error && error.response) throw error;
+        throw { response: { data: error?.message || "Impossible de se connecter au serveur" } };
+    }
+}
+async function handleEvalFetch(url, options = {}) {
+    try {
+        const res = await fetch(url, options);
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw { response: { data: errorText || `Erreur ${res.status}: ${res.statusText}` } };
+        }
+        return res;
+    } catch (error) {
+        if (error && error.response) throw error;
+        throw { response: { data: error?.message || "Impossible de se connecter au serveur" } };
     }
 }
 
-function authHeaders() {
-    const token = sessionStorage.getItem("accessToken");
-    const h = { Accept: "application/json" };
-    if (token) h.Authorization = `Bearer ${token}`;
-    return h;
+
+function authHeaders(token = null) {
+    const accessToken = token || sessionStorage.getItem("accessToken");
+    const tokenType = (sessionStorage.getItem("tokenType") || "BEARER").toUpperCase();
+    const headers = {};
+    if (accessToken) headers["Authorization"] = tokenType.startsWith("BEARER") ? `Bearer ${accessToken}` : accessToken;
+    return headers;
 }
 
 export async function fetchProfStudents(profId, params = {}) {
@@ -37,4 +49,93 @@ export async function fetchProfStudents(profId, params = {}) {
 
     const url = `${API_BASE}/prof/${profId}/etudiants?${q.toString()}`;
     return handleFetch(url, { method: "GET", headers: authHeaders() });
+}
+
+export async function createEvaluation (studentId, offerId, token = null) {
+    const url = `${API_BASE}/prof/evaluations`;
+    console.log('Calling URL:', url);
+    console.log('With data:', { studentId, internshipOfferId: offerId });
+
+
+    const res = await handleEvalFetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders(token)
+        },
+        body: JSON.stringify({studentId, internshipOfferId: offerId})
+    });
+    const responseData = await res.json()
+    console.log("Create evaluation Response", responseData)
+    return responseData
+}
+export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
+    const currentLanguage = localStorage.getItem("i18nextLng")
+    console.log("Form data: ", formData)
+    const res = await handleFetch(`${API_BASE}/prof/evaluations/${evaluationId}/generate-pdf`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Accept-Language": currentLanguage ?? "fr",
+            ...authHeaders(token)
+        },
+        body: JSON.stringify(formData)
+    });
+    return await res.json();
+}
+
+export async function getEligibleEvaluations(token = null) {
+    const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/eligible`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
+export async function getEvaluationInfo(studentId, offerId, token = null) {
+    const url = `${API_BASE}/prof/evaluations/info?studentId=${studentId}&offerId=${offerId}`;
+
+    console.log("Calling Teacher Evaluation Info:", url);
+
+    const res = await handleEvalFetch(url, {
+        method: "GET",
+        headers: authHeaders(token)
+    });
+
+    const json = await res.json();
+    console.log("Evaluation Info Response:", json);
+
+    return json;
+}
+export async function checkTeacherAssigned(studentId, offerId, token = null){
+    const res = await handleEvalFetch(
+        `${API_BASE}/employeur/evaluations/check-teacher-assigned?studentId=${studentId}&offerId=${offerId}`, {
+            method: 'GET',
+            headers: {
+                ...authHeaders(token)
+            }
+        })
+    return await res.json();
+}
+export async function checkExistingEvaluation(studentId, offerId, token = null) {
+    const res = await handleFetch(`${API_BASE}/prof/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
+        headers: authHeaders(token)
+    });
+    return await res.json();
+}
+export async function previewEvaluationPdf (evaluationId, formData = null, token = null) {
+    if (formData) {
+        const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/${evaluationId}/preview-pdf`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeaders(token)
+            },
+            body: JSON.stringify(formData)
+        });
+        return await res.blob();
+    } else {
+        const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/${evaluationId}/pdf`, {
+            headers: authHeaders(token)
+        });
+        return await res.blob();
+    }
 }
