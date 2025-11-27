@@ -150,4 +150,58 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.firstName").value("NewName"))
                 .andExpect(jsonPath("$.email").value("updated@mail.com"));
     }
+
+    @Test
+    @DisplayName("PUT /user/me returns 400 on IllegalArgumentException")
+    void updateProfile_illegalArgument_returnsBadRequest() throws Exception {
+        UpdateUserRequest req = new UpdateUserRequest();
+        req.setFirstName("NewName");
+
+        when(userService.updateProfile(any(String.class), any(UpdateUserRequest.class)))
+                .thenThrow(new IllegalArgumentException("Invalid data"));
+
+        mockMvc.perform(
+                        put("/user/me")
+                                .header("Authorization", "Bearer yyy")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Invalid data"));
+    }
+
+    @Test
+    @DisplayName("PUT /user/me returns 500 on general exception")
+    void updateProfile_generalException_returnsInternalServerError() throws Exception {
+        UpdateUserRequest req = new UpdateUserRequest();
+        req.setFirstName("NewName");
+
+        when(userService.updateProfile(any(String.class), any(UpdateUserRequest.class)))
+                .thenThrow(new RuntimeException("Database error"));
+
+        mockMvc.perform(
+                        put("/user/me")
+                                .header("Authorization", "Bearer yyy")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.error").value("Une erreur est survenue lors de la mise à jour"));
+    }
+
+    @Test
+    @DisplayName("GET /user/me/role returns the user's role")
+    void getMyRole_returnsRole() throws Exception {
+        String token = "Bearer jwt-token";
+
+        UserDTO dto = new UserDTO();
+        dto.setId(1L);
+        dto.setEmail("user@example.com");
+        dto.setRole(Role.GESTIONNAIRE);
+
+        when(userService.getMe(token)).thenReturn(dto);
+
+        mockMvc.perform(get("/user/me/role").header("Authorization", token))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.role").value("GESTIONNAIRE"));
+    }
 }
