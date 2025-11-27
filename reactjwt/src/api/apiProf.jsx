@@ -11,7 +11,12 @@ async function handleFetch(url, options = {}) {
         return res;
     } catch (error) {
         if (error && error.response) throw error;
-        throw { response: { data: error?.message || "Impossible de se connecter au serveur" } };
+        // Gérer les erreurs réseau (Failed to fetch, CORS, etc.)
+        const errorMessage = error?.message || "Impossible de se connecter au serveur";
+        if (errorMessage.includes("Failed to fetch") || errorMessage.includes("NetworkError")) {
+            throw { response: { data: "Erreur de connexion au serveur. Vérifiez que le serveur est démarré." } };
+        }
+        throw { response: { data: errorMessage } };
     }
 }
 async function handleEvalFetch(url, options = {}) {
@@ -38,6 +43,9 @@ function authHeaders(token = null) {
 }
 
 export async function fetchProfStudents(profId, params = {}) {
+    if (!profId) {
+        throw { response: { data: "ID du professeur manquant" } };
+    }
     const q = new URLSearchParams();
     if (params.name) q.set("nom", params.name);
     if (params.company) q.set("entreprise", params.company);
@@ -48,8 +56,18 @@ export async function fetchProfStudents(profId, params = {}) {
     q.set("asc", String(params.asc ?? true));
 
     const url = `${API_BASE}/prof/${profId}/etudiants?${q.toString()}`;
-    const res = await handleFetch(url, {method: "GET", headers: authHeaders()});
-    return await res.json();
+    try {
+        const res = await handleFetch(url, {method: "GET", headers: authHeaders()});
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return await res.json();
+        }
+        // Si ce n'est pas du JSON, retourner un tableau vide
+        return [];
+    } catch (error) {
+        console.error("Error in fetchProfStudents:", error);
+        throw error;
+    }
 }
 
 export async function getProfMe(token = null) {

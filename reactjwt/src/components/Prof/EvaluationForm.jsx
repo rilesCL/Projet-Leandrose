@@ -227,6 +227,24 @@ const EvaluationForm = () => {
     const optionBase = "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border font-semibold text-sm";
     const optionDefault = "bg-gray-100 border-gray-300 text-gray-800";
     const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
+    
+    // Fonction pour obtenir les classes selon la valeur et l'état de sélection
+    const getRatingButtonClasses = (value, isSelected) => {
+        if (!isSelected) return optionDefault;
+        
+        switch (value) {
+            case "EXCELLENT": // Totalement d'accord
+                return "bg-green-800 border-green-900 text-white shadow";
+            case "TRES_BIEN": // Plutôt d'accord
+                return "bg-green-200 border-green-300 text-green-900 shadow";
+            case "SATISFAISANT": // Plutôt en désaccord
+                return "bg-red-200 border-red-300 text-red-900 shadow";
+            case "A_AMELIORER": // Totalement en désaccord
+                return "bg-red-800 border-red-900 text-white shadow";
+            default:
+                return optionDefault;
+        }
+    };
 
     return (
         <div className="max-w-4xl mx-auto p-6">
@@ -282,8 +300,8 @@ const EvaluationForm = () => {
                                     <p className="validation-error text-sm text-red-600 mb-2">{ratingErrors}</p>
                                 )}
 
-                                {/* Rating Buttons: use grid for better layout */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                {/* Rating Buttons: use grid for better layout - vertical on small screens */}
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     {[
                                         { value: "EXCELLENT", label: t('evaluation.rating.totally_agree') },
                                         { value: "TRES_BIEN", label: t('evaluation.rating.mostly_agree') },
@@ -296,7 +314,7 @@ const EvaluationForm = () => {
                                         return (
                                             <label
                                                 key={option.value}
-                                                className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
+                                                className={`${optionBase} ${getRatingButtonClasses(option.value, isSelected)} flex-1`}
                                             >
                                                 <input
                                                     type="radio"
@@ -329,7 +347,7 @@ const EvaluationForm = () => {
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.preferredStage}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q1")}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         {[{ value: "1", label: t('studentProfile.observations.first_intern')},
                             { value: "2", label: t('studentProfile.observations.second_intern') }].map(
                             opt => {
@@ -337,7 +355,7 @@ const EvaluationForm = () => {
                                 return (
                                     <label
                                         key={opt.value}
-                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
+                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault} flex-1`}
                                     >
                                         <input
                                             type="radio"
@@ -360,7 +378,7 @@ const EvaluationForm = () => {
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.capacity}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q2")}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
                         {[
                             { value: "1", label: t('studentProfile.observations.stage1') },
                             { value: "2", label: t('studentProfile.observations.stage2') },
@@ -393,13 +411,13 @@ const EvaluationForm = () => {
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.sameTraineeNextStage}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q3")}</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 justify-center max-w-xs mx-auto">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-xs mx-auto">
                         {[{ value: "YES", label: t('studentProfile.observations.yes') }, { value: "NO", label: t('studentProfile.observations.no') }].map(opt => {
                             const isSelected = formData.sameTraineeNextStage === opt.value;
                             return (
                                 <label
                                     key={opt.value}
-                                    className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
+                                    className={`${optionBase} ${isSelected ? optionSelected : optionDefault} flex-1`}
                                 >
                                     <input
                                         type="radio"
