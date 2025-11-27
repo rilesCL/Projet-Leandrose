@@ -3,8 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
     getEvaluationInfo,
     createEvaluation,
-    generateEvaluationPdfWithId,
-    checkExistingEvaluation
+        generateEvaluationPdfWithId
 } from "../../api/apiProf";
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +17,6 @@ const EvaluationForm = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [errors, setErrors] = useState({});
-    const [evaluationId, setEvaluationId] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [successMessage, setSuccessMessage] = useState(null);
@@ -101,11 +99,6 @@ const EvaluationForm = () => {
         const loadInfo = async () => {
             try {
                 setLoading(true);
-
-                const existingCheck = await checkExistingEvaluation(studentId, offerId);
-                if (existingCheck.exists && existingCheck.evaluation) {
-                    setEvaluationId(existingCheck.evaluation.id);
-                }
 
                 const data = await getEvaluationInfo(studentId, offerId);
                 setInfo(data);
@@ -230,14 +223,31 @@ const EvaluationForm = () => {
     if (loading) return <p className="text-gray-900">{t('evaluation.loading')}</p>;
     if (error && !info) return <p className="text-red-500">{error}</p>;
 
+    // unified classes for option labels
+    const optionBase = "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border font-semibold text-sm";
+    const optionDefault = "bg-gray-100 border-gray-300 text-gray-800";
+    const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
+
     return (
         <div className="max-w-4xl mx-auto p-6">
+
+            <div className="mb-4">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center text-blue-600 hover:text-blue-800 focus:outline-none"
+                    aria-label={t('common.back', { defaultValue: 'Retour' })}
+                >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    {t('common.back', { defaultValue: 'Retour' })}
+                </button>
+            </div>
 
             <h1 className="text-3xl font-bold text-center mb-8 text-gray-900">
                 {t('evaluation.title')}
             </h1>
 
-            {/* Company Info */}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h2 className="text-xl font-semibold mb-4 text-gray-900">{t('evaluation.companyInfo')}</h2>
 
@@ -271,8 +281,9 @@ const EvaluationForm = () => {
                                 {ratingErrors && (
                                     <p className="validation-error text-sm text-red-600 mb-2">{ratingErrors}</p>
                                 )}
-                                {/* Rating Buttons */}
-                                <div className="flex flex-wrap justify-center gap-3">
+
+                                {/* Rating Buttons: use grid for better layout */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                                     {[
                                         { value: "EXCELLENT", label: t('evaluation.rating.totally_agree') },
                                         { value: "TRES_BIEN", label: t('evaluation.rating.mostly_agree') },
@@ -285,15 +296,7 @@ const EvaluationForm = () => {
                                         return (
                                             <label
                                                 key={option.value}
-                                                className={`
-                                                    flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                                    border-2 font-semibold
-                                                    ${option.value === "EXCELLENT" ? "bg-green-400 border-green-600 text-gray-900" : ""}
-                                                    ${option.value === "TRES_BIEN" ? "bg-green-200 border-green-400 text-gray-900" : ""}
-                                                    ${option.value === "SATISFAISANT" ? "bg-orange-200 border-orange-400 text-gray-900" : ""}
-                                                    ${option.value === "A_AMELIORER" ? "bg-red-400 border-red-600 text-gray-900" : ""}
-                                                    ${isSelected ? "ring-2 ring-black shadow-lg" : ""}
-                                                `}
+                                                className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
                                             >
                                                 <input
                                                     type="radio"
@@ -303,7 +306,7 @@ const EvaluationForm = () => {
                                                     onChange={() =>
                                                         handleQuestionChange(groupKey, index, option.value)
                                                     }
-                                                    className="mr-2"
+                                                    className="sr-only"
                                                 />
                                                 <span>{option.label}</span>
                                             </label>
@@ -318,19 +321,15 @@ const EvaluationForm = () => {
                 </section>
             ))}
 
-            {/* OBSERVATIONS GÉNÉRALES */}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h3 className="text-lg font-semibold mb-4 text-gray-900">{t("studentProfile.observations.title")}</h3>
 
-                {/* Preferred stage */}
                 <div className="mb-6">
                     {errors?.preferredStage && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                            {errors.preferredStage}
-                        </p>
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.preferredStage}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q1")}</p>
-                    <div className="flex flex-wrap justify-center gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 justify-center">
                         {[{ value: "1", label: t('studentProfile.observations.first_intern')},
                             { value: "2", label: t('studentProfile.observations.second_intern') }].map(
                             opt => {
@@ -338,10 +337,7 @@ const EvaluationForm = () => {
                                 return (
                                     <label
                                         key={opt.value}
-                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                            bg-blue-100 border-2 border-blue-300 text-blue-900 font-medium
-                                            ${isSelected ? "border-blue-600 ring-2 ring-blue-400 ring-offset-2 shadow-md" : ""}
-                                        `}
+                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
                                     >
                                         <input
                                             type="radio"
@@ -349,7 +345,7 @@ const EvaluationForm = () => {
                                             value={opt.value}
                                             checked={isSelected}
                                             onChange={e => handleChange("preferredStage", e.target.value)}
-                                            className="mr-2"
+                                            className="sr-only"
                                         />
                                         {opt.label}
                                     </label>
@@ -359,15 +355,12 @@ const EvaluationForm = () => {
                     </div>
                 </div>
 
-                {/* Capacity */}
                 <div className="mb-6">
                     {errors?.capacity && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                            {errors.capacity}
-                        </p>
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.capacity}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q2")}</p>
-                    <div className="flex flex-wrap justify-center gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                         {[
                             { value: "1", label: t('studentProfile.observations.stage1') },
                             { value: "2", label: t('studentProfile.observations.stage2') },
@@ -378,10 +371,7 @@ const EvaluationForm = () => {
                             return (
                                 <label
                                     key={opt.value}
-                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-purple-100 border-2 border-purple-300 text-purple-900 font-medium
-                                        ${isSelected ? "border-purple-700 ring-2 ring-purple-400 ring-offset-2 shadow-md" : ""}
-                                    `}
+                                    className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
                                 >
                                     <input
                                         type="radio"
@@ -389,7 +379,7 @@ const EvaluationForm = () => {
                                         value={opt.value}
                                         checked={isSelected}
                                         onChange={e => handleChange("capacity", e.target.value)}
-                                        className="mr-2"
+                                        className="sr-only"
                                     />
                                     {opt.label}
                                 </label>
@@ -398,24 +388,18 @@ const EvaluationForm = () => {
                     </div>
                 </div>
 
-                {/* Same trainee again */}
                 <div className="mb-6">
                     {errors?.sameTraineeNextStage && (
-                        <p className="validation-error text-sm text-red-600 mb-2 text-center">
-                            {errors.sameTraineeNextStage}
-                        </p>
+                        <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.sameTraineeNextStage}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q3")}</p>
-                    <div className="flex justify-center gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 justify-center max-w-xs mx-auto">
                         {[{ value: "YES", label: t('studentProfile.observations.yes') }, { value: "NO", label: t('studentProfile.observations.no') }].map(opt => {
                             const isSelected = formData.sameTraineeNextStage === opt.value;
                             return (
                                 <label
                                     key={opt.value}
-                                    className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all
-                                        bg-green-100 border-2 border-green-300 text-green-900 font-medium
-                                        ${isSelected ? "border-green-700 ring-2 ring-green-400 ring-offset-2 shadow-md" : ""}
-                                    `}
+                                    className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
                                 >
                                     <input
                                         type="radio"
@@ -423,7 +407,7 @@ const EvaluationForm = () => {
                                         value={opt.value}
                                         checked={isSelected}
                                         onChange={e => handleChange("sameTraineeNextStage", e.target.value)}
-                                        className="mr-2"
+                                        className="sr-only"
                                     />
                                     {opt.label}
                                 </label>
@@ -477,3 +461,4 @@ const EvaluationForm = () => {
 };
 
 export default EvaluationForm;
+

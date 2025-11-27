@@ -4,9 +4,9 @@ import { FaSignOutAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../LanguageSelector.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
-import ProfStudentsPage from "./ProfStudentPage.jsx";
 import EvaluationsList from "../Employeur/EvaluationList.jsx";
-import {t} from "i18next";
+import ProfStudentsPage from "./ProfStudentPage.jsx";
+
 
 export default function DashboardProf() {
     const navigate = useNavigate();

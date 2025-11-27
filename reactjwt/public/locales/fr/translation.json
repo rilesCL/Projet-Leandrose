@@ -784,7 +784,8 @@
     "noApplicationsForTerm": "Aucune candidature acceptée pour la session {{term}}"
   },
   "common": {
-    "cancel": "Annuler"
+    "cancel": "Cancel",
+    "back": "Retour"
   },
   "createEntenteForm": {
     "title": "Créer une entente de stage",

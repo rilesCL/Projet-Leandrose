@@ -782,7 +782,8 @@
     "noApplicationsForTerm": "No accepted applications for the {{term}} term"
   },
   "common": {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "back": "Back"
   },
   "createEntenteForm": {
     "title": "Create Internship Agreement",
