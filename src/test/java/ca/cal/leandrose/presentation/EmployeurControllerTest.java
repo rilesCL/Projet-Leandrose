@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import ca.cal.leandrose.model.Candidature;
+import ca.cal.leandrose.model.EvaluationStatus;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
@@ -39,16 +40,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @WebMvcTest(controllers = EmployeurController.class)
 @ActiveProfiles("test")
@@ -127,7 +122,7 @@ class EmployeurControllerTest {
                       .build();
 
       evaluationDto = new EvaluationStagiaireDto(
-              3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", null, true, false
+              3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", null, true, false, EvaluationStatus.EN_COURS
       );
       formData  = createEvaluationEmployerFormData();
   }
@@ -521,7 +516,7 @@ class EmployeurControllerTest {
     @Test
     void generateEvaluationPdf_notOwner_returnsForbidden() throws Exception {
         EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 2L,
-                100L, null, null, false, false);
+                100L, null, null, false, false, EvaluationStatus.EN_COURS);
 
         when(userAppService.getMe(anyString())).thenReturn(employeurDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(otherEvaluation);
@@ -613,7 +608,7 @@ class EmployeurControllerTest {
 
         EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(
                 1L, LocalDate.now(), 2L, 1L, 2L, 100L,
-                null, null, false, false
+                null, null, false, false, EvaluationStatus.EN_COURS
         );
 
         when(userAppService.getMe(anyString())).thenReturn(differentEmployeur);

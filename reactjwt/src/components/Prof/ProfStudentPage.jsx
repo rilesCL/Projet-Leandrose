@@ -52,11 +52,7 @@ export default function ProfStudentsPage() {
     const [firstLoadDone, setFirstLoadDone] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
-    const handleLogout = () => {
-        sessionStorage.clear();
-        localStorage.clear();
-        navigate("/login", { replace: true });
-    };
+
 
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");

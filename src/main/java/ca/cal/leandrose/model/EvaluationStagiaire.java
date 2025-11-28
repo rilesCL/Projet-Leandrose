@@ -28,22 +28,24 @@ public class EvaluationStagiaire {
   @JoinColumn(name = "student_id")
   private Student student;
 
-    @ManyToOne
-    @JoinColumn(name = "professeur_id")
-    private Prof professeur;
+  @ManyToOne
+  @JoinColumn(name = "professeur_id")
+  private Prof professeur;
 
-    @ManyToOne
-    @JoinColumn(name = "internship_id")
-    private InternshipOffer internshipOffer;
+  @ManyToOne
+  @JoinColumn(name = "internship_id")
+  private InternshipOffer internshipOffer;
 
   @ManyToOne
   @JoinColumn(name = "entente_stage_id")
   private EntenteStage ententeStage;
 
-    private String employerPdfFilePath;
-    private String professorPdfFilePath;
+  private String employerPdfFilePath;
+  private String professorPdfFilePath;
 
-    private boolean submittedByEmployer;
-    private boolean submittedByProfessor;
+  private boolean submittedByEmployer;
+  private boolean submittedByProfessor;
 
+  @Enumerated(EnumType.STRING)
+  private EvaluationStatus status;
 }

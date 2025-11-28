@@ -46,7 +46,6 @@ public class EvaluationStagiaireService {
             Long internshipId
     ) {
 
-        // Fetch core entities
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Étudiant non trouvé"));
 
@@ -66,25 +65,20 @@ public class EvaluationStagiaireService {
         if (existingOpt.isPresent()) {
             EvaluationStagiaire existing = existingOpt.get();
 
-            // EMPLOYER tries to start their section
             if (creator == CreatorTypeEvaluation.EMPLOYER) {
 
                 if (!existing.isSubmittedByEmployer()) {
-                    // employer continues their section
                     return mapToDto(existing);
                 }
             }
 
-            // PROF tries to start their section
             if (creator == CreatorTypeEvaluation.PROF) {
 
                 if (!existing.isSubmittedByProfessor()) {
-                    // professor continues their section
                     return mapToDto(existing);
                 }
             }
 
-            // If both sections are already submitted
             throw new IllegalStateException("L'évaluation complète existe déjà pour ce stagiaire.");
         }
 
@@ -113,12 +107,11 @@ public class EvaluationStagiaireService {
                 .employeur(emp)
                 .professeur(prof)
                 .ententeStage(stage)
-
                 .submittedByEmployer(false)
                 .submittedByProfessor(false)
-
                 .employerPdfFilePath(null)
                 .professorPdfFilePath(null)
+                .status(EvaluationStatus.EN_COURS)
                 .build();
 
         evaluationStagiaireRepository.save(evaluation);
@@ -220,6 +213,7 @@ public class EvaluationStagiaireService {
         String pdfPath = pdfGeneratorService.generatedEvaluationByTeacher(evaluation, formData, info, langage);
         evaluation.setProfessorPdfFilePath(pdfPath);
         evaluation.setSubmittedByProfessor(true);
+        evaluation.setStatus(EvaluationStatus.TERMINEE);
         EvaluationStagiaire savedEvaluation = evaluationStagiaireRepository.save(evaluation);
         return mapToDto(savedEvaluation);
     }
@@ -310,7 +304,8 @@ public class EvaluationStagiaireService {
                 evaluation.getEmployerPdfFilePath(),
                 evaluation.getProfessorPdfFilePath(),
                 evaluation.isSubmittedByEmployer(),
-                evaluation.isSubmittedByProfessor()
+                evaluation.isSubmittedByProfessor(),
+                evaluation.getStatus()
         );
     }
     public boolean isEvaluationEligible(CreatorTypeEvaluation creatorType, Long creatorId, Long studentId, Long internshipOfferId) {

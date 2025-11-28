@@ -27,6 +27,7 @@ public class EntenteStageService {
   private final CandidatureRepository candidatureRepository;
   private final PDFGeneratorService pdfGeneratorService;
   private final ProfRepository profRepository;
+  private final EvaluationStagiaireRepository evaluationStagiaireRepository;
   private final GestionnaireRepository gestionnaireRepository;
 
   public List<CandidatureDto> getCandidaturesAcceptees() {
@@ -429,7 +430,7 @@ public class EntenteStageService {
                   stageStatus = (today.isAfter(end)) ? "TERMINE" : "EN_COURS";
                 }
 
-                String evaluationStatus = "A_FAIRE";
+                String evaluationStatus = getEvaluationStatus(e, student, offer);
 
                 return ProfStudentItemDto.builder()
                     .ententeId(e.getId())
@@ -518,5 +519,26 @@ public class EntenteStageService {
         ententeRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(
             studentId, offerId);
     return ententeStage.isPresent() && ententeStage.get().getProf() != null;
+  }
+
+  private String getEvaluationStatus(EntenteStage ententeState, Student student, InternshipOffer offer){
+      if(student == null || offer == null)
+          return EvaluationStatus.A_FAIRE.name();
+
+      Optional<EvaluationStagiaire> evaluationOpt = evaluationStagiaireRepository
+              .findByStudentIdAndInternshipOfferId(student.getId(), offer.getId());
+
+      if(evaluationOpt.isPresent()) {
+          EvaluationStagiaire evaluation = evaluationOpt.get();
+
+          if(evaluation.isSubmittedByEmployer() && evaluation.isSubmittedByProfessor()){
+              return EvaluationStatus.TERMINEE.name();
+          }
+          else if(evaluation.isSubmittedByEmployer() || evaluation.isSubmittedByProfessor()){
+              return EvaluationStatus.EN_COURS.name();
+          }
+
+      }
+      return EvaluationStatus.A_FAIRE.name();
   }
 }

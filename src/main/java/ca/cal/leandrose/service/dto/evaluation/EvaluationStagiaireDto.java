@@ -1,6 +1,8 @@
 package ca.cal.leandrose.service.dto.evaluation;
 
 
+import ca.cal.leandrose.model.EvaluationStatus;
+
 import java.time.LocalDate;
 
 public record EvaluationStagiaireDto(
@@ -13,6 +15,7 @@ public record EvaluationStagiaireDto(
         String employerPdfPath,
         String professorPdfPath,
         boolean submittedByEmployer,
-        boolean submittedByProfessor
+        boolean submittedByProfessor,
+        EvaluationStatus status
 ) {
 }

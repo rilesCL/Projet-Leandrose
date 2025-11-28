@@ -3,6 +3,8 @@ package ca.cal.leandrose.service.dto.evaluation;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+
+import ca.cal.leandrose.model.EvaluationStatus;
 import org.junit.jupiter.api.Test;
 
 class EvaluationStagiaireDtoTest {
@@ -20,7 +22,7 @@ class EvaluationStagiaireDtoTest {
             "/uploads/employer_eval.pdf",
             "/uploads/professor_eval.pdf",
             true,
-            false);
+            false, EvaluationStatus.EN_COURS);
 
     assertNotNull(dto);
     assertEquals(1L, dto.id());
@@ -39,7 +41,7 @@ class EvaluationStagiaireDtoTest {
   void testEvaluationStagiaireDtoWithNullValues() {
     EvaluationStagiaireDto dto =
         new EvaluationStagiaireDto(
-            null, null, null, null, null, null, null, null, false, false);
+            null, null, null, null, null, null, null, null, false, false, EvaluationStatus.EN_COURS);
 
     assertNull(dto.id());
     assertNull(dto.dateEvaluation());
@@ -66,7 +68,8 @@ class EvaluationStagiaireDtoTest {
             "/uploads/employer_eval.pdf",
             "/uploads/professor_eval.pdf",
             true,
-            false);
+            false,
+                EvaluationStatus.EN_COURS);
 
     EvaluationStagiaireDto dto2 =
         new EvaluationStagiaireDto(
@@ -79,7 +82,8 @@ class EvaluationStagiaireDtoTest {
             "/uploads/employer_eval.pdf",
             "/uploads/professor_eval.pdf",
             true,
-            false);
+            false,
+                EvaluationStatus.EN_COURS);
 
     assertEquals(dto1, dto2);
     assertEquals(dto1.hashCode(), dto2.hashCode());
@@ -98,7 +102,8 @@ class EvaluationStagiaireDtoTest {
             "/uploads/employer_eval.pdf",
             "/uploads/professor_eval.pdf",
             true,
-            false);
+            false,
+                EvaluationStatus.EN_COURS);
 
     assertNotNull(dto.toString());
     assertTrue(dto.toString().contains("EvaluationStagiaireDto"));
@@ -117,7 +122,8 @@ class EvaluationStagiaireDtoTest {
             "/uploads/employer_eval.pdf",
             "/uploads/professor_eval.pdf",
             true,
-            true);
+            true,
+                EvaluationStatus.EN_COURS);
 
     assertTrue(dto.submittedByEmployer());
     assertTrue(dto.submittedByProfessor());

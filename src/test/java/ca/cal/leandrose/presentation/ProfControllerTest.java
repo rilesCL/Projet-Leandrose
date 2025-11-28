@@ -1,5 +1,6 @@
 package ca.cal.leandrose.presentation;
 
+import ca.cal.leandrose.model.EvaluationStatus;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.EntenteStageService;
@@ -125,7 +126,7 @@ class ProfControllerTest {
                 .build();
 
         evaluationDto = new EvaluationStagiaireDto(
-                3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", null, true, false
+                3L, LocalDate.now(), 2L, 1L, 2L,  100L,"/path/to/pdf", null, true, false, EvaluationStatus.EN_COURS
         );
         formData = createEvaluationProfFormData();
     }
@@ -327,7 +328,7 @@ class ProfControllerTest {
     @Test
     void generateEvaluationPdf_notOwner_returnsForbidden() throws Exception {
         EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(1L, LocalDate.now(), 2L,1L, 2L,
-                100L, null, null, false, false);
+                100L, null, null, false, false, EvaluationStatus.EN_COURS);
 
         when(userAppService.getMe(anyString())).thenReturn(profDto);
         when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(otherEvaluation);
@@ -419,7 +420,7 @@ class ProfControllerTest {
 
         EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(
                 1L, LocalDate.now(), 2L, 1L, 2L, 100L,
-                null, null, false, false
+                null, null, false, false, EvaluationStatus.EN_COURS
         );
 
         when(userAppService.getMe(anyString())).thenReturn(differentProf);
