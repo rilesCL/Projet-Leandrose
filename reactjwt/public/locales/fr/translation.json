@@ -838,6 +838,11 @@
       "waiting_your_signature": "En attente de votre signature",
       "draft": "Brouillon"
     },
+    "messages": {
+      "waitingStudentAndEmployer": "En attente des signatures de l'étudiant et de l'employeur",
+      "waitingStudent": "En attente de la signature de l'étudiant",
+      "waitingEmployer": "En attente de la signature de l'employeur"
+    },
     "errors": {
       "errors_fetching_agreements": "Erreur lors de la récupération des ententes",
       "errors_loading_agreements": "Error de chargement des ententes",

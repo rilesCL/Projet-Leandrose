@@ -836,6 +836,11 @@
       "waiting_your_signature": "Waiting for your signature",
       "draft": "Draft"
     },
+    "messages": {
+      "waitingStudentAndEmployer": "Awaiting signatures from the student and the employer",
+      "waitingStudent": "Awaiting student signature",
+      "waitingEmployer": "Awaiting employer's signature"
+    },
     "errors": {
       "errors_fetching_agreements": "Error fetching agreements",
       "errors_loading_agreements": "Error loading agreements",

@@ -289,7 +289,7 @@ const EvaluationForm = () => {
             setSubmitted(true);
             setSuccessMessage(t("evaluation.submittedSuccess"));
             setTimeout(() => {
-                navigate("/dashboard/employeur/evaluations")
+                navigate("/dashboard/employeur/?tab=evaluations")
             }, 2000)
         } catch (err) {
             console.error(t("evaluation.errors.submit"), err);

@@ -172,7 +172,9 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
     };
 
     const getStatusBadge = (entente) => {
-        const managerSigned = entente.dateSignatureGestionnaire !== null;
+        const studentSigned = entente.dateSignatureEtudiant;
+        const employerSigned = entente.dateSignatureEmployeur;
+        const managerSigned = entente.dateSignatureGestionnaire;
 
         if (entente.statut === 'VALIDEE') {
             return (
@@ -185,24 +187,43 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
             );
         }
 
-        if (managerSigned && entente.statut === 'EN_ATTENTE_SIGNATURE') {
+        // Manager can sign - both student and employer have signed, but manager hasn't
+        if (studentSigned && employerSigned && !managerSigned && entente.statut === 'EN_ATTENTE_SIGNATURE') {
             return (
                 <button
                     onClick={() => handleStatusClick(entente)}
                     className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
+                >
+                    {t("ententeStage.status.waiting_your_signature")}
+                </button>
+            );
+        }
+
+        // Waiting for student and/or employer to sign
+        if ((!studentSigned || !employerSigned) && entente.statut === 'EN_ATTENTE_SIGNATURE') {
+            let waitingFor = [];
+            if (!studentSigned) waitingFor.push(t("ententeStage.status.student"));
+            if (!employerSigned) waitingFor.push(t("ententeStage.status.employer"));
+
+            return (
+                <button
+                    onClick={() => handleStatusClick(entente)}
+                    className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
+                    title={`En attente de: ${waitingFor.join(', ')}`}
                 >
                     {t("ententeStage.status.waiting_other_signatures")}
                 </button>
             );
         }
 
-        if (entente.statut === 'EN_ATTENTE_SIGNATURE') {
+        // Manager has signed but waiting for others (shouldn't happen with new backend logic)
+        if (managerSigned && (!studentSigned || !employerSigned)) {
             return (
                 <button
                     onClick={() => handleStatusClick(entente)}
-                    className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
+                    className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors cursor-pointer"
                 >
-                    {t("ententeStage.status.waiting_your_signature")}
+                    {t("ententeStage.status.invalid_order")}
                 </button>
             );
         }
@@ -218,9 +239,66 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
             );
         }
 
-        return <span
-            className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
+        return (
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            {entente.statut}
+        </span>
+        );
     };
+
+    // const getStatusBadge = (entente) => {
+    //     const managerSigned =
+    //         entente.dateSignatureEtudiant &&
+    //         entente.dateSignatureEmployeur &&
+    //         !entente.dateSignatureGestionnaire;
+    //
+    //     if (entente.statut === 'VALIDEE') {
+    //         return (
+    //             <button
+    //                 onClick={() => handleStatusClick(entente)}
+    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors cursor-pointer"
+    //             >
+    //                 {t("ententeStage.status.validation")}
+    //             </button>
+    //         );
+    //     }
+    //
+    //     if (managerSigned && entente.statut === 'EN_ATTENTE_SIGNATURE') {
+    //         return (
+    //             <button
+    //                 onClick={() => handleStatusClick(entente)}
+    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
+    //             >
+    //                 {t("ententeStage.status.waiting_other_signatures")}
+    //             </button>
+    //         );
+    //     }
+    //
+    //     if (entente.statut === 'EN_ATTENTE_SIGNATURE') {
+    //         return (
+    //             <button
+    //                 onClick={() => handleStatusClick(entente)}
+    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
+    //             >
+    //                 {t("ententeStage.status.waiting_your_signature")}
+    //             </button>
+    //         );
+    //     }
+    //
+    //     if (entente.statut === 'BROUILLON') {
+    //         return (
+    //             <button
+    //                 onClick={() => handleStatusClick(entente)}
+    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
+    //             >
+    //                 {t("ententeStage.status.draft")}
+    //             </button>
+    //         );
+    //     }
+    //
+    //     return <span
+    //         className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
+    // };
 
     const getSortIcon = (field) => {
         if (sortField !== field) return <FaSort className="text-gray-400"/>;
@@ -248,6 +326,21 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
         const date = new Date(dateDebut);
         date.setDate(date.getDate() + (dureeSemaines * 7));
         return date.toISOString().split('T')[0];
+    };
+
+    const getDisabledSignMessage = (entente) => {
+        const studentSigned = entente.dateSignatureEtudiant;
+        const employerSigned = entente.dateSignatureEmployeur;
+
+        if (!studentSigned && !employerSigned) {
+            return t("ententeStage.messages.waitingStudentAndEmployer");
+        } else if (!studentSigned) {
+            return t("ententeStage.messages.waitingStudent");
+        } else if (!employerSigned) {
+            return t("ententeStage.messages.waitingEmployer");
+        }
+
+        return t("ententeStage.messages.cannotSign");
     };
 
     if (loading) {
@@ -634,14 +727,25 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
                                                     <FaEye className="text-sm"/>
                                                     <span>{t("ententeStage.actions.look")}</span>
                                                 </button>
+
                                                 {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasManagerSigned(entente) && (
-                                                    <Link
-                                                        to={`/dashboard/gestionnaire/ententes/${entente.id}/signer`}
-                                                        className="text-green-600 hover:text-green-900 flex items-center space-x-1"
-                                                    >
-                                                        <FaSignature className="text-sm"/>
-                                                        <span>{t("ententeStage.actions.sign")}</span>
-                                                    </Link>
+                                                    entente.dateSignatureEtudiant && entente.dateSignatureEmployeur ? (
+                                                        <Link
+                                                            to={`/dashboard/gestionnaire/ententes/${entente.id}/signer`}
+                                                            className="text-green-600 hover:text-green-900 flex items-center space-x-1"
+                                                        >
+                                                            <FaSignature className="text-sm"/>
+                                                            <span>{t("ententeStage.actions.sign")}</span>
+                                                        </Link>
+                                                    ) : (
+                                                        <span
+                                                            className="text-gray-400 flex items-center space-x-1 cursor-not-allowed"
+                                                            title={getDisabledSignMessage(entente)}
+                                                        >
+                                                            <FaSignature className="text-sm"/>
+                                                                <span>{t("ententeStage.actions.sign")}</span>
+                                                        </span>
+                                                    )
                                                 )}
                                                 {entente.statut === 'VALIDEE' && !entente.prof && (
                                                     <button

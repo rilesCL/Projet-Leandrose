@@ -299,6 +299,10 @@ public class EntenteStageService {
             .findById(gestionnaireId)
             .orElseThrow(() -> new EntityNotFoundException("Gestionnaire non trouvé"));
 
+    if(entente.getDateSignatureEtudiant() == null && entente.getDateSignatureEmployeur() == null){
+        throw new IllegalStateException("L'étudiant et l'employeur doit signer avant le gestionnaire");
+    }
+
     if (entente.getStatut() != EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE) {
       throw new IllegalStateException("L'entente doit être en attente de signature.");
     }
@@ -311,9 +315,7 @@ public class EntenteStageService {
     entente.setDateSignatureGestionnaire(LocalDateTime.now());
     entente.setDateModification(LocalDateTime.now());
 
-    if (entente.getDateSignatureEtudiant() != null && entente.getDateSignatureEmployeur() != null) {
-      entente.setStatut(EntenteStage.StatutEntente.VALIDEE);
-    }
+    entente.setStatut(EntenteStage.StatutEntente.VALIDEE);
 
     EntenteStage saved = ententeRepository.save(entente);
     return EntenteStageDto.fromEntity(saved);
