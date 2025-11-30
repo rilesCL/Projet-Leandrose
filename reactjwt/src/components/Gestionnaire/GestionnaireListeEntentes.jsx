@@ -56,11 +56,12 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
         setFilteredEntentes(filtered);
     }, [selectedTerm, ententes]);
 
+    const closeToast = () => {
+        setToast({show: false, message: '', type: ''});
+    };
+
     const showToast = (message, type = 'error') => {
         setToast({show: true, message, type});
-        setTimeout(() => {
-            setToast({show: false, message: '', type: ''});
-        }, 5000);
     };
 
     const handleOpenProfModal = async (entente) => {
@@ -270,26 +271,6 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {toast.show && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div
-                            className={`flex items-center gap-3 px-6 py-4 rounded-lg shadow-xl transition-all duration-300 max-w-md ${
-                                toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                            }`}>
-                            <span className="flex-1">{toast.message}</span>
-                            <button
-                                onClick={() => setToast({show: false, message: '', type: ''})}
-                                className={`p-1 rounded transition-colors ${
-                                    toast.type === 'success'
-                                        ? 'bg-green-500 hover:bg-green-600'
-                                        : 'bg-red-500 hover:bg-red-600'
-                                }`}
-                            >
-                                <FaTimes className="text-lg text-white"/>
-                            </button>
-                        </div>
-                    </div>
-                )}
 
                 {signatureModal.show && signatureModal.entente && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -703,6 +684,33 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
                     />
                 )}
             </div>
+
+            {toast.show && (
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

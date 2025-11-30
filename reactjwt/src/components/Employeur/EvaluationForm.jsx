@@ -21,7 +21,7 @@ const EvaluationForm = () => {
     const [internship, setInternship] = useState(null);
     // `error` garde les erreurs d'initialisation / serveur (distinct de validation UI)
     const [error, setError] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null);
+    const [toast, setToast] = useState({show: false, message: '', type: 'success'});
     const [submitted, setSubmitted] = useState(false);
 
     // Nouveau state pour stocker les erreurs de validation par champ
@@ -248,9 +248,16 @@ const EvaluationForm = () => {
         return false;
     };
 
+    const closeToast = () => {
+        setToast({show: false, message: '', type: 'success'});
+        if (submitted) {
+            navigate("/dashboard/employeur/evaluations");
+        }
+    };
+
     const handleSubmitEvaluation = async () => {
         setError(null);
-        setSuccessMessage(null);
+        setToast({show: false, message: '', type: 'success'});
         // validation -> otr object d'erreurs
         const validationErrors = validateForm();
         if (hasErrors(validationErrors)) {
@@ -287,10 +294,11 @@ const EvaluationForm = () => {
             console.log("EvaluationId: ", evalId)
             await generateEvaluationPdfWithId(evalId, formData);
             setSubmitted(true);
-            setSuccessMessage(t("evaluation.submittedSuccess"));
-            setTimeout(() => {
-                navigate("/dashboard/employeur/evaluations")
-            }, 2000)
+            setToast({
+                show: true,
+                message: t("evaluation.submittedSuccess"),
+                type: 'success'
+            });
         } catch (err) {
             console.error(t("evaluation.errors.submit"), err);
             const errorMessage =
@@ -300,6 +308,8 @@ const EvaluationForm = () => {
             setSubmitting(false);
         }
     };
+
+    const isFormDisabled = toast.show && toast.type === 'success';
 
     if (loading) {
         return (
@@ -356,7 +366,10 @@ const EvaluationForm = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 py-8 relative">
+            {isFormDisabled && (
+                <div className="absolute inset-0 bg-white bg-opacity-75 z-10 rounded-lg"></div>
+            )}
             <div className="mb-8">
                 <div className="mb-4">
                     <button
@@ -732,7 +745,7 @@ const EvaluationForm = () => {
                             <button
                                 onClick={() => setError(null)}
                                 className="ml-4 text-red-400 hover:text-red-600 transition-colors"
-                                aria-label="Fermer le message d’erreur"
+                                aria-label="Fermer le message d'erreur"
                             >
                                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
                                     <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="2"
@@ -741,25 +754,6 @@ const EvaluationForm = () => {
                                           strokeLinecap="round"/>
                                 </svg>
                             </button>
-                        </div>
-                    </div>
-                )}
-
-                {successMessage && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <circle cx="10" cy="10" r="8"/>
-                                    <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2"
-                                              strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                            </div>
-                            <div className="ml-3">
-                                <p className="text-sm font-medium text-green-800">
-                                    {successMessage}
-                                </p>
-                            </div>
                         </div>
                     </div>
                 )}
@@ -784,6 +778,33 @@ const EvaluationForm = () => {
                     </button>
                 </div>
             </div>
+
+            {toast.show && (
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

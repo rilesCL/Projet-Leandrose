@@ -23,7 +23,7 @@ export default function UserProfilePage() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const [successPopup, setSuccessPopup] = useState("");
+    const [toast, setToast] = useState({show: false, message: '', type: 'success'});
     const [errorPopup, setErrorPopup] = useState("");
 
     const [showNameSection, setShowNameSection] = useState(false);
@@ -82,10 +82,18 @@ export default function UserProfilePage() {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
+    const closeToast = () => {
+        setToast({show: false, message: '', type: 'success'});
+        const roleForRedirect = user?.role;
+        if (roleForRedirect) {
+            navigate(getDashboardByRole(roleForRedirect));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorPopup("");
-        setSuccessPopup("");
+        setToast({show: false, message: '', type: 'success'});
 
         const token = sessionStorage.getItem("accessToken");
         if (!token) {
@@ -148,14 +156,11 @@ export default function UserProfilePage() {
             setCurrentPassword("");
             setConfirmPassword("");
 
-            setSuccessPopup(t("userProfile.success.updateSuccess"));
-            
-            // Auto-hide success message after 3 seconds and redirect
-            setTimeout(() => {
-                setSuccessPopup("");
-                const roleForRedirect = updated.role || (user && user.role);
-                navigate(getDashboardByRole(roleForRedirect));
-            }, 3000);
+            setToast({
+                show: true,
+                message: t("userProfile.success.updateSuccess"),
+                type: 'success'
+            });
         } catch (err) {
             setErrorPopup(err.message || t("userProfile.errors.updateFailed"));
         } finally {
@@ -171,17 +176,12 @@ export default function UserProfilePage() {
         );
     }
 
+    const isFormDisabled = toast.show && toast.type === 'success';
+
     return (
         <div className="min-h-screen relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-10">
-            {successPopup && (
-                <>
-                    {/* Overlay pour bloquer la page */}
-                    <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-                    {/* Message de succès */}
-                    <div className="fixed top-1/3 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg text-lg z-50">
-                        {successPopup}
-                    </div>
-                </>
+            {isFormDisabled && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
             )}
 
             {errorPopup && (
@@ -195,7 +195,10 @@ export default function UserProfilePage() {
                     <h1 className="text-2xl font-bold mb-2">{t("userProfile.title")}</h1>
                     <p className="text-gray-500 mb-6">{t("userProfile.subtitle")}</p>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6 relative">
+                        {isFormDisabled && (
+                            <div className="absolute inset-0 bg-white bg-opacity-75 z-10 rounded-xl"></div>
+                        )}
                         <div className="border rounded-xl p-4">
                             <button
                                 type="button"
@@ -349,6 +352,33 @@ export default function UserProfilePage() {
                     </form>
                 </div>
             </div>
+
+            {toast.show && (
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
