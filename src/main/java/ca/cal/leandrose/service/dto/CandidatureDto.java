@@ -49,7 +49,7 @@ public class CandidatureDto {
   }
 
   public Long getEmployeurId() {
-    return internshipOffer.getEmployeurId();
+    return internshipOffer != null ? internshipOffer.getEmployeurId() : null;
   }
 
   public static CandidatureDto withErrorMessage(String message) {

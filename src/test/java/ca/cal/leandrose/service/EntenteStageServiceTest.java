@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.CandidatureRepository;
 import ca.cal.leandrose.repository.EntenteStageRepository;
+import ca.cal.leandrose.repository.EvaluationStagiaireRepository;
 import ca.cal.leandrose.service.dto.CandidatureDto;
 import ca.cal.leandrose.service.dto.EntenteStageDto;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,6 +29,7 @@ class EntenteStageServiceTest {
   @Mock private EntenteStageRepository ententeRepository;
 
   @Mock private CandidatureRepository candidatureRepository;
+  @Mock private EvaluationStagiaireRepository evaluationStagiaireRepository; //Besoin de ça, sinon un test échoue.
 
   @Mock private PDFGeneratorService pdfGeneratorService;
 
@@ -79,6 +81,7 @@ class EntenteStageServiceTest {
             .durationInWeeks(12)
             .address("123 Rue Test")
             .status(InternshipOffer.Status.PUBLISHED)
+            .schoolTerm(new SchoolTerm(SchoolTerm.Season.FALL, 2026))
             .employeur(employeur)
             .build();
 

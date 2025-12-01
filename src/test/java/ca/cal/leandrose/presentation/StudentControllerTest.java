@@ -3,6 +3,7 @@ package ca.cal.leandrose.presentation;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import ca.cal.leandrose.model.Candidature;
@@ -24,6 +25,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = StudentController.class)
 @ActiveProfiles("test")
@@ -49,7 +51,8 @@ class StudentControllerTest {
   @MockitoBean private EntenteStageService ententeStageService;
 
   private StudentDto studentDto;
-
+  private InternshipOfferDto internshipOfferDto;
+  private CandidatureDto candidatureDto;
   @BeforeEach
   void setup() {
     studentDto =
@@ -62,6 +65,21 @@ class StudentControllerTest {
             .program("COMPUTER_SCIENCE")
             .internshipTerm("WINTER 2026")
             .build();
+
+      // Create internship offer
+      internshipOfferDto = InternshipOfferDto.builder()
+              .id(1L)
+              .description("Software Developer Internship")
+              .employeurId(1L) // Make sure this is set
+              .companyName("Tech Corp")
+              .build();
+
+      // Create candidature with internship offer
+      candidatureDto = CandidatureDto.builder()
+              .id(100L)
+              .student(studentDto)
+              .internshipOffer(internshipOfferDto) // This must not be null
+              .build();
   }
 
   @Test
@@ -354,7 +372,7 @@ class StudentControllerTest {
     mockMvc
         .perform(post("/student/applications/100/accept").header("Authorization", "Bearer token"))
         .andExpect(status().isBadRequest())
-        .andExpect(content().string("L'employeur doit d'abord accepter cette candidature"));
+        .andExpect(jsonPath("$.error.message").value("L'employeur doit d'abord accepter cette candidature"));
   }
 
   @Test
@@ -369,7 +387,7 @@ class StudentControllerTest {
     mockMvc
         .perform(post("/student/applications/999/accept").header("Authorization", "Bearer token"))
         .andExpect(status().isNotFound())
-        .andExpect(content().string("Candidature non trouvée"));
+        .andExpect(jsonPath("$.error.message").value("Candidature non trouvée"));
   }
 
   @Test
@@ -384,7 +402,7 @@ class StudentControllerTest {
     mockMvc
         .perform(post("/student/applications/100/accept").header("Authorization", "Bearer token"))
         .andExpect(status().isBadRequest())
-        .andExpect(content().string("Cette candidature ne vous appartient pas"));
+        .andExpect(jsonPath("$.error.message").value("Cette candidature ne vous appartient pas"));
   }
 
   @Test
@@ -437,9 +455,8 @@ class StudentControllerTest {
     mockMvc
         .perform(post("/student/applications/100/reject").header("Authorization", "Bearer token"))
         .andExpect(status().isBadRequest())
-        .andExpect(
-            content()
-                .string("Vous ne pouvez refuser que les candidatures acceptées par l'employeur"));
+        .andExpect(jsonPath("$.error.message").value(
+                "Vous ne pouvez refuser que les candidatures acceptées par l'employeur"));
   }
 
   @Test
@@ -454,7 +471,8 @@ class StudentControllerTest {
     mockMvc
         .perform(post("/student/applications/999/reject").header("Authorization", "Bearer token"))
         .andExpect(status().isNotFound())
-        .andExpect(content().string("Candidature non trouvée"));
+        .andExpect(jsonPath("$.error.message").value("Candidature non trouvée"));
+
   }
 
   @Test
@@ -469,7 +487,8 @@ class StudentControllerTest {
     mockMvc
         .perform(post("/student/applications/100/reject").header("Authorization", "Bearer token"))
         .andExpect(status().isBadRequest())
-        .andExpect(content().string("Cette candidature ne vous appartient pas"));
+        .andExpect(jsonPath("$.error.message").value("Cette candidature ne vous appartient pas"));
+
   }
 
   @Test

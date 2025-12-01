@@ -127,7 +127,8 @@ class CandidatureDtoTest {
     CandidatureDto dto = new CandidatureDto();
     dto.setInternshipOffer(null);
 
-    assertThrows(NullPointerException.class, () -> dto.getEmployeurId());
+    assertNull(dto.getEmployeurId());
+
   }
 
   @Test

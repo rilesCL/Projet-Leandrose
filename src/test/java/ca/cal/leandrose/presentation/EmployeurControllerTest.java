@@ -3,7 +3,6 @@ package ca.cal.leandrose.presentation;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -77,6 +76,7 @@ class EmployeurControllerTest {
   private ProfDto profDto;
   private MockHttpServletRequest request;
   private InternshipOfferDto internshipOfferDto;
+  private ConvocationDto convocationDto;
 
 
   @BeforeEach
@@ -263,6 +263,7 @@ class EmployeurControllerTest {
   void createConvocation_asEmployeur_createsSuccessfully() throws Exception {
     EmployeurDto employeurDto = EmployeurDto.builder().id(1L).role(Role.EMPLOYEUR).build();
     ConvocationDto request = new ConvocationDto();
+    request.setId(100L);
     request.setConvocationDate(LocalDateTime.now().plusDays(5));
     request.setLocation("Bureau 301");
     request.setMessage("Message perso");
@@ -271,7 +272,8 @@ class EmployeurControllerTest {
 
     when(userAppService.getMe(anyString())).thenReturn(employeurDto);
     when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
-    doNothing().when(convocationService).addConvocation(anyLong(), any(), anyString(), anyString());
+    when(convocationService.addConvocation(anyLong(), any(), anyString(), anyString()))
+            .thenReturn(request);
 
     ObjectMapper testObjectMapper = new ObjectMapper();
     testObjectMapper.registerModule(new JavaTimeModule());
@@ -284,7 +286,9 @@ class EmployeurControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(testObjectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
-        .andExpect(content().string("Convocation créée avec succès"));
+        .andExpect(jsonPath("$.id").value(100L))
+        .andExpect(jsonPath("$.location").value("Bureau 301"))
+        .andExpect(jsonPath("$.message").value("Message perso"));
   }
 
   @Test

@@ -33,6 +33,7 @@ class CandidatureServiceTest {
 
   @BeforeEach
   void setUp() {
+    SchoolTerm autumn = new SchoolTerm(SchoolTerm.Season.FALL, 2026);
     Employeur employeur =
         employeurRepository.save(
             Employeur.builder()
@@ -65,6 +66,7 @@ class CandidatureServiceTest {
                 .remuneration(1500f)
                 .employeur(employeur)
                 .pdfPath("/path/to/pdf.pdf")
+                .schoolTerm(autumn)
                 .status(InternshipOffer.Status.PUBLISHED)
                 .build());
 
@@ -97,6 +99,7 @@ class CandidatureServiceTest {
   @Test
   void getCandidaturesByStudent_ShouldReturnAllCandidatures() {
     candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
+    SchoolTerm winter = new SchoolTerm(SchoolTerm.Season.WINTER, 2026);
 
     InternshipOffer offer2 =
         offerRepository.save(
@@ -107,6 +110,7 @@ class CandidatureServiceTest {
                 .address("789 Rue Test")
                 .employeur(testOffer.getEmployeur())
                 .pdfPath("/path/to/offer2.pdf")
+                .schoolTerm(winter)
                 .status(InternshipOffer.Status.PUBLISHED)
                 .build());
 
