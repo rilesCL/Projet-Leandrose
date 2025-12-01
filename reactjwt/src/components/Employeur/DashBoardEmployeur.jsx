@@ -72,34 +72,38 @@ export default function DashBoardEmployeur() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white shadow">
-                <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center">
-                            <span className="text-xl font-bold text-indigo-600">
+                <div className="w-full px-2 sm:px-4 lg:px-8">
+                    <div className="flex justify-between items-center h-16 gap-2">
+                        <div className="flex items-center min-w-0 flex-shrink">
+                            <span className="text-lg sm:text-xl font-bold text-indigo-600 truncate">
                                 {t("appName")}
                             </span>
                         </div>
 
                         <nav
-                            className="flex items-center space-x-4"
+                            className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
-                            <TermSelector onTermChange={handleTermChange}/>
+                            <div className="hidden sm:block">
+                                <TermSelector onTermChange={handleTermChange}/>
+                            </div>
                             <ThemeToggle/>
                             <LanguageSelector/>
                             <button
                                 onClick={() => navigate("/profil")}
-                                className="text-sm text-gray-600 hover:text-indigo-600"
+                                className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 px-1 sm:px-2 whitespace-nowrap"
                             >
-                                {t("profile.menu") || "Mon profil"}
+                                <span className="hidden sm:inline">{t("profile.menu") || "Mon profil"}</span>
+                                <span className="sm:hidden">👤</span>
                             </button>
 
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center text-gray-600 hover:text-red-600 transition"
+                                className="flex items-center text-gray-600 hover:text-red-600 transition px-1 sm:px-2"
+                                title={t("dashboardEmployeur.logout")}
                             >
-                                <FaSignOutAlt className="mr-1"/>
-                                <span className="hidden sm:inline">
+                                <FaSignOutAlt className="text-sm sm:text-base"/>
+                                <span className="hidden md:inline ml-1 text-xs sm:text-sm">
                                     {t("dashboardEmployeur.logout")}
                                 </span>
                             </button>

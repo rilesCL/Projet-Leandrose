@@ -75,15 +75,17 @@ export default function DashBoardGestionnaire() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white shadow-md border-b border-indigo-100">
-                <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-                    <span className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
-    {t("appName")}
-</span>
-                    <div className="flex items-center gap-4">
-                        <TermSelector onTermChange={handleTermChange}/>
+                <div className="w-full px-2 sm:px-4 lg:px-8 h-16 flex justify-between items-center gap-2">
+                    <span className="text-lg sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 truncate min-w-0">
+                        {t("appName")}
+                    </span>
+                    <div className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0">
+                        <div className="hidden sm:block">
+                            <TermSelector onTermChange={handleTermChange}/>
+                        </div>
                         <button
                             onClick={() => setChatbotOpen(!chatbotOpen)}
-                            className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 border-2 text-xl ${
+                            className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-200 border-2 text-base sm:text-xl flex-shrink-0 ${
                                 chatbotOpen
                                     ? 'bg-indigo-600 border-indigo-700'
                                     : 'bg-white border-gray-300'
@@ -96,15 +98,18 @@ export default function DashBoardGestionnaire() {
                         <LanguageSelector/>
                         <button
                             onClick={() => navigate("/profil")}
-                            className="text-sm text-gray-600 hover:text-indigo-600"
+                            className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 px-1 sm:px-2 whitespace-nowrap"
                         >
-                            {t("profile.menu") || "Mon profil"}
+                            <span className="hidden sm:inline">{t("profile.menu") || "Mon profil"}</span>
+                            <span className="sm:hidden">👤</span>
                         </button>
                         <button
                             onClick={handleLogout}
-                            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-all duration-200"
+                            className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 flex-shrink-0"
+                            title={t("dashboardGestionnaire.logout")}
                         >
-                            <FaSignOutAlt/> {t("dashboardGestionnaire.logout")}
+                            <FaSignOutAlt className="text-sm sm:text-base"/>
+                            <span className="hidden md:inline">{t("dashboardGestionnaire.logout")}</span>
                         </button>
                     </div>
                 </div>
