@@ -24,9 +24,6 @@ export default function OfferCandidaturesList() {
 
     const showToast = (message, type = 'success', persistent = false) => {
         setToast({show: true, message, type, persistent});
-        if (!persistent) {
-            setTimeout(() => setToast({show: false, message: '', type: 'success', persistent: false}), 3000);
-        }
     };
 
     const closeToast = () => {
@@ -284,18 +281,16 @@ export default function OfferCandidaturesList() {
                         </svg>
                     )}
                     <span className="font-medium">{toast.message}</span>
-                    {toast.persistent && (
-                        <button
-                            onClick={closeToast}
-                            className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
-                            aria-label="Close"
-                        >
-                            <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                      d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    )}
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
             )}
         </>

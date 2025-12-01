@@ -137,13 +137,14 @@ class ConvocationDtoTest {
   void testConvocationDtoAllArgsConstructor() {
     ConvocationDto dto =
         new ConvocationDto(
-            1L, 1L, LocalDateTime.of(2025, 9, 15, 14, 30), "Bureau 201", "Test message");
+            1L, 1L, LocalDateTime.of(2025, 9, 15, 14, 30), "Bureau 201", "Test message", null);
 
     assertEquals(1L, dto.getId());
     assertEquals(1L, dto.getCandidatureId());
     assertEquals(LocalDateTime.of(2025, 9, 15, 14, 30), dto.getConvocationDate());
     assertEquals("Bureau 201", dto.getLocation());
     assertEquals("Test message", dto.getMessage());
+    assertNull(dto.getError());
   }
 }
 

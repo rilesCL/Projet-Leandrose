@@ -74,23 +74,25 @@ export default function DashboardProf() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white border-b">
-                <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
-                    <span className="text-xl font-bold text-indigo-600">{t("appName")}</span>
-                    <div className="flex items-center gap-4">
+                <div className="w-full px-2 sm:px-4 lg:px-8 h-16 flex justify-between items-center gap-2">
+                    <span className="text-lg sm:text-xl font-bold text-indigo-600 truncate min-w-0">{t("appName")}</span>
+                    <div className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0">
                         <ThemeToggle />
                         <LanguageSelector />
                         <button
                             onClick={() => navigate("/profil")}
-                            className="text-sm text-gray-600 hover:text-indigo-600"
+                            className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 px-1 sm:px-2 whitespace-nowrap"
                         >
-                            {t("profile.menu") || "Mon profil"}
+                            <span className="hidden sm:inline">{t("profile.menu") || "Mon profil"}</span>
+                            <span className="sm:hidden">👤</span>
                         </button>
                         <button
                             onClick={handleLogout}
-                            className="flex items-center text-gray-600 hover:text-red-600 transition text-sm"
+                            className="flex items-center text-gray-600 hover:text-red-600 transition text-xs sm:text-sm px-1 sm:px-2"
+                            title={t("dashboardEmployeur.logout")}
                         >
-                            <FaSignOutAlt className="mr-1" />
-                            <span className="hidden sm:inline">
+                            <FaSignOutAlt className="text-sm sm:text-base" />
+                            <span className="hidden md:inline ml-1">
                                 {t("dashboardEmployeur.logout")}
                             </span>
                         </button>

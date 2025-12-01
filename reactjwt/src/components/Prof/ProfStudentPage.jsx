@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProfStudents } from "../../api/apiProf.jsx";
 import { t } from "i18next";
+
 
 const STATUS_LABELS = {
     EN_COURS: "profStudentsPage.status.inProgress",
@@ -17,22 +18,22 @@ function prettifyStatus(value) {
     return value
         .toString()
         .split("_")
-        .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
+        .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
         .join(" ");
 }
 
-function badgeClass(value) {
-    switch (value) {
+function badgeClass(status) {
+    switch (status) {
         case "A_FAIRE":
-            return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+            return "bg-yellow-100 text-yellow-800";
         case "EN_COURS":
         case "EN_COURS_EVAL":
-            return "bg-blue-100 text-blue-800 border border-blue-300";
+            return "bg-blue-100 text-blue-800";
         case "TERMINE":
         case "TERMINEE":
-            return "bg-emerald-100 text-emerald-800 border border-emerald-300";
+            return "bg-green-100 text-green-800";
         default:
-            return "bg-gray-100 text-gray-800 border border-gray-300";
+            return "bg-gray-100 text-gray-800";
     }
 }
 
@@ -40,19 +41,15 @@ export default function ProfStudentsPage() {
     const navigate = useNavigate();
     const [profId, setProfId] = useState(null);
     const [userName, setUserName] = useState("");
-    const [name, setName] = useState("");
-    const [company, setCompany] = useState("");
-    const [dateFrom, setDateFrom] = useState("");
-    const [dateTo, setDateTo] = useState("");
-    const [evaluationStatus, setEvaluationStatus] = useState("");
-    const [sortBy, setSortBy] = useState("name");
-    const [asc, setAsc] = useState(true);
-    const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [firstLoadDone, setFirstLoadDone] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
+    const [firstLoadDone, setFirstLoadDone] = useState(false);
 
-
+    const [rows, setRows] = useState([]);
+    const [name, setName] = useState("");
+    const [evaluationStatus, setEvaluationStatus] = useState("");
+    const [sortBy, setSortBy] = useState("");
+    const [sortOrder, setSortOrder] = useState("asc");
 
     useEffect(() => {
         const token = sessionStorage.getItem("accessToken");
@@ -85,56 +82,67 @@ export default function ProfStudentsPage() {
         })();
     }, []);
 
-    const doSearch = async () => {
+    const loadData = useCallback(async () => {
         if (!profId) return;
         setLoading(true);
         setErrorMsg("");
         try {
             const data = await fetchProfStudents(profId, {
-                name: name.trim() || undefined,
-                company: company.trim() || undefined,
-                dateFrom: dateFrom || undefined,
-                dateTo: dateTo || undefined,
-                evaluationStatus: evaluationStatus || undefined,
-                sortBy,
-                asc,
+                name,
+                evaluationStatus,
             });
             setRows(Array.isArray(data) ? data : []);
             setFirstLoadDone(true);
         } catch (err) {
-            setErrorMsg(err?.response?.data || t("profStudentsPage.errors.loadingError"));
+            console.error("Error loading students:", err);
+            let errorMessage = t("profStudentsPage.errors.loadingError");
+            if (err?.response?.data) {
+                errorMessage = err.response.data;
+            } else if (err?.message) {
+                errorMessage = err.message;
+            } else if (typeof err === 'string') {
+                errorMessage = err;
+            }
+            setErrorMsg(errorMessage);
         } finally {
             setLoading(false);
         }
-    };
+    }, [profId, name, evaluationStatus, t]);
 
     useEffect(() => {
         if (profId && !firstLoadDone) {
-            doSearch();
+            loadData();
         }
-    }, [profId, firstLoadDone]);
+    }, [profId, firstLoadDone, loadData]);
 
-    const resetFilters = () => {
-        setName("");
-        setCompany("");
-        setDateFrom("");
-        setDateTo("");
-        setEvaluationStatus("");
-        setSortBy("name");
-        setAsc(true);
-        if (profId) doSearch();
-    };
+    // Déclencher la recherche quand les filtres changent (avec debounce)
+    useEffect(() => {
+        if (!profId || !firstLoadDone) return;
+        
+        const timeoutId = setTimeout(() => {
+            loadData();
+        }, 300); // Debounce de 300ms
+
+        return () => clearTimeout(timeoutId);
+    }, [name, evaluationStatus, profId, firstLoadDone, loadData]);
 
     const onClickSortStudent = () => {
         if (sortBy === "name") {
-            setAsc((v) => !v);
+            setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
         } else {
             setSortBy("name");
-            setAsc(true);
+            setSortOrder("asc");
         }
     };
 
-    const sortedIcon = useMemo(() => (asc ? "▲" : "▼"), [asc]);
+    const sortedIcon = sortOrder === "asc" ? "↑" : "↓";
+
+    const resetFilters = () => {
+        setName("");
+        setEvaluationStatus("");
+        setSortBy("");
+        setSortOrder("asc");
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -145,34 +153,13 @@ export default function ProfStudentsPage() {
                     </h1>
 
                     {/* Filters */}
-                    <div className="bg-white rounded-lg shadow p-6 mb-6">
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
+                    <div className="bg-white rounded-lg shadow p-6 mb-6 border border-gray-200">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <input
                                 type="text"
-                                placeholder={t("profStudentsPage.filters.studentName")}
+                                placeholder={t("profStudentsPage.filters.studentName") || "Nom de l'étudiant"}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            />
-                            <input
-                                type="text"
-                                placeholder={t("profStudentsPage.filters.company")}
-                                value={company}
-                                onChange={(e) => setCompany(e.target.value)}
-                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            />
-                            <input
-                                type="date"
-                                placeholder={t("profStudentsPage.filters.from")}
-                                value={dateFrom}
-                                onChange={(e) => setDateFrom(e.target.value)}
-                                className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            />
-                            <input
-                                type="date"
-                                placeholder={t("profStudentsPage.filters.to")}
-                                value={dateTo}
-                                onChange={(e) => setDateTo(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             />
                             <select
@@ -180,26 +167,19 @@ export default function ProfStudentsPage() {
                                 onChange={(e) => setEvaluationStatus(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             >
-                                <option value="">{t("profStudentsPage.filters.evaluationStatus")}</option>
-                                <option value="A_FAIRE">{t("profStudentsPage.status.toDo")}</option>
-                                <option value="EN_COURS">{t("profStudentsPage.status.inProgress")}</option>
-                                <option value="TERMINEE">{t("profStudentsPage.status.finished")}</option>
+                                <option value="">{t("profStudentsPage.filters.evaluationStatus") || "Statut d'évaluation"}</option>
+                                <option value="A_FAIRE">{t("profStudentsPage.status.toDo") || "À faire"}</option>
+                                <option value="EN_COURS">{t("profStudentsPage.status.inProgress") || "En cours"}</option>
+                                <option value="TERMINEE">{t("profStudentsPage.status.finished") || "Terminée"}</option>
                             </select>
                         </div>
 
                         <div className="flex gap-3">
                             <button
-                                onClick={doSearch}
-                                disabled={loading || !profId}
-                                className="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                            >
-                                {t("profStudentsPage.buttons.search")}
-                            </button>
-                            <button
                                 onClick={resetFilters}
                                 className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
                             >
-                                {t("profStudentsPage.buttons.reset")}
+                                {t("profStudentsPage.buttons.reset") || "Réinitialiser"}
                             </button>
                         </div>
                     </div>
@@ -212,7 +192,7 @@ export default function ProfStudentsPage() {
                     )}
 
                     {/* Table */}
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-sm">
                                 <thead className="bg-gray-50 border-b border-gray-200">

@@ -2,6 +2,7 @@ package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Convocation;
 import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class ConvocationDto {
   private LocalDateTime convocationDate;
   private String location;
   private String message;
+  private Map<String, String> error;
 
   public static ConvocationDto create(Convocation convocation) {
     return ConvocationDto.builder()
@@ -27,5 +29,11 @@ public class ConvocationDto {
         .location(convocation.getLocation())
         .message(convocation.getPersonnalMessage())
         .build();
+  }
+
+  public static ConvocationDto withErrorMessage(String message) {
+    ConvocationDto dto = new ConvocationDto();
+    dto.setError(Map.of("message", message));
+    return dto;
   }
 }

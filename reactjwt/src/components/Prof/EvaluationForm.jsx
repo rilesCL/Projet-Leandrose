@@ -19,7 +19,7 @@ const EvaluationForm = () => {
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [successMessage, setSuccessMessage] = useState(null);
+    const [toast, setToast] = useState({show: false, message: '', type: 'success'});
 
     const teacherEvaluationTemplate = {
         conformity: {
@@ -206,11 +206,11 @@ const EvaluationForm = () => {
 
             await generateEvaluationPdfWithId(evalId, normalizedForm);
             setSubmitted(true);
-            setSuccessMessage(t("evaluation.submittedSuccess"));
-
-            setTimeout(() => {
-                navigate("/dashboard/prof?tab=evaluations");
-            }, 2000);
+            setToast({
+                show: true,
+                message: t("evaluation.submittedSuccess"),
+                type: 'success'
+            });
 
         } catch (err) {
             console.error(err);
@@ -223,13 +223,43 @@ const EvaluationForm = () => {
     if (loading) return <p className="text-gray-900">{t('evaluation.loading')}</p>;
     if (error && !info) return <p className="text-red-500">{error}</p>;
 
+    const closeToast = () => {
+        setToast({show: false, message: '', type: 'success'});
+        if (submitted) {
+            navigate("/dashboard/prof?tab=evaluations");
+        }
+    };
+
+    const isFormDisabled = toast.show && toast.type === 'success';
+
     // unified classes for option labels
     const optionBase = "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border font-semibold text-sm";
     const optionDefault = "bg-gray-100 border-gray-300 text-gray-800";
     const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
+    
+    // Fonction pour obtenir les classes selon la valeur et l'état de sélection
+    const getRatingButtonClasses = (value, isSelected) => {
+        if (!isSelected) return optionDefault;
+        
+        switch (value) {
+            case "EXCELLENT": // Totalement d'accord
+                return "bg-green-800 border-green-900 text-white shadow";
+            case "TRES_BIEN": // Plutôt d'accord
+                return "bg-green-200 border-green-300 text-green-900 shadow";
+            case "SATISFAISANT": // Plutôt en désaccord
+                return "bg-red-200 border-red-300 text-red-900 shadow";
+            case "A_AMELIORER": // Totalement en désaccord
+                return "bg-red-800 border-red-900 text-white shadow";
+            default:
+                return optionDefault;
+        }
+    };
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
+        <div className="max-w-4xl mx-auto p-6 relative">
+            {isFormDisabled && (
+                <div className="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-75 dark:bg-opacity-75 z-10 rounded-lg"></div>
+            )}
 
             <div className="mb-4">
                 <button
@@ -282,8 +312,8 @@ const EvaluationForm = () => {
                                     <p className="validation-error text-sm text-red-600 mb-2">{ratingErrors}</p>
                                 )}
 
-                                {/* Rating Buttons: use grid for better layout */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                {/* Rating Buttons: use grid for better layout - vertical on small screens */}
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     {[
                                         { value: "EXCELLENT", label: t('evaluation.rating.totally_agree') },
                                         { value: "TRES_BIEN", label: t('evaluation.rating.mostly_agree') },
@@ -296,7 +326,7 @@ const EvaluationForm = () => {
                                         return (
                                             <label
                                                 key={option.value}
-                                                className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
+                                                className={`${optionBase} ${getRatingButtonClasses(option.value, isSelected)} flex-1`}
                                             >
                                                 <input
                                                     type="radio"
@@ -329,7 +359,7 @@ const EvaluationForm = () => {
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.preferredStage}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q1")}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         {[{ value: "1", label: t('studentProfile.observations.first_intern')},
                             { value: "2", label: t('studentProfile.observations.second_intern') }].map(
                             opt => {
@@ -337,7 +367,7 @@ const EvaluationForm = () => {
                                 return (
                                     <label
                                         key={opt.value}
-                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
+                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault} flex-1`}
                                     >
                                         <input
                                             type="radio"
@@ -360,7 +390,7 @@ const EvaluationForm = () => {
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.capacity}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q2")}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
                         {[
                             { value: "1", label: t('studentProfile.observations.stage1') },
                             { value: "2", label: t('studentProfile.observations.stage2') },
@@ -393,13 +423,13 @@ const EvaluationForm = () => {
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.sameTraineeNextStage}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q3")}</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 justify-center max-w-xs mx-auto">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-xs mx-auto">
                         {[{ value: "YES", label: t('studentProfile.observations.yes') }, { value: "NO", label: t('studentProfile.observations.no') }].map(opt => {
                             const isSelected = formData.sameTraineeNextStage === opt.value;
                             return (
                                 <label
                                     key={opt.value}
-                                    className={`${optionBase} ${isSelected ? optionSelected : optionDefault}`}
+                                    className={`${optionBase} ${isSelected ? optionSelected : optionDefault} flex-1`}
                                 >
                                     <input
                                         type="radio"
@@ -418,23 +448,6 @@ const EvaluationForm = () => {
 
             </section>
 
-            {successMessage && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                <circle cx="10" cy="10" r="8" />
-                                <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
-                        <div className="ml-3">
-                            <p className="text-sm font-medium text-green-800">
-                                {successMessage}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
                 <button
@@ -456,6 +469,32 @@ const EvaluationForm = () => {
                 </button>
             </div>
 
+            {toast.show && (
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

@@ -196,8 +196,8 @@ public class PDFGeneratorService {
     }
 
     public String generatedEvaluationByEmployer(EvaluationStagiaire evaluationStagiaire, EvaluationEmployerFormData formData, String language,
-                                                String profFirstName, String profLastName,
-                                                String nameCollege, String address, String fax_machine ) {
+                                       String profFirstName, String profLastName,
+                                       String nameCollege, String address, String fax_machine ) {
         try {
             Path evaluationDir = Paths.get(baseEvaluationsDir).toAbsolutePath().normalize();
             if (!Files.exists(evaluationDir)) {
@@ -247,7 +247,7 @@ public class PDFGeneratorService {
                                                String language) {
         try {
             Path targetPath = prepareOutputPath(evaluationStagiaire.getId());
-            generateTeacherPdfDocument(targetPath, evaluationStagiaire, formData, teacherInfo, language);
+            generateTeacherPdfDocument(targetPath, formData, teacherInfo, language);
 
             log.info("PDF d'évaluation du prof généré avec succès : {}", targetPath);
             return targetPath.toString();
@@ -274,7 +274,6 @@ public class PDFGeneratorService {
     }
 
     private void generateTeacherPdfDocument(Path targetPath,
-                                            EvaluationStagiaire evaluationStagiaire,
                                             EvaluationProfFormDto formData,
                                             EvaluationTeacherInfoDto teacherInfo,
                                             String language) throws DocumentException, IOException {
@@ -288,7 +287,7 @@ public class PDFGeneratorService {
 
             document.open();
 
-            buildTeacherDocumentContent(document, evaluationStagiaire, formData, teacherInfo, language);
+            buildTeacherDocumentContent(document, formData, teacherInfo, language);
 
         } finally {
             if (document != null && document.isOpen()) {
@@ -302,7 +301,6 @@ public class PDFGeneratorService {
     }
 
     private void buildTeacherDocumentContent(Document document,
-                                             EvaluationStagiaire evaluationStagiaire,
                                              EvaluationProfFormDto formData,
                                              EvaluationTeacherInfoDto teacherInfo,
                                              String language) throws DocumentException {
@@ -310,7 +308,7 @@ public class PDFGeneratorService {
         addHeaderEvaluationParProf(document, language);
 
         
-        addEmployerSection(document, evaluationStagiaire, teacherInfo.entrepriseTeacherDto(), language);
+        addEmployerSection(document, teacherInfo.entrepriseTeacherDto(), language);
         addStudentSection(document, formData, teacherInfo.studentTeacherDto(), language);
 
         addRatingLegendAligned(document, language);
@@ -401,12 +399,7 @@ public class PDFGeneratorService {
 
     private Boolean getDiscussedWithTrainee(EvaluationEmployerFormData formData) {
         Object val = invokeGetter(formData, "discussedWithTrainee", "getDiscussedWithTrainee", "discussed", "isDiscussedWithTrainee");
-        if (val == null) return null;
-        if (val instanceof Boolean) return (Boolean) val;
-        String s = String.valueOf(val);
-        if ("true".equalsIgnoreCase(s) || "yes".equalsIgnoreCase(s) || "1".equals(s)) return true;
-        if ("false".equalsIgnoreCase(s) || "no".equalsIgnoreCase(s) || "0".equals(s)) return false;
-        return null;
+        return valIsNull(val);
     }
 
     private String getSupervisionHours(EvaluationEmployerFormData formData) {
@@ -421,6 +414,9 @@ public class PDFGeneratorService {
 
     private Boolean getTechnicalTrainingSufficient(EvaluationEmployerFormData formData) {
         Object val = invokeGetter(formData, "technicalTrainingSufficient", "getTechnicalTrainingSufficient", "technicalTraining", "isTechnicalTrainingSufficient");
+        return valIsNull(val);
+    }
+    private Boolean valIsNull(Object val) {
         if (val == null) return null;
         if (val instanceof Boolean) return (Boolean) val;
         String s = String.valueOf(val);
@@ -887,7 +883,7 @@ public class PDFGeneratorService {
         addInfoRow(infoTable, getTranslation("evaluationDate", language), evaluation.getDateEvaluation().format(DATE_FORMATTER), boldFont, normalFont);
         document.add(infoTable);
     }
-    private void addEmployerSection(Document document, EvaluationStagiaire evaluationStagiaire,EntrepriseTeacherDto dto, String language) throws DocumentException{
+    private void addEmployerSection(Document document, EntrepriseTeacherDto dto, String language) throws DocumentException{
         Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, BaseColor.BLACK);
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
         Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
@@ -1126,30 +1122,7 @@ public class PDFGeneratorService {
                 t("Signature de l'enseignant responsable du stagiaire", "Signature of the teacher responsible for the intern", language),
                 boldFont
         );
-        signatureLabel.setSpacingAfter(2f);
-
-        Paragraph teacherSignature = new Paragraph(teacherName, italicFont);
-        teacherSignature.setSpacingAfter(6f);
-
-        signatureCell.addElement(signatureLabel);
-        signatureCell.addElement(teacherSignature);
-
-        PdfPCell dateCell = new PdfPCell();
-        dateCell.setBorder(Rectangle.NO_BORDER);
-
-        Paragraph dateLabel = new Paragraph(
-                t("Date", "Date", language),
-                boldFont
-        );
-        dateLabel.setSpacingAfter(2f);
-
-        Paragraph dateText = new Paragraph(formattedDate, italicFont);
-
-        dateCell.addElement(dateLabel);
-        dateCell.addElement(dateText);
-
-        table.addCell(signatureCell);
-        table.addCell(dateCell);
+        setSignLabel(language, teacherName, italicFont, boldFont, formattedDate, table, signatureCell, signatureLabel);
 
         PdfPTable tableStudent = new PdfPTable(new float[]{2f, 2f});
         tableStudent.setWidthPercentage(100);
@@ -1162,6 +1135,14 @@ public class PDFGeneratorService {
                 t("Signature de l'étudiant", "Student Signature", language),
                 boldFont
         );
+        setSignLabel(language, studentName, italicFont, boldFont, formattedDate, tableStudent, studentSignatureCell, studentSignatureLabel);
+
+
+        document.add(table);
+        document.add(tableStudent);
+    }
+
+    private void setSignLabel(String language, String studentName, Font italicFont, Font boldFont, String formattedDate, PdfPTable tableStudent, PdfPCell studentSignatureCell, Paragraph studentSignatureLabel) {
         studentSignatureLabel.setSpacingAfter(2f);
 
         Paragraph studentSignature = new Paragraph(studentName, italicFont);
@@ -1186,10 +1167,6 @@ public class PDFGeneratorService {
 
         tableStudent.addCell(studentSignatureCell);
         tableStudent.addCell(studentDateCell);
-
-
-        document.add(table);
-        document.add(tableStudent);
     }
 
 
@@ -1350,9 +1327,6 @@ public class PDFGeneratorService {
            String categoryKey = entry.getKey();
            CategoryData categoryData = entry.getValue();
 
-           List<? extends IQuestionResponse> responses = formData.getCategories() != null
-                   ? formData.getCategories().get(categoryKey)
-                   : null;
 
            Paragraph categoryTitle = new Paragraph(categoryData.getTitle(), categoryFont);
            categoryTitle.setSpacingBefore(6f);

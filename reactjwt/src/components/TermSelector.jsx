@@ -104,34 +104,34 @@ export default function TermSelector({onTermChange}) {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
                 aria-haspopup="true"
                 aria-expanded={isOpen}
             >
-                <span className="text-sm font-medium text-gray-700">
+                <span className="font-medium text-gray-700 whitespace-nowrap">
                     {selectedTerm ? formatTerm(selectedTerm) : t('termSelector.selectTerm')}
                 </span>
                 <FaChevronDown
-                    className={`text-gray-500 text-xs transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                    className={`text-gray-500 text-xs transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
                 />
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="py-1">
                         {availableTerms.map((term, index) => (
                             <button
                                 key={`${term.season}-${term.year}`}
                                 onClick={() => handleTermSelect(term)}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-indigo-50 transition-colors flex items-center justify-between ${
+                                className={`w-full text-left px-3 sm:px-4 py-2 text-xs sm:text-sm hover:bg-indigo-50 transition-colors flex items-center justify-between ${
                                     selectedTerm?.season === term.season && selectedTerm?.year === term.year
                                         ? 'bg-indigo-50 text-indigo-700 font-medium'
                                         : 'text-gray-700'
                                 }`}
                             >
-                                <span>{formatTerm(term)}</span>
+                                <span className="truncate">{formatTerm(term)}</span>
                                 {isCurrentTerm(term) && (
-                                    <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                                    <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 sm:px-2 py-0.5 rounded-full ml-1 flex-shrink-0">
                                         {t('termSelector.current')}
                                     </span>
                                 )}

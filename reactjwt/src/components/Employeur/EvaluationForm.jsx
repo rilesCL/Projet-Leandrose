@@ -21,7 +21,7 @@ const EvaluationForm = () => {
     const [internship, setInternship] = useState(null);
     // `error` garde les erreurs d'initialisation / serveur (distinct de validation UI)
     const [error, setError] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null);
+    const [toast, setToast] = useState({show: false, message: '', type: 'success'});
     const [submitted, setSubmitted] = useState(false);
 
     // Nouveau state pour stocker les erreurs de validation par champ
@@ -248,9 +248,16 @@ const EvaluationForm = () => {
         return false;
     };
 
+    const closeToast = () => {
+        setToast({show: false, message: '', type: 'success'});
+        if (submitted) {
+            navigate("/dashboard/employeur/evaluations");
+        }
+    };
+
     const handleSubmitEvaluation = async () => {
         setError(null);
-        setSuccessMessage(null);
+        setToast({show: false, message: '', type: 'success'});
         // validation -> otr object d'erreurs
         const validationErrors = validateForm();
         if (hasErrors(validationErrors)) {
@@ -287,10 +294,11 @@ const EvaluationForm = () => {
             console.log("EvaluationId: ", evalId)
             await generateEvaluationPdfWithId(evalId, formData);
             setSubmitted(true);
-            setSuccessMessage(t("evaluation.submittedSuccess"));
-            setTimeout(() => {
-                navigate("/dashboard/employeur/?tab=evaluations")
-            }, 2000)
+            setToast({
+                show: true,
+                message: t("evaluation.submittedSuccess"),
+                type: 'success'
+            });
         } catch (err) {
             console.error(t("evaluation.errors.submit"), err);
             const errorMessage =
@@ -301,6 +309,8 @@ const EvaluationForm = () => {
         }
     };
 
+    const isFormDisabled = toast.show && toast.type === 'success';
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-64 py-12">
@@ -309,6 +319,32 @@ const EvaluationForm = () => {
             </div>
         );
     }
+
+    // unified classes for option labels
+    const optionBase = "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border font-semibold text-sm";
+    const optionDefault = "bg-gray-100 border-gray-300 text-gray-800";
+    
+    // Fonction pour obtenir les classes selon la valeur et l'état de sélection
+    const getRatingButtonClasses = (value, isSelected) => {
+        if (!isSelected) return optionDefault;
+        
+        switch (value) {
+            case "EXCELLENT": // Totalement d'accord
+            case 0: // Pour globalAssessment
+                return "bg-green-800 border-green-900 text-white shadow";
+            case "TRES_BIEN": // Plutôt d'accord
+            case 1: // Pour globalAssessment
+                return "bg-green-200 border-green-300 text-green-900 shadow";
+            case "SATISFAISANT": // Plutôt en désaccord
+            case 3: // Pour globalAssessment
+                return "bg-red-200 border-red-300 text-red-900 shadow";
+            case "A_AMELIORER": // Totalement en désaccord
+            case 4: // Pour globalAssessment
+                return "bg-red-800 border-red-900 text-white shadow";
+            default:
+                return optionDefault;
+        }
+    };
 
     if (error && !student) {
         return (
@@ -330,7 +366,10 @@ const EvaluationForm = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 py-8 relative">
+            {isFormDisabled && (
+                <div className="absolute inset-0 bg-white bg-opacity-75 z-10 rounded-lg"></div>
+            )}
             <div className="mb-8">
                 <div className="mb-4">
                     <button
@@ -427,44 +466,19 @@ const EvaluationForm = () => {
                                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                                             {question}
                                         </p>
-                                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                                        {/* Rating Buttons: vertical on small screens */}
+                                        <div className="flex flex-col sm:flex-row gap-3 mb-3">
                                             {[
-                                                {
-                                                    value: 'EXCELLENT',
-                                                    label: t('evaluation.rating.totally_agree'),
-                                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
-                                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
-                                                    inputRing: 'focus:ring-green-600 text-green-700'
-                                                },
-                                                {
-                                                    value: 'TRES_BIEN',
-                                                    label: t('evaluation.rating.mostly_agree'),
-                                                    baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
-                                                    selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
-                                                    inputRing: 'focus:ring-green-500 text-green-600'
-                                                },
-                                                {
-                                                    value: 'SATISFAISANT',
-                                                    label: t('evaluation.rating.mostly_disagree'),
-                                                    baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
-                                                    selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
-                                                    inputRing: 'focus:ring-orange-500 text-orange-600'
-                                                },
-                                                {
-                                                    value: 'A_AMELIORER',
-                                                    label: t('evaluation.rating.totally_disagree'),
-                                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
-                                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
-                                                    inputRing: 'focus:ring-red-600 text-red-700'
-                                                }
+                                                { value: 'EXCELLENT', label: t('evaluation.rating.totally_agree') },
+                                                { value: 'TRES_BIEN', label: t('evaluation.rating.mostly_agree') },
+                                                { value: 'SATISFAISANT', label: t('evaluation.rating.mostly_disagree') },
+                                                { value: 'A_AMELIORER', label: t('evaluation.rating.totally_disagree') }
                                             ].map((option) => {
                                                 const isSelected = formData.categories[categoryKey]?.[questionIndex]?.rating === option.value;
                                                 return (
                                                     <label
                                                         key={option.value}
-                                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
-                                                            isSelected ? option.selectedClasses : ''
-                                                        }`}
+                                                        className={`${optionBase} ${getRatingButtonClasses(option.value, isSelected)} flex-1`}
                                                     >
                                                         <input
                                                             type="radio"
@@ -474,9 +488,9 @@ const EvaluationForm = () => {
                                                             onChange={(e) =>
                                                                 handleQuestionChange(categoryKey, questionIndex, 'rating', e.target.value)
                                                             }
-                                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                                            className="sr-only"
                                                         />
-                                                        <span className="text-sm font-medium">{option.label}</span>
+                                                        <span>{option.label}</span>
                                                     </label>
                                                 );
                                             })}
@@ -524,44 +538,19 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.question')}
                         </p>
-                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                        {/* Rating Buttons: vertical on small screens */}
+                        <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                {
-                                    value: 0,
-                                    label: t('evaluation.rating.totally_agree'),
-                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
-                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-green-600 text-green-700'
-                                },
-                                {
-                                    value: 1,
-                                    label: t('evaluation.rating.mostly_agree'),
-                                    baseClasses: 'bg-green-200 border-2 border-green-400 text-green-900 font-semibold hover:border-green-500 hover:bg-green-300/80',
-                                    selectedClasses: 'border-[3px] border-green-600 ring-2 ring-green-400 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-green-500 text-green-600'
-                                },
-                                {
-                                    value: 3,
-                                    label: t('evaluation.rating.mostly_disagree'),
-                                    baseClasses: 'bg-orange-200 border-2 border-orange-400 text-orange-900 font-semibold hover:border-orange-500 hover:bg-orange-300/80',
-                                    selectedClasses: 'border-[3px] border-orange-600 ring-2 ring-orange-400 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-orange-500 text-orange-600'
-                                },
-                                {
-                                    value: 4,
-                                    label: t('evaluation.rating.totally_disagree'),
-                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
-                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-red-600 text-red-700'
-                                }
+                                { value: 0, label: t('evaluation.rating.totally_agree') },
+                                { value: 1, label: t('evaluation.rating.mostly_agree') },
+                                { value: 3, label: t('evaluation.rating.mostly_disagree') },
+                                { value: 4, label: t('evaluation.rating.totally_disagree') }
                             ].map((option) => {
                                 const isSelected = formData.globalAssessment === option.value;
                                 return (
                                     <label
                                         key={option.value}
-                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
-                                            isSelected ? option.selectedClasses : ''
-                                        }`}
+                                        className={`${optionBase} ${getRatingButtonClasses(option.value, isSelected)} flex-1`}
                                     >
                                         <input
                                             type="radio"
@@ -569,9 +558,9 @@ const EvaluationForm = () => {
                                             value={option.value}
                                             checked={isSelected}
                                             onChange={(e) => handleFieldChange('globalAssessment', parseInt(e.target.value))}
-                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                            className="sr-only"
                                         />
-                                        <span className="text-sm font-medium">{option.label}</span>
+                                        <span>{option.label}</span>
                                     </label>
                                 );
                             })}
@@ -666,37 +655,19 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.welcome_nextInternship')}
                         </p>
-                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                        {/* Welcome Next Internship Buttons: vertical on small screens */}
+                        <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                {
-                                    value: 'YES',
-                                    label: t('evaluation.globalAssessment.yes'),
-                                    baseClasses: 'bg-blue-400 border-2 border-blue-600 text-blue-900 font-semibold hover:border-blue-700 hover:bg-blue-500/80',
-                                    selectedClasses: 'border-[3px] border-blue-800 ring-2 ring-blue-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-blue-600 text-blue-700'
-                                },
-                                {
-                                    value: 'NO',
-                                    label: t('evaluation.globalAssessment.no'),
-                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
-                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-red-600 text-red-700'
-                                },
-                                {
-                                    value: 'MAYBE',
-                                    label: t('evaluation.globalAssessment.maybe'),
-                                    baseClasses: 'bg-yellow-200 border-2 border-yellow-400 text-yellow-900 font-semibold hover:border-yellow-500 hover:bg-yellow-300/80',
-                                    selectedClasses: 'border-[3px] border-yellow-600 ring-2 ring-yellow-400 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-yellow-500 text-yellow-600'
-                                },
+                                { value: 'YES', label: t('evaluation.globalAssessment.yes') },
+                                { value: 'NO', label: t('evaluation.globalAssessment.no') },
+                                { value: 'MAYBE', label: t('evaluation.globalAssessment.maybe') }
                             ].map((option) => {
                                 const isSelected = formData.welcomeNextInternship === option.value;
+                                const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
                                 return (
                                     <label
                                         key={option.value}
-                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
-                                            isSelected ? option.selectedClasses : ''
-                                        }`}
+                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault} flex-1`}
                                     >
                                         <input
                                             type="radio"
@@ -704,9 +675,9 @@ const EvaluationForm = () => {
                                             value={option.value}
                                             checked={isSelected}
                                             onChange={(e) => handleFieldChange('welcomeNextInternship', option.value)}
-                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                            className="sr-only"
                                         />
-                                        <span className="text-sm font-medium">{option.label}</span>
+                                        <span>{option.label}</span>
                                     </label>
                                 );
                             })}
@@ -721,30 +692,18 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.technical_training')}
                         </p>
-                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                        {/* Technical Training Buttons: vertical on small screens */}
+                        <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                {
-                                    value: true,
-                                    label: t('evaluation.globalAssessment.yes'),
-                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
-                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-green-600 text-green-700'
-                                },
-                                {
-                                    value: false,
-                                    label: t('evaluation.globalAssessment.no'),
-                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
-                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-red-600 text-red-700'
-                                },
+                                { value: true, label: t('evaluation.globalAssessment.yes') },
+                                { value: false, label: t('evaluation.globalAssessment.no') }
                             ].map((option) => {
                                 const isSelected = formData.technicalTrainingSufficient === option.value;
+                                const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
                                 return (
                                     <label
-                                        key={option.value}
-                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
-                                            isSelected ? option.selectedClasses : ''
-                                        }`}
+                                        key={String(option.value)}
+                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault} flex-1`}
                                     >
                                         <input
                                             type="radio"
@@ -752,9 +711,9 @@ const EvaluationForm = () => {
                                             value={option.value}
                                             checked={isSelected}
                                             onChange={(e) => handleFieldChange('technicalTrainingSufficient', option.value)}
-                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                            className="sr-only"
                                         />
-                                        <span className="text-sm font-medium">{option.label}</span>
+                                        <span>{option.label}</span>
                                     </label>
                                 );
                             })}
@@ -786,7 +745,7 @@ const EvaluationForm = () => {
                             <button
                                 onClick={() => setError(null)}
                                 className="ml-4 text-red-400 hover:text-red-600 transition-colors"
-                                aria-label="Fermer le message d’erreur"
+                                aria-label="Fermer le message d'erreur"
                             >
                                 <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
                                     <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="2"
@@ -795,25 +754,6 @@ const EvaluationForm = () => {
                                           strokeLinecap="round"/>
                                 </svg>
                             </button>
-                        </div>
-                    </div>
-                )}
-
-                {successMessage && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <circle cx="10" cy="10" r="8"/>
-                                    <polyline points="7,10 9,12 13,8" fill="none" stroke="white" strokeWidth="2"
-                                              strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
-                            </div>
-                            <div className="ml-3">
-                                <p className="text-sm font-medium text-green-800">
-                                    {successMessage}
-                                </p>
-                            </div>
                         </div>
                     </div>
                 )}
@@ -838,6 +778,33 @@ const EvaluationForm = () => {
                     </button>
                 </div>
             </div>
+
+            {toast.show && (
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

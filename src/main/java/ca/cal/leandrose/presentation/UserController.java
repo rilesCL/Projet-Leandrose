@@ -7,6 +7,7 @@ import ca.cal.leandrose.service.UserAppService;
 import ca.cal.leandrose.service.dto.JWTAuthResponse;
 import ca.cal.leandrose.service.dto.LoginDTO;
 import ca.cal.leandrose.service.dto.UserDTO;
+import ca.cal.leandrose.service.dto.UserRoleResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -75,8 +76,15 @@ public class UserController {
     }
 
   @GetMapping("me/role")
-  public ResponseEntity<?> getMyRole(HttpServletRequest request){
-      UserDTO me = userService.getMe(request.getHeader("Authorization"));
-      return ResponseEntity.ok(Map.of("role", me.getRole().name()));
+  public ResponseEntity<UserRoleResponseDto> getMyRole(HttpServletRequest request){
+      try {
+          UserDTO me = userService.getMe(request.getHeader("Authorization"));
+          return ResponseEntity.ok(UserRoleResponseDto.builder()
+                  .role(me.getRole())
+                  .build());
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                  .body(UserRoleResponseDto.withErrorMessage("Non autorisé"));
+      }
   }
 }

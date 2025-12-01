@@ -2,6 +2,7 @@ package ca.cal.leandrose.service.dto;
 
 import ca.cal.leandrose.model.Candidature;
 import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class CandidatureDto {
 
   private Candidature.Status status;
   private LocalDateTime applicationDate;
+  private Map<String, String> error;
 
   public static CandidatureDto fromEntity(Candidature candidature) {
     if (candidature == null) return null;
@@ -48,5 +50,11 @@ public class CandidatureDto {
 
   public Long getEmployeurId() {
     return internshipOffer.getEmployeurId();
+  }
+
+  public static CandidatureDto withErrorMessage(String message) {
+    CandidatureDto dto = new CandidatureDto();
+    dto.setError(Map.of("message", message));
+    return dto;
   }
 }

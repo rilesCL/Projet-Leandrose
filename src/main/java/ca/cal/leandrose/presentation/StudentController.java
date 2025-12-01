@@ -249,7 +249,7 @@ public class StudentController {
   }
 
   @PostMapping("/applications/{candidatureId}/accept")
-  public ResponseEntity<?> acceptCandidature(
+  public ResponseEntity<CandidatureDto> acceptCandidature(
       HttpServletRequest request, @PathVariable Long candidatureId) {
 
     UserDTO me = userService.getMe(request.getHeader("Authorization"));
@@ -261,14 +261,14 @@ public class StudentController {
       CandidatureDto updated = candidatureService.acceptByStudent(candidatureId, me.getId());
       return ResponseEntity.ok(updated);
     } catch (IllegalStateException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
+      return ResponseEntity.badRequest().body(CandidatureDto.withErrorMessage(e.getMessage()));
     } catch (RuntimeException e) {
-      return ResponseEntity.status(404).body("Candidature non trouvée");
+      return ResponseEntity.status(404).body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
     }
   }
 
   @PostMapping("/applications/{candidatureId}/reject")
-  public ResponseEntity<?> rejectCandidature(
+  public ResponseEntity<CandidatureDto> rejectCandidature(
       HttpServletRequest request, @PathVariable Long candidatureId) {
 
     UserDTO me = userService.getMe(request.getHeader("Authorization"));
@@ -280,9 +280,9 @@ public class StudentController {
       CandidatureDto updated = candidatureService.rejectByStudent(candidatureId, me.getId());
       return ResponseEntity.ok(updated);
     } catch (IllegalStateException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
+      return ResponseEntity.badRequest().body(CandidatureDto.withErrorMessage(e.getMessage()));
     } catch (RuntimeException e) {
-      return ResponseEntity.status(404).body("Candidature non trouvée");
+      return ResponseEntity.status(404).body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
     }
   }
 

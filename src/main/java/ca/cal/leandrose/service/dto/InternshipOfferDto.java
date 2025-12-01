@@ -54,4 +54,8 @@ public class InternshipOfferDto {
   public InternshipOfferDto(String errorMessage) {
     this.errorMessage = errorMessage;
   }
+
+  public static InternshipOfferDto withErrorMessage(String message) {
+    return new InternshipOfferDto(message);
+  }
 }

@@ -145,7 +145,7 @@ class CandidatureDtoTest {
     CvDto cvDto = CvDto.empty();
 
     CandidatureDto dto =
-        new CandidatureDto(1L, studentDto, offerDto, cvDto, Candidature.Status.PENDING, null);
+        new CandidatureDto(1L, studentDto, offerDto, cvDto, Candidature.Status.PENDING, null, null);
 
     assertEquals(1L, dto.getId());
     assertEquals(studentDto, dto.getStudent());
@@ -153,6 +153,7 @@ class CandidatureDtoTest {
     assertEquals(cvDto, dto.getCv());
     assertEquals(Candidature.Status.PENDING, dto.getStatus());
     assertNull(dto.getApplicationDate());
+    assertNull(dto.getError());
   }
 }
 

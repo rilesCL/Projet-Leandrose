@@ -22,9 +22,12 @@ export default function StudentApplicationsList() {
     const [toast, setToast] = useState({show: false, message: '', type: 'success'});
     const [activeTab, setActiveTab] = useState('ALL');
 
+    const closeToast = () => {
+        setToast({show: false, message: '', type: 'success'});
+    };
+
     const showToast = (message, type = 'success') => {
         setToast({show: true, message, type});
-        setTimeout(() => setToast({show: false, message: '', type: 'success'}), 4000);
     };
 
     const loadData = async () => {
@@ -501,6 +504,33 @@ export default function StudentApplicationsList() {
                             </button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {toast.show && (
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${toast.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${toast.type === 'success' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
             )}
         </>
