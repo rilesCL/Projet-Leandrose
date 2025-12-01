@@ -4,8 +4,13 @@ import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.*;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.CheckExistingEvaluationResponseDto;
+import ca.cal.leandrose.service.dto.evaluation.CheckTeacherAssignedResponseDto;
+import ca.cal.leandrose.service.dto.evaluation.CreateEvaluationRequest;
+import ca.cal.leandrose.service.dto.evaluation.PdfGenerationResponse;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoResponseDto;
 import ca.cal.leandrose.service.mapper.InternshipOfferMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +28,7 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -161,7 +164,7 @@ public class EmployeurController {
     }
 
     @PostMapping("/candidatures/{candidatureId}/convocations")
-    public ResponseEntity<String> createConvocation(
+    public ResponseEntity<ConvocationDto> createConvocation(
             HttpServletRequest request,
             @PathVariable Long candidatureId,
             @RequestBody ConvocationDto convocationRequest) {
@@ -178,18 +181,18 @@ public class EmployeurController {
                 return ResponseEntity.status(403).build();
             }
 
-            convocationService.addConvocation(
+            ConvocationDto result = convocationService.addConvocation(
                     candidatureId,
                     convocationRequest.getConvocationDate(),
                     convocationRequest.getLocation(),
                     convocationRequest.getMessage());
 
-            return ResponseEntity.ok().body("Convocation créée avec succès");
+            return ResponseEntity.ok().body(result);
 
         } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(ConvocationDto.withErrorMessage(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erreur lors de la création de la convocation");
+            return ResponseEntity.status(500).body(ConvocationDto.withErrorMessage("Erreur lors de la création de la convocation"));
         }
     }
 
@@ -267,7 +270,7 @@ public class EmployeurController {
     }
 
     @PostMapping("/candidatures/{id}/accept")
-    public ResponseEntity<?> acceptCandidature(
+    public ResponseEntity<CandidatureDto> acceptCandidature(
             HttpServletRequest request, @PathVariable("id") Long candidatureId) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
         if (!me.getRole().name().equals("EMPLOYEUR")) {
@@ -284,14 +287,14 @@ public class EmployeurController {
             CandidatureDto updated = candidatureService.acceptByEmployeur(candidatureId);
             return ResponseEntity.ok(updated);
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(CandidatureDto.withErrorMessage(e.getMessage()));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body("Candidature non trouvée");
+            return ResponseEntity.status(404).body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
         }
     }
 
     @PostMapping("/candidatures/{id}/reject")
-    public ResponseEntity<?> rejectCandidature(
+    public ResponseEntity<CandidatureDto> rejectCandidature(
             HttpServletRequest request, @PathVariable("id") Long candidatureId) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
         if (!me.getRole().name().equals("EMPLOYEUR")) {
@@ -308,9 +311,9 @@ public class EmployeurController {
             CandidatureDto updated = candidatureService.rejectByEmployeur(candidatureId);
             return ResponseEntity.ok(updated);
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(CandidatureDto.withErrorMessage(e.getMessage()));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body("Candidature non trouvée");
+            return ResponseEntity.status(404).body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
         }
     }
 
@@ -413,7 +416,7 @@ public class EmployeurController {
         }
     }
     @PostMapping("/evaluations")
-    public ResponseEntity<?> createEvaluation(
+    public ResponseEntity<EvaluationStagiaireResponseDto> createEvaluation(
             HttpServletRequest request,
             @RequestBody CreateEvaluationRequest createRequest){
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
@@ -428,22 +431,22 @@ public class EmployeurController {
 
             if (!isEligible){
                 return ResponseEntity.badRequest().body(
-                        new EvaluationResponsesDto(null, "Evaluation not allowed - agreement not validated or not found")
+                        EvaluationStagiaireResponseDto.withErrorMessage("Evaluation not allowed - agreement not validated or not found")
                 );
             }
             EvaluationStagiaireDto response = evaluationStagiaireService.createEvaluationByEmployer(
                     me.getId(), createRequest.studentId(), createRequest.internshipOfferId()
             );
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(EvaluationStagiaireResponseDto.fromDto(response));
 
         } catch(Exception e){
-            return ResponseEntity.badRequest().body(new EvaluationResponsesDto(null, e.getMessage()));
+            return ResponseEntity.badRequest().body(EvaluationStagiaireResponseDto.withErrorMessage(e.getMessage()));
         }
 
     }
 
     @PostMapping("/evaluations/{evaluationId}/generate-pdf")
-    public ResponseEntity<?> generateEvaluationPdf(
+    public ResponseEntity<PdfGenerationResponseDto> generateEvaluationPdf(
             HttpServletRequest request,
             @PathVariable Long evaluationId,
             @RequestBody EvaluationEmployerFormData formData,
@@ -458,17 +461,17 @@ public class EmployeurController {
         try {
             EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
             if (!evaluation.employeurId().equals(me.getId())) {
-                return ResponseEntity.status(403).body("Accès non autorisé");
+                return ResponseEntity.status(403).body(PdfGenerationResponseDto.withErrorMessage("Accès non autorisé"));
             }
 
             String lang = language.startsWith("en") ? "en" : "fr";
             EvaluationStagiaireDto updatedEvaluation =
                     evaluationStagiaireService.generateEvaluationPdfByEmployer(evaluationId, formData, lang);
 
-            return ResponseEntity.ok(new PdfGenerationResponse(updatedEvaluation.employerPdfPath(), "PDF généré avec succès"));
+            return ResponseEntity.ok(PdfGenerationResponseDto.fromResponse(new PdfGenerationResponse(updatedEvaluation.employerPdfPath(), "PDF généré avec succès")));
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(PdfGenerationResponseDto.withErrorMessage(e.getMessage()));
         }
     }
 
@@ -504,7 +507,7 @@ public class EmployeurController {
     }
 
     @GetMapping("/evaluations")
-    public ResponseEntity<?> getMyEvaluations(HttpServletRequest request) {
+    public ResponseEntity<EvaluationListResponseDto> getMyEvaluations(HttpServletRequest request) {
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 
         if (!me.getRole().name().equals("EMPLOYEUR")) {
@@ -513,13 +516,15 @@ public class EmployeurController {
 
         try {
             List<EvaluationStagiaireDto> evaluations = evaluationStagiaireService.getEvaluationsByEmployeur(me.getId());
-            return ResponseEntity.ok(evaluations);
+            return ResponseEntity.ok(EvaluationListResponseDto.builder()
+                    .evaluations(evaluations)
+                    .build());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erreur lors de la récupération des évaluations");
+            return ResponseEntity.status(500).body(EvaluationListResponseDto.withErrorMessage("Erreur lors de la récupération des évaluations"));
         }
     }
     @GetMapping("/evaluation/{evaluationId}")
-    public ResponseEntity<?> getEvaluation(
+    public ResponseEntity<EvaluationStagiaireResponseDto> getEvaluation(
             HttpServletRequest request,
             @PathVariable Long evaluationId) {
 
@@ -533,12 +538,12 @@ public class EmployeurController {
             EvaluationStagiaireDto evaluation = evaluationStagiaireService.getEvaluationById(evaluationId);
 
             if (!evaluation.employeurId().equals(me.getId())) {
-                return ResponseEntity.status(403).body("Accès non autorisé");
+                return ResponseEntity.status(403).body(EvaluationStagiaireResponseDto.withErrorMessage("Accès non autorisé"));
             }
 
-            return ResponseEntity.ok(evaluation);
+            return ResponseEntity.ok(EvaluationStagiaireResponseDto.fromDto(evaluation));
         } catch (Exception e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(EvaluationStagiaireResponseDto.withErrorMessage("Évaluation non trouvée"));
         }
     }
     @GetMapping("/evaluations/eligible")
@@ -554,7 +559,7 @@ public class EmployeurController {
     }
 
     @GetMapping("/evaluations/info")
-    public ResponseEntity<?> getEvaluationInfo(
+    public ResponseEntity<EvaluationEmployerInfoResponseDto> getEvaluationInfo(
             HttpServletRequest request,
             @RequestParam Long studentId,
             @RequestParam Long offerId) {
@@ -568,13 +573,13 @@ public class EmployeurController {
         try {
             EvaluationEmployerInfoDto info = evaluationStagiaireService.getEvaluationInfoForEmployer(
                     me.getId(), studentId, offerId);
-            return ResponseEntity.ok(info);
+            return ResponseEntity.ok(EvaluationEmployerInfoResponseDto.fromInfo(info));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(EvaluationEmployerInfoResponseDto.withErrorMessage(e.getMessage()));
         }
     }
     @GetMapping("/evaluations/check-existing")
-    public ResponseEntity<?> checkExistingEvaluation(
+    public ResponseEntity<CheckExistingEvaluationResponseDto> checkExistingEvaluation(
             HttpServletRequest request,
             @RequestParam Long studentId,
             @RequestParam Long offerId) {
@@ -590,39 +595,36 @@ public class EmployeurController {
                     .getExistingEvaluation(studentId, offerId);
 
             if (existingEvaluation.isPresent()) {
-                return ResponseEntity.ok().body(Map.of(
-                        "exists", true,
-                        "evaluation", existingEvaluation.get(),
-                        "message", "Une évaluation existe déjà"
-                ));
+                return ResponseEntity.ok().body(CheckExistingEvaluationResponseDto.builder()
+                        .exists(true)
+                        .evaluation(existingEvaluation.get())
+                        .message("Une évaluation existe déjà")
+                        .build());
             } else {
-                return ResponseEntity.ok().body(Map.of(
-                        "exists", false,
-                        "message", "Aucune évaluation existante"
-                ));
+                return ResponseEntity.ok().body(CheckExistingEvaluationResponseDto.builder()
+                        .exists(false)
+                        .message("Aucune évaluation existante")
+                        .build());
             }
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(CheckExistingEvaluationResponseDto.withErrorMessage(e.getMessage()));
         }
     }
 
     @GetMapping("/evaluations/check-teacher-assigned")
-    public ResponseEntity<?> checkTeacherAssigned(HttpServletRequest request,
+    public ResponseEntity<CheckTeacherAssignedResponseDto> checkTeacherAssigned(HttpServletRequest request,
                                                   @RequestParam Long studentId,
                                                   @RequestParam Long offerId) throws AccessDeniedException{
         getAuthenticatedEmployeur(request);
 
         try{
             boolean isTeacherAssigned = ententeStageService.isTeacherAssigned(studentId, offerId);
-            Map<String, Object> response = new HashMap<>();
-
-            response.put("teacherAssigned", isTeacherAssigned);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(CheckTeacherAssignedResponseDto.builder()
+                    .teacherAssigned(isTeacherAssigned)
+                    .build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error", e.getMessage()
-            ));
+            return ResponseEntity.badRequest().body(CheckTeacherAssignedResponseDto.withErrorMessage(e.getMessage()));
         }
     }
 
@@ -635,7 +637,7 @@ public class EmployeurController {
     return me;
   }
     @PutMapping("/offers/{offerId}/disable")
-    public ResponseEntity<?> disableOffer(HttpServletRequest request, @PathVariable Long offerId){
+    public ResponseEntity<InternshipOfferDto> disableOffer(HttpServletRequest request, @PathVariable Long offerId){
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 
         if (!me.getRole().name().equals("EMPLOYEUR")) {
@@ -648,11 +650,11 @@ public class EmployeurController {
             );
         }
         catch(Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(InternshipOfferDto.withErrorMessage(e.getMessage()));
         }
     }
     @PutMapping("/offers/{offerId}/enable")
-    public ResponseEntity<?> enableOffer(HttpServletRequest request, @PathVariable Long offerId){
+    public ResponseEntity<InternshipOfferDto> enableOffer(HttpServletRequest request, @PathVariable Long offerId){
         UserDTO me = userService.getMe(request.getHeader("Authorization"));
 
         if (!me.getRole().name().equals("EMPLOYEUR")) {
@@ -665,7 +667,7 @@ public class EmployeurController {
             );
         }
         catch(Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(InternshipOfferDto.withErrorMessage(e.getMessage()));
         }
     }
 }

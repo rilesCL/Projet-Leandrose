@@ -16,7 +16,7 @@ public class ConvocationService {
   private final ConvocationRepository convocationRepository;
   private final CandidatureRepository candidatureRepository;
 
-  public void addConvocation(
+  public ConvocationDto addConvocation(
       Long candidatureId, LocalDateTime convocationDate, String location, String message) {
     Candidature candidature =
         candidatureRepository
@@ -49,6 +49,7 @@ public class ConvocationService {
 
     Convocation convocation = new Convocation(candidature, convocationDate, location, finalMessage);
     convocationRepository.save(convocation);
+    return ConvocationDto.create(convocation);
   }
 
   public List<ConvocationDto> getAllConvocationsByInterShipOfferId(Long internshipOfferId) {

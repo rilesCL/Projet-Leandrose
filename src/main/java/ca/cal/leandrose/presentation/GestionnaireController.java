@@ -80,7 +80,7 @@ public class GestionnaireController {
               "attachment; filename=\"" + filepath.getFileName() + "\"")
           .body(resource);
     } catch (RuntimeException | IOException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CvDownloadResponseDto.withErrorMessage(e.getMessage()));
     }
   }
 
@@ -272,7 +272,7 @@ public class GestionnaireController {
   }
 
   @PostMapping("/chatclient")
-  public ResponseEntity<?> exchange(
+  public ResponseEntity<ChatResponseDto> exchange(
       @RequestBody ChatRequest request,
       @RequestHeader(value = "X-Session-Id", required = false) String sessionId) {
     try {
@@ -280,16 +280,17 @@ public class GestionnaireController {
 
       String response = chatService.chat(request.query(), effectiveSessionId);
 
-      Map<String, Object> result = new HashMap<>();
-      result.put("response", response);
-      result.put("sessionId", effectiveSessionId);
+      ChatResponseDto result = ChatResponseDto.builder()
+          .response(response)
+          .sessionId(effectiveSessionId)
+          .build();
 
       return ResponseEntity.ok(result);
     } catch (Exception e) {
       System.err.println("❌ Chat error: " + e.getMessage());
       e.printStackTrace();
       return ResponseEntity.internalServerError()
-          .body(Map.of("error", "Erreur du chat: " + e.getMessage()));
+          .body(ChatResponseDto.withErrorMessage("Erreur du chat: " + e.getMessage()));
     }
   }
 
