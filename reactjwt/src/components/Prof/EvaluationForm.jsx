@@ -390,7 +390,7 @@ const EvaluationForm = () => {
                         <p className="validation-error text-sm text-red-600 mb-2 text-center">{errors.capacity}</p>
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q2")}</p>
-                    <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 justify-center">
                         {[
                             { value: "1", label: t('studentProfile.observations.stage1') },
                             { value: "2", label: t('studentProfile.observations.stage2') },

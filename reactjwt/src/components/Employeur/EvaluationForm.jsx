@@ -251,7 +251,7 @@ const EvaluationForm = () => {
     const closeToast = () => {
         setToast({show: false, message: '', type: 'success'});
         if (submitted) {
-            navigate("/dashboard/employeur/evaluations");
+            navigate("/dashboard/employeur?tab=evaluations");
         }
     };
 
@@ -573,7 +573,7 @@ const EvaluationForm = () => {
 
                     <div className="mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('evaluation.globalAssessment.specify')}
+                            {t('evaluation.globalAssessment.discussed')}
                         </label>
                         <textarea
                             value={formData.globalAppreciation}
@@ -588,32 +588,20 @@ const EvaluationForm = () => {
 
                     <div className="mb-6">
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
-                            {t('evaluation.globalAssessment.discussed')}
+                            {t('evaluation.globalAssessment.technical_training')}
                         </p>
-                        <div className="flex flex-wrap justify-center gap-3 mb-3">
+                        {/* Technical Training Buttons: vertical on small screens */}
+                        <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                {
-                                    value: true,
-                                    label: t('evaluation.globalAssessment.yes'),
-                                    baseClasses: 'bg-green-400 border-2 border-green-600 text-green-900 font-semibold hover:border-green-700 hover:bg-green-500/80',
-                                    selectedClasses: 'border-[3px] border-green-800 ring-2 ring-green-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-green-600 text-green-700'
-                                },
-                                {
-                                    value: false,
-                                    label: t('evaluation.globalAssessment.no'),
-                                    baseClasses: 'bg-red-400 border-2 border-red-600 text-red-900 font-semibold hover:border-red-700 hover:bg-red-500/80',
-                                    selectedClasses: 'border-[3px] border-red-800 ring-2 ring-red-600 ring-offset-2 shadow-md',
-                                    inputRing: 'focus:ring-red-600 text-red-700'
-                                },
+                                { value: true, label: t('evaluation.globalAssessment.yes') },
+                                { value: false, label: t('evaluation.globalAssessment.no') }
                             ].map((option) => {
                                 const isSelected = formData.discussedWithTrainee === option.value;
+                                const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
                                 return (
                                     <label
-                                        key={option.value}
-                                        className={`flex items-center px-4 py-2 rounded-lg cursor-pointer transition-all ${option.baseClasses} ${
-                                            isSelected ? option.selectedClasses : ''
-                                        }`}
+                                        key={String(option.value)}
+                                        className={`${optionBase} ${isSelected ? optionSelected : optionDefault} flex-1`}
                                     >
                                         <input
                                             type="radio"
@@ -621,9 +609,9 @@ const EvaluationForm = () => {
                                             value={option.value}
                                             checked={isSelected}
                                             onChange={(e) => handleFieldChange('discussedWithTrainee', option.value)}
-                                            className={`mr-2 focus:ring-2 ${option.inputRing}`}
+                                            className="sr-only"
                                         />
-                                        <span className="text-sm font-medium">{option.label}</span>
+                                        <span>{option.label}</span>
                                     </label>
                                 );
                             })}
@@ -633,7 +621,6 @@ const EvaluationForm = () => {
                             <p className="validation-error text-sm text-red-600 mt-1">{errors.discussedWithTrainee}</p>
                         )}
                     </div>
-
                     <div className="mb-6">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             {t('evaluation.globalAssessment.supervision_hours')}
