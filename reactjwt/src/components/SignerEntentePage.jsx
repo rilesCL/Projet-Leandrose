@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {getCurrentUser, signAgreement, verifyPassword} from "../api/apiSignature";
+import {FaEye, FaEyeSlash} from "react-icons/fa";
 import {useTranslation} from "react-i18next";
 
 export default function SignerEntentePage() {
     const {id} = useParams();
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
+    const [showPasword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -38,6 +40,10 @@ export default function SignerEntentePage() {
 
         loadCurrentUser();
     }, [navigate]);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPasword);
+    }
 
     const handleSign = async (e) => {
         e.preventDefault();
@@ -121,15 +127,30 @@ export default function SignerEntentePage() {
                         <label className="block text-gray-700 text-sm font-medium mb-2">
                             {t("signerEntente.description")}
                         </label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder={t("signerEntente.placeholder")}
-                            required
-                            disabled={loading}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPasword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 pr-10"
+                                placeholder={t("signerEntente.placeholder")}
+                                required
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                                aria-label={showPasword ? "Hide password" : "Show password"}
+                                disabled={loading}
+                            >
+                                {showPasword ? (
+                                    <FaEyeSlash className="h-5 w-5" />
+                                ) : (
+                                    <FaEye className="h-5 w-5" />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     {error && (
