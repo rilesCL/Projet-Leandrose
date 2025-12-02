@@ -12,6 +12,7 @@ import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
+import ca.cal.leandrose.service.dto.ProgramDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -388,5 +389,72 @@ class GestionnaireControllerTest {
 
     verify(gestionnaireService, times(1)).approveCv(cvId1);
     verify(gestionnaireService, times(1)).approveCv(cvId2);
+  }
+
+  @Test
+  void getPendingOffers_ShouldReturnListOfPendingOffers() throws Exception {
+    when(gestionnaireService.getPendingOffers()).thenReturn(List.of(internshipOfferDto));
+    mockMvc
+        .perform(get("/gestionnaire/offers/pending"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(1L))
+        .andExpect(jsonPath("$[0].companyName").value("TechCorp"));
+    verify(gestionnaireService, times(1)).getPendingOffers();
+  }
+
+  @Test
+  void getOfferPdf_ShouldReturnPdfBytes() throws Exception {
+    byte[] pdfBytes = "test pdf content".getBytes();
+    when(internshipOfferService.getOfferPdf(1L)).thenReturn(pdfBytes);
+    mockMvc
+        .perform(get("/gestionnaire/offers/1/pdf"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Content-Type", "application/pdf"))
+        .andExpect(header().string("Content-Disposition", "inline; filename=offer_1.pdf"));
+    verify(internshipOfferService, times(1)).getOfferPdf(1L);
+  }
+
+  @Test
+  void getOfferPdf_ShouldReturnNotFound_WhenException() throws Exception {
+    when(internshipOfferService.getOfferPdf(1L)).thenThrow(new RuntimeException("Not found"));
+    mockMvc.perform(get("/gestionnaire/offers/1/pdf")).andExpect(status().isNotFound());
+  }
+
+  @Test
+  void approveOffer_ShouldReturnApprovedOffer() throws Exception {
+    when(gestionnaireService.approveOffer(1L)).thenReturn(internshipOfferDto);
+    mockMvc
+        .perform(post("/gestionnaire/offers/1/approve"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1L));
+    verify(gestionnaireService, times(1)).approveOffer(1L);
+  }
+
+  @Test
+  void rejectOffer_ShouldReturnRejectedOffer() throws Exception {
+    internshipOfferDto.setStatus("REJECTED");
+    when(gestionnaireService.rejectOffer(eq(1L), anyString())).thenReturn(internshipOfferDto);
+    mockMvc
+        .perform(
+            post("/gestionnaire/offers/1/reject")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"comment\":\"Invalid offer\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("REJECTED"));
+    verify(gestionnaireService, times(1)).rejectOffer(eq(1L), anyString());
+  }
+
+  @Test
+  void getPrograms_ShouldReturnListOfPrograms() throws Exception {
+    ProgramDto program1 = new ProgramDto("INFORMATIQUE", "Informatique");
+    ProgramDto program2 = new ProgramDto("GENIE_LOGICIEL", "Génie logiciel");
+    when(gestionnaireService.getAllPrograms()).thenReturn(List.of(program1, program2));
+    mockMvc
+        .perform(get("/gestionnaire/programs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.size()").value(2))
+        .andExpect(jsonPath("$[0].code").value("INFORMATIQUE"))
+        .andExpect(jsonPath("$[1].code").value("GENIE_LOGICIEL"));
+    verify(gestionnaireService, times(1)).getAllPrograms();
   }
 }

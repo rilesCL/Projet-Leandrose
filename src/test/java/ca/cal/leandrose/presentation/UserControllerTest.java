@@ -204,4 +204,17 @@ class UserControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.role").value("GESTIONNAIRE"));
     }
+
+    @Test
+    @DisplayName("GET /user/me/role returns 401 when exception occurs")
+    void getMyRole_exception_returnsUnauthorized() throws Exception {
+        String token = "Bearer jwt-token";
+
+        when(userService.getMe(token))
+                .thenThrow(new RuntimeException("Authentication failed"));
+
+        mockMvc.perform(get("/user/me/role").header("Authorization", token))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.message").value("Non autorisé"));
+    }
 }

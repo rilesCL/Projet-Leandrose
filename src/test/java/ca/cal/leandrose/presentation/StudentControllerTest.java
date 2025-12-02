@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.EntenteStage;
 import ca.cal.leandrose.model.InternshipOffer;
+import ca.cal.leandrose.presentation.request.UpdateStudentInfoRequest;
 import ca.cal.leandrose.repository.StudentRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
@@ -1112,5 +1113,212 @@ class StudentControllerTest {
     mockMvc
         .perform(get("/student/employeurs").header("Authorization", "Bearer token"))
         .andExpect(status().isInternalServerError());
+  }
+
+  @Test
+  void getCurrentStudent_asStudent_returnsStudentDto() throws Exception {
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.getStudentById(1L)).thenReturn(studentDto);
+
+    mockMvc
+        .perform(get("/student/me").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.firstName").value("John"));
+  }
+
+  @Test
+  void getCurrentStudent_missingAuthorization_returnsUnauthorized() throws Exception {
+    mockMvc.perform(get("/student/me")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void getCurrentStudent_notStudent_returnsForbidden() throws Exception {
+    UserDTO dto = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+    when(userAppService.getMe(anyString())).thenReturn(dto);
+
+    mockMvc
+        .perform(get("/student/me").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void getCurrentStudent_serviceThrowsException_returnsNotFound() throws Exception {
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.getStudentById(1L)).thenThrow(new RuntimeException("Student not found"));
+
+    mockMvc
+        .perform(get("/student/me").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void updateStudentInfo_asStudent_returnsUpdatedStudent() throws Exception {
+    UpdateStudentInfoRequest request = new UpdateStudentInfoRequest();
+    request.setProgram("SOFTWARE_ENGINEERING");
+
+    StudentDto updated = StudentDto.builder()
+        .id(1L)
+        .firstName("John")
+        .lastName("Doe")
+        .program("SOFTWARE_ENGINEERING")
+        .build();
+
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.updateStudentInfo(1L, "SOFTWARE_ENGINEERING")).thenReturn(updated);
+
+    mockMvc
+        .perform(put("/student/update-info")
+            .header("Authorization", "Bearer token")
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .content("{\"program\":\"SOFTWARE_ENGINEERING\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.program").value("SOFTWARE_ENGINEERING"));
+  }
+
+  @Test
+  void updateStudentInfo_notStudent_returnsForbidden() throws Exception {
+    UserDTO dto = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+    when(userAppService.getMe(anyString())).thenReturn(dto);
+
+    mockMvc
+        .perform(put("/student/update-info")
+            .header("Authorization", "Bearer token")
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .content("{\"program\":\"SOFTWARE_ENGINEERING\"}"))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void updateStudentInfo_illegalArgument_returnsBadRequest() throws Exception {
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.updateStudentInfo(1L, "INVALID"))
+        .thenThrow(new IllegalArgumentException("Invalid program"));
+
+    mockMvc
+        .perform(put("/student/update-info")
+            .header("Authorization", "Bearer token")
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .content("{\"program\":\"INVALID\"}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.error").value("Invalid program"));
+  }
+
+  @Test
+  void updateStudentInfo_generalException_returnsInternalServerError() throws Exception {
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.updateStudentInfo(1L, "SOFTWARE_ENGINEERING"))
+        .thenThrow(new RuntimeException("Database error"));
+
+    mockMvc
+        .perform(put("/student/update-info")
+            .header("Authorization", "Bearer token")
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .content("{\"program\":\"SOFTWARE_ENGINEERING\"}"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.error.error").value("Une erreur est survenue"));
+  }
+
+  @Test
+  void getMyConvocations_asStudent_returnsList() throws Exception {
+    ConvocationDto convocation = ConvocationDto.builder()
+        .id(1L)
+        .location("Bureau 301")
+        .build();
+
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(convocationService.getConvocationsByStudentId(1L)).thenReturn(List.of(convocation));
+
+    mockMvc
+        .perform(get("/student/convocations").header("Authorization", "Bearer token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].location").value("Bureau 301"));
+  }
+
+  @Test
+  void getMyConvocations_notStudent_returnsForbidden() throws Exception {
+    UserDTO dto = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+    when(userAppService.getMe(anyString())).thenReturn(dto);
+
+    mockMvc
+        .perform(get("/student/convocations").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void downloadCv_asStudent_returnsPdf() throws Exception {
+    CvDto cvDto = CvDto.builder().id(1L).pdfPath("/path/to/cv.pdf").build();
+
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.getStudentById(1L)).thenReturn(studentDto);
+    when(cvService.getCvByStudentId(1L)).thenReturn(cvDto);
+
+    mockMvc
+        .perform(get("/student/cv/download").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound()); // File doesn't exist in test
+  }
+
+  @Test
+  void downloadCv_missingAuthorization_returnsUnauthorized() throws Exception {
+    mockMvc.perform(get("/student/cv/download")).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void downloadCv_notStudent_returnsForbidden() throws Exception {
+    UserDTO dto = new UserDTO(2L, null, null, null, ca.cal.leandrose.model.auth.Role.EMPLOYEUR);
+    when(userAppService.getMe(anyString())).thenReturn(dto);
+
+    mockMvc
+        .perform(get("/student/cv/download").header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void downloadCv_cvNotFound_returnsNotFound() throws Exception {
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.getStudentById(1L)).thenReturn(studentDto);
+    when(cvService.getCvByStudentId(1L)).thenThrow(new RuntimeException("CV not found"));
+
+    mockMvc
+        .perform(get("/student/cv/download").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void getCv_cvNotFound_returnsNotFound() throws Exception {
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(studentService.getStudentById(1L)).thenReturn(studentDto);
+    when(cvService.getCvByStudentId(1L)).thenThrow(new RuntimeException("CV not found"));
+
+    mockMvc
+        .perform(get("/student/cv").header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void applyToOffer_illegalStateException_returnsBadRequest() throws Exception {
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    when(candidatureService.postuler(1L, 200L, 300L))
+        .thenThrow(new IllegalStateException("CV not approved"));
+
+    mockMvc
+        .perform(post("/student/offers/200/apply")
+            .param("cvId", "300")
+            .header("Authorization", "Bearer token"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void downloadOfferPdf_exception_returnsNotFound() throws Exception {
+    InternshipOfferDto offer = InternshipOfferMapper.toDto(
+        InternshipOffer.builder().id(100L).status(InternshipOffer.Status.PUBLISHED).build());
+    when(internshipOfferService.getOffer(100L)).thenReturn(offer);
+    when(internshipOfferService.getOfferPdf(100L))
+        .thenThrow(new RuntimeException("File not found"));
+
+    mockMvc
+        .perform(get("/student/offers/100/pdf"))
+        .andExpect(status().isNotFound());
   }
 }

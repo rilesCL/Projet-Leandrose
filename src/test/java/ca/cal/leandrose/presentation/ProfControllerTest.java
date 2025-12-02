@@ -32,6 +32,7 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -518,6 +519,122 @@ class ProfControllerTest {
         when(userAppService.getMe(anyString())).thenReturn(studentDto);
 
         mockMvc.perform(get("/prof/evaluations/check-existing")
+                        .header("Authorization", "Bearer token")
+                        .param("studentId", "2")
+                        .param("offerId", "3"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void checkTeacherAssigned_success_returnsOk() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(profDto);
+        when(ententeStageService.isTeacherAssigned(2L, 100L)).thenReturn(true);
+
+        mockMvc.perform(get("/prof/evaluations/check-teacher-assigned")
+                        .header("Authorization", "Bearer token")
+                        .param("studentId", "2")
+                        .param("offerId", "100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teacherAssigned").value(true));
+    }
+
+    @Test
+    void checkTeacherAssigned_notProf_throwsAccessDeniedException() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/prof/evaluations/check-teacher-assigned")
+                        .header("Authorization", "Bearer token")
+                        .param("studentId", "2")
+                        .param("offerId", "100"))
+                .andExpect(result -> {
+                    Exception exception = result.getResolvedException();
+                    assertNotNull(exception, "Exception should be thrown");
+                    assertTrue(exception instanceof java.nio.file.AccessDeniedException,
+                            "Expected AccessDeniedException but got: " + 
+                            (exception != null ? exception.getClass().getName() : "null"));
+                });
+    }
+
+    @Test
+    void checkTeacherAssigned_serviceException_returnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(profDto);
+        when(ententeStageService.isTeacherAssigned(2L, 100L))
+                .thenThrow(new RuntimeException("Service error"));
+
+        mockMvc.perform(get("/prof/evaluations/check-teacher-assigned")
+                        .header("Authorization", "Bearer token")
+                        .param("studentId", "2")
+                        .param("offerId", "100"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void generateEvaluationPdf_authenticationException_returnsUnauthorized() throws Exception {
+        when(userAppService.getMe(anyString()))
+                .thenThrow(new RuntimeException("Authentication failed"));
+
+        mockMvc.perform(post("/prof/evaluations/1/generate-pdf")
+                        .header("Authorization", "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(formData)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void generateEvaluationPdf_serviceException_returnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(profDto);
+        when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
+        when(evaluationStagiaireService.generateEvaluationByTeacher(eq(1L), any(), eq("fr")))
+                .thenThrow(new RuntimeException("PDF generation error"));
+
+        mockMvc.perform(post("/prof/evaluations/1/generate-pdf")
+                        .header("Authorization", "Bearer token")
+                        .header("Accept-Language", "fr")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(formData)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void generateEvaluationPdf_englishLanguage_returnsOk() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(profDto);
+        when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(evaluationDto);
+        when(evaluationStagiaireService.generateEvaluationByTeacher(eq(1L), any(), eq("en")))
+                .thenReturn(evaluationDto);
+
+        mockMvc.perform(post("/prof/evaluations/1/generate-pdf")
+                        .header("Authorization", "Bearer token")
+                        .header("Accept-Language", "en-US")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(formData)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getEvaluationPdf_notOwner_returnsForbidden() throws Exception {
+        ProfDto differentProf = ProfDto.builder()
+                .id(999L)
+                .role(Role.PROF)
+                .build();
+
+        EvaluationStagiaireDto otherEvaluation = new EvaluationStagiaireDto(
+                1L, LocalDate.now(), 2L, 999L, 2L, 100L,
+                null, null, false, false, EvaluationStatus.EN_COURS
+        );
+
+        when(userAppService.getMe(anyString())).thenReturn(differentProf);
+        when(evaluationStagiaireService.getEvaluationById(1L)).thenReturn(otherEvaluation);
+
+        mockMvc.perform(get("/prof/evaluations/1/pdf")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getEvaluationInfo_notProf_returnsForbidden() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/prof/evaluations/info")
                         .header("Authorization", "Bearer token")
                         .param("studentId", "2")
                         .param("offerId", "3"))
