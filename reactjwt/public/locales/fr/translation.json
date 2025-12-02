@@ -839,6 +839,9 @@
       "draft": "Brouillon"
     },
     "messages": {
+      "employer": "Employeur",
+      "student": "Étudiant",
+      "in_waiting_of": "En attente de:",
       "waitingStudentAndEmployer": "En attente des signatures de l'étudiant et de l'employeur",
       "waitingStudent": "En attente de la signature de l'étudiant",
       "waitingEmployer": "En attente de la signature de l'employeur"

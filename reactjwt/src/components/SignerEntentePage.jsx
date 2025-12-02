@@ -67,6 +67,9 @@ export default function SignerEntentePage() {
 
             setSuccess(t("signerEntente.success"));
             setPassword("");
+            setTimeout(() => {
+                navigate(getDashboardPath())
+            }, 3000)
 
         } catch (error) {
             if (error.status === 401) {

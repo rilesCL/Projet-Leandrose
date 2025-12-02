@@ -203,14 +203,14 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
         // Waiting for student and/or employer to sign
         if ((!studentSigned || !employerSigned) && entente.statut === 'EN_ATTENTE_SIGNATURE') {
             let waitingFor = [];
-            if (!studentSigned) waitingFor.push(t("ententeStage.status.student"));
-            if (!employerSigned) waitingFor.push(t("ententeStage.status.employer"));
+            if (!studentSigned) waitingFor.push(t("ententeStage.messages.student"));
+            if (!employerSigned) waitingFor.push(t("ententeStage.messages.employer"));
 
             return (
                 <button
                     onClick={() => handleStatusClick(entente)}
                     className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
-                    title={`En attente de: ${waitingFor.join(', ')}`}
+                    title={`${t('ententeStage.messages.in_waiting_of')} ${waitingFor.join(', ')}`}
                 >
                     {t("ententeStage.status.waiting_other_signatures")}
                 </button>
