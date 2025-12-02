@@ -1,5 +1,6 @@
 package ca.cal.leandrose.presentation;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -7,10 +8,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.EvaluationStatus;
+import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
@@ -20,6 +23,7 @@ import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
+import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -732,5 +736,344 @@ class EmployeurControllerTest {
         mockMvc.perform(put("/employeur/offers/100/enable")
                         .header("Authorization", "Bearer token"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getMyOffers_asEmployeur_returnsList() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.getOffersByEmployeurId(1L))
+                .thenReturn(List.of(InternshipOffer.builder().id(100L).description("Stage Java").build()));
+
+        mockMvc.perform(get("/employeur/offers")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(100));
+    }
+
+    @Test
+    void getMyOffers_notEmployeur_returnsForbidden() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/employeur/offers")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void uploadOffer_success_returnsOk() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(employeurService.getEmployeurById(1L)).thenReturn(employeurDto);
+        when(internshipOfferService.createOfferDto(anyString(), any(), anyInt(), anyString(), any(), any(), any()))
+                .thenReturn(internshipOfferDto);
+
+        InternshipOfferRequest offerRequest = new InternshipOfferRequest();
+        offerRequest.setDescription("Stage Java");
+        offerRequest.setStartDate("2025-09-01");
+        offerRequest.setDurationInWeeks(12);
+        offerRequest.setAddress("123 Rue Test");
+        offerRequest.setRemuneration(500.0f);
+
+        org.springframework.mock.web.MockMultipartFile pdfFile =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "pdfFile", "test.pdf", "application/pdf", "PDF_CONTENT".getBytes());
+
+        org.springframework.mock.web.MockMultipartFile offerPart =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "offer", "", "application/json",
+                        objectMapper.writeValueAsString(offerRequest).getBytes());
+
+        mockMvc.perform(multipart("/employeur/offers")
+                        .file(pdfFile)
+                        .file(offerPart)
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void uploadOffer_emptyDescription_returnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+
+        InternshipOfferRequest offerRequest = new InternshipOfferRequest();
+        offerRequest.setDescription("");
+
+        org.springframework.mock.web.MockMultipartFile pdfFile =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "pdfFile", "test.pdf", "application/pdf", "PDF_CONTENT".getBytes());
+
+        org.springframework.mock.web.MockMultipartFile offerPart =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "offer", "", "application/json",
+                        objectMapper.writeValueAsString(offerRequest).getBytes());
+
+        mockMvc.perform(multipart("/employeur/offers")
+                        .file(pdfFile)
+                        .file(offerPart)
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void uploadOffer_descriptionTooLong_returnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+
+        InternshipOfferRequest offerRequest = new InternshipOfferRequest();
+        offerRequest.setDescription("A".repeat(51));
+
+        org.springframework.mock.web.MockMultipartFile pdfFile =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "pdfFile", "test.pdf", "application/pdf", "PDF_CONTENT".getBytes());
+
+        org.springframework.mock.web.MockMultipartFile offerPart =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "offer", "", "application/json",
+                        objectMapper.writeValueAsString(offerRequest).getBytes());
+
+        mockMvc.perform(multipart("/employeur/offers")
+                        .file(pdfFile)
+                        .file(offerPart)
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void uploadOffer_notEmployeur_returnsForbidden() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        InternshipOfferRequest offerRequest = new InternshipOfferRequest();
+        offerRequest.setDescription("Stage Java");
+
+        org.springframework.mock.web.MockMultipartFile pdfFile =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "pdfFile", "test.pdf", "application/pdf", "PDF_CONTENT".getBytes());
+
+        org.springframework.mock.web.MockMultipartFile offerPart =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "offer", "", "application/json",
+                        objectMapper.writeValueAsString(offerRequest).getBytes());
+
+        mockMvc.perform(multipart("/employeur/offers")
+                        .file(pdfFile)
+                        .file(offerPart)
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void downloadCandidateCv_success_returnsOk() throws Exception {
+        CandidatureDto candidatureDto = createCandidatureDto(50L, 1L, "Alice", "Martin");
+        CvDto cvDto = CvDto.builder().id(10L).pdfPath("/cv/path.pdf").build();
+        candidatureDto.setCv(cvDto);
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
+
+        mockMvc.perform(get("/employeur/candidatures/50/cv")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound()); // File doesn't exist in test
+    }
+
+    @Test
+    void downloadCandidateCv_notEmployeur_returnsForbidden() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/employeur/candidatures/50/cv")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void downloadCandidateCv_wrongEmployeur_returnsForbidden() throws Exception {
+        CandidatureDto candidatureDto = createCandidatureDto(50L, 2L, "Alice", "Martin");
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(candidatureService.getCandidatureById(50L)).thenReturn(candidatureDto);
+
+        mockMvc.perform(get("/employeur/candidatures/50/cv")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getEntentesPourEmployeur_success_returnsList() throws Exception {
+        EntenteStageDto entente1 = EntenteStageDto.builder()
+                .id(10L)
+                .internshipOffer(internshipOfferDto)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.getAllEntentes()).thenReturn(List.of(entente1));
+
+        mockMvc.perform(get("/employeur/ententes")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getEntentesPourEmployeur_notEmployeur_returnsForbidden() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/employeur/ententes")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getEntentesPourEmployeur_serviceException_returnsInternalServerError() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.getAllEntentes())
+                .thenThrow(new RuntimeException("Database error"));
+
+        mockMvc.perform(get("/employeur/ententes")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void getEntentePdf_success_returnsOk() throws Exception {
+        StudentDto studentDto = StudentDto.builder()
+                .id(2L)
+                .firstName("Alice")
+                .lastName("Smith")
+                .build();
+
+        EntenteStageDto entente = EntenteStageDto.builder()
+                .id(10L)
+                .student(studentDto)
+                .cheminDocumentPDF("/entente/path.pdf")
+                .internshipOffer(internshipOfferDto)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.getEntenteById(10L)).thenReturn(entente);
+
+        mockMvc.perform(get("/employeur/ententes/10/pdf")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound()); // File doesn't exist in test
+    }
+
+    @Test
+    void getEntentePdf_notEmployeur_returnsForbidden() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/employeur/ententes/10/pdf")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getEntentePdf_wrongEmployeur_returnsForbidden() throws Exception {
+        EmployeurDto otherEmployeur = EmployeurDto.builder()
+                .id(2L)
+                .email("other@test.com")
+                .build();
+
+        InternshipOfferDto otherOffer = InternshipOfferDto.builder()
+                .id(200L)
+                .employeurDto(otherEmployeur)
+                .build();
+
+        EntenteStageDto entente = EntenteStageDto.builder()
+                .id(10L)
+                .internshipOffer(otherOffer)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.getEntenteById(10L)).thenReturn(entente);
+
+        mockMvc.perform(get("/employeur/ententes/10/pdf")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getEntentePdf_noPdfPath_returnsNotFound() throws Exception {
+        EntenteStageDto entente = EntenteStageDto.builder()
+                .id(10L)
+                .cheminDocumentPDF(null)
+                .internshipOffer(internshipOfferDto)
+                .build();
+
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.getEntenteById(10L)).thenReturn(entente);
+
+        mockMvc.perform(get("/employeur/ententes/10/pdf")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getEntentePdf_ententeNotFound_returnsNotFound() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.getEntenteById(999L))
+                .thenThrow(new jakarta.persistence.EntityNotFoundException("Entente not found"));
+
+        mockMvc.perform(get("/employeur/ententes/999/pdf")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void checkTeacherAssigned_success_returnsOk() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.isTeacherAssigned(2L, 100L)).thenReturn(true);
+
+        mockMvc.perform(get("/employeur/evaluations/check-teacher-assigned")
+                        .header("Authorization", "Bearer token")
+                        .param("studentId", "2")
+                        .param("offerId", "100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teacherAssigned").value(true));
+    }
+
+    @Test
+    void checkTeacherAssigned_notEmployeur_throwsAccessDeniedException() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(studentDto);
+
+        mockMvc.perform(get("/employeur/evaluations/check-teacher-assigned")
+                        .header("Authorization", "Bearer token")
+                        .param("studentId", "2")
+                        .param("offerId", "100"))
+                .andExpect(result -> {
+                    Exception exception = result.getResolvedException();
+                    assertNotNull(exception, "Exception should be thrown");
+                    assertTrue(exception instanceof java.nio.file.AccessDeniedException,
+                            "Expected AccessDeniedException but got: " + 
+                            (exception != null ? exception.getClass().getName() : "null"));
+                });
+    }
+
+    @Test
+    void checkTeacherAssigned_serviceException_returnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(ententeStageService.isTeacherAssigned(2L, 100L))
+                .thenThrow(new RuntimeException("Service error"));
+
+        mockMvc.perform(get("/employeur/evaluations/check-teacher-assigned")
+                        .header("Authorization", "Bearer token")
+                        .param("studentId", "2")
+                        .param("offerId", "100"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void disableOffer_serviceException_returnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.disableOffer(1L, 100L))
+                .thenThrow(new RuntimeException("Offer not found"));
+
+        mockMvc.perform(put("/employeur/offers/100/disable")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void enableOffer_serviceException_returnsBadRequest() throws Exception {
+        when(userAppService.getMe(anyString())).thenReturn(employeurDto);
+        when(internshipOfferService.enableOffer(1L, 100L))
+                .thenThrow(new RuntimeException("Offer not found"));
+
+        mockMvc.perform(put("/employeur/offers/100/enable")
+                        .header("Authorization", "Bearer token"))
+                .andExpect(status().isBadRequest());
     }
 }

@@ -1,6 +1,7 @@
 package ca.cal.leandrose.presentation;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -207,5 +208,276 @@ class GestionnaireControllerEntenteTest {
     mockMvc.perform(delete("/gestionnaire/ententes/1")).andExpect(status().isNoContent());
 
     verify(ententeStageService).supprimerEntente(1L);
+  }
+
+  @Test
+  void creerEntente_ShouldReturnBadRequest_WhenIllegalArgumentException() throws Exception {
+    when(ententeStageService.creerEntente(any(EntenteStageDto.class)))
+        .thenThrow(new IllegalArgumentException("Invalid data"));
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ententeDto)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.message").value("Invalid data"));
+  }
+
+  @Test
+  void creerEntente_ShouldReturnNotFound_WhenEntityNotFoundException() throws Exception {
+    when(ententeStageService.creerEntente(any(EntenteStageDto.class)))
+        .thenThrow(new jakarta.persistence.EntityNotFoundException("Entity not found"));
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ententeDto)))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.message").value("Entity not found"));
+  }
+
+  @Test
+  void modifierEntente_ShouldReturnNotFound_WhenEntityNotFoundException() throws Exception {
+    when(ententeStageService.modifierEntente(eq(1L), any(EntenteStageDto.class)))
+        .thenThrow(new jakarta.persistence.EntityNotFoundException("Not found"));
+    mockMvc
+        .perform(
+            put("/gestionnaire/ententes/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ententeDto)))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.message").value("Not found"));
+  }
+
+  @Test
+  void modifierEntente_ShouldReturnConflict_WhenIllegalStateException() throws Exception {
+    when(ententeStageService.modifierEntente(eq(1L), any(EntenteStageDto.class)))
+        .thenThrow(new IllegalStateException("Already signed"));
+    mockMvc
+        .perform(
+            put("/gestionnaire/ententes/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ententeDto)))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.error.message").value("Already signed"));
+  }
+
+  @Test
+  void modifierEntente_ShouldReturnBadRequest_WhenIllegalArgumentException() throws Exception {
+    when(ententeStageService.modifierEntente(eq(1L), any(EntenteStageDto.class)))
+        .thenThrow(new IllegalArgumentException("Invalid argument"));
+    mockMvc
+        .perform(
+            put("/gestionnaire/ententes/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ententeDto)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.message").value("Invalid argument"));
+  }
+
+  @Test
+  void validerEntente_ShouldReturnOk_WhenValid() throws Exception {
+    ententeDto.setStatut(EntenteStage.StatutEntente.VALIDEE);
+    when(ententeStageService.validerEtGenererEntente(1L)).thenReturn(ententeDto);
+    mockMvc
+        .perform(post("/gestionnaire/ententes/1/valider"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.statut").value("VALIDEE"));
+    verify(ententeStageService, times(1)).validerEtGenererEntente(1L);
+  }
+
+  @Test
+  void validerEntente_ShouldReturnNotFound_WhenEntityNotFoundException() throws Exception {
+    when(ententeStageService.validerEtGenererEntente(1L))
+        .thenThrow(new jakarta.persistence.EntityNotFoundException("Not found"));
+    mockMvc
+        .perform(post("/gestionnaire/ententes/1/valider"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.message").value("Not found"));
+  }
+
+  @Test
+  void validerEntente_ShouldReturnConflict_WhenIllegalStateException() throws Exception {
+    when(ententeStageService.validerEtGenererEntente(1L))
+        .thenThrow(new IllegalStateException("Already signed"));
+    mockMvc
+        .perform(post("/gestionnaire/ententes/1/valider"))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.error.message").value("Already signed"));
+  }
+
+  @Test
+  void telechargerPDFEntente_ShouldReturnPdfBytes() throws Exception {
+    byte[] pdfBytes = "test pdf content".getBytes();
+    when(ententeStageService.telechargerPDF(1L)).thenReturn(pdfBytes);
+    mockMvc
+        .perform(get("/gestionnaire/ententes/1/telecharger"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Content-Type", "application/pdf"))
+        .andExpect(
+            header()
+                .string("Content-Disposition", "attachment; filename=\"entente_stage_1.pdf\""));
+    verify(ententeStageService, times(1)).telechargerPDF(1L);
+  }
+
+  @Test
+  void telechargerPDFEntente_ShouldReturnNotFound_WhenEntityNotFoundException() throws Exception {
+    when(ententeStageService.telechargerPDF(1L))
+        .thenThrow(new jakarta.persistence.EntityNotFoundException("Not found"));
+    mockMvc
+        .perform(get("/gestionnaire/ententes/1/telecharger"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.message").value("Not found"));
+  }
+
+  @Test
+  void getEntente_ShouldReturnNotFound_WhenEntityNotFoundException() throws Exception {
+    when(ententeStageService.getEntenteById(1L))
+        .thenThrow(new jakarta.persistence.EntityNotFoundException("Not found"));
+    mockMvc
+        .perform(get("/gestionnaire/ententes/1"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.message").value("Not found"));
+  }
+
+  @Test
+  void supprimerEntente_ShouldReturnNotFound_WhenEntityNotFoundException() throws Exception {
+    doThrow(new jakarta.persistence.EntityNotFoundException("Not found"))
+        .when(ententeStageService)
+        .supprimerEntente(1L);
+    mockMvc.perform(delete("/gestionnaire/ententes/1")).andExpect(status().isNotFound());
+  }
+
+  @Test
+  void signerEntenteParGestionnaire_ShouldReturnOk_WhenValid() throws Exception {
+    UserDTO gestionnaireDto = new UserDTO();
+    gestionnaireDto.setId(1L);
+    gestionnaireDto.setRole(ca.cal.leandrose.model.auth.Role.GESTIONNAIRE);
+    when(userAppService.getMe(anyString())).thenReturn(gestionnaireDto);
+    when(ententeStageService.signerParGestionnaire(1L, 1L)).thenReturn(ententeDto);
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/signer")
+                .header("Authorization", "Bearer token"))
+        .andExpect(status().isOk());
+    verify(ententeStageService, times(1)).signerParGestionnaire(1L, 1L);
+  }
+
+  @Test
+  void signerEntenteParGestionnaire_ShouldReturnForbidden_WhenNotGestionnaire() throws Exception {
+    UserDTO studentDto = new UserDTO();
+    studentDto.setId(1L);
+    studentDto.setRole(ca.cal.leandrose.model.auth.Role.STUDENT);
+    when(userAppService.getMe(anyString())).thenReturn(studentDto);
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/signer")
+                .header("Authorization", "Bearer token"))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void signerEntenteParGestionnaire_ShouldReturnNotFound_WhenEntityNotFoundException()
+      throws Exception {
+    UserDTO gestionnaireDto = new UserDTO();
+    gestionnaireDto.setId(1L);
+    gestionnaireDto.setRole(ca.cal.leandrose.model.auth.Role.GESTIONNAIRE);
+    when(userAppService.getMe(anyString())).thenReturn(gestionnaireDto);
+    when(ententeStageService.signerParGestionnaire(1L, 1L))
+        .thenThrow(new jakarta.persistence.EntityNotFoundException("Not found"));
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/signer")
+                .header("Authorization", "Bearer token"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.message").value("Entente non trouvée"));
+  }
+
+  @Test
+  void signerEntenteParGestionnaire_ShouldReturnConflict_WhenAlreadySigned() throws Exception {
+    UserDTO gestionnaireDto = new UserDTO();
+    gestionnaireDto.setId(1L);
+    gestionnaireDto.setRole(ca.cal.leandrose.model.auth.Role.GESTIONNAIRE);
+    when(userAppService.getMe(anyString())).thenReturn(gestionnaireDto);
+    when(ententeStageService.signerParGestionnaire(1L, 1L))
+        .thenThrow(new IllegalStateException("déjà signé"));
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/signer")
+                .header("Authorization", "Bearer token"))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.error.message").value("déjà signé"));
+  }
+
+  @Test
+  void getAllProfs_ShouldReturnListOfProfs() throws Exception {
+    ProfDto prof1 = ProfDto.builder().id(1L).firstName("Jean").lastName("Dupont").build();
+    ProfDto prof2 = ProfDto.builder().id(2L).firstName("Marie").lastName("Martin").build();
+    when(profService.getAllProfs()).thenReturn(List.of(prof1, prof2));
+    mockMvc
+        .perform(get("/gestionnaire/profs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.size()").value(2))
+        .andExpect(jsonPath("$[0].firstName").value("Jean"))
+        .andExpect(jsonPath("$[1].firstName").value("Marie"));
+    verify(profService, times(1)).getAllProfs();
+  }
+
+  @Test
+  void getAllProfs_ShouldReturnInternalServerError_WhenException() throws Exception {
+    when(profService.getAllProfs()).thenThrow(new RuntimeException("Database error"));
+    mockMvc
+        .perform(get("/gestionnaire/profs"))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.size()").value(0));
+  }
+
+  @Test
+  void attribuerProf_ShouldReturnOk_WhenValid() throws Exception {
+    when(ententeStageService.attribuerProf(1L, 2L)).thenReturn(ententeDto);
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/attribuer-prof")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"profId\":2}"))
+        .andExpect(status().isOk());
+    verify(ententeStageService, times(1)).attribuerProf(1L, 2L);
+  }
+
+  @Test
+  void attribuerProf_ShouldReturnBadRequest_WhenProfIdIsNull() throws Exception {
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/attribuer-prof")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.message").value("L'id du professeur est requis"));
+  }
+
+  @Test
+  void attribuerProf_ShouldReturnNotFound_WhenEntityNotFoundException() throws Exception {
+    when(ententeStageService.attribuerProf(1L, 2L))
+        .thenThrow(new jakarta.persistence.EntityNotFoundException("Not found"));
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/attribuer-prof")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"profId\":2}"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.error.message").value("Not found"));
+  }
+
+  @Test
+  void attribuerProf_ShouldReturnBadRequest_WhenIllegalArgumentException() throws Exception {
+    when(ententeStageService.attribuerProf(1L, 2L))
+        .thenThrow(new IllegalArgumentException("Invalid argument"));
+    mockMvc
+        .perform(
+            post("/gestionnaire/ententes/1/attribuer-prof")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"profId\":2}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.message").value("Invalid argument"));
   }
 }

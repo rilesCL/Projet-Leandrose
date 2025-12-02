@@ -96,4 +96,31 @@ class EmployeurServiceTest {
 
     assertThrows(UserNotFoundException.class, () -> employeurService.getEmployeurById(99L));
   }
+
+  @Test
+  void testGetEmployeurByIdNullId_throwsIllegalArgumentException() {
+    assertThrows(IllegalArgumentException.class, () -> employeurService.getEmployeurById(null));
+  }
+
+  @Test
+  void testCreateEmployeur_duplicateEmail_throwsIllegalArgumentException() {
+    String rawPassword = "password123";
+    String encodedPassword = "encodedPass";
+
+    when(employeurRepository.existsByEmail("existing@example.com")).thenReturn(true);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            employeurService.createEmployeur(
+                "John",
+                "Doe",
+                "existing@example.com",
+                rawPassword,
+                "TechCorp",
+                "IT"));
+
+    verify(employeurRepository, never()).save(any(Employeur.class));
+    verify(passwordEncoder, never()).encode(anyString());
+  }
 }

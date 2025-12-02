@@ -26,9 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
-
-@ActiveProfiles("test")
 class InternshipOfferServiceTest {
 
   @Mock private InternshipOfferRepository internshipOfferRepository;
@@ -267,5 +264,74 @@ class InternshipOfferServiceTest {
       RuntimeException ex = assertThrows(RuntimeException.class, () ->
               internshipOfferService.enableOffer(1L, 10L));
       assertEquals("Impossible de réactiver une offre dont la date de début est expiré", ex.getMessage());
+  }
+
+  @Test
+  void setOfferStatus_wrongEmployer_throwsException() {
+    InternshipOffer offer = new InternshipOffer();
+    offer.setId(10L);
+    offer.setStatus(InternshipOffer.Status.PUBLISHED);
+    Employeur otherEmployeur = Employeur.builder().id(999L).build();
+    offer.setEmployeur(otherEmployeur);
+
+    when(internshipOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+
+    RuntimeException ex = assertThrows(RuntimeException.class, () ->
+            internshipOfferService.disableOffer(1L, 10L));
+    assertEquals("Vous n'êtes pas autorisé à modifier cette offre", ex.getMessage());
+  }
+
+  @Test
+  void setOfferStatus_offerNotFound_throwsException() {
+    when(internshipOfferRepository.findById(999L)).thenReturn(Optional.empty());
+
+    RuntimeException ex = assertThrows(RuntimeException.class, () ->
+            internshipOfferService.disableOffer(1L, 999L));
+    assertEquals("Offre de stage non trouvée", ex.getMessage());
+  }
+
+  @Test
+  void getOfferDetails_notFound_throwsEntityNotFoundException() {
+    when(internshipOfferRepository.findById(999L)).thenReturn(Optional.empty());
+
+    assertThrows(jakarta.persistence.EntityNotFoundException.class, () ->
+            internshipOfferService.getOfferDetails(999L));
+  }
+
+  @Test
+  void getOfferPdf_fileNotFound_throwsException() throws Exception {
+    InternshipOffer offer = InternshipOffer.builder()
+            .id(20L)
+            .employeur(employeur)
+            .pdfPath("/nonexistent/path.pdf")
+            .build();
+
+    when(internshipOfferRepository.findById(20L)).thenReturn(Optional.of(offer));
+
+    assertThrows(IOException.class, () -> internshipOfferService.getOfferPdf(20L));
+  }
+
+  @Test
+  void getPublishedOffersForStudents_invalidProgram_throwsException() {
+    assertThrows(IllegalArgumentException.class, () ->
+            internshipOfferService.getPublishedOffersForStudents("INVALID_PROGRAM", "FALL 2025"));
+  }
+
+  @Test
+  void getPublishedOffersForStudents_invalidSchoolTermFormat_throwsException() {
+    assertThrows(IllegalArgumentException.class, () ->
+            internshipOfferService.getPublishedOffersForStudents("program.computer_science", "INVALID"));
+  }
+
+  @Test
+  void getPublishedOffersForStudents_nullSchoolTerm_throwsException() {
+    assertThrows(IllegalArgumentException.class, () ->
+            internshipOfferService.getPublishedOffersForStudents("program.computer_science", null));
+  }
+
+  @Test
+  void getPublishedOffersForStudents_emptySchoolTerm_throwsException() {
+    assertThrows(IllegalArgumentException.class, () ->
+            internshipOfferService.getPublishedOffersForStudents("program.computer_science", ""));
   }
 }
