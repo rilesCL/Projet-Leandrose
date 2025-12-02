@@ -14,6 +14,11 @@ export default function CreateEntenteForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const [toast, setToast] = useState({
+        show: false,
+        message: '',
+        type: 'success'
+    })
 
     const [formData, setFormData] = useState({
         candidatureId: candidatureIdFromUrl || "",
@@ -47,6 +52,25 @@ export default function CreateEntenteForm() {
         setFormData(prev => ({...prev, [name]: value}));
         if (errors[name]) setErrors(prev => ({...prev, [name]: null}));
     };
+
+    const showToast = (message, type = 'success') => {
+        setToast({
+            show: true,
+            message,
+            type
+        });
+        setTimeout(() => {
+            setToast(prev => ({...prev, show: false}));
+        }, 5000)
+    }
+    const closeToast =() => {
+        setToast({show: false, message: '', type: 'success'})
+
+        if(success){
+            navigate("/dashboard/gestionnaire");
+        }
+
+    }
 
     const validateForm = () => {
         const newErrors = {};
@@ -82,6 +106,7 @@ export default function CreateEntenteForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setToast({show: false, message: '', type: 'success'});
         if (!validateForm()) return;
 
         setLoading(true);
@@ -110,13 +135,14 @@ export default function CreateEntenteForm() {
 
 
             if (result.error) {
-                setError(result.error.message || t("createEntenteForm.createError"));
-            } else {
+                showToast(result.error.message || t("createEntenteForm.createError"), 'error');
+            } else{
+                showToast(t("createEntenteForm.success"), 'success');
                 setSuccess(true);
             }
         } catch (err) {
             console.error("❌ Erreur création entente:", err);
-            setError(err.message || t("createEntenteForm.createError"));
+            showToast(err.message || t("createEntenteForm.createError"), 'error');
         } finally {
             setLoading(false);
         }
@@ -146,14 +172,37 @@ export default function CreateEntenteForm() {
 
             <h2 className="text-2xl font-semibold mb-6">{t("createEntenteForm.title")}</h2>
 
-            {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
-                    {error}
-                </div>
-            )}
-            {success && (
-                <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded">
-                    {t("createEntenteForm.success")}
+            {toast.show && (
+                <div
+                    className={`fixed bottom-6 right-6 px-6 py-4 rounded-lg shadow-lg z-50 flex items-center gap-3 transition-all duration-300 ${
+                        toast.type === 'success'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-red-500 text-white'
+                    }`}
+                >
+                    {toast.type === 'success' ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                        </svg>
+                    ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    )}
+                    <span className="font-medium">{toast.message}</span>
+                    <button
+                        onClick={closeToast}
+                        className={`ml-2 rounded-full p-1 transition-colors ${
+                            toast.type === 'success'
+                                ? 'bg-green-600 hover:bg-green-700'
+                                : 'bg-red-600 hover:bg-red-700'
+                        }`}
+                        aria-label="Close"
+                    >
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
             )}
 
@@ -179,7 +228,7 @@ export default function CreateEntenteForm() {
                         ))}
                     </select>
                     {errors.candidatureId && (
-                        <p className="mt-1 text-sm text-red-600">{errors.candidatureId}</p>
+                        <p className="validation-error mt-1 text-sm text-red-600">{errors.candidatureId}</p>
                     )}
                 </div>
 
@@ -293,7 +342,7 @@ export default function CreateEntenteForm() {
                         }`}
                     />
                     {errors.missionsObjectifs && (
-                        <p className="mt-1 text-sm text-red-600">{errors.missionsObjectifs}</p>
+                        <p className="validation-error mt-1 text-sm text-red-600">{errors.missionsObjectifs}</p>
                     )}
                 </div>
 
@@ -308,7 +357,7 @@ export default function CreateEntenteForm() {
                     </button>
                     <button
                         type="submit"
-                        disabled={loading || success}
+                        disabled={loading}
                         className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
                     >
                         {loading ? t("createEntenteForm.submitting") : t("createEntenteForm.submitButton")}

@@ -837,6 +837,9 @@
       "draft": "Draft"
     },
     "messages": {
+      "employer": "Employer",
+      "student": "Student",
+      "in_waiting_of": "In waiting of: ",
       "waitingStudentAndEmployer": "Awaiting signatures from the student and the employer",
       "waitingStudent": "Awaiting student signature",
       "waitingEmployer": "Awaiting employer's signature"

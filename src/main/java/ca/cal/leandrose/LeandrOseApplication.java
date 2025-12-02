@@ -47,7 +47,7 @@ public class LeandrOseApplication {
             "macolo",
             Program.COMPUTER_SCIENCE.getTranslationKey());
 
-        studentService.createStudent(
+        StudentDto riles = studentService.createStudent(
             "Ghilas",
             "Amr",
             "ghil.amr@student.com",
@@ -256,6 +256,7 @@ public class LeandrOseApplication {
                 "STU007",
                 Program.COMPUTER_SCIENCE.getTranslationKey());
 
+
         MultipartFile cvFileEntente2 = loadPdfFromResources("CV_Lucas_Bergeron.pdf");
         CvDto cvDtoEntente2 = cvService.uploadCv(studentEntente2.getId(), cvFileEntente2);
         CvDto cvApprovedEntente2 = gestionnaireService.approveCv(cvDtoEntente2.getId());
@@ -282,6 +283,19 @@ public class LeandrOseApplication {
         CandidatureDto candidatureFullyAccepted2 =
             candidatureService.acceptByStudent(
                 candidatureAcceptedEntente2.getId(), studentEntente2.getId());
+
+          //Entente de stage Demo
+        MultipartFile cvFileRiles = loadPdfFromResources("CV_Riles.pdf");
+        CvDto cvDtoRiles = cvService.uploadCv(riles.getId(), cvFileRiles);
+        CvDto cvApprovedRiles = gestionnaireService.approveCv(cvDtoRiles.getId());
+
+        CandidatureDto candidatureDtoRiles = candidatureService.postuler(riles.getId(),
+                offerApprovedEntente2.getId(), cvApprovedRiles.getId());
+        CandidatureDto candidatureRilesDto =
+                candidatureService.acceptByEmployeur(candidatureDtoRiles.getId());
+
+        candidatureService.acceptByStudent(
+                candidatureRilesDto.getId(), riles.getId());
 
         EntenteStageDto ententeDto2 = new EntenteStageDto();
         ententeDto2.setCandidatureId(candidatureFullyAccepted2.getId());
