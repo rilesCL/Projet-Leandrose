@@ -152,9 +152,11 @@ export default function EmployeurListeStages({selectedTerm}) {
             return (
                 <button
                     onClick={() => handleStatusClick(entente)}
-                    className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors cursor-pointer"
+                    className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors cursor-pointer inline-flex items-center"
                 >
-                    {t("ententeStage.status.validation")}
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{t("ententeStage.status.validation")}</span>
+                    <span className="sm:hidden">✓</span>
                 </button>
             );
         }
@@ -163,9 +165,11 @@ export default function EmployeurListeStages({selectedTerm}) {
             return (
                 <button
                     onClick={() => handleStatusClick(entente)}
-                    className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
+                    className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer inline-flex items-center"
                 >
-                    {t("ententeStage.status.waiting_other_signatures")}
+                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{t("ententeStage.status.waiting_other_signatures")}</span>
+                    <span className="sm:hidden">⏳</span>
                 </button>
             );
         }
@@ -174,9 +178,11 @@ export default function EmployeurListeStages({selectedTerm}) {
             return (
                 <button
                     onClick={() => handleStatusClick(entente)}
-                    className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
+                    className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer inline-flex items-center"
                 >
-                    {t("ententeStage.status.waiting_your_signature")}
+                    <span className="w-2 h-2 bg-orange-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{t("ententeStage.status.waiting_your_signature")}</span>
+                    <span className="sm:hidden">✍️</span>
                 </button>
             );
         }
@@ -185,15 +191,21 @@ export default function EmployeurListeStages({selectedTerm}) {
             return (
                 <button
                     onClick={() => handleStatusClick(entente)}
-                    className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
+                    className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer inline-flex items-center"
                 >
-                    {t("ententeStage.status.draft")}
+                    <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{t("ententeStage.status.draft")}</span>
+                    <span className="sm:hidden">📝</span>
                 </button>
             );
         }
 
-        return <span
-            className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
+        return (
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 inline-flex items-center">
+                <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
+                {entente.statut}
+            </span>
+        );
     };
 
     const getSortIcon = (field) => {
@@ -403,101 +415,132 @@ export default function EmployeurListeStages({selectedTerm}) {
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white shadow rounded-lg overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                <tr>
-                                    <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                        onClick={() => handleSort("studentNom")}
-                                    >
-                                        <div className="flex items-center space-x-1">
-                                            <span>{t("ententeStage.student")}</span>
-                                            {getSortIcon("studentNom")}
-                                        </div>
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t("ententeStage.stage")}
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t("ententeStage.period")}
-                                    </th>
-                                    <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                        onClick={() => handleSort("statut")}
-                                    >
-                                        <div className="flex items-center space-x-1">
-                                            <span>{t("ententeStage.status.title")}</span>
-                                            {getSortIcon("statut")}
-                                        </div>
-                                    </th>
-                                    <th
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                        onClick={() => handleSort("dateCreation")}
-                                    >
-                                        <div className="flex items-center space-x-1">
-                                            <span>{t("ententeStage.created_at")}</span>
-                                            {getSortIcon("dateCreation")}
-                                        </div>
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t("ententeStage.actions.title")}
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                {sortedEntentes.map((entente) => (
-                                    <tr key={entente.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div>
+                    <>
+                        <div className="bg-white shadow rounded-lg overflow-hidden">
+                            <div className="hidden lg:block overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                    <tr>
+                                        <th
+                                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                            onClick={() => handleSort("studentNom")}
+                                        >
+                                            <div className="flex items-center space-x-1">
+                                                <span>{t("ententeStage.student")}</span>
+                                                {getSortIcon("studentNom")}
+                                            </div>
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t("ententeStage.stage")}
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t("ententeStage.period")}
+                                        </th>
+                                        <th
+                                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                            onClick={() => handleSort("statut")}
+                                        >
+                                            <div className="flex items-center space-x-1">
+                                                <span>{t("ententeStage.status.title")}</span>
+                                                {getSortIcon("statut")}
+                                            </div>
+                                        </th>
+                                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t("ententeStage.actions.title")}
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                    {sortedEntentes.map((entente) => (
+                                        <tr key={entente.id} className="hover:bg-gray-50">
+                                            <td className="px-4 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">
                                                     {entente.student?.firstName} {entente.student?.lastName}
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900 max-w-xs truncate">
-                                                {entente.internshipOffer?.description}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                {formatDate(entente.dateDebut)} - {formatDate(calculateDateFin(entente.dateDebut, entente.duree))}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            {getStatusBadge(entente)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {formatDate(entente.dateCreation)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div className="flex items-center space-x-2">
-                                                <button
-                                                    onClick={() => handleViewPdf(entente.id)}
-                                                    className="text-indigo-600 hover:text-indigo-900 flex items-center space-x-1"
-                                                >
-                                                    <FaEye className="text-sm"/>
-                                                    <span>{t("ententeStage.actions.look")}</span>
-                                                </button>
-                                                {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasEmployerSigned(entente) && (
-                                                    <Link
-                                                        to={`/dashboard/employeur/ententes/${entente.id}/signer`}
-                                                        className="text-green-600 hover:text-green-900 flex items-center space-x-1"
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <div className="text-sm text-gray-900 max-w-xs truncate">
+                                                    {entente.internshipOffer?.description}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-900">
+                                                    {formatDate(entente.dateDebut)} - {formatDate(calculateDateFin(entente.dateDebut, entente.duree))}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4 whitespace-nowrap">
+                                                {getStatusBadge(entente)}
+                                            </td>
+                                            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <button
+                                                        onClick={() => handleViewPdf(entente.id)}
+                                                        className="inline-flex items-center px-3 py-2 text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors"
                                                     >
-                                                        <FaSignature className="text-sm"/>
-                                                        <span>{t("ententeStage.actions.sign")}</span>
-                                                    </Link>
-                                                )}
+                                                        <FaEye className="mr-1"/>
+                                                        <span className="hidden xl:inline">{t("ententeStage.actions.look")}</span>
+                                                    </button>
+                                                    {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasEmployerSigned(entente) && (
+                                                        <Link
+                                                            to={`/dashboard/employeur/ententes/${entente.id}/signer`}
+                                                            className="inline-flex items-center px-3 py-2 text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
+                                                        >
+                                                            <FaSignature className="mr-1"/>
+                                                            <span className="hidden xl:inline">{t("ententeStage.actions.sign")}</span>
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="lg:hidden divide-y divide-gray-200">
+                                {sortedEntentes.map((entente) => (
+                                    <div key={entente.id} className="p-4 hover:bg-gray-50">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-sm font-semibold text-gray-900">
+                                                    {entente.student?.firstName} {entente.student?.lastName}
+                                                </h4>
+                                                <p className="text-xs text-gray-600 mt-1 truncate">
+                                                    {entente.internshipOffer?.description}
+                                                </p>
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    {formatDate(entente.dateDebut)} - {formatDate(calculateDateFin(entente.dateDebut, entente.duree))}
+                                                </p>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </div>
+
+                                        <div className="flex items-center justify-center mb-3">
+                                            {getStatusBadge(entente)}
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => handleViewPdf(entente.id)}
+                                                className="flex-1 inline-flex items-center justify-center px-3 py-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors"
+                                            >
+                                                <FaEye className="mr-1"/>
+                                                <span className="text-sm">{t("ententeStage.actions.look")}</span>
+                                            </button>
+                                            {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasEmployerSigned(entente) && (
+                                                <Link
+                                                    to={`/dashboard/employeur/ententes/${entente.id}/signer`}
+                                                    className="flex-1 inline-flex items-center justify-center px-3 py-2 text-green-600 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
+                                                >
+                                                    <FaSignature className="mr-1"/>
+                                                    <span className="text-sm">{t("ententeStage.actions.sign")}</span>
+                                                </Link>
+                                            )}
+                                        </div>
+                                    </div>
                                 ))}
-                                </tbody>
-                            </table>
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
 
                 {sortedEntentes.length > 0 && (

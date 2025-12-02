@@ -23,11 +23,9 @@ export default function InternshipOffersList({selectedTerm}) {
     const [currentComment, setCurrentComment] = useState("");
     const [showPdfModal, setShowPdfModal] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
-
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [confirmMessage, setConfirmMessage] = useState("");
     const [onConfirm, setOnConfirm] = useState(null);
-
     const [infoMessage, setInfoMessage] = useState(null);
 
     useEffect(() => {
@@ -48,19 +46,6 @@ export default function InternshipOffersList({selectedTerm}) {
 
         setFilteredOffers(filtered);
     }, [selectedTerm, offers]);
-
-    const translateSchoolTerm = (termString) => {
-        if (!termString || typeof termString !== 'string') return '';
-        const parts = termString.trim().split(/\s+/);
-        const seasonKey = parts.shift().toUpperCase();
-        const rest = parts.join(' ');
-        const translationKey = `terms.${seasonKey}`;
-        const translated = t(translationKey);
-        const seasonLabel = (translated === translationKey)
-            ? (seasonKey.charAt(0).toUpperCase() + seasonKey.slice(1).toLowerCase())
-            : translated;
-        return rest ? `${seasonLabel} ${rest}` : seasonLabel;
-    };
 
     useEffect(() => {
         async function fetchOffers() {
@@ -113,34 +98,34 @@ export default function InternshipOffersList({selectedTerm}) {
 
         if (statusUpper === "PENDING" || statusUpper === "PENDING_VALIDATION") {
             return (
-                <span
-                    className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full inline-block mr-2"></span>
-                    {t("internshipOffersList.status.pendingapproval")}
+                <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center">
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{t("internshipOffersList.status.pendingapproval")}</span>
+                    <span className="sm:hidden">⏳</span>
                 </span>
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
             return (
-                <span
-                    className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
-                    <span className="w-2 h-2 bg-green-500 rounded-full inline-block mr-2"></span>
-                    {t("internshipOffersList.status.published")}
+                <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200 inline-flex items-center">
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{t("internshipOffersList.status.published")}</span>
+                    <span className="sm:hidden">✓</span>
                 </span>
             );
         } else if (statusUpper === "REJECTED") {
             return (
-                <span
-                    className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">
-                    <span className="w-2 h-2 bg-red-500 rounded-full inline-block mr-2"></span>
-                    {t("internshipOffersList.status.rejected")}
+                <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200 inline-flex items-center">
+                    <span className="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{t("internshipOffersList.status.rejected")}</span>
+                    <span className="sm:hidden">✗</span>
                 </span>
             );
         } else {
             return (
-                <span
-                    className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">
-                    <span className="w-2 h-2 bg-gray-500 rounded-full inline-block mr-2"></span>
-                    {statusUpper || t("internshipOffersList.status.unknown")}
+                <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200 inline-flex items-center">
+                    <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
+                    <span className="hidden sm:inline">{statusUpper || t("internshipOffersList.status.unknown")}</span>
+                    <span className="sm:hidden">?</span>
                 </span>
             );
         }
@@ -172,6 +157,7 @@ export default function InternshipOffersList({selectedTerm}) {
     const handleCreateOffer = () => {
         navigate('/dashboard/employeur/createOffer');
     };
+
     const confirmAction = (message, callback) => {
         setConfirmMessage(message);
         setOnConfirm(() => callback);
@@ -196,6 +182,7 @@ export default function InternshipOffersList({selectedTerm}) {
             }
         );
     }
+
     const handleEnableOffer = async (offer) => {
         const startDate = new Date(offer.startDate)
         const today = new Date()
@@ -300,36 +287,30 @@ export default function InternshipOffersList({selectedTerm}) {
     return (
         <>
             <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200">
+                <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-medium text-gray-900">{t("internshipOffersList.title")}</h3>
                     <p className="text-sm text-gray-600">
                         {t("internshipOffersList.subtitle")} ({filteredOffers.length} {filteredOffers.length > 1 ? t("internshipOffersList.offers") : t("internshipOffersList.offer")})
                     </p>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="hidden lg:block overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {t("internshipOffersList.table.description")}
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {t("internshipOffersList.table.startDate")}
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {t("internshipOffersList.table.duration")}
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {t("terms.term")}
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {t("internshipOffersList.table.status")}
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {t("employerCandidatures.table.candidatures", 'Candidatures')}
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {t("internshipOffersList.table.actions")}
                             </th>
                         </tr>
@@ -350,78 +331,79 @@ export default function InternshipOffersList({selectedTerm}) {
                                         }
                                     } : {})}
                                 >
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 py-4">
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0">
-                                                <div
-                                                    className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
+                                                <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
                                                     <span className="text-white text-sm font-bold">📋</span>
                                                 </div>
                                             </div>
-                                            <div className="ml-3">
-                                                <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                                            <div className="ml-3 min-w-0">
+                                                <div className="text-sm font-medium text-gray-900 truncate">
                                                     {offer.description || t("internshipOffersList.notDefined")}
                                                 </div>
                                                 <div className="text-xs text-gray-500">
-                                                    {offer.address || t("internshipOffersList.notSpecified")}
+                                                    {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {formatDate(offer.startDate)}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {translateSchoolTerm(offer.schoolTerm) || "N/A"}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                    <td className="px-4 py-4 whitespace-nowrap">
                                         {getStatusLabel(offer.status)}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm">
                                         <span title={preview}
                                               className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
                                             {loadingCounts && !cData ? t('internshipOffersList.loading') : count}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2"
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium"
                                         onClick={(e) => e.stopPropagation()}>
-                                        {statusUpper === "REJECTED" && (
+                                        <div className="flex items-center justify-center gap-1">
+                                            {statusUpper === "REJECTED" && (
+                                                <button
+                                                    onClick={() => {
+                                                        setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment'));
+                                                        setShowCommentModal(true);
+                                                    }}
+                                                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
+                                                    title={t('internshipOffersList.viewRejectionComment')}
+                                                >
+                                                    <span className="mr-1">💬</span>
+                                                    <span className="hidden xl:inline">{t('internshipOffersList.viewRejectionComment')}</span>
+                                                </button>
+                                            )}
                                             <button
-                                                onClick={() => {
-                                                    setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment'));
-                                                    setShowCommentModal(true);
-                                                }}
-                                                className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
-                                                title={t('internshipOffersList.viewRejectionComment')}
+                                                onClick={() => handlePreviewOffer(offer.id)}
+                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                                                title={t('internshipOffersList.preview')}
                                             >
-                                                <span className="mr-1">💬</span>
+                                                <span className="mr-1">👁</span>
+                                                <span className="hidden xl:inline">{t("previewPdf.preview")}</span>
                                             </button>
-                                        )}
-                                        <button
-                                            onClick={() => handlePreviewOffer(offer.id)}
-                                            className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
-                                            title={t('internshipOffersList.preview')}
-                                        >
-                                            <span className="mr-1">👁 {t("previewPdf.preview")}</span>
-                                        </button>
-                                        {statusUpper === "PUBLISHED" || statusUpper === "APPROVED" ? (
-                                            <button
-                                                onClick={() => handleDisableOffer(offer.id)}
-                                                className="inline-flex items-center px-3 py-1 border text-sm rounded-md text-gray-700 bg-red-300 hover:bg-red-200"
-                                            >
-                                                🔒 {t("internshipOffersList.disable")}
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={() => handleEnableOffer(offer)}
-                                                className="inline-flex items-center px-3 py-1 border text-sm rounded-md text-green-700 bg-green-100 hover:bg-green-200"
-                                            >
-                                                🔓 {t("internshipOffersList.enable")}
-                                            </button>
-                                        )}
+                                            {statusUpper === "PUBLISHED" || statusUpper === "APPROVED" ? (
+                                                <button
+                                                    onClick={() => handleDisableOffer(offer.id)}
+                                                    className="inline-flex items-center px-3 py-2 border text-sm rounded-md text-gray-700 bg-red-300 hover:bg-red-200"
+                                                    title={t("internshipOffersList.disable")}
+                                                >
+                                                    <span className="mr-1">🔒</span>
+                                                    <span className="hidden xl:inline">{t("internshipOffersList.disable")}</span>
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleEnableOffer(offer)}
+                                                    className="inline-flex items-center px-3 py-2 border text-sm rounded-md text-green-700 bg-green-100 hover:bg-green-200"
+                                                    title={t("internshipOffersList.enable")}
+                                                >
+                                                    <span className="mr-1">🔓</span>
+                                                    <span className="hidden xl:inline">{t("internshipOffersList.enable")}</span>
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             );
@@ -430,7 +412,88 @@ export default function InternshipOffersList({selectedTerm}) {
                     </table>
                 </div>
 
-                <div className="px-6 py-3 bg-gray-50 text-right">
+                <div className="lg:hidden divide-y divide-gray-200">
+                    {filteredOffers.map((offer) => {
+                        const cData = candidatureData[offer.id];
+                        const count = cData ? cData.count : (loadingCounts ? '…' : 0);
+                        const statusUpper = (offer.status || '').toUpperCase();
+                        const isClickable = statusUpper === 'APPROVED' || statusUpper === 'PUBLISHED';
+
+                        return (
+                            <div
+                                key={offer.id}
+                                className={`p-4 ${isClickable ? 'cursor-pointer hover:bg-gray-50' : 'cursor-not-allowed opacity-50'}`}
+                                {...(isClickable ? {
+                                    onClick: (e) => {
+                                        if (!(e.target.closest('button'))) navigate(`/dashboard/employeur/offers/${offer.id}/candidatures`);
+                                    }
+                                } : {})}
+                            >
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex items-start flex-1 min-w-0">
+                                        <div className="flex-shrink-0">
+                                            <div className="h-10 w-10 bg-blue-500 rounded flex items-center justify-center">
+                                                <span className="text-white text-lg">📋</span>
+                                            </div>
+                                        </div>
+                                        <div className="ml-3 flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold text-gray-900 truncate">
+                                                {offer.description || t("internshipOffersList.notDefined")}
+                                            </h4>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {formatDate(offer.startDate)} • {offer.durationInWeeks || 0} {(offer.durationInWeeks || 0) > 1 ? t("internshipOffersList.weeks") : t("internshipOffersList.week")}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-center gap-2 mb-3">
+                                    {getStatusLabel(offer.status)}
+                                    <span className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
+                                        {loadingCounts && !cData ? '…' : count} 👥
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                    {statusUpper === "REJECTED" && (
+                                        <button
+                                            onClick={() => {
+                                                setCurrentComment(offer.rejectionComment || t('internshipOffersList.noRejectionComment'));
+                                                setShowCommentModal(true);
+                                            }}
+                                            className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200"
+                                        >
+                                            💬
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={() => handlePreviewOffer(offer.id)}
+                                        className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200"
+                                    >
+                                        👁
+                                    </button>
+                                    {statusUpper === "PUBLISHED" || statusUpper === "APPROVED" ? (
+                                        <button
+                                            onClick={() => handleDisableOffer(offer.id)}
+                                            className="flex-1 inline-flex items-center justify-center px-3 py-2 border text-sm font-medium rounded-md text-gray-700 bg-red-300 hover:bg-red-200"
+                                        >
+                                            🔒
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleEnableOffer(offer)}
+                                            className="flex-1 inline-flex items-center justify-center px-3 py-2 border text-sm font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200"
+                                        >
+                                            🔓
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div className="px-4 sm:px-6 py-3 bg-gray-50 text-right">
                     <button
                         onClick={handleCreateOffer}
                         className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
@@ -441,25 +504,16 @@ export default function InternshipOffersList({selectedTerm}) {
                 </div>
 
                 {showCommentModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                        <div
-                            className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full max-h-[80vh] mx-4 overflow-hidden">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
+                        <div className="bg-white rounded-lg shadow-lg p-6 max-w-xl w-full max-h-[80vh] overflow-hidden">
                             <h2 className="text-lg font-semibold mb-4 text-red-700">
                                 {t('internshipOffersList.rejectionCommentTitle', 'Commentaire de rejet')}
                             </h2>
 
                             <div className="text-gray-800 overflow-auto max-h-[60vh]">
-                <pre
-                    className="whitespace-pre-wrap break-words text-sm"
-                    style={{
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                        overflowWrap: 'break-word',
-                        margin: 0
-                    }}
-                >
-                    {currentComment}
-                </pre>
+                                <pre className="whitespace-pre-wrap break-words text-sm" style={{margin: 0}}>
+                                    {currentComment}
+                                </pre>
                             </div>
 
                             <div className="mt-6 text-right">
@@ -474,9 +528,10 @@ export default function InternshipOffersList({selectedTerm}) {
                     </div>
                 )}
             </div>
+
             {showConfirmModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
                         <h2 className="text-lg font-semibold mb-4 text-gray-800">
                             {t("internshipOffersList.confirm", "Confirmation")}
                         </h2>
@@ -485,7 +540,7 @@ export default function InternshipOffersList({selectedTerm}) {
                             {confirmMessage}
                         </p>
 
-                        <div className="flex justify-end space-x-3">
+                        <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setShowConfirmModal(false)}
                                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
@@ -505,9 +560,10 @@ export default function InternshipOffersList({selectedTerm}) {
                     </div>
                 </div>
             )}
+
             {infoMessage && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
+                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
                         <h2 className="text-lg font-semibold mb-4 text-indigo-700">
                             {t("internshipOffersList.info")}
                         </h2>
