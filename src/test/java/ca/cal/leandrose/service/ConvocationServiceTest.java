@@ -281,4 +281,68 @@ class ConvocationServiceTest {
     assertTrue(
         result.stream().anyMatch(dto -> dto.getCandidatureId().equals(candidature2.getId())));
   }
+    @Test
+    void addConvocation_ShouldThrow_WhenConvocationDateNull() {
+        IllegalArgumentException ex =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                convocationService.addConvocation(
+                                        testCandidature.getId(), null, "Bureau 301", "Message"));
+        assertEquals("La date de convocation ne peut pas être nulle", ex.getMessage());
+    }
+
+    @Test
+    void getConvocationsByStudentId_ShouldReturnDtos() {
+        // Arrange
+        convocationService.addConvocation(
+                testCandidature.getId(), futureDate, "Bureau 301", "Message");
+
+        // Act
+        List<ConvocationDto> result =
+                convocationService.getConvocationsByStudentId(testStudent.getId());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+
+        ConvocationDto dto = result.get(0);
+        assertEquals(testCandidature.getId(), dto.getCandidatureId());
+        assertEquals("Bureau 301", dto.getLocation());
+    }
+
+    @Test
+    void getConvocationsByStudentId_ShouldReturnEmpty_WhenNone() {
+        List<ConvocationDto> result =
+                convocationService.getConvocationsByStudentId(testStudent.getId());
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllConvocationsByInternshipOfferId_ShouldReturnEmpty_WhenNoneExist() {
+        List<ConvocationDto> result =
+                convocationService.getAllConvocationsByInterShipOfferId(testOffer.getId());
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void addConvocation_ShouldPersistConvocationCorrectly() {
+        ConvocationDto dto =
+                convocationService.addConvocation(
+                        testCandidature.getId(), futureDate, "Salle 400", "Message test");
+
+        // read fresh from DB
+        Convocation conv =
+                convocationRepository.findById(dto.getId()).orElseThrow();
+
+        assertEquals("Salle 400", conv.getLocation());
+        assertEquals("Message test", conv.getPersonnalMessage());
+        assertEquals(futureDate, conv.getConvocationDate());
+        assertEquals(testCandidature.getId(), conv.getCandidature().getId());
+    }
+
 }

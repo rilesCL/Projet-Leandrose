@@ -5,11 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import ca.cal.leandrose.model.Cv;
-import ca.cal.leandrose.model.Gestionnaire;
-import ca.cal.leandrose.model.InternshipOffer;
-import ca.cal.leandrose.model.Student;
+import ca.cal.leandrose.model.*;
+import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.CvRepository;
+import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;
 import ca.cal.leandrose.service.dto.CvDto;
 import ca.cal.leandrose.service.dto.InternshipOfferDto;
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 public class GestionnaireServiceTest {
@@ -30,7 +30,10 @@ public class GestionnaireServiceTest {
   @Mock private CvRepository cvRepository;
   @InjectMocks private GestionnaireService gestionnaireService;
   @Mock private InternshipOfferRepository internshipOfferRepository;
+    @Mock private GestionnaireRepository gestionnaireRepository;
+    @Mock private PasswordEncoder passwordEncoder;
   private InternshipOffer offerPending;
+
 
   private Cv pendingCv;
 
@@ -201,4 +204,138 @@ public class GestionnaireServiceTest {
     assertEquals(acceptedOffers.size(), list_approved_offers.size());
     assertTrue(list_approved_offers.stream().allMatch(o -> "PUBLISHED".equals(o.getStatus())));
   }
+    // ---------- ADD ALL TESTS BELOW ----------
+
+    @Test
+    void approveCv_shouldThrow_whenCvNotFound() {
+        when(cvRepository.findById(999L)).thenReturn(Optional.empty());
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> gestionnaireService.approveCv(999L));
+        assertEquals("Cv non trouvé", ex.getMessage());
+    }
+
+    @Test
+    void rejectCv_shouldThrow_whenCvNotFound() {
+        when(cvRepository.findById(999L)).thenReturn(Optional.empty());
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> gestionnaireService.rejectCv(999L, "bad"));
+        assertEquals("Cv non trouvé", ex.getMessage());
+    }
+
+    @Test
+    void rejectOffer_shouldRejectAndSetComment() {
+        InternshipOffer pending = new InternshipOffer();
+        pending.setId(1L);
+        pending.setStatus(InternshipOffer.Status.PENDING_VALIDATION);
+
+        when(internshipOfferRepository.findById(1L)).thenReturn(Optional.of(pending));
+        when(internshipOfferRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        InternshipOfferDto dto = gestionnaireService.rejectOffer(1L, "Non conforme");
+
+        assertEquals("REJECTED", dto.getStatus());
+        assertEquals("Non conforme", dto.getRejectionComment());
+        assertEquals(LocalDate.now(), dto.getValidationDate());
+    }
+
+    @Test
+    void rejectOffer_shouldThrow_whenCommentMissing() {
+        assertThrows(IllegalArgumentException.class,
+                () -> gestionnaireService.rejectOffer(1L, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> gestionnaireService.rejectOffer(1L, "   "));
+    }
+
+    @Test
+    void rejectOffer_shouldThrow_whenOfferNotFound() {
+        when(internshipOfferRepository.findById(123L)).thenReturn(Optional.empty());
+
+        RuntimeException ex =
+                assertThrows(RuntimeException.class,
+                        () -> gestionnaireService.rejectOffer(123L, "bad"));
+
+        assertEquals("Offre non trouvée", ex.getMessage());
+    }
+
+    @Test
+    void rejectOffer_shouldThrow_whenStatusInvalid() {
+        InternshipOffer published = new InternshipOffer();
+        published.setId(5L);
+        published.setStatus(InternshipOffer.Status.PUBLISHED);
+
+        when(internshipOfferRepository.findById(5L)).thenReturn(Optional.of(published));
+
+        assertThrows(IllegalStateException.class,
+                () -> gestionnaireService.rejectOffer(5L, "raison"));
+    }
+
+    @Test
+    void approveOffer_shouldThrow_whenNotFound() {
+        when(internshipOfferRepository.findById(555L)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> gestionnaireService.approveOffer(555L));
+
+        assertEquals("Offre non trouvée", ex.getMessage());
+    }
+
+    @Test
+    void getPendingOffers_shouldReturnDtos() {
+        InternshipOffer p1 = new InternshipOffer();
+        p1.setId(1L);
+        p1.setStatus(InternshipOffer.Status.PENDING_VALIDATION);
+
+        InternshipOffer p2 = new InternshipOffer();
+        p2.setId(2L);
+        p2.setStatus(InternshipOffer.Status.PENDING_VALIDATION);
+
+        when(internshipOfferRepository.findByStatusOrderByStartDateDesc(
+                InternshipOffer.Status.PENDING_VALIDATION))
+                .thenReturn(List.of(p1, p2));
+
+        List<InternshipOfferDto> result = gestionnaireService.getPendingOffers();
+
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(o -> "PENDING_VALIDATION".equals(o.getStatus())));
+    }
+
+    @Test
+    void createGestionnaire_shouldEncodePassword_andSave() {
+        when(passwordEncoder.encode("rawpwd")).thenReturn("encodedpwd");
+
+        Gestionnaire saved = Gestionnaire.builder()
+                .id(99L)
+                .firstName("Ana")
+                .lastName("Silva")
+                .email("ana@test.com")
+                .password("encodedpwd")
+                .phoneNumber("123")
+                .build();
+
+        when(gestionnaireRepository.save(any(Gestionnaire.class))).thenReturn(saved);
+
+        var dto = gestionnaireService.createGestionnaire(
+                "Ana", "Silva", "ana@test.com", "rawpwd", "123");
+
+        assertEquals(99L, dto.getId());
+        assertEquals("Ana", dto.getFirstName());
+        assertEquals("Silva", dto.getLastName());
+        assertEquals("ana@test.com", dto.getEmail());
+        assertEquals("123", dto.getPhoneNumber());
+
+        verify(passwordEncoder).encode("rawpwd");
+        verify(gestionnaireRepository).save(any(Gestionnaire.class));
+    }
+
+
+    @Test
+    void getAllPrograms_shouldReturnAllEnumValues() {
+        var list = gestionnaireService.getAllPrograms();
+
+        assertEquals(Program.values().length, list.size());
+        assertTrue(list.stream().anyMatch(p -> p.code().equals(Program.COMPUTER_SCIENCE.name())));
+    }
+
+// ---------- END OF ADDED TESTS ----------
+
 }

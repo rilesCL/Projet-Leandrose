@@ -165,4 +165,58 @@ class CvServiceTest {
         assertThrows(RuntimeException.class, () -> cvService.getCvByStudentId(999L));
     assertTrue(ex.getMessage().contains("CV non trouvé"));
   }
+    @Test
+    void downloadCv_ShouldReturnResource_WhenCvExistsAndFilePresent() throws Exception {
+        // Upload a valid CV first
+        MockMultipartFile file =
+                new MockMultipartFile(
+                        "file",
+                        "cv.pdf",
+                        "application/pdf",
+                        Files.readAllBytes(Path.of("src/test/resources/test.pdf")));
+
+        CvDto uploaded = cvService.uploadCv(testStudent.getId(), file);
+        Cv saved = cvRepository.findById(uploaded.getId()).orElseThrow();
+
+        // Act
+        var resource = cvService.downloadCv(saved.getId());
+
+        // Assert
+        assertNotNull(resource);
+        assertTrue(resource.exists());
+        assertTrue(resource.isReadable());
+    }
+
+    @Test
+    void downloadCv_ShouldThrow_WhenCvIdNotFound() {
+        RuntimeException ex =
+                assertThrows(RuntimeException.class, () -> cvService.downloadCv(999L));
+
+        assertTrue(ex.getMessage().contains("Cv introuvable"));
+    }
+
+    @Test
+    void downloadCv_ShouldThrow_WhenFileMissingOnDisk() throws Exception {
+        // Upload a real CV
+        MockMultipartFile file =
+                new MockMultipartFile(
+                        "file",
+                        "cv.pdf",
+                        "application/pdf",
+                        Files.readAllBytes(Path.of("src/test/resources/test.pdf")));
+
+        CvDto uploaded = cvService.uploadCv(testStudent.getId(), file);
+
+        // Delete the file manually
+        Cv saved = cvRepository.findById(uploaded.getId()).orElseThrow();
+        Path path = Path.of(saved.getPdfPath());
+        Files.deleteIfExists(path);
+
+        // Act + Assert
+        RuntimeException ex =
+                assertThrows(RuntimeException.class, () -> cvService.downloadCv(saved.getId()));
+
+        assertTrue(ex.getMessage().contains("Fichier non trouvé"));
+    }
+
 }

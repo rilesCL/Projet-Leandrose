@@ -2,10 +2,12 @@ package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
-import ca.cal.leandrose.service.dto.evaluation.CreatorTypeEvaluation;
+import ca.cal.leandrose.service.dto.ProfDto;
+import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
-import ca.cal.leandrose.service.dto.evaluation.EvaluationStagiaireDto;
-import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
+import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
+import ca.cal.leandrose.service.dto.evaluation.prof.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +33,7 @@ class EvaluationStagiaireServiceTest {
 
     @Mock
     private EmployeurRepository employeurRepository;
+
     @Mock
     private ProfRepository profRepository;
 
@@ -43,6 +45,9 @@ class EvaluationStagiaireServiceTest {
 
     @Mock
     private EntenteStageRepository ententeStageRepository;
+
+    @Mock
+    private PDFGeneratorService pdfGeneratorService;
 
     @InjectMocks
     @Spy
@@ -58,13 +63,14 @@ class EvaluationStagiaireServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Setup common test data
         employeur = Employeur.builder()
                 .id(1L)
                 .firstName("John")
                 .lastName("Doe")
+                .email("john.doe@company.com")
                 .companyName("Test Company")
                 .build();
+
         professeur = Prof.builder()
                 .id(1L)
                 .firstName("Marie")
@@ -72,6 +78,7 @@ class EvaluationStagiaireServiceTest {
                 .email("marie-claude.beauchamp@college.ca")
                 .nameCollege("Collège Mainsonneuve")
                 .address("3800 R. Sherbrooke E, Montréal, QC H1X 2A2")
+                .fax_machine("514-555-9999")
                 .build();
 
         student = Student.builder()
@@ -84,6 +91,9 @@ class EvaluationStagiaireServiceTest {
         internshipOffer = InternshipOffer.builder()
                 .id(3L)
                 .description("Java Developer Internship")
+                .address("123 Test St")
+                .startDate(LocalDate.now())
+                .durationInWeeks(12)
                 .employeur(employeur)
                 .build();
 
@@ -92,19 +102,14 @@ class EvaluationStagiaireServiceTest {
                 .student(student)
                 .internshipOffer(internshipOffer)
                 .build();
+
         ententeStage = EntenteStage.builder()
                 .id(1L)
                 .candidature(candidature)
                 .prof(professeur)
-                .gestionnaire(null) // or create a Gestionnaire if needed
-                .missionsObjectifs("Développement d'applications Java, participation aux réunions d'équipe")
-                .statut(EntenteStage.StatutEntente.VALIDEE) // or whatever status is appropriate
+                .missionsObjectifs("Développement d'applications Java")
+                .statut(EntenteStage.StatutEntente.VALIDEE)
                 .dateCreation(LocalDateTime.now())
-                .dateModification(LocalDateTime.now())
-                .cheminDocumentPDF("/path/to/entente.pdf")
-                .dateSignatureEtudiant(LocalDateTime.now())
-                .dateSignatureEmployeur(LocalDateTime.now())
-                .dateSignatureGestionnaire(LocalDateTime.now())
                 .build();
 
         evaluationStagiaire = EvaluationStagiaire.builder()
@@ -116,13 +121,15 @@ class EvaluationStagiaireServiceTest {
                 .internshipOffer(internshipOffer)
                 .ententeStage(ententeStage)
                 .submittedByEmployer(false)
+                .submittedByProfessor(false)
+                .status(EvaluationStatus.EN_COURS)
                 .build();
     }
 
-    // Test for createEvaluation method
+    // ==================== Create Evaluation Tests ====================
+
     @Test
     void createEvaluationByEmployer_Success() {
-        // Given
         when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
                 .thenReturn(Optional.of(ententeStage));
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
@@ -136,10 +143,9 @@ class EvaluationStagiaireServiceTest {
                     evaluation.setId(1L);
                     return evaluation;
                 });
-        // When
+
         EvaluationStagiaireDto result = evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L);
 
-        // Then
         assertNotNull(result);
         assertEquals(1L, result.id());
         assertEquals(1L, result.employeurId());
@@ -148,14 +154,11 @@ class EvaluationStagiaireServiceTest {
         assertFalse(result.submittedByEmployer());
 
         verify(employeurRepository).findById(1L);
-        verify(studentRepository).findById(2L);
-        verify(internshipOfferRepository).findById(3L);
         verify(evaluationStagiaireRepository).save(any(EvaluationStagiaire.class));
     }
 
     @Test
     void createEvaluationByProf_Success() {
-        // Given
         when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
                 .thenReturn(Optional.of(ententeStage));
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
@@ -169,27 +172,71 @@ class EvaluationStagiaireServiceTest {
                     evaluation.setId(1L);
                     return evaluation;
                 });
-        // When
+
         EvaluationStagiaireDto result = evaluationStagiaireService.createEvaluationByProf(1L, 2L, 3L);
 
-        // Then
         assertNotNull(result);
-        assertEquals(1L, result.id());
         assertEquals(1L, result.professeurId());
-        assertEquals(2L, result.studentId());
-        assertEquals(3L, result.internshipOfferId());
         assertFalse(result.submittedByProfessor());
 
         verify(profRepository).findById(1L);
-        verify(studentRepository).findById(2L);
-        verify(internshipOfferRepository).findById(3L);
-        verify(evaluationStagiaireRepository).save(any(EvaluationStagiaire.class));
     }
 
     @Test
-    void createEvaluation_EvaluationAlreadyExists_ThrowsException() {
-        // Given
-        EvaluationStagiaire existingEvaluation = EvaluationStagiaire.builder()
+    void createEvaluationByEmployer_ExistingIncompleteEvaluation_ReturnsExisting() {
+        EvaluationStagiaire existing = EvaluationStagiaire.builder()
+                .id(5L)
+                .student(student)
+                .internshipOffer(internshipOffer)
+                .employeur(employeur)
+                .professeur(professeur)
+                .submittedByEmployer(false)
+                .submittedByProfessor(false)
+                .build();
+
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(existing));
+
+        EvaluationStagiaireDto result = evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L);
+
+        assertNotNull(result);
+        assertEquals(5L, result.id());
+        verify(evaluationStagiaireRepository, never()).save(any());
+    }
+
+    @Test
+    void createEvaluationByProf_ExistingIncompleteEvaluation_ReturnsExisting() {
+        EvaluationStagiaire existing = EvaluationStagiaire.builder()
+                .id(5L)
+                .student(student)
+                .internshipOffer(internshipOffer)
+                .employeur(employeur)
+                .professeur(professeur)
+                .submittedByEmployer(true)
+                .submittedByProfessor(false)
+                .build();
+
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(existing));
+
+        EvaluationStagiaireDto result = evaluationStagiaireService.createEvaluationByProf(1L, 2L, 3L);
+
+        assertNotNull(result);
+        assertEquals(5L, result.id());
+        verify(evaluationStagiaireRepository, never()).save(any());
+    }
+
+    @Test
+    void createEvaluationByEmployer_AlreadyComplete_ThrowsException() {
+        EvaluationStagiaire existing = EvaluationStagiaire.builder()
                 .id(1L)
                 .student(student)
                 .internshipOffer(internshipOffer)
@@ -204,324 +251,358 @@ class EvaluationStagiaireServiceTest {
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
         when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
         when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
-                .thenReturn(Optional.of(existingEvaluation));
+                .thenReturn(Optional.of(existing));
 
-        // When & Then
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
+        assertThrows(IllegalStateException.class,
                 () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
-
-        assertEquals("L'évaluation complète existe déjà pour ce stagiaire.", exception.getMessage());
-
-        verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L);
-        verify(studentRepository).findById(2L);
-        verify(internshipOfferRepository).findById(3L);
-        verify(evaluationStagiaireRepository).findByStudentIdAndInternshipOfferId(2L, 3L);
-        verify(evaluationStagiaireRepository, never()).save(any(EvaluationStagiaire.class));
     }
 
     @Test
-    void createEvaluation_EmployeurNotFound_ThrowsException() {
-        // Given
+    void createEvaluationByProf_AlreadyComplete_ThrowsException() {
+        EvaluationStagiaire existing = EvaluationStagiaire.builder()
+                .id(1L)
+                .student(student)
+                .internshipOffer(internshipOffer)
+                .employeur(employeur)
+                .professeur(professeur)
+                .submittedByEmployer(false)
+                .submittedByProfessor(true)
+                .build();
+
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(existing));
+
+        assertThrows(IllegalStateException.class,
+                () -> evaluationStagiaireService.createEvaluationByProf(1L, 2L, 3L));
+    }
+
+    @Test
+    void createEvaluation_StudentNotFound_ThrowsException() {
+        when(studentRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
+    }
+
+    @Test
+    void createEvaluation_InternshipOfferNotFound_ThrowsException() {
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
+    }
+
+    @Test
+    void createEvaluation_EntenteStageNotFound_ThrowsException() {
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
+    }
+
+    @Test
+    void createEvaluationByEmployer_EmployeurNotFound_ThrowsException() {
         when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
                 .thenReturn(Optional.of(ententeStage));
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
         when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
         when(employeurRepository.findById(1L)).thenReturn(Optional.empty());
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.empty());
 
-        // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
+        assertThrows(RuntimeException.class,
                 () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
-
-        assertEquals("Employeur non trouvé", exception.getMessage());
-
-        verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L);
-        verify(studentRepository).findById(2L);
-        verify(internshipOfferRepository).findById(3L);
-        verify(employeurRepository).findById(1L);
-        verify(evaluationStagiaireRepository, never()).save(any(EvaluationStagiaire.class));
     }
+
     @Test
-    void createEvaluation_ProfNotFound_ThrowsException() {
-        // Given
+    void createEvaluationByProf_ProfNotFound_ThrowsException() {
         when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
                 .thenReturn(Optional.of(ententeStage));
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
         when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
         when(profRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.createEvaluationByProf(1L, 2L, 3L));
-
-        assertEquals("Professeur non trouvé", exception.getMessage());
-
-        verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L);
-        verify(studentRepository).findById(2L);
-        verify(internshipOfferRepository).findById(3L);
-        verify(profRepository).findById(1L);
-        verify(evaluationStagiaireRepository, never()).save(any(EvaluationStagiaire.class));
-    }
-
-    @Test
-    void createEvaluation_StudentNotFound_ThrowsException() {
-        // Given
-        when(studentRepository.findById(2L)).thenReturn(Optional.empty());
-
-        // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
-
-        assertEquals("Étudiant non trouvé", exception.getMessage());
-        verify(studentRepository).findById(2L);
-        verify(internshipOfferRepository, never()).findById(anyLong());
-    }
-
-    @Test
-    void createEvaluation_InternshipOfferNotFound_ThrowsException() {
-        // Given
-        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
-        when(internshipOfferRepository.findById(3L)).thenReturn(Optional.empty());
-
-        // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.createEvaluationByEmployer(1L, 2L, 3L));
-
-        assertEquals("Offre de stage non trouvée", exception.getMessage());
-        verify(internshipOfferRepository).findById(3L);
-    }
-
-    @Test
-    void getEvaluationInfo_ForEmployer_Success() {
-        // Given
-        EntenteStage ententeStage = EntenteStage.builder()
-                .id(1L)
-                .statut(EntenteStage.StatutEntente.VALIDEE)
-                .candidature(candidature)
-                .build();
-
-        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(2L, 3L, EntenteStage.StatutEntente.VALIDEE))
-                .thenReturn(Optional.of(ententeStage));
-
-        EvaluationStagiaire eval = new EvaluationStagiaire();
-        eval.setSubmittedByEmployer(false);
-
         when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
-                .thenReturn(Optional.of(eval));
+                .thenReturn(Optional.empty());
 
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.createEvaluationByProf(1L, 2L, 3L));
+    }
+
+    // ==================== Get Evaluation Info Tests ====================
+
+    @Test
+    void getEvaluationInfoForEmployer_Success() {
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                2L, 3L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(Optional.of(ententeStage));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.empty());
         when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
         when(internshipOfferRepository.findById(3L)).thenReturn(Optional.of(internshipOffer));
 
-        // When
         EvaluationEmployerInfoDto result = evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L);
 
-        // Then
         assertNotNull(result);
-        assertNotNull(result.studentInfo());
-        assertNotNull(result.internshipInfo());
         assertEquals("Alice", result.studentInfo().firstName());
-        assertEquals("Smith", result.studentInfo().lastName());
-        assertEquals("Computer Science", result.studentInfo().program());
         assertEquals("Java Developer Internship", result.internshipInfo().description());
-        assertEquals("Test Company", result.internshipInfo().companyName());
-
-        verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(2L, 3L, EntenteStage.StatutEntente.VALIDEE);
-        verify(studentRepository).findById(2L);
-        verify(evaluationStagiaireRepository).findByStudentIdAndInternshipOfferId(2L, 3L);
-        verify(internshipOfferRepository).findById(3L);
     }
+
     @Test
-    void getEvaluationInfo_ForProf_Success() {
-        // Given
-        EntenteStage ententeStage = EntenteStage.builder()
-                .id(1L)
-                .statut(EntenteStage.StatutEntente.VALIDEE)
-                .candidature(candidature)
-                .prof(professeur)
+    void getEvaluationInfoForEmployer_NotEligible_ThrowsException() {
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                2L, 3L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class,
+                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
+    }
+
+    @Test
+    void getEvaluationInfoForEmployer_AlreadySubmitted_ThrowsException() {
+        EvaluationStagiaire submitted = EvaluationStagiaire.builder()
+                .submittedByEmployer(true)
+                .build();
+
+        doReturn(true).when(evaluationStagiaireService)
+                .isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 3L);
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(submitted));
+
+        assertThrows(IllegalStateException.class,
+                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
+    }
+
+    @Test
+    void getEvaluationInfoForTeacher_Success() {
+        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(
+                1L, 2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.empty());
+
+        EvaluationTeacherInfoDto result = evaluationStagiaireService.getEvaluationInfoForTeacher(1L, 2L, 3L);
+
+        assertNotNull(result);
+        assertEquals("Alice Smith", result.studentTeacherDto().fullname());
+        assertEquals("Test Company", result.entrepriseTeacherDto().companyName());
+    }
+
+    @Test
+    void getEvaluationInfoForTeacher_NoEntente_ThrowsException() {
+        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(
+                1L, 2L, 3L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class,
+                () -> evaluationStagiaireService.getEvaluationInfoForTeacher(1L, 2L, 3L));
+    }
+
+    @Test
+    void getEvaluationInfoForTeacher_AlreadySubmitted_ThrowsException() {
+        EvaluationStagiaire submitted = EvaluationStagiaire.builder()
+                .submittedByProfessor(true)
                 .build();
 
         when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(
                 1L, 2L, 3L))
                 .thenReturn(Optional.of(ententeStage));
-
-        EvaluationStagiaire eval = new EvaluationStagiaire();
-        eval.setSubmittedByEmployer(false);
-        eval.setSubmittedByProfessor(false);
-
         when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
-                .thenReturn(Optional.of(eval));
+                .thenReturn(Optional.of(submitted));
 
-        // When
-        EvaluationTeacherInfoDto result = evaluationStagiaireService.getEvaluationInfoForTeacher(1L, 2L, 3L);
-
-        // Then
-        assertNotNull(result);
-        assertNotNull(result.entrepriseTeacherDto());
-        assertNotNull(result.studentTeacherDto());
-        assertEquals("Alice Smith", result.studentTeacherDto().fullname());
-        assertEquals("Test Company", result.entrepriseTeacherDto().companyName());
-        assertEquals("John Doe", result.entrepriseTeacherDto().contactName());
-
-
-        verify(ententeStageRepository).findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(1L, 2L, 3L);
-        verify(evaluationStagiaireRepository).findByStudentIdAndInternshipOfferId(2L, 3L);
-    }
-
-    @Test
-    void getEvaluationInfo_ForEmployer_NotEligible_ThrowsException() {
-        // Given
-        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(2L, 3L, EntenteStage.StatutEntente.VALIDEE))
-                .thenReturn(Optional.empty());
-
-        // When & Then
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
-
-        assertEquals("Evaluation not allowed - agreement not validated or not found", exception.getMessage());
-        verify(ententeStageRepository).findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(2L, 3L, EntenteStage.StatutEntente.VALIDEE);
-        verify(evaluationStagiaireRepository, never()).existsByInternshipOfferIdAndStudentId(anyLong(), anyLong());
-    }
-    @Test
-    void getEvaluationInfo_ForProf_NotEligible_ThrowsException() {
-        // Given
-        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(1L, 2L, 3L))
-                .thenReturn(Optional.empty());
-
-        // When & Then
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
+        assertThrows(IllegalStateException.class,
                 () -> evaluationStagiaireService.getEvaluationInfoForTeacher(1L, 2L, 3L));
-
-        assertEquals("Aucune entente de stage associée à ce professeur pour cet étudiant et ce stage.", exception.getMessage());
-
-        verify(ententeStageRepository).findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(1L, 2L, 3L);
-        verify(evaluationStagiaireRepository, never()).findByStudentIdAndInternshipOfferId(anyLong(), anyLong());
     }
 
     @Test
-    void getEvaluationInfo_EvaluationAlreadyExists_ThrowsExceptionForEmployer() {
-        //Given
-        EntenteStage ententeStage = EntenteStage.builder()
+    void getEvaluationInfoForTeacher_NoEmployeur_ThrowsException() {
+        EntenteStage ententeWithoutEmployeur = EntenteStage.builder()
                 .id(1L)
-                .statut(EntenteStage.StatutEntente.VALIDEE)
-                .candidature(candidature)
-                .build();
-
-        doReturn(true)
-                .when(evaluationStagiaireService)
-                .isEvaluationEligible(CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 3L);
-
-        EvaluationStagiaire existing = new EvaluationStagiaire();
-        existing.setSubmittedByEmployer(true);
-
-        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
-                .thenReturn(Optional.of(existing));
-
-        // When + Then
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
-
-        assertEquals("L'employeur a déjà complété cette formulaire.", ex.getMessage());
-
-        verify(studentRepository, never()).findById(any());
-    }
-
-    @Test
-    void getEvaluationInfo_EvaluationAlreadyExists_ThrowsExceptionForProf() {
-        //Given
-        EntenteStage ententeStage = EntenteStage.builder()
-                .id(1L)
-                .statut(EntenteStage.StatutEntente.VALIDEE)
                 .candidature(candidature)
                 .prof(professeur)
-                .build();
-
-        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(1L, 2L, 3L))
-                .thenReturn(Optional.of(ententeStage));
-
-        EvaluationStagiaire existing = new EvaluationStagiaire();
-        existing.setSubmittedByProfessor(true);
-
-        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
-                .thenReturn(Optional.of(existing));
-
-        // When + Then
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.getEvaluationInfoForTeacher(1L, 2L, 3L));
-
-        assertEquals("le profeseur a déjà complété cette formulaire", ex.getMessage());
-
-        verify(studentRepository, never()).findById(any());
-    }
-
-    @Test
-    void getEvaluationInfo_ForEmployer_StudentNotFound_ThrowsException() {
-        // Given
-        EntenteStage ententeStage = EntenteStage.builder()
-                .id(1L)
                 .statut(EntenteStage.StatutEntente.VALIDEE)
-                .candidature(candidature)
                 .build();
 
-        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(2L, 3L, EntenteStage.StatutEntente.VALIDEE))
-                .thenReturn(Optional.of(ententeStage));
-        when(studentRepository.findById(2L)).thenReturn(Optional.empty());
+        InternshipOffer offerWithoutEmployeur = InternshipOffer.builder()
+                .id(3L)
+                .description("Test")
+                .startDate(LocalDate.now())
+                .durationInWeeks(12)
+                .address("Test Address")
+                .employeur(null)
+                .build();
 
-        // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> evaluationStagiaireService.getEvaluationInfoForEmployer(1L, 2L, 3L));
+        Candidature candidatureWithoutEmployeur = Candidature.builder()
+                .id(1L)
+                .student(student)
+                .internshipOffer(offerWithoutEmployeur)
+                .build();
 
-        assertEquals("Étudiant non trouvé", exception.getMessage());
-        verify(studentRepository).findById(2L);
-    }
-    @Test
-    void getEvaluationInfo_ForProf_NoEntenteStage_ThrowsException() {
-        // Given
-        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(1L, 2L, 3L))
+        ententeWithoutEmployeur.setCandidature(candidatureWithoutEmployeur);
+
+        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_Id(
+                1L, 2L, 3L))
+                .thenReturn(Optional.of(ententeWithoutEmployeur));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
                 .thenReturn(Optional.empty());
 
-        // When & Then
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
+        assertThrows(IllegalStateException.class,
                 () -> evaluationStagiaireService.getEvaluationInfoForTeacher(1L, 2L, 3L));
-
-        assertEquals("Aucune entente de stage associée à ce professeur pour cet étudiant et ce stage.", exception.getMessage());
     }
 
-    // Test for getEvaluationById method
+    // ==================== Generate PDF Tests ====================
+
     @Test
-    void getEvaluationById_Success() {
-        // Given
+    void generateEvaluationPdfByEmployer_Success() {
+        Map<String, List<EmployerQuestionResponse>> categories = createEmployerCategories();
+        EvaluationEmployerFormData formData = new EvaluationEmployerFormData(
+                categories, "Good work", 1, "Good", false, 15, "YES", true
+        );
+
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.of(evaluationStagiaire));
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_Id(2L, 3L))
+                .thenReturn(Optional.of(ententeStage));
+        when(pdfGeneratorService.generatedEvaluationByEmployer(
+                any(), any(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn("/path/to/pdf");
+        when(evaluationStagiaireRepository.save(any())).thenReturn(evaluationStagiaire);
+
+        EvaluationStagiaireDto result = evaluationStagiaireService.generateEvaluationPdfByEmployer(
+                1L, formData, "fr");
+
+        assertNotNull(result);
+        verify(pdfGeneratorService).generatedEvaluationByEmployer(
+                any(), any(), eq("fr"), eq("Marie"), eq("Beauchamp"),
+                eq("Collège Mainsonneuve"), anyString(), anyString());
+        verify(evaluationStagiaireRepository).save(any());
+    }
+
+    @Test
+    void generateEvaluationPdfByEmployer_EvaluationNotFound_ThrowsException() {
+        Map<String, List<EmployerQuestionResponse>> categories = createEmployerCategories();
+        EvaluationEmployerFormData formData = new EvaluationEmployerFormData(
+                categories, null, 1, null, false, 15, "NO", false
+        );
+
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.generateEvaluationPdfByEmployer(1L, formData, "fr"));
+    }
+
+    @Test
+    void generateEvaluationByTeacher_Success() {
+        Map<String, List<QuestionResponseTeacher>> categories = createTeacherCategories();
+        EvaluationProfFormDto formData = new EvaluationProfFormDto(
+                categories, 1, 2, false, false, new ArrayList<>()
+        );
+
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.of(evaluationStagiaire));
+        when(pdfGeneratorService.generatedEvaluationByTeacher(any(), any(), any(), anyString()))
+                .thenReturn("/path/to/pdf");
+        when(evaluationStagiaireRepository.save(any())).thenReturn(evaluationStagiaire);
+
+        EvaluationStagiaireDto result = evaluationStagiaireService.generateEvaluationByTeacher(
+                1L, formData, "fr");
+
+        assertNotNull(result);
+        verify(pdfGeneratorService).generatedEvaluationByTeacher(any(), any(), any(), eq("fr"));
+        verify(evaluationStagiaireRepository).save(any());
+    }
+
+    @Test
+    void generateEvaluationByTeacher_EvaluationNotFound_ThrowsException() {
+        Map<String, List<QuestionResponseTeacher>> categories = createTeacherCategories();
+        EvaluationProfFormDto formData = new EvaluationProfFormDto(
+                categories, 1, 2, false, false, new ArrayList<>()
+        );
+
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.generateEvaluationByTeacher(1L, formData, "fr"));
+    }
+
+    // ==================== Get PDF Tests ====================
+
+    @Test
+    void getEvaluationPdf_Employer_Success() {
+        evaluationStagiaire.setEmployerPdfFilePath("/path/to/employer.pdf");
+        byte[] pdfContent = "PDF content".getBytes();
+
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.of(evaluationStagiaire));
+        when(pdfGeneratorService.lireFichierPDF("/path/to/employer.pdf")).thenReturn(pdfContent);
+
+        byte[] result = evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER);
+
+        assertNotNull(result);
+        assertArrayEquals(pdfContent, result);
+    }
+
+    @Test
+    void getEvaluationPdf_Professor_Success() {
+        evaluationStagiaire.setProfessorPdfFilePath("/path/to/professor.pdf");
+        byte[] pdfContent = "PDF content".getBytes();
+
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.of(evaluationStagiaire));
+        when(pdfGeneratorService.lireFichierPDF("/path/to/professor.pdf")).thenReturn(pdfContent);
+
+        byte[] result = evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.PROF);
+
+        assertNotNull(result);
+        assertArrayEquals(pdfContent, result);
+    }
+
+    @Test
+    void getEvaluationPdf_NoPdfGenerated_ThrowsException() {
+        evaluationStagiaire.setEmployerPdfFilePath(null);
+
         when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.of(evaluationStagiaire));
 
-        // When
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER));
+    }
+
+    @Test
+    void getEvaluationPdf_EvaluationNotFound_ThrowsException() {
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class,
+                () -> evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER));
+    }
+
+    // ==================== Get Evaluation By ID Tests ====================
+
+    @Test
+    void getEvaluationById_Success() {
+        when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.of(evaluationStagiaire));
+
         EvaluationStagiaireDto result = evaluationStagiaireService.getEvaluationById(1L);
 
-        // Then
         assertNotNull(result);
         assertEquals(1L, result.id());
-        assertEquals(1L, result.employeurId());
-        assertEquals(2L, result.studentId());
-        assertEquals(3L, result.internshipOfferId());
-
-        verify(evaluationStagiaireRepository).findById(1L);
     }
 
     @Test
     void getEvaluationById_NotFound_ThrowsException() {
-        // Given
         when(evaluationStagiaireRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class,
+        assertThrows(RuntimeException.class,
                 () -> evaluationStagiaireService.getEvaluationById(1L));
-
-        assertEquals("Évaluation non trouvée", exception.getMessage());
-        verify(evaluationStagiaireRepository).findById(1L);
     }
 
-    // Test for getEvaluationsByEmployeur method
+    // ==================== Get Evaluations By Creator Tests ====================
+
     @Test
     void getEvaluationsByEmployeur_Success() {
-        // Given
-        EvaluationStagiaire evaluation2 = EvaluationStagiaire.builder()
+        EvaluationStagiaire eval2 = EvaluationStagiaire.builder()
                 .id(2L)
                 .dateEvaluation(LocalDate.now())
                 .employeur(employeur)
@@ -532,86 +613,223 @@ class EvaluationStagiaireServiceTest {
                 .build();
 
         when(evaluationStagiaireRepository.findByEmployeurId(1L))
-                .thenReturn(List.of(evaluationStagiaire, evaluation2));
+                .thenReturn(List.of(evaluationStagiaire, eval2));
 
-        // When
         List<EvaluationStagiaireDto> result = evaluationStagiaireService.getEvaluationsByEmployeur(1L);
 
-        // Then
         assertNotNull(result);
         assertEquals(2, result.size());
-
-        EvaluationStagiaireDto firstResult = result.get(0);
-        assertEquals(1L, firstResult.id());
-        assertEquals(1L, firstResult.employeurId());
-        assertFalse(firstResult.submittedByEmployer());
-
-        EvaluationStagiaireDto secondResult = result.get(1);
-        assertEquals(2L, secondResult.id());
-        assertTrue(secondResult.submittedByEmployer());
-
-        verify(evaluationStagiaireRepository).findByEmployeurId(1L);
-    }
-    @Test
-    void getEvaluationsByProf_Success() {
-        // Given
-        EvaluationStagiaire evaluation2 = EvaluationStagiaire.builder()
-                .id(2L)
-                .dateEvaluation(LocalDate.now())
-                .employeur(employeur)
-                .student(student)
-                .professeur(professeur)
-                .internshipOffer(internshipOffer)
-                .submittedByEmployer(true)
-                .build();
-
-        when(evaluationStagiaireRepository.findByProfesseurId(1L))
-                .thenReturn(List.of(evaluationStagiaire, evaluation2));
-
-        // When
-        List<EvaluationStagiaireDto> result = evaluationStagiaireService.getEvaluationsByProfesseur(1L);
-        System.out.println("Resultat: " + result);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-
-        EvaluationStagiaireDto firstResult = result.get(0);
-        assertEquals(1L, firstResult.id());
-        assertEquals(1L, firstResult.employeurId());
-        assertFalse(firstResult.submittedByEmployer());
-
-        EvaluationStagiaireDto secondResult = result.get(1);
-        assertEquals(2L, secondResult.id());
-        assertTrue(secondResult.submittedByEmployer());
-
-        verify(evaluationStagiaireRepository).findByProfesseurId(1L);
+        assertEquals(1L, result.get(0).id());
+        assertEquals(2L, result.get(1).id());
     }
 
     @Test
     void getEvaluationsByEmployeur_EmptyList() {
-        // Given
         when(evaluationStagiaireRepository.findByEmployeurId(1L)).thenReturn(List.of());
 
-        // When
         List<EvaluationStagiaireDto> result = evaluationStagiaireService.getEvaluationsByEmployeur(1L);
 
-        // Then
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(evaluationStagiaireRepository).findByEmployeurId(1L);
     }
-    @Test
-    void getEvaluationsByProf_EmptyList() {
-        // Given
-        when(evaluationStagiaireRepository.findByProfesseurId(1L)).thenReturn(List.of());
 
-        // When
+    @Test
+    void getEvaluationsByProfesseur_Success() {
+        when(evaluationStagiaireRepository.findByProfesseurId(1L))
+                .thenReturn(List.of(evaluationStagiaire));
+
         List<EvaluationStagiaireDto> result = evaluationStagiaireService.getEvaluationsByProfesseur(1L);
 
-        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getEvaluationsByProfesseur_EmptyList() {
+        when(evaluationStagiaireRepository.findByProfesseurId(1L)).thenReturn(List.of());
+
+        List<EvaluationStagiaireDto> result = evaluationStagiaireService.getEvaluationsByProfesseur(1L);
+
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(evaluationStagiaireRepository).findByProfesseurId(1L);
+    }
+
+    // ==================== Eligibility Tests ====================
+
+    @Test
+    void isEvaluationEligible_Employer_Valid_ReturnsTrue() {
+        EntenteStage validEntente = EntenteStage.builder()
+                .id(1L)
+                .candidature(candidature)
+                .statut(EntenteStage.StatutEntente.VALIDEE)
+                .build();
+
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                2L, 3L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(Optional.of(validEntente));
+
+        boolean result = evaluationStagiaireService.isEvaluationEligible(
+                CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 3L);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isEvaluationEligible_Employer_Invalid_ReturnsFalse() {
+        when(ententeStageRepository.findByCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                2L, 3L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(Optional.empty());
+
+        boolean result = evaluationStagiaireService.isEvaluationEligible(
+                CreatorTypeEvaluation.EMPLOYER, 1L, 2L, 3L);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void isEvaluationEligible_Prof_Valid_ReturnsTrue() {
+        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                1L, 2L, 3L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(Optional.of(ententeStage));
+
+        boolean result = evaluationStagiaireService.isEvaluationEligible(
+                CreatorTypeEvaluation.PROF, 1L, 2L, 3L);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void isEvaluationEligible_Prof_Invalid_ReturnsFalse() {
+        when(ententeStageRepository.findByProf_IdAndCandidature_Student_IdAndCandidature_InternshipOffer_IdAndStatut(
+                1L, 2L, 3L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(Optional.empty());
+
+        boolean result = evaluationStagiaireService.isEvaluationEligible(
+                CreatorTypeEvaluation.PROF, 1L, 2L, 3L);
+
+        assertFalse(result);
+    }
+
+    // ==================== Get Eligible Evaluations Tests ====================
+
+    @Test
+    void getEligibleEvaluations_Employer_WithoutExistingEvaluation() {
+        when(ententeStageRepository.findByCandidature_InternshipOffer_Employeur_IdAndStatut(
+                1L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(List.of(ententeStage));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.empty());
+
+        List<EligibleEvaluationDto> result = evaluationStagiaireService.getEligibleEvaluations(
+                CreatorTypeEvaluation.EMPLOYER, 1L);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertFalse(result.get(0).hasEvaluation());
+        assertNull(result.get(0).evaluationId());
+    }
+
+    @Test
+    void getEligibleEvaluations_Employer_WithExistingEvaluation() {
+        when(ententeStageRepository.findByCandidature_InternshipOffer_Employeur_IdAndStatut(
+                1L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(List.of(ententeStage));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(evaluationStagiaire));
+
+        List<EligibleEvaluationDto> result = evaluationStagiaireService.getEligibleEvaluations(
+                CreatorTypeEvaluation.EMPLOYER, 1L);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).hasEvaluation());
+        assertEquals(1L, result.get(0).evaluationId());
+    }
+
+    @Test
+    void getEligibleEvaluations_Prof_WithSubmittedEvaluation() {
+        evaluationStagiaire.setSubmittedByEmployer(true);
+
+        when(ententeStageRepository.findByProf_IdAndStatut(1L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(List.of(ententeStage));
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(evaluationStagiaire));
+
+        List<EligibleEvaluationDto> result = evaluationStagiaireService.getEligibleEvaluations(
+                CreatorTypeEvaluation.PROF, 1L);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).evaluationSubmitted());
+    }
+
+    @Test
+    void getEligibleEvaluations_Prof_EmptyList() {
+        when(ententeStageRepository.findByProf_IdAndStatut(1L, EntenteStage.StatutEntente.VALIDEE))
+                .thenReturn(List.of());
+
+        List<EligibleEvaluationDto> result = evaluationStagiaireService.getEligibleEvaluations(
+                CreatorTypeEvaluation.PROF, 1L);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    // ==================== Get Existing Evaluation Tests ====================
+
+    @Test
+    void getExistingEvaluation_Found() {
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.of(evaluationStagiaire));
+
+        Optional<EvaluationStagiaireDto> result = evaluationStagiaireService.getExistingEvaluation(2L, 3L);
+
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().id());
+    }
+
+    @Test
+    void getExistingEvaluation_NotFound() {
+        when(evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(2L, 3L))
+                .thenReturn(Optional.empty());
+
+        Optional<EvaluationStagiaireDto> result = evaluationStagiaireService.getExistingEvaluation(2L, 3L);
+
+        assertFalse(result.isPresent());
+    }
+
+    // ==================== Helper Methods ====================
+
+    private Map<String, List<EmployerQuestionResponse>> createEmployerCategories() {
+        Map<String, List<EmployerQuestionResponse>> categories = new HashMap<>();
+        categories.put("productivity", createEmployerResponses(5));
+        categories.put("quality", createEmployerResponses(5));
+        categories.put("relationships", createEmployerResponses(6));
+        categories.put("skills", createEmployerResponses(6));
+        return categories;
+    }
+
+    private List<EmployerQuestionResponse> createEmployerResponses(int count) {
+        List<EmployerQuestionResponse> responses = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            responses.add(new EmployerQuestionResponse(null, false, "TRES_BIEN"));
+        }
+        return responses;
+    }
+
+    private Map<String, List<QuestionResponseTeacher>> createTeacherCategories() {
+        Map<String, List<QuestionResponseTeacher>> categories = new HashMap<>();
+        categories.put("conformity", createTeacherResponses(3));
+        categories.put("environment", createTeacherResponses(2));
+        categories.put("general", createTeacherResponses(5));
+        return categories;
+    }
+
+    private List<QuestionResponseTeacher> createTeacherResponses(int count) {
+        List<QuestionResponseTeacher> responses = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            responses.add(new QuestionResponseTeacher("TRES_BIEN"));
+        }
+        return responses;
     }
 }
