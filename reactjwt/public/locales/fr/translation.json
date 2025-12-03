@@ -974,7 +974,8 @@
       "pdf_loading": "Erreur lors du chargement du PDF",
       "no_teacher_assigned": "Aucun enseignant n'est assigné à ce stage."
     },
-    "awaiting_teacher": "En attente d'un professeur."
+    "awaiting_teacher": "En attente d'un professeur.",
+    "dateNotAvailable": "La date d'évaluation n'est pas disponible"
   },
   "evaluation": {
     "submitting": "Soumission de l'évaluation...",

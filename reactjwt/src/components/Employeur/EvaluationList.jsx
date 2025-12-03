@@ -116,6 +116,25 @@ export default function EvaluationsList() {
         );
     }
 
+    const formatEvaluationDate = (dateString) => {
+        if (!dateString) return t("evaluationList.dateNotAvailable");
+
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const [year, month, day] = dateString.split('-');
+            const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            return date.toLocaleDateString();
+        }
+
+        try {
+            const date = new Date(dateString);
+            return isNaN(date.getTime())
+                ? t("evaluationList.dateNotAvailable")
+                : date.toLocaleDateString();
+        } catch {
+            return t("evaluationList.dateNotAvailable");
+        }
+    }
+
     return (
         <div className="max-w-5xl mx-auto px-4 py-8">
 
@@ -162,9 +181,9 @@ export default function EvaluationsList() {
                                                         ? t("evaluationList.submitted")
                                                         : t("evaluationList.draft_created")}
                                                 {" - "}
-                                                {new Date(
-                                                    evaluation.dateEvaluation
-                                                ).toLocaleDateString()}
+                                                {console.log("Raw dateEvaluation:", evaluation.dateEvaluation, "Type:", typeof evaluation.dateEvaluation)}
+
+                                                {formatEvaluationDate(evaluation.dateEvaluation)}
                                             </div>
                                         )}
                                     </div>

@@ -972,7 +972,8 @@
       "pdf_loading": "Error loading PDF",
       "no_teacher_assigned": "No teacher has been assigned to this internship yet."
     },
-    "awaiting_teacher": "In waiting for a teacher"
+    "awaiting_teacher": "In waiting for a teacher",
+    "dateNotAvailable": "The evaluation date isnt available."
   },
   "evaluation": {
     "submitting": "Submitting evaluation...",
