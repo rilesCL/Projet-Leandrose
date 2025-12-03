@@ -214,7 +214,7 @@ export default function StudentEntentesListe() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="bg-gray-50 flex items-center justify-center py-8">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
                     <p className="mt-4 text-gray-600">{t("studentEntentes.loading")}</p>
@@ -230,10 +230,8 @@ export default function StudentEntentesListe() {
     ).length;
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-                {signatureModal.show && signatureModal.entente && (
+        <>
+            {signatureModal.show && signatureModal.entente && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
                             <div className="flex justify-between items-center mb-4">
@@ -347,19 +345,16 @@ export default function StudentEntentesListe() {
                     </div>
                 )}
 
-                <div className="mb-8">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">{t("studentEntentes.title")}</h1>
-                            <p className="text-gray-600 mt-2">
-                                {t("studentEntentes.subtitle")}
-                            </p>
-                        </div>
-                    </div>
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+                <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-900">{t("studentEntentes.title")}</h3>
+                    <p className="text-sm text-gray-600">
+                        {t("studentEntentes.subtitle")}
+                    </p>
                 </div>
 
                 {sortedEntentes.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow p-8 text-center">
+                    <div className="p-8 text-center">
                         <div className="max-w-md mx-auto">
                             <div
                                 className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -374,8 +369,8 @@ export default function StudentEntentesListe() {
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white shadow rounded-lg overflow-hidden">
-                        <div className="overflow-x-auto">
+                    <>
+                        <div className="hidden lg:block overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                 <tr>
@@ -484,11 +479,63 @@ export default function StudentEntentesListe() {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                )}
 
-                {sortedEntentes.length > 0 && (
-                    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div className="lg:hidden divide-y divide-gray-200">
+                            {sortedEntentes.map((entente) => (
+                                <div key={entente.id} className="p-4 hover:bg-gray-50">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold text-gray-900">
+                                                {entente.internshipOffer?.employeurDto?.companyName}
+                                            </h4>
+                                            <p className="text-xs text-gray-600 mt-1 truncate">
+                                                {entente.internshipOffer?.description}
+                                            </p>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {formatDate(entente.dateDebut)} - {formatDate(calculateDateFin(entente.dateDebut, entente.duree))}
+                                            </p>
+                                            {entente.prof && (
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    {t("studentEntentes.professor")}: {entente.prof.firstName} {entente.prof.lastName}
+                                                </p>
+                                            )}
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {formatDate(entente.dateCreation)}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-center mb-3">
+                                        {getStatusBadge(entente)}
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <button
+                                            onClick={() => handleViewPdf(entente.id)}
+                                            className="w-full inline-flex justify-center items-center px-3 py-2 text-sm text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
+                                        >
+                                            <FaEye className="mr-1"/>
+                                            {t("studentEntentes.viewPdf")}
+                                        </button>
+                                        {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasStudentSigned(entente) && (
+                                            <Link
+                                                to={`/dashboard/student/ententes/${entente.id}/signer`}
+                                                className="w-full inline-flex justify-center items-center px-3 py-2 text-sm text-green-600 bg-green-50 rounded-md hover:bg-green-100"
+                                            >
+                                                <FaSignature className="mr-1"/>
+                                                {t("studentEntentes.sign")}
+                                            </Link>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {sortedEntentes.length > 0 && (
+                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="px-4 py-5 sm:p-6">
                                 <dt className="text-sm font-medium text-gray-500 truncate">
@@ -520,8 +567,7 @@ export default function StudentEntentesListe() {
                             </div>
                         </div>
                     </div>
-                )}
-            </div>
+            )}
 
             {pdfToPreview && (
                 <PdfViewer
@@ -556,6 +602,6 @@ export default function StudentEntentesListe() {
                     </button>
                 </div>
             )}
-        </div>
+        </>
     );
 }

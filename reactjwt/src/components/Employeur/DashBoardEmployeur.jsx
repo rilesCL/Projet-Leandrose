@@ -84,9 +84,7 @@ export default function DashBoardEmployeur() {
                             className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0"
                             aria-label={t("dashboardEmployeur.navigation.mainNavigation")}
                         >
-                            <div className="hidden sm:block">
-                                <TermSelector onTermChange={handleTermChange}/>
-                            </div>
+                            <TermSelector onTermChange={handleTermChange}/>
                             <ThemeToggle/>
                             <LanguageSelector/>
                             <button

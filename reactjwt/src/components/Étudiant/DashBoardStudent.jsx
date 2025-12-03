@@ -226,9 +226,9 @@ export default function DashBoardStudent() {
                     </div>
                 </div>
             </header>
-            <main className="py-8">
+            <main className="py-10">
                 <div className="w-full px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                    <h1 className="text-2xl font-semibold text-gray-900 mb-4">
                         {t("dashboardStudent.welcome")} {userName}!
                     </h1>
                     <p className="text-gray-600 mb-6">{t("dashboardStudent.description")}</p>
@@ -258,15 +258,31 @@ export default function DashBoardStudent() {
                         <div className="space-y-8">
                             <StudentInternshipOffersList
                                 studentInfo={studentInfo}
-                                onReregisterClick={() => setShowReregistrationModal(true)}
+                                onReregisterClick={() => setShowReregisterModal(true)}
                             />
                         </div>
                     )}
 
-                    {section === 'cv' && <StudentCvList/>}
-                    {section === 'applications' && <StudentApplicationsList/>}
-                    {section === 'ententes' && <StudentEntentesListe/>}
-                    {section === 'contacts' && <InfosContactPage/>}
+                    {section === 'cv' && (
+                        <div className="space-y-8">
+                            <StudentCvList/>
+                        </div>
+                    )}
+                    {section === 'applications' && (
+                        <div className="space-y-8">
+                            <StudentApplicationsList/>
+                        </div>
+                    )}
+                    {section === 'ententes' && (
+                        <div className="space-y-8">
+                            <StudentEntentesListe/>
+                        </div>
+                    )}
+                    {section === 'contacts' && (
+                        <div className="space-y-8">
+                            <InfosContactPage/>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

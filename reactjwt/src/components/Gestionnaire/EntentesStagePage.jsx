@@ -81,11 +81,11 @@ export default function EntentesStagePage({selectedTerm}) {
         );
 
     return (
-        <div className="bg-white shadow rounded p-6">
-
-            <h2 className="text-2xl font-semibold mb-6 text-gray-900">
-                {t("ententesStagePage.title")}
-            </h2>
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900">{t("ententesStagePage.title")}</h3>
+            </div>
+            <div className="p-6">
 
             {filteredCandidatures.length === 0 ? (
                 <p className="text-sm text-gray-600">
@@ -176,6 +176,7 @@ export default function EntentesStagePage({selectedTerm}) {
                     onClose={() => setCvToPreview(null)}
                 />
             )}
+            </div>
         </div>
     );
 }

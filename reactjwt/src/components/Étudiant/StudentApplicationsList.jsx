@@ -307,54 +307,106 @@ export default function StudentApplicationsList() {
                         </p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.offer")}</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.company")}</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.date")}</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.status")}</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.actions")}</th>
-                            </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                            {filteredCandidatures.map(c => (
-                                <tr key={c.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{c.internshipOffer?.description}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">{c.internshipOffer?.companyName}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{formatDate(c.applicationDate)}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status, c)}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                        <button
-                                            onClick={() => navigate(`/dashboard/student/offers/${c.internshipOffer?.id}`)}
-                                            className="text-indigo-600 hover:text-indigo-900"
-                                        >
-                                            {t("studentApplicationsList.viewOffer")}
-                                        </button>
-
-                                        {canAcceptOrReject(c.status) && (
-                                            <>
-                                                <button
-                                                    onClick={() => handleAcceptCandidature(c.id)}
-                                                    className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
-                                                >
-                                                    {t("studentApplicationsList.actions.accept")}
-                                                </button>
-                                                <button
-                                                    onClick={() => openRejectModal(c)}
-                                                    className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
-                                                >
-                                                    {t("studentApplicationsList.actions.reject")}
-                                                </button>
-                                            </>
-                                        )}
-                                    </td>
+                    <>
+                        <div className="hidden lg:block overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.offer")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.company")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.date")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.status")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.actions")}</th>
                                 </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                {filteredCandidatures.map(c => (
+                                    <tr key={c.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{c.internshipOffer?.description}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900">{c.internshipOffer?.companyName}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{formatDate(c.applicationDate)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status, c)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                            <button
+                                                onClick={() => navigate(`/dashboard/student/offers/${c.internshipOffer?.id}`)}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                {t("studentApplicationsList.viewOffer")}
+                                            </button>
+
+                                            {canAcceptOrReject(c.status) && (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleAcceptCandidature(c.id)}
+                                                        className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
+                                                    >
+                                                        {t("studentApplicationsList.actions.accept")}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => openRejectModal(c)}
+                                                        className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                                                    >
+                                                        {t("studentApplicationsList.actions.reject")}
+                                                    </button>
+                                                </>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="lg:hidden divide-y divide-gray-200">
+                        {filteredCandidatures.map(c => (
+                            <div key={c.id} className="p-4 hover:bg-gray-50">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-semibold text-gray-900 truncate">
+                                            {c.internshipOffer?.description}
+                                        </h4>
+                                        <p className="text-xs text-gray-600 mt-1">
+                                            {c.internshipOffer?.companyName}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {formatDate(c.applicationDate)}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-center mb-3">
+                                    {getStatusBadge(c.status, c)}
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => navigate(`/dashboard/student/offers/${c.internshipOffer?.id}`)}
+                                        className="w-full inline-flex justify-center px-3 py-2 text-sm text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
+                                    >
+                                        {t("studentApplicationsList.viewOffer")}
+                                    </button>
+
+                                    {canAcceptOrReject(c.status) && (
+                                        <>
+                                            <button
+                                                onClick={() => handleAcceptCandidature(c.id)}
+                                                className="w-full px-3 py-2 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
+                                            >
+                                                {t("studentApplicationsList.actions.accept")}
+                                            </button>
+                                            <button
+                                                onClick={() => openRejectModal(c)}
+                                                className="w-full px-3 py-2 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                                            >
+                                                {t("studentApplicationsList.actions.reject")}
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                        </div>
+                    </>
                 )}
             </div>
 

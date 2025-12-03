@@ -47,12 +47,11 @@ export default function OffersPage({selectedTerm}) {
     }, [selectedTerm, offers]);
 
     return (
-        <div className="bg-gray-50 flex items-center justify-center">
-            <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-md">
-
-                <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">
-                    {t("offerPagesDetails.title")}
-                </h2>
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900">{t("offerPagesDetails.title")}</h3>
+            </div>
+            <div className="p-6">
 
                 <div className="flex gap-4 mb-6 justify-center">
                     <button

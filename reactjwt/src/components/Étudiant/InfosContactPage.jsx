@@ -133,7 +133,7 @@ export default function StudentContactsPage() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-6">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboardStudent.contacts.title')}</h1>
                 <p className="text-gray-600">{t('dashboardStudent.contacts.subtitle')}</p>

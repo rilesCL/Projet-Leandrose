@@ -80,9 +80,7 @@ export default function DashBoardGestionnaire() {
                         {t("appName")}
                     </span>
                     <div className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0">
-                        <div className="hidden sm:block">
-                            <TermSelector onTermChange={handleTermChange}/>
-                        </div>
+                        <TermSelector onTermChange={handleTermChange}/>
                         <button
                             onClick={() => setChatbotOpen(!chatbotOpen)}
                             className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-200 border-2 text-base sm:text-xl flex-shrink-0 ${
@@ -115,13 +113,13 @@ export default function DashBoardGestionnaire() {
                 </div>
             </header>
 
-            <main className="py-6">
-                <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <main className="py-10">
+                <div className="w-full px-4 sm:px-6 lg:px-8">
                     <div className="mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">
-                            {t("dashboardGestionnaire.welcome")} {userName} 👋
+                        <h1 className="text-2xl font-semibold text-gray-900 mb-4">
+                            {t("dashboardGestionnaire.welcome")} {userName}! 👋
                         </h1>
-                        <p className="text-gray-600 text-sm">{t("dashboardGestionnaire.description")}</p>
+                        <p className="text-gray-600 mb-6">{t("dashboardGestionnaire.description")}</p>
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-2.5 mb-6">
@@ -136,30 +134,30 @@ export default function DashBoardGestionnaire() {
                     </div>
 
                     {section === 'cv' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
+                        <div className="space-y-8">
                             <PendingCvPage/>
                         </div>
                     )}
 
                     {section === 'pending' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
+                        <div className="space-y-8">
                             <PendingOffersPage/>
                         </div>
                     )}
 
                     {section === 'offers' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
+                        <div className="space-y-8">
                             <OffersPage selectedTerm={selectedTerm}/>
                         </div>
                     )}
 
                     {section === 'applications-accepted' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
+                        <div className="space-y-8">
                             <EntentesStagePage selectedTerm={selectedTerm}/>
                         </div>
                     )}
                     {section === 'ententes' && (
-                        <div className="transition-opacity duration-300 ease-in-out">
+                        <div className="space-y-8">
                             <GestionnaireListeEntentes selectedTerm={selectedTerm}/>
                         </div>
                     )}
