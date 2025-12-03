@@ -1,6 +1,7 @@
 package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Employeur;
+import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.EmployeurDto;
@@ -29,6 +30,7 @@ public class EmployeurService {
       throw new IllegalArgumentException("Cet email est déjà utilisé");
     }
 
+
     Employeur employeur =
         Employeur.builder()
             .firstName(firstName)
@@ -36,10 +38,11 @@ public class EmployeurService {
             .email(email)
             .password(passwordEncoder.encode(rawPassword))
             .companyName(companyName)
-            .field(field)
+            .field("program." + field.toLowerCase())
             .build();
 
     Employeur savedEmployeur = employeurRepository.save(employeur);
+    System.out.println(savedEmployeur.getField());
     return EmployeurDto.create(savedEmployeur);
   }
 

@@ -87,6 +87,7 @@ public class InternshipOfferService {
             .build();
 
     InternshipOffer saved = internshipOfferRepository.save(offer);
+    System.out.println(saved.getSchoolTerm());
 
     return toDto(saved);
   }
@@ -117,22 +118,27 @@ public class InternshipOfferService {
     return internshipOfferRepository.findOffersByEmployeurId(employeurId);
   }
 
-  public List<InternshipOfferDto> getPublishedOffersForStudents(String program, String schoolTerm) {
-    if (Arrays.stream(Program.values()).anyMatch(p -> p.getTranslationKey().equals(program))) {
-      SchoolTerm term = parseSchoolTerm(schoolTerm);
+    public List<InternshipOfferDto> getPublishedOffersForStudents(String program, String schoolTerm) {
+        if (Arrays.stream(Program.values()).noneMatch(p -> p.getTranslationKey().equals(program))) {
+            throw new IllegalArgumentException("Invalid program: " + program);
+        }
 
-      return internshipOfferRepository.findPublishedByProgram(program).stream()
-          .filter(
-              offer ->
-                  offer.getSchoolTerm() != null
-                      && offer.getSchoolTerm().getSeason() == term.getSeason()
-                      && offer.getSchoolTerm().getYear() == term.getYear())
-          .map(InternshipOfferMapper::toDto)
-          .toList();
-    } else {
-      throw new IllegalArgumentException("Invalid program: " + program);
+        SchoolTerm term = parseSchoolTerm(schoolTerm);
+        System.out.println("Fetching offers for program: " + program + ", term: " + term.getTermAsString());
+
+        return internshipOfferRepository.findPublishedByProgram(program).stream()
+                .filter(offer -> {
+                    boolean matchesTerm = offer.getSchoolTerm() != null
+                            && offer.getSchoolTerm().getSeason() == term.getSeason()
+                            && offer.getSchoolTerm().getYear() == term.getYear();
+                    System.out.println("Offer ID: " + offer.getId() + ", Matches term: " + matchesTerm);
+                    return matchesTerm;
+                })
+                .map(InternshipOfferMapper::toDto)
+                .toList();
     }
-  }
+
+
 
   private SchoolTerm parseSchoolTerm(String termString) {
     if (termString == null || termString.isBlank()) {
