@@ -1,9 +1,9 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { vi, describe, beforeEach, test, expect } from "vitest";
+import {fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {beforeEach, describe, expect, test, vi} from "vitest";
 import UserProfilePage from "../User/UserProfilePage.jsx";
 
 vi.mock("react-i18next", () => ({
-    useTranslation: () => ({ t: (k) => k })
+    useTranslation: () => ({t: (k) => k})
 }));
 
 const mockNavigate = vi.fn();
@@ -27,7 +27,7 @@ describe("UserProfilePage", () => {
     });
 
     function renderPage() {
-        return render(<UserProfilePage />);
+        return render(<UserProfilePage/>);
     }
 
     test("affiche le titre", async () => {
@@ -65,7 +65,7 @@ describe("UserProfilePage", () => {
 
         await screen.findByText("Mon profil");
 
-        const phoneButton = screen.getByRole("button", { name: /téléphone/i });
+        const phoneButton = screen.getByRole("button", {name: /téléphone/i});
         fireEvent.click(phoneButton);
 
         await waitFor(() => {
@@ -82,7 +82,7 @@ describe("UserProfilePage", () => {
 
         global.fetch.mockResolvedValueOnce({
             ok: true,
-            json: async () => ({ ...mockUser, message: "updated" })
+            json: async () => ({...mockUser, message: "updated"})
         });
 
         renderPage();
@@ -93,9 +93,9 @@ describe("UserProfilePage", () => {
             "Entrez votre mot de passe actuel pour confirmer"
         );
 
-        fireEvent.change(pwdInput, { target: { value: "abc123" } });
+        fireEvent.change(pwdInput, {target: {value: "abc123"}});
 
-        const saveButton = screen.getByRole("button", { name: /sauvegarder/i });
+        const saveButton = screen.getByRole("button", {name: /sauvegarder/i});
         fireEvent.click(saveButton);
 
         await waitFor(() => {
@@ -125,7 +125,7 @@ describe("UserProfilePage", () => {
 
         await screen.findByText("Mon profil");
 
-        const saveButton = screen.getByRole("button", { name: /sauvegarder/i });
+        const saveButton = screen.getByRole("button", {name: /sauvegarder/i});
         fireEvent.click(saveButton);
 
         await waitFor(() => {
@@ -143,7 +143,7 @@ describe("UserProfilePage", () => {
 
         await screen.findByText("Mon profil");
 
-        const nameButton = screen.getByRole("button", { name: /prénom \/ nom/i });
+        const nameButton = screen.getByRole("button", {name: /prénom \/ nom/i});
         fireEvent.click(nameButton);
 
         await waitFor(() => {

@@ -232,118 +232,118 @@ export default function StudentEntentesListe() {
     return (
         <>
             {signatureModal.show && signatureModal.entente && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {t("studentEntentes.signatureStatus")}
-                                </h3>
-                                <button
-                                    onClick={() => setSignatureModal({show: false, entente: null})}
-                                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                                >
-                                    <FaTimes className="text-xl"/>
-                                </button>
-                            </div>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {t("studentEntentes.signatureStatus")}
+                            </h3>
+                            <button
+                                onClick={() => setSignatureModal({show: false, entente: null})}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <FaTimes className="text-xl"/>
+                            </button>
+                        </div>
 
-                            <div className="space-y-4">
-                                {(() => {
-                                    const signatures = getSignatureStatus(signatureModal.entente);
-                                    return (
-                                        <>
-                                            <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div
-                                                    className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
-                                                    {signatures.employeur.signed ? (
-                                                        <FaCheck className="text-xl"/>
-                                                    ) : (
-                                                        <FaClock className="text-xl"/>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400"/>
-                                                        <span
-                                                            className="font-medium text-gray-900">{t("studentEntentes.employer")}</span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
-                                                    {signatures.employeur.signed ? (
-                                                        <p className="text-xs text-green-600 mt-1">
-                                                            {t("studentEntentes.signedOn")} {formatDateTime(signatures.employeur.date)}
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
-                                                    )}
-                                                </div>
+                        <div className="space-y-4">
+                            {(() => {
+                                const signatures = getSignatureStatus(signatureModal.entente);
+                                return (
+                                    <>
+                                        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                                            <div
+                                                className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                {signatures.employeur.signed ? (
+                                                    <FaCheck className="text-xl"/>
+                                                ) : (
+                                                    <FaClock className="text-xl"/>
+                                                )}
                                             </div>
-
-                                            <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div
-                                                    className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
-                                                    {signatures.etudiant.signed ? (
-                                                        <FaCheck className="text-xl"/>
-                                                    ) : (
-                                                        <FaClock className="text-xl"/>
-                                                    )}
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-gray-400"/>
+                                                    <span
+                                                        className="font-medium text-gray-900">{t("studentEntentes.employer")}</span>
                                                 </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400"/>
-                                                        <span
-                                                            className="font-medium text-gray-900">{t("studentEntentes.student")}</span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
-                                                    {signatures.etudiant.signed ? (
-                                                        <p className="text-xs text-green-600 mt-1">
-                                                            {t("studentEntentes.signedOn")} {formatDateTime(signatures.etudiant.date)}
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
-                                                    )}
-                                                </div>
+                                                <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
+                                                {signatures.employeur.signed ? (
+                                                    <p className="text-xs text-green-600 mt-1">
+                                                        {t("studentEntentes.signedOn")} {formatDateTime(signatures.employeur.date)}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
+                                                )}
                                             </div>
+                                        </div>
 
-                                            <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div
-                                                    className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
-                                                    {signatures.gestionnaire.signed ? (
-                                                        <FaCheck className="text-xl"/>
-                                                    ) : (
-                                                        <FaClock className="text-xl"/>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400"/>
-                                                        <span
-                                                            className="font-medium text-gray-900">{t("studentEntentes.manager")}</span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
-                                                    {signatures.gestionnaire.signed ? (
-                                                        <p className="text-xs text-green-600 mt-1">
-                                                            {t("studentEntentes.signedOn")} {formatDateTime(signatures.gestionnaire.date)}
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
-                                                    )}
-                                                </div>
+                                        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                                            <div
+                                                className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                {signatures.etudiant.signed ? (
+                                                    <FaCheck className="text-xl"/>
+                                                ) : (
+                                                    <FaClock className="text-xl"/>
+                                                )}
                                             </div>
-                                        </>
-                                    );
-                                })()}
-                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-gray-400"/>
+                                                    <span
+                                                        className="font-medium text-gray-900">{t("studentEntentes.student")}</span>
+                                                </div>
+                                                <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
+                                                {signatures.etudiant.signed ? (
+                                                    <p className="text-xs text-green-600 mt-1">
+                                                        {t("studentEntentes.signedOn")} {formatDateTime(signatures.etudiant.date)}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
+                                                )}
+                                            </div>
+                                        </div>
 
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    onClick={() => setSignatureModal({show: false, entente: null})}
-                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                                >
-                                    {t("studentEntentes.close")}
-                                </button>
-                            </div>
+                                        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                                            <div
+                                                className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                {signatures.gestionnaire.signed ? (
+                                                    <FaCheck className="text-xl"/>
+                                                ) : (
+                                                    <FaClock className="text-xl"/>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-gray-400"/>
+                                                    <span
+                                                        className="font-medium text-gray-900">{t("studentEntentes.manager")}</span>
+                                                </div>
+                                                <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
+                                                {signatures.gestionnaire.signed ? (
+                                                    <p className="text-xs text-green-600 mt-1">
+                                                        {t("studentEntentes.signedOn")} {formatDateTime(signatures.gestionnaire.date)}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-orange-600 mt-1">{t("studentEntentes.awaitingSignature")}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                onClick={() => setSignatureModal({show: false, entente: null})}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            >
+                                {t("studentEntentes.close")}
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
+            )}
 
             <div className="bg-white shadow rounded-lg overflow-hidden">
                 <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
@@ -536,37 +536,37 @@ export default function StudentEntentesListe() {
 
             {sortedEntentes.length > 0 && (
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                    {t("studentEntentes.stats.total")}
-                                </dt>
-                                <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                                    {sortedEntentes.length}
-                                </dd>
-                            </div>
-                        </div>
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                    {t("studentEntentes.stats.awaitingSignature")}
-                                </dt>
-                                <dd className="mt-1 text-3xl font-semibold text-orange-600">
-                                    {waitingForStudentSignature}
-                                </dd>
-                            </div>
-                        </div>
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                    {t("studentEntentes.stats.validated")}
-                                </dt>
-                                <dd className="mt-1 text-3xl font-semibold text-green-600">
-                                    {sortedEntentes.filter(e => e.statut === 'VALIDEE').length}
-                                </dd>
-                            </div>
+                    <div className="bg-white overflow-hidden shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                {t("studentEntentes.stats.total")}
+                            </dt>
+                            <dd className="mt-1 text-3xl font-semibold text-gray-900">
+                                {sortedEntentes.length}
+                            </dd>
                         </div>
                     </div>
+                    <div className="bg-white overflow-hidden shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                {t("studentEntentes.stats.awaitingSignature")}
+                            </dt>
+                            <dd className="mt-1 text-3xl font-semibold text-orange-600">
+                                {waitingForStudentSignature}
+                            </dd>
+                        </div>
+                    </div>
+                    <div className="bg-white overflow-hidden shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                {t("studentEntentes.stats.validated")}
+                            </dt>
+                            <dd className="mt-1 text-3xl font-semibold text-green-600">
+                                {sortedEntentes.filter(e => e.statut === 'VALIDEE').length}
+                            </dd>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {pdfToPreview && (

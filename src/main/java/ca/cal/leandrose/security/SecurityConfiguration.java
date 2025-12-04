@@ -30,68 +30,81 @@ import org.springframework.web.filter.CorsFilter;
 @Profile("!test")
 public class SecurityConfiguration {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserAppRepository userRepository;
-    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+  private final JwtTokenProvider jwtTokenProvider;
+  private final UserAppRepository userRepository;
+  private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(POST, "/user/login", "/api/register/**").permitAll()
-                        .requestMatchers(GET, "/user/me/role", "/api/register/programs").permitAll()
-                        .requestMatchers("/user/me").permitAll()
-                        .requestMatchers("/gestionnaire/**").hasAuthority("GESTIONNAIRE")
-                        .requestMatchers(POST, "/student/**").hasAuthority("STUDENT")
-                        .requestMatchers(PUT, "/student/**").hasAuthority("STUDENT")
-                        .requestMatchers(GET, "/student/**").hasAuthority("STUDENT")
-                        .requestMatchers(POST, "/employeur/**", "/employer/ententes/*/signer").hasAuthority("EMPLOYEUR")
-                        .requestMatchers(PUT, "/employeur/**").hasAuthority("EMPLOYEUR")
-                        .requestMatchers(GET, "/employeur/**", "/ententes").hasAuthority("EMPLOYEUR")
-                        .requestMatchers(POST, "/prof/**").hasAuthority("PROF")
-                        .requestMatchers(GET, "/prof/**").hasAnyAuthority("PROF", "GESTIONNAIRE")
-                        .requestMatchers(GET, "/user/*").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
-                        .requestMatchers(POST, "/user/verify-password").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
-                        .requestMatchers(PUT, "/user/me").hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
-                        .anyRequest().denyAll()
-                )
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(handler ->
-                        handler.authenticationEntryPoint(authenticationEntryPoint)
-                );
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.csrf(AbstractHttpConfigurer::disable)
+        .cors(Customizer.withDefaults())
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(POST, "/user/login", "/api/register/**")
+                    .permitAll()
+                    .requestMatchers(GET, "/user/me/role", "/api/register/programs")
+                    .permitAll()
+                    .requestMatchers("/user/me")
+                    .permitAll()
+                    .requestMatchers("/gestionnaire/**")
+                    .hasAuthority("GESTIONNAIRE")
+                    .requestMatchers(POST, "/student/**")
+                    .hasAuthority("STUDENT")
+                    .requestMatchers(PUT, "/student/**")
+                    .hasAuthority("STUDENT")
+                    .requestMatchers(GET, "/student/**")
+                    .hasAuthority("STUDENT")
+                    .requestMatchers(POST, "/employeur/**", "/employer/ententes/*/signer")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(PUT, "/employeur/**")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(GET, "/employeur/**", "/ententes")
+                    .hasAuthority("EMPLOYEUR")
+                    .requestMatchers(POST, "/prof/**")
+                    .hasAuthority("PROF")
+                    .requestMatchers(GET, "/prof/**")
+                    .hasAnyAuthority("PROF", "GESTIONNAIRE")
+                    .requestMatchers(GET, "/user/*")
+                    .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
+                    .requestMatchers(POST, "/user/verify-password")
+                    .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
+                    .requestMatchers(PUT, "/user/me")
+                    .hasAnyAuthority("EMPLOYEUR", "GESTIONNAIRE", "STUDENT", "PROF")
+                    .anyRequest()
+                    .denyAll())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+        .exceptionHandling(handler -> handler.authenticationEntryPoint(authenticationEntryPoint));
 
-        return http.build();
-    }
+    return http.build();
+  }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+  @Bean
+  public CorsFilter corsFilter() {
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.addAllowedOrigin("http://localhost:5173");
+    config.addAllowedMethod("*");
+    config.addAllowedHeader("*");
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
+  }
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtTokenProvider, userRepository);
-    }
+  @Bean
+  public JwtAuthenticationFilter jwtAuthenticationFilter() {
+    return new JwtAuthenticationFilter(jwtTokenProvider, userRepository);
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

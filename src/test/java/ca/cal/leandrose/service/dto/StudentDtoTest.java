@@ -163,7 +163,7 @@ class StudentDtoTest {
             .build();
 
     StudentDto dto = StudentDto.create(studentWithoutTerm);
-    
+
     assertNotNull(dto);
     assertNotNull(dto.getInternshipTerm());
     assertEquals(1L, dto.getId());
@@ -180,6 +180,3 @@ class StudentDtoTest {
     assertNull(dto.getStudentNumber());
   }
 }
-
-
-

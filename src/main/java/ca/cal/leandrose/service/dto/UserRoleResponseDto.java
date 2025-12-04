@@ -12,13 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRoleResponseDto {
-    private Role role;
-    private Map<String, String> error;
+  private Role role;
+  private Map<String, String> error;
 
-    public static UserRoleResponseDto withErrorMessage(String message) {
-        UserRoleResponseDto dto = new UserRoleResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static UserRoleResponseDto withErrorMessage(String message) {
+    UserRoleResponseDto dto = new UserRoleResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }
-

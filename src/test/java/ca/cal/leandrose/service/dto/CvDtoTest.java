@@ -92,7 +92,8 @@ class CvDtoTest {
 
   @Test
   void testCreate_WithNullStudent() {
-    Cv cvWithoutStudent = Cv.builder().id(1L).student(null).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cvWithoutStudent =
+        Cv.builder().id(1L).student(null).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
 
     CvDto dto = CvDto.create(cvWithoutStudent);
 
@@ -136,8 +137,7 @@ class CvDtoTest {
 
   @Test
   void testCvDtoAllArgsConstructor() {
-    CvDto dto =
-        new CvDto(1L, 1L, "/cv.pdf", Cv.Status.APPROVED, "John Doe", "No issues");
+    CvDto dto = new CvDto(1L, 1L, "/cv.pdf", Cv.Status.APPROVED, "John Doe", "No issues");
 
     assertEquals(1L, dto.getId());
     assertEquals(1L, dto.getStudentId());
@@ -147,7 +147,3 @@ class CvDtoTest {
     assertNull(dto.getRejectionComment());
   }
 }
-
-
-
-

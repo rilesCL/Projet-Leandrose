@@ -201,7 +201,8 @@ export default function EmployeurListeStages({selectedTerm}) {
         }
 
         return (
-            <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 inline-flex items-center">
+            <span
+                className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 inline-flex items-center">
                 <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
                 {entente.statut}
             </span>
@@ -478,7 +479,8 @@ export default function EmployeurListeStages({selectedTerm}) {
                                                         className="inline-flex items-center px-3 py-2 text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors"
                                                     >
                                                         <FaEye className="mr-1"/>
-                                                        <span className="hidden xl:inline">{t("ententeStage.actions.look")}</span>
+                                                        <span
+                                                            className="hidden xl:inline">{t("ententeStage.actions.look")}</span>
                                                     </button>
                                                     {entente.statut === 'EN_ATTENTE_SIGNATURE' && !hasEmployerSigned(entente) && (
                                                         <Link
@@ -486,7 +488,8 @@ export default function EmployeurListeStages({selectedTerm}) {
                                                             className="inline-flex items-center px-3 py-2 text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
                                                         >
                                                             <FaSignature className="mr-1"/>
-                                                            <span className="hidden xl:inline">{t("ententeStage.actions.sign")}</span>
+                                                            <span
+                                                                className="hidden xl:inline">{t("ententeStage.actions.sign")}</span>
                                                         </Link>
                                                     )}
                                                 </div>

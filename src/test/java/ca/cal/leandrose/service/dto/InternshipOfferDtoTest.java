@@ -177,6 +177,3 @@ class InternshipOfferDtoTest {
     assertNull(dto.getErrorMessage());
   }
 }
-
-
-

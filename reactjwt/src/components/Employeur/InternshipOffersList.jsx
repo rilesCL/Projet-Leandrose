@@ -98,7 +98,8 @@ export default function InternshipOffersList({selectedTerm}) {
 
         if (statusUpper === "PENDING" || statusUpper === "PENDING_VALIDATION") {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
                     <span className="hidden sm:inline">{t("internshipOffersList.status.pendingapproval")}</span>
                     <span className="sm:hidden">⏳</span>
@@ -106,7 +107,8 @@ export default function InternshipOffersList({selectedTerm}) {
             );
         } else if (statusUpper === "APPROVED" || statusUpper === "PUBLISHED") {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
                     <span className="hidden sm:inline">{t("internshipOffersList.status.published")}</span>
                     <span className="sm:hidden">✓</span>
@@ -114,7 +116,8 @@ export default function InternshipOffersList({selectedTerm}) {
             );
         } else if (statusUpper === "REJECTED") {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
                     <span className="hidden sm:inline">{t("internshipOffersList.status.rejected")}</span>
                     <span className="sm:hidden">✗</span>
@@ -122,7 +125,8 @@ export default function InternshipOffersList({selectedTerm}) {
             );
         } else {
             return (
-                <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200 inline-flex items-center">
+                <span
+                    className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200 inline-flex items-center">
                     <span className="w-2 h-2 bg-gray-500 rounded-full mr-1"></span>
                     <span className="hidden sm:inline">{statusUpper || t("internshipOffersList.status.unknown")}</span>
                     <span className="sm:hidden">?</span>
@@ -173,7 +177,7 @@ export default function InternshipOffersList({selectedTerm}) {
                     await disableOffer(offerId, token);
                     setOffers(prev =>
                         prev.map(o =>
-                            o.id === offerId ? { ...o, status: "DISABLED" } : o
+                            o.id === offerId ? {...o, status: "DISABLED"} : o
                         )
                     );
                 } catch (err) {
@@ -186,7 +190,7 @@ export default function InternshipOffersList({selectedTerm}) {
     const handleEnableOffer = async (offer) => {
         const startDate = new Date(offer.startDate)
         const today = new Date()
-        today.setHours(0,0,0,0)
+        today.setHours(0, 0, 0, 0)
 
         if (startDate < today) {
             setInfoMessage(
@@ -203,7 +207,7 @@ export default function InternshipOffersList({selectedTerm}) {
                     await enableOffer(offer.id, token);
                     setOffers(prev =>
                         prev.map(o =>
-                            o.id === offer.id ? { ...o, status: "PUBLISHED" } : o
+                            o.id === offer.id ? {...o, status: "PUBLISHED"} : o
                         )
                     );
                 } catch (err) {
@@ -334,7 +338,8 @@ export default function InternshipOffersList({selectedTerm}) {
                                     <td className="px-4 py-4">
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0">
-                                                <div className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
+                                                <div
+                                                    className="h-8 w-8 bg-blue-500 rounded flex items-center justify-center">
                                                     <span className="text-white text-sm font-bold">📋</span>
                                                 </div>
                                             </div>
@@ -373,7 +378,8 @@ export default function InternshipOffersList({selectedTerm}) {
                                                     title={t('internshipOffersList.viewRejectionComment')}
                                                 >
                                                     <span className="mr-1">💬</span>
-                                                    <span className="hidden xl:inline">{t('internshipOffersList.viewRejectionComment')}</span>
+                                                    <span
+                                                        className="hidden xl:inline">{t('internshipOffersList.viewRejectionComment')}</span>
                                                 </button>
                                             )}
                                             <button
@@ -391,7 +397,8 @@ export default function InternshipOffersList({selectedTerm}) {
                                                     title={t("internshipOffersList.disable")}
                                                 >
                                                     <span className="mr-1">🔒</span>
-                                                    <span className="hidden xl:inline">{t("internshipOffersList.disable")}</span>
+                                                    <span
+                                                        className="hidden xl:inline">{t("internshipOffersList.disable")}</span>
                                                 </button>
                                             ) : (
                                                 <button
@@ -400,7 +407,8 @@ export default function InternshipOffersList({selectedTerm}) {
                                                     title={t("internshipOffersList.enable")}
                                                 >
                                                     <span className="mr-1">🔓</span>
-                                                    <span className="hidden xl:inline">{t("internshipOffersList.enable")}</span>
+                                                    <span
+                                                        className="hidden xl:inline">{t("internshipOffersList.enable")}</span>
                                                 </button>
                                             )}
                                         </div>
@@ -432,7 +440,8 @@ export default function InternshipOffersList({selectedTerm}) {
                                 <div className="flex items-start justify-between mb-3">
                                     <div className="flex items-start flex-1 min-w-0">
                                         <div className="flex-shrink-0">
-                                            <div className="h-10 w-10 bg-blue-500 rounded flex items-center justify-center">
+                                            <div
+                                                className="h-10 w-10 bg-blue-500 rounded flex items-center justify-center">
                                                 <span className="text-white text-lg">📋</span>
                                             </div>
                                         </div>
@@ -449,7 +458,8 @@ export default function InternshipOffersList({selectedTerm}) {
 
                                 <div className="flex items-center justify-center gap-2 mb-3">
                                     {getStatusLabel(offer.status)}
-                                    <span className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
+                                    <span
+                                        className="inline-flex items-center px-2 py-1 rounded bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
                                         {loadingCounts && !cData ? '…' : count} 👥
                                     </span>
                                 </div>

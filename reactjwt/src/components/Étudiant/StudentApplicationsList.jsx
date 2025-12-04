@@ -358,53 +358,53 @@ export default function StudentApplicationsList() {
                         </div>
 
                         <div className="lg:hidden divide-y divide-gray-200">
-                        {filteredCandidatures.map(c => (
-                            <div key={c.id} className="p-4 hover:bg-gray-50">
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-semibold text-gray-900 truncate">
-                                            {c.internshipOffer?.description}
-                                        </h4>
-                                        <p className="text-xs text-gray-600 mt-1">
-                                            {c.internshipOffer?.companyName}
-                                        </p>
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            {formatDate(c.applicationDate)}
-                                        </p>
+                            {filteredCandidatures.map(c => (
+                                <div key={c.id} className="p-4 hover:bg-gray-50">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold text-gray-900 truncate">
+                                                {c.internshipOffer?.description}
+                                            </h4>
+                                            <p className="text-xs text-gray-600 mt-1">
+                                                {c.internshipOffer?.companyName}
+                                            </p>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {formatDate(c.applicationDate)}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-center mb-3">
+                                        {getStatusBadge(c.status, c)}
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <button
+                                            onClick={() => navigate(`/dashboard/student/offers/${c.internshipOffer?.id}`)}
+                                            className="w-full inline-flex justify-center px-3 py-2 text-sm text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
+                                        >
+                                            {t("studentApplicationsList.viewOffer")}
+                                        </button>
+
+                                        {canAcceptOrReject(c.status) && (
+                                            <>
+                                                <button
+                                                    onClick={() => handleAcceptCandidature(c.id)}
+                                                    className="w-full px-3 py-2 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
+                                                >
+                                                    {t("studentApplicationsList.actions.accept")}
+                                                </button>
+                                                <button
+                                                    onClick={() => openRejectModal(c)}
+                                                    className="w-full px-3 py-2 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
+                                                >
+                                                    {t("studentApplicationsList.actions.reject")}
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
-
-                                <div className="flex items-center justify-center mb-3">
-                                    {getStatusBadge(c.status, c)}
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        onClick={() => navigate(`/dashboard/student/offers/${c.internshipOffer?.id}`)}
-                                        className="w-full inline-flex justify-center px-3 py-2 text-sm text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100"
-                                    >
-                                        {t("studentApplicationsList.viewOffer")}
-                                    </button>
-
-                                    {canAcceptOrReject(c.status) && (
-                                        <>
-                                            <button
-                                                onClick={() => handleAcceptCandidature(c.id)}
-                                                className="w-full px-3 py-2 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 font-medium"
-                                            >
-                                                {t("studentApplicationsList.actions.accept")}
-                                            </button>
-                                            <button
-                                                onClick={() => openRejectModal(c)}
-                                                className="w-full px-3 py-2 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
-                                            >
-                                                {t("studentApplicationsList.actions.reject")}
-                                            </button>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                         </div>
                     </>
                 )}

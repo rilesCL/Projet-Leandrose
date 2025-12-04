@@ -23,6 +23,28 @@ public class LeandrOseApplication {
     SpringApplication.run(LeandrOseApplication.class, args);
   }
 
+    private static EntenteStageDto getEntenteStageDto(CandidatureDto candidatureFullyAccepted, InternshipOfferDto offerApprovedEntente) {
+        EntenteStageDto ententeDto = new EntenteStageDto();
+        ententeDto.setCandidatureId(candidatureFullyAccepted.getId());
+        ententeDto.setDateDebut(offerApprovedEntente.getStartDate());
+        ententeDto.setDuree(offerApprovedEntente.getDurationInWeeks());
+        ententeDto.setLieu(offerApprovedEntente.getAddress());
+        ententeDto.setRemuneration(offerApprovedEntente.getRemuneration());
+        ententeDto.setMissionsObjectifs(
+            """
+                                L'étudiant(e) sera amené(e) à :
+                                - Développer des fonctionnalités web en utilisant React et Node.js
+                                - Participer aux revues de code et aux cérémonies Agile
+                                - Collaborer avec l'équipe de développement sur des projets clients
+                                - Améliorer ses compétences en développement full-stack
+
+                                Objectifs d'apprentissage :
+                                - Maîtriser les frameworks modernes de développement web
+                                - Comprendre les méthodologies Agile en entreprise
+                                - Développer son autonomie et sa capacité à résoudre des problèmes""");
+        return ententeDto;
+    }
+
   @Bean
   @Profile("!test")
   @Transactional
@@ -445,28 +467,6 @@ public class LeandrOseApplication {
       }
     };
   }
-
-    private static EntenteStageDto getEntenteStageDto(CandidatureDto candidatureFullyAccepted, InternshipOfferDto offerApprovedEntente) {
-        EntenteStageDto ententeDto = new EntenteStageDto();
-        ententeDto.setCandidatureId(candidatureFullyAccepted.getId());
-        ententeDto.setDateDebut(offerApprovedEntente.getStartDate());
-        ententeDto.setDuree(offerApprovedEntente.getDurationInWeeks());
-        ententeDto.setLieu(offerApprovedEntente.getAddress());
-        ententeDto.setRemuneration(offerApprovedEntente.getRemuneration());
-        ententeDto.setMissionsObjectifs(
-            """
-                                L'étudiant(e) sera amené(e) à :
-                                - Développer des fonctionnalités web en utilisant React et Node.js
-                                - Participer aux revues de code et aux cérémonies Agile
-                                - Collaborer avec l'équipe de développement sur des projets clients
-                                - Améliorer ses compétences en développement full-stack
-
-                                Objectifs d'apprentissage :
-                                - Maîtriser les frameworks modernes de développement web
-                                - Comprendre les méthodologies Agile en entreprise
-                                - Développer son autonomie et sa capacité à résoudre des problèmes""");
-        return ententeDto;
-    }
 
     private MultipartFile loadPdfFromResources(String filename) throws IOException {
     ClassPathResource resource = new ClassPathResource("test.pdf");

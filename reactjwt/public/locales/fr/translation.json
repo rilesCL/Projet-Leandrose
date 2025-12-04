@@ -995,7 +995,6 @@
       "salaryRequired": "Le salaire est requis",
       "hoursInvalid": "Les heures doivent être un nombre valide et non négatif",
       "salaryInvalid": "Le salaire doit être un nombre valide et non négatif"
-
     },
     "errors": {
       "missing_studentId_Or_offerId": "Carte d'étudiant ou numéro d'offre manquant",
@@ -1202,7 +1201,7 @@
       "nbHoursWeek": "Préciser le nombre d'heures par semaine",
       "first_month": "Premier mois",
       "second_month": "Deuxième mois",
-      "third_month" : "Troisième mois",
+      "third_month": "Troisième mois",
       "salary": "Préciser le salaire "
     },
     "observations": {

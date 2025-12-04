@@ -4,5 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface EvaluationForm {
-    Map<String, List<? extends IQuestionResponse>> getCategories();;
+  Map<String, List<? extends IQuestionResponse>> getCategories();
+  ;
 }

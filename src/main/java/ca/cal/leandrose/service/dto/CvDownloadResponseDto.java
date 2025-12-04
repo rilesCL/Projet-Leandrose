@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CvDownloadResponseDto {
-    private String pdfPath;
-    private String filename;
-    private Map<String, String> error;
+  private String pdfPath;
+  private String filename;
+  private Map<String, String> error;
 
-    public static CvDownloadResponseDto withErrorMessage(String message) {
-        CvDownloadResponseDto dto = new CvDownloadResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static CvDownloadResponseDto withErrorMessage(String message) {
+    CvDownloadResponseDto dto = new CvDownloadResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }

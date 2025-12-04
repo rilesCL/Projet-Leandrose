@@ -117,7 +117,8 @@ export default function TermSelector({onTermChange}) {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div
+                    className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="py-1">
                         {availableTerms.map((term, index) => (
                             <button
@@ -131,7 +132,8 @@ export default function TermSelector({onTermChange}) {
                             >
                                 <span className="truncate">{formatTerm(term)}</span>
                                 {isCurrentTerm(term) && (
-                                    <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 sm:px-2 py-0.5 rounded-full ml-1 flex-shrink-0">
+                                    <span
+                                        className="text-xs bg-indigo-100 text-indigo-700 px-1.5 sm:px-2 py-0.5 rounded-full ml-1 flex-shrink-0">
                                         {t('termSelector.current')}
                                     </span>
                                 )}

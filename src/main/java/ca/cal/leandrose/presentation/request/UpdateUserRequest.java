@@ -7,12 +7,12 @@ import lombok.Setter;
 @Setter
 public class UpdateUserRequest {
 
-    private String firstName;
-    private String lastName;
+  private String firstName;
+  private String lastName;
 
-    private String email;
-    private String newPassword;
-    private String currentPassword;
+  private String email;
+  private String newPassword;
+  private String currentPassword;
 
-    private String phoneNumber;
+  private String phoneNumber;
 }

@@ -1,20 +1,22 @@
 package ca.cal.leandrose.presentation;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import ca.cal.leandrose.model.Candidature;
 import ca.cal.leandrose.model.EvaluationStatus;
 import ca.cal.leandrose.model.InternshipOffer;
 import ca.cal.leandrose.model.auth.Role;
+import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
 import ca.cal.leandrose.service.*;
@@ -23,14 +25,12 @@ import ca.cal.leandrose.service.dto.evaluation.*;
 import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
-import ca.cal.leandrose.presentation.request.InternshipOfferRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,11 +44,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.*;
-
 
 @WebMvcTest(controllers = EmployeurController.class)
 @ActiveProfiles("test")

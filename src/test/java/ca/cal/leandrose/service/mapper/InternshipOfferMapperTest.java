@@ -168,6 +168,3 @@ class InternshipOfferMapperTest {
     assertEquals(validationDate, dto.getValidationDate());
   }
 }
-
-
-

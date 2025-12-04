@@ -21,6 +21,7 @@ public class Cv {
 
   private String pdfPath;
   private String rejectionComment;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "status")
   private Status status;

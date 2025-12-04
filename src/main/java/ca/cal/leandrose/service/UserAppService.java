@@ -1,17 +1,15 @@
 package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.*;
-import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.presentation.request.UpdateUserRequest;
 import ca.cal.leandrose.repository.*;
 import ca.cal.leandrose.security.JwtTokenProvider;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.*;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

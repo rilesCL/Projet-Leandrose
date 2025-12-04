@@ -62,8 +62,3 @@ class QuestionResponseTest {
     assertEquals("", response.rating());
   }
 }
-
-
-
-
-

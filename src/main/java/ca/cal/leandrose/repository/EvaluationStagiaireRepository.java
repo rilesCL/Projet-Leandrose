@@ -9,9 +9,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EvaluationStagiaireRepository extends JpaRepository<EvaluationStagiaire, Long> {
 
-    List<EvaluationStagiaire> findByEmployeurId(Long employeurId);
-    List<EvaluationStagiaire> findByProfesseurId(Long professeurId);
-    Optional<EvaluationStagiaire> findByStudentIdAndInternshipOfferId(Long studentId, Long internshipOfferId);
+  List<EvaluationStagiaire> findByEmployeurId(Long employeurId);
+
+  List<EvaluationStagiaire> findByProfesseurId(Long professeurId);
+
+  Optional<EvaluationStagiaire> findByStudentIdAndInternshipOfferId(
+      Long studentId, Long internshipOfferId);
 
   boolean existsByInternshipOfferIdAndStudentId(Long internshipOfferId, Long studentId);
 }

@@ -1,4 +1,5 @@
 Définition de DONE
+
 1. Code & Qualité
 
 Le code source est écrit, relu (code review) et validé par au moins un autre membre de l’équipe.

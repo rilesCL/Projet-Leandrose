@@ -149,7 +149,3 @@ class ProfDtoTest {
     assertEquals("Test error", dto.getError().get("error"));
   }
 }
-
-
-
-

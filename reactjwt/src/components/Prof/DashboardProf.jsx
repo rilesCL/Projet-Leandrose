@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
-import { useTranslation } from "react-i18next";
+import React, {useEffect, useState} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import {FaSignOutAlt} from "react-icons/fa";
+import {useTranslation} from "react-i18next";
 import LanguageSelector from "../LanguageSelector.jsx";
 import ThemeToggle from "../ThemeToggle.jsx";
 import EvaluationsList from "../Employeur/EvaluationList.jsx";
@@ -11,7 +11,7 @@ import ProfStudentsPage from "./ProfStudentPage.jsx";
 export default function DashboardProf() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { t, i18n } = useTranslation();
+    const {t, i18n} = useTranslation();
     const [userName, setUserName] = useState("");
 
     const [section, setSection] = useState(() => {
@@ -24,7 +24,7 @@ export default function DashboardProf() {
     const handleLogout = () => {
         sessionStorage.clear();
         localStorage.clear();
-        navigate("/login", { replace: true });
+        navigate("/login", {replace: true});
     };
 
     useEffect(() => {
@@ -54,7 +54,7 @@ export default function DashboardProf() {
         fetchUserInfo();
     }, [navigate]);
 
-    const Btn = ({ target, children }) => (
+    const Btn = ({target, children}) => (
         <button
             onClick={() => setSection(target)}
             className={`relative flex-1 min-w-[140px] px-6 py-3.5 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out ${
@@ -75,10 +75,11 @@ export default function DashboardProf() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white border-b">
                 <div className="w-full px-2 sm:px-4 lg:px-8 h-16 flex justify-between items-center gap-2">
-                    <span className="text-lg sm:text-xl font-bold text-indigo-600 truncate min-w-0">{t("appName")}</span>
+                    <span
+                        className="text-lg sm:text-xl font-bold text-indigo-600 truncate min-w-0">{t("appName")}</span>
                     <div className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0">
-                        <ThemeToggle />
-                        <LanguageSelector />
+                        <ThemeToggle/>
+                        <LanguageSelector/>
                         <button
                             onClick={() => navigate("/profil")}
                             className="text-xs sm:text-sm text-gray-600 hover:text-indigo-600 px-1 sm:px-2 whitespace-nowrap"
@@ -91,7 +92,7 @@ export default function DashboardProf() {
                             className="flex items-center text-gray-600 hover:text-red-600 transition text-xs sm:text-sm px-1 sm:px-2"
                             title={t("dashboardEmployeur.logout")}
                         >
-                            <FaSignOutAlt className="text-sm sm:text-base" />
+                            <FaSignOutAlt className="text-sm sm:text-base"/>
                             <span className="hidden md:inline ml-1">
                                 {t("dashboardEmployeur.logout")}
                             </span>
@@ -124,13 +125,13 @@ export default function DashboardProf() {
                     {/* Content Sections */}
                     {section === 'etudiants' && (
                         <div className="space-y-8">
-                            <ProfStudentsPage />
+                            <ProfStudentsPage/>
                         </div>
                     )}
 
                     {section === 'evaluations' && (
                         <div className="space-y-8">
-                            <EvaluationsList />
+                            <EvaluationsList/>
                         </div>
                     )}
                 </div>

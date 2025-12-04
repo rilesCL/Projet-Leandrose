@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { I18nextProvider, initReactI18next } from 'react-i18next';
+import {render, screen} from '@testing-library/react';
+import {MemoryRouter, Route, Routes} from 'react-router-dom';
+import {I18nextProvider, initReactI18next} from 'react-i18next';
 import i18n from 'i18next';
 import EvaluationForm from '../EvaluationForm.jsx';
 import * as apiProf from '../../../api/apiProf';
@@ -120,7 +120,7 @@ const MockProfEvaluationForm = () => {
         <I18nextProvider i18n={i18nInstance}>
             <MemoryRouter initialEntries={['/prof/evaluation/123/456']}>
                 <Routes>
-                    <Route path="/prof/evaluation/:studentId/:offerId" element={<EvaluationForm />} />
+                    <Route path="/prof/evaluation/:studentId/:offerId" element={<EvaluationForm/>}/>
                 </Routes>
             </MemoryRouter>
         </I18nextProvider>
@@ -131,7 +131,7 @@ describe('EvaluationForm (Prof)', () => {
     beforeEach(() => {
         vi.resetAllMocks();
 
-        mockedApi.checkExistingEvaluation.mockResolvedValue({ exists: false });
+        mockedApi.checkExistingEvaluation.mockResolvedValue({exists: false});
         mockedApi.getEvaluationInfo.mockResolvedValue({
             entrepriseTeacherDto: {
                 companyName: 'ABC Inc',
@@ -145,7 +145,7 @@ describe('EvaluationForm (Prof)', () => {
             }
         });
 
-        mockedApi.createEvaluation.mockResolvedValue({ id: 'eval-123' });
+        mockedApi.createEvaluation.mockResolvedValue({id: 'eval-123'});
         mockedApi.generateEvaluationPdfWithId.mockResolvedValue({});
     });
 
@@ -154,7 +154,7 @@ describe('EvaluationForm (Prof)', () => {
     });
 
     it('renders company and student details after loading', async () => {
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         expect(await screen.findByText('Evaluation Form')).toBeInTheDocument();
 
@@ -169,7 +169,7 @@ describe('EvaluationForm (Prof)', () => {
     });
 
     it('renders all evaluation categories with questions', async () => {
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         await screen.findByText('Evaluation Form');
 
@@ -183,19 +183,19 @@ describe('EvaluationForm (Prof)', () => {
     });
 
     it('shows rating options for questions', async () => {
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         await screen.findByText('Question 1 about conformity');
 
-        const totallyAgreeButtons = await screen.findAllByRole('radio', { name: /Totally agree/i });
-        const mostlyAgreeButtons = await screen.findAllByRole('radio', { name: /Mostly agree/i });
+        const totallyAgreeButtons = await screen.findAllByRole('radio', {name: /Totally agree/i});
+        const mostlyAgreeButtons = await screen.findAllByRole('radio', {name: /Mostly agree/i});
 
         expect(totallyAgreeButtons.length).toBeGreaterThan(0);
         expect(mostlyAgreeButtons.length).toBeGreaterThan(0);
     });
 
     it('renders observations section with all options', async () => {
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         await screen.findByText('General Observations');
 
@@ -216,7 +216,7 @@ describe('EvaluationForm (Prof)', () => {
     });
 
     it('renders hours input fields for conformity category', async () => {
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         await screen.findByText('CONFORMITY');
 
@@ -225,7 +225,7 @@ describe('EvaluationForm (Prof)', () => {
     });
 
     it('renders salary input field for general category', async () => {
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         await screen.findByText('GENERAL');
 
@@ -233,16 +233,16 @@ describe('EvaluationForm (Prof)', () => {
     });
 
     it('shows submit button', async () => {
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
-        const submitButton = await screen.findByRole('button', { name: /Submit Evaluation/i });
+        const submitButton = await screen.findByRole('button', {name: /Submit Evaluation/i});
         expect(submitButton).toBeInTheDocument();
         expect(submitButton).toBeEnabled();
     });
 
-    it("shows validations errors when required fields are missing", async  () => {
+    it("shows validations errors when required fields are missing", async () => {
         const user = userEvent.setup()
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         const submitButton = await screen.findByRole('button', {name: /Submit Evaluation/i})
         await user.click(submitButton)
@@ -259,7 +259,7 @@ describe('EvaluationForm (Prof)', () => {
     })
     it("validates hours fields when conformity questions are answered", async () => {
         const user = userEvent.setup()
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         await screen.findByText("CONFORMITY")
 
@@ -277,7 +277,7 @@ describe('EvaluationForm (Prof)', () => {
     })
     it("validates work shift ranges when YES is selected", async () => {
         const user = userEvent.setup()
-        render(<MockProfEvaluationForm />);
+        render(<MockProfEvaluationForm/>);
 
         await screen.findByText("General Observations")
 

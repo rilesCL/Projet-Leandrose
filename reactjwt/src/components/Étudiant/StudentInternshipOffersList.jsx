@@ -40,9 +40,9 @@ export default function StudentInternshipOffersList({studentInfo, onReregisterCl
                 setLoading(false);
             }
         }
+
         fetchOffers();
     }, [t]);
-
 
 
     if (loading) {

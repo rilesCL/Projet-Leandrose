@@ -48,13 +48,13 @@ public class CandidatureDto {
         .build();
   }
 
-  public Long getEmployeurId() {
-    return internshipOffer != null ? internshipOffer.getEmployeurId() : null;
-  }
-
   public static CandidatureDto withErrorMessage(String message) {
     CandidatureDto dto = new CandidatureDto();
     dto.setError(Map.of("message", message));
     return dto;
+  }
+
+  public Long getEmployeurId() {
+    return internshipOffer != null ? internshipOffer.getEmployeurId() : null;
   }
 }

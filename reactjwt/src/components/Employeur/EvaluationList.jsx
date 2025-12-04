@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React, {useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 
 import * as apiEmployer from '../../api/apiEmployeur';
 import * as apiProf from '../../api/apiProf';
-import { getMyRole } from '../../api/apiAuth';
+import {getMyRole} from '../../api/apiAuth';
 
 import PdfViewer from '../PdfViewer.jsx';
 
 export default function EvaluationsList() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
 
     const [role, setRole] = useState(null);
     const [eligibleAgreements, setEligibleAgreements] = useState([]);
@@ -41,7 +41,7 @@ export default function EvaluationsList() {
 
 
     useEffect(() => {
-        if(!role) return
+        if (!role) return
         const fetchEligible = async () => {
             try {
                 const agreements = await api.getEligibleEvaluations();
@@ -73,7 +73,7 @@ export default function EvaluationsList() {
                         }
 
                     } catch (err) {
-                        evalMap[key] = { exists: false };
+                        evalMap[key] = {exists: false};
                         teacherMap[key] = false;
                     }
                 }
@@ -150,8 +150,8 @@ export default function EvaluationsList() {
                         const evaluation = status?.evaluation;
                         const hasEval =
                             evaluation &&
-                                ((isTeacher && evaluation.submittedByProfessor) ||
-                                    (isEmployer && evaluation.submittedByEmployer))
+                            ((isTeacher && evaluation.submittedByProfessor) ||
+                                (isEmployer && evaluation.submittedByEmployer))
 
                         const teacherAssigned = teacherAssignmentStatus[key];
                         const canCreate = teacherAssigned && !hasEval
@@ -171,7 +171,8 @@ export default function EvaluationsList() {
                                         <p>{agreement.internshipDescription}</p>
 
                                         {hasEval && (
-                                            <div className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm">
+                                            <div
+                                                className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm">
                                                 ✔ {t("evaluationList.evaluation")}{" "}
                                                 {isTeacher
                                                     ? evaluation.submittedByProfessor
@@ -230,7 +231,7 @@ export default function EvaluationsList() {
             )}
 
             {showPdfViewer && currentPdfBlob && (
-                <PdfViewer file={currentPdfBlob} onClose={handleClosePdfViewer} />
+                <PdfViewer file={currentPdfBlob} onClose={handleClosePdfViewer}/>
             )}
         </div>
     );

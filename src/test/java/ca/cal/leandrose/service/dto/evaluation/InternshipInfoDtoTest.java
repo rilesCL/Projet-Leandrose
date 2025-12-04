@@ -53,7 +53,3 @@ class InternshipInfoDtoTest {
     assertEquals("", dto.companyName());
   }
 }
-
-
-
-

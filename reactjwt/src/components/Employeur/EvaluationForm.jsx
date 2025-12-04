@@ -1,5 +1,3 @@
-
-
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -133,7 +131,7 @@ const EvaluationForm = () => {
                     throw new Error(t("evaluation.errors.missing_studentId_Or_offerId"));
                 }
                 const existingCheck = await checkExistingEvaluation(studentId, offerId);
-                let evalId =null
+                let evalId = null
                 if (existingCheck.exists && existingCheck.evaluation) {
                     evalId = existingCheck.evaluation.id
                     setEvaluationId(evalId)
@@ -462,13 +460,13 @@ const EvaluationForm = () => {
                                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                                             {question}
                                         </p>
-                                        
+
                                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                                             {[
-                                                { value: 'EXCELLENT', label: t('evaluation.rating.totally_agree') },
-                                                { value: 'TRES_BIEN', label: t('evaluation.rating.mostly_agree') },
-                                                { value: 'SATISFAISANT', label: t('evaluation.rating.mostly_disagree') },
-                                                { value: 'A_AMELIORER', label: t('evaluation.rating.totally_disagree') }
+                                                {value: 'EXCELLENT', label: t('evaluation.rating.totally_agree')},
+                                                {value: 'TRES_BIEN', label: t('evaluation.rating.mostly_agree')},
+                                                {value: 'SATISFAISANT', label: t('evaluation.rating.mostly_disagree')},
+                                                {value: 'A_AMELIORER', label: t('evaluation.rating.totally_disagree')}
                                             ].map((option) => {
                                                 const isSelected = formData.categories[categoryKey]?.[questionIndex]?.rating === option.value;
                                                 return (
@@ -534,13 +532,13 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.question')}
                         </p>
-                        
+
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                { value: 0, label: t('evaluation.rating.totally_agree') },
-                                { value: 1, label: t('evaluation.rating.mostly_agree') },
-                                { value: 3, label: t('evaluation.rating.mostly_disagree') },
-                                { value: 4, label: t('evaluation.rating.totally_disagree') }
+                                {value: 0, label: t('evaluation.rating.totally_agree')},
+                                {value: 1, label: t('evaluation.rating.mostly_agree')},
+                                {value: 3, label: t('evaluation.rating.mostly_disagree')},
+                                {value: 4, label: t('evaluation.rating.totally_disagree')}
                             ].map((option) => {
                                 const isSelected = formData.globalAssessment === option.value;
                                 return (
@@ -586,11 +584,11 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.technical_training')}
                         </p>
-                        
+
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                { value: true, label: t('evaluation.globalAssessment.yes') },
-                                { value: false, label: t('evaluation.globalAssessment.no') }
+                                {value: true, label: t('evaluation.globalAssessment.yes')},
+                                {value: false, label: t('evaluation.globalAssessment.no')}
                             ].map((option) => {
                                 const isSelected = formData.discussedWithTrainee === option.value;
                                 const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
@@ -638,12 +636,12 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.welcome_nextInternship')}
                         </p>
-                        
+
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                { value: 'YES', label: t('evaluation.globalAssessment.yes') },
-                                { value: 'NO', label: t('evaluation.globalAssessment.no') },
-                                { value: 'MAYBE', label: t('evaluation.globalAssessment.maybe') }
+                                {value: 'YES', label: t('evaluation.globalAssessment.yes')},
+                                {value: 'NO', label: t('evaluation.globalAssessment.no')},
+                                {value: 'MAYBE', label: t('evaluation.globalAssessment.maybe')}
                             ].map((option) => {
                                 const isSelected = formData.welcomeNextInternship === option.value;
                                 const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
@@ -675,11 +673,11 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.technical_training')}
                         </p>
-                        
+
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
-                                { value: true, label: t('evaluation.globalAssessment.yes') },
-                                { value: false, label: t('evaluation.globalAssessment.no') }
+                                {value: true, label: t('evaluation.globalAssessment.yes')},
+                                {value: false, label: t('evaluation.globalAssessment.no')}
                             ].map((option) => {
                                 const isSelected = formData.technicalTrainingSufficient === option.value;
                                 const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";

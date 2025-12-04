@@ -26,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
+
 class InternshipOfferServiceTest {
 
   @Mock private InternshipOfferRepository internshipOfferRepository;

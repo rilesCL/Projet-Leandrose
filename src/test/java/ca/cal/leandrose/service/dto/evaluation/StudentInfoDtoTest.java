@@ -56,7 +56,3 @@ class StudentInfoDtoTest {
     assertEquals("", dto.program());
   }
 }
-
-
-
-

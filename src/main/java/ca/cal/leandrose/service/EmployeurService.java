@@ -1,7 +1,6 @@
 package ca.cal.leandrose.service;
 
 import ca.cal.leandrose.model.Employeur;
-import ca.cal.leandrose.model.Program;
 import ca.cal.leandrose.repository.EmployeurRepository;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.EmployeurDto;

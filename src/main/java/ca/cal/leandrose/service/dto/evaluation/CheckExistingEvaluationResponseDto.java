@@ -11,15 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckExistingEvaluationResponseDto {
-    private Boolean exists;
-    private EvaluationStagiaireDto evaluation;
-    private String message;
-    private Map<String, String> error;
+  private Boolean exists;
+  private EvaluationStagiaireDto evaluation;
+  private String message;
+  private Map<String, String> error;
 
-    public static CheckExistingEvaluationResponseDto withErrorMessage(String message) {
-        CheckExistingEvaluationResponseDto dto = new CheckExistingEvaluationResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static CheckExistingEvaluationResponseDto withErrorMessage(String message) {
+    CheckExistingEvaluationResponseDto dto = new CheckExistingEvaluationResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }
-

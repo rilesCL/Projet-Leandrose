@@ -16,9 +16,5 @@ class EvaluationQuestionTest {
   void testEvaluationQuestionCanBeInstantiated() {
     EvaluationQuestion question = new EvaluationQuestion();
     assertNotNull(question);
-
   }
 }
-
-
-

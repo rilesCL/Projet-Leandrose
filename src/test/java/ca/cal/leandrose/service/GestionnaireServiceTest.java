@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import ca.cal.leandrose.model.*;
-import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.repository.CvRepository;
 import ca.cal.leandrose.repository.GestionnaireRepository;
 import ca.cal.leandrose.repository.InternshipOfferRepository;

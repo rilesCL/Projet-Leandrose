@@ -50,8 +50,3 @@ class EvaluationResponsesDtoTest {
     assertEquals("", dto.message());
   }
 }
-
-
-
-
-

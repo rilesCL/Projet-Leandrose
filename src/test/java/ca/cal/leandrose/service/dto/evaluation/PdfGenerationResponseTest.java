@@ -55,8 +55,3 @@ class PdfGenerationResponseTest {
     assertEquals("", response.message());
   }
 }
-
-
-
-
-

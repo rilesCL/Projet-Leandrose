@@ -8,6 +8,5 @@ import lombok.Setter;
 @Setter
 public class VerifyPasswordRequest {
 
-    @NotBlank
-    private String password;
+  @NotBlank private String password;
 }

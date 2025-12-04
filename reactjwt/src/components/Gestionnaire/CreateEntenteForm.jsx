@@ -63,10 +63,10 @@ export default function CreateEntenteForm() {
             setToast(prev => ({...prev, show: false}));
         }, 5000)
     }
-    const closeToast =() => {
+    const closeToast = () => {
         setToast({show: false, message: '', type: 'success'})
 
-        if(success){
+        if (success) {
             navigate("/dashboard/gestionnaire");
         }
 
@@ -136,7 +136,7 @@ export default function CreateEntenteForm() {
 
             if (result.error) {
                 showToast(result.error.message || t("createEntenteForm.createError"), 'error');
-            } else{
+            } else {
                 showToast(t("createEntenteForm.success"), 'success');
                 setSuccess(true);
             }
@@ -186,7 +186,8 @@ export default function CreateEntenteForm() {
                         </svg>
                     ) : (
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     )}
                     <span className="font-medium">{toast.message}</span>
@@ -200,7 +201,8 @@ export default function CreateEntenteForm() {
                         aria-label="Close"
                     >
                         <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>

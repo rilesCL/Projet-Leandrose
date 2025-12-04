@@ -76,7 +76,8 @@ export default function DashBoardGestionnaire() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
             <header className="bg-white shadow-md border-b border-indigo-100">
                 <div className="w-full px-2 sm:px-4 lg:px-8 h-16 flex justify-between items-center gap-2">
-                    <span className="text-lg sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 truncate min-w-0">
+                    <span
+                        className="text-lg sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 truncate min-w-0">
                         {t("appName")}
                     </span>
                     <div className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0">

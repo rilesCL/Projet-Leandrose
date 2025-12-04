@@ -80,7 +80,8 @@ public class GestionnaireController {
               "attachment; filename=\"" + filepath.getFileName() + "\"")
           .body(resource);
     } catch (RuntimeException | IOException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CvDownloadResponseDto.withErrorMessage(e.getMessage()));
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(CvDownloadResponseDto.withErrorMessage(e.getMessage()));
     }
   }
 
@@ -280,10 +281,8 @@ public class GestionnaireController {
 
       String response = chatService.chat(request.query(), effectiveSessionId);
 
-      ChatResponseDto result = ChatResponseDto.builder()
-          .response(response)
-          .sessionId(effectiveSessionId)
-          .build();
+      ChatResponseDto result =
+          ChatResponseDto.builder().response(response).sessionId(effectiveSessionId).build();
 
       return ResponseEntity.ok(result);
     } catch (Exception e) {

@@ -5,29 +5,30 @@ async function handleFetch(url, options = {}) {
         const res = await fetch(url, options);
         if (!res.ok) {
             const errorText = await res.text();
-            throw { response: { data: errorText || `Erreur ${res.status}: ${res.statusText}` } };
+            throw {response: {data: errorText || `Erreur ${res.status}: ${res.statusText}`}};
         }
         return res;
     } catch (error) {
         if (error && error.response) throw error;
         const errorMessage = error?.message || "Impossible de se connecter au serveur";
         if (errorMessage.includes("Failed to fetch") || errorMessage.includes("NetworkError")) {
-            throw { response: { data: "Erreur de connexion au serveur. Vérifiez que le serveur est démarré." } };
+            throw {response: {data: "Erreur de connexion au serveur. Vérifiez que le serveur est démarré."}};
         }
-        throw { response: { data: errorMessage } };
+        throw {response: {data: errorMessage}};
     }
 }
+
 async function handleEvalFetch(url, options = {}) {
     try {
         const res = await fetch(url, options);
         if (!res.ok) {
             const errorText = await res.text();
-            throw { response: { data: errorText || `Erreur ${res.status}: ${res.statusText}` } };
+            throw {response: {data: errorText || `Erreur ${res.status}: ${res.statusText}`}};
         }
         return res;
     } catch (error) {
         if (error && error.response) throw error;
-        throw { response: { data: error?.message || "Impossible de se connecter au serveur" } };
+        throw {response: {data: error?.message || "Impossible de se connecter au serveur"}};
     }
 }
 
@@ -42,7 +43,7 @@ function authHeaders(token = null) {
 
 export async function fetchProfStudents(profId, params = {}) {
     if (!profId) {
-        throw { response: { data: "ID du professeur manquant" } };
+        throw {response: {data: "ID du professeur manquant"}};
     }
     const q = new URLSearchParams();
     if (params.name) q.set("nom", params.name);
@@ -89,10 +90,10 @@ export async function getProfMe(token = null) {
     return data ?? null;
 }
 
-export async function createEvaluation (studentId, offerId, token = null) {
+export async function createEvaluation(studentId, offerId, token = null) {
     const url = `${API_BASE}/prof/evaluations`;
     console.log('Calling URL:', url);
-    console.log('With data:', { studentId, internshipOfferId: offerId });
+    console.log('With data:', {studentId, internshipOfferId: offerId});
 
 
     const res = await handleEvalFetch(url, {
@@ -107,6 +108,7 @@ export async function createEvaluation (studentId, offerId, token = null) {
     console.log("Create evaluation Response", responseData)
     return responseData
 }
+
 export async function generateEvaluationPdfWithId(evaluationId, formData, token = null) {
     const currentLanguage = localStorage.getItem("i18nextLng")
     console.log("Form data: ", formData)
@@ -128,6 +130,7 @@ export async function getEligibleEvaluations(token = null) {
     });
     return await res.json();
 }
+
 export async function getEvaluationInfo(studentId, offerId, token = null) {
     const url = `${API_BASE}/prof/evaluations/info?studentId=${studentId}&offerId=${offerId}`;
 
@@ -143,7 +146,8 @@ export async function getEvaluationInfo(studentId, offerId, token = null) {
 
     return json;
 }
-export async function checkTeacherAssigned(studentId, offerId, token = null){
+
+export async function checkTeacherAssigned(studentId, offerId, token = null) {
     const res = await handleEvalFetch(
         `${API_BASE}/employeur/evaluations/check-teacher-assigned?studentId=${studentId}&offerId=${offerId}`, {
             method: 'GET',
@@ -153,13 +157,15 @@ export async function checkTeacherAssigned(studentId, offerId, token = null){
         })
     return await res.json();
 }
+
 export async function checkExistingEvaluation(studentId, offerId, token = null) {
     const res = await handleFetch(`${API_BASE}/prof/evaluations/check-existing?studentId=${studentId}&offerId=${offerId}`, {
         headers: authHeaders(token)
     });
     return await res.json();
 }
-export async function previewEvaluationPdf (evaluationId, formData = null, token = null) {
+
+export async function previewEvaluationPdf(evaluationId, formData = null, token = null) {
     if (formData) {
         const res = await handleEvalFetch(`${API_BASE}/prof/evaluations/${evaluationId}/preview-pdf`, {
             method: 'POST',

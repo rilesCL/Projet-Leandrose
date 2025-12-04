@@ -113,12 +113,7 @@ class EmployeurServiceTest {
         IllegalArgumentException.class,
         () ->
             employeurService.createEmployeur(
-                "John",
-                "Doe",
-                "existing@example.com",
-                rawPassword,
-                "TechCorp",
-                "IT"));
+                "John", "Doe", "existing@example.com", rawPassword, "TechCorp", "IT"));
 
     verify(employeurRepository, never()).save(any(Employeur.class));
     verify(passwordEncoder, never()).encode(anyString());

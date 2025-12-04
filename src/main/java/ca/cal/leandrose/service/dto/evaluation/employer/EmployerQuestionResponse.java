@@ -2,22 +2,20 @@ package ca.cal.leandrose.service.dto.evaluation.employer;
 
 import ca.cal.leandrose.service.dto.evaluation.IQuestionResponse;
 
-public record EmployerQuestionResponse(
-        String comment,
-        Boolean checked,
-        String rating
-) implements IQuestionResponse {
+public record EmployerQuestionResponse(String comment, Boolean checked, String rating)
+    implements IQuestionResponse {
 
-    @Override
-    public String getComment(){
-        return comment;
-    }
-    @Override
-    public String getRating(){
-        return rating;
-    }
-    public Boolean getChecked(){
-        return checked;
-    }
+  @Override
+  public String getComment() {
+    return comment;
+  }
 
+  @Override
+  public String getRating() {
+    return rating;
+  }
+
+  public Boolean getChecked() {
+    return checked;
+  }
 }

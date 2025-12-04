@@ -64,7 +64,3 @@ class GestionnaireTest {
     assertEquals(Role.GESTIONNAIRE, gestionnaire.getRole());
   }
 }
-
-
-
-

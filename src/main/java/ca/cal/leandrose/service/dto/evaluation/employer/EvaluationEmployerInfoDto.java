@@ -4,6 +4,4 @@ import ca.cal.leandrose.service.dto.evaluation.InternshipInfoDto;
 import ca.cal.leandrose.service.dto.evaluation.StudentInfoDto;
 
 public record EvaluationEmployerInfoDto(
-        StudentInfoDto studentInfo,
-        InternshipInfoDto internshipInfo
-) {}
+    StudentInfoDto studentInfo, InternshipInfoDto internshipInfo) {}

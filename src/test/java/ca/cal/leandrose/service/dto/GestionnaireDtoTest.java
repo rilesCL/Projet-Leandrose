@@ -71,7 +71,6 @@ class GestionnaireDtoTest {
     assertNull(dto.getPhoneNumber());
   }
 
-
   @Test
   void testCreate_WithNullPhoneNumber() {
     Gestionnaire gestionnaire =
@@ -90,6 +89,3 @@ class GestionnaireDtoTest {
     assertNull(dto.getPhoneNumber());
   }
 }
-
-
-

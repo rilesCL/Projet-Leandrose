@@ -16,14 +16,7 @@ class EvaluationFormDataTest {
 
     EvaluationFormData formData =
         new EvaluationFormData(
-            categories,
-            "General comment",
-            5,
-            "Excellent",
-            true,
-            10,
-            "Yes",
-            true);
+            categories, "General comment", 5, "Excellent", true, 10, "Yes", true);
 
     assertNotNull(formData);
     assertEquals(categories, formData.categories());
@@ -55,15 +48,7 @@ class EvaluationFormDataTest {
   void testEvaluationFormDataWithEmptyCategories() {
     Map<String, List<QuestionResponse>> categories = new HashMap<>();
     EvaluationFormData formData =
-        new EvaluationFormData(
-            categories,
-            "",
-            0,
-            "",
-            false,
-            0,
-            "",
-            false);
+        new EvaluationFormData(categories, "", 0, "", false, 0, "", false);
 
     assertNotNull(formData.categories());
     assertTrue(formData.categories().isEmpty());
@@ -83,25 +68,11 @@ class EvaluationFormDataTest {
 
     EvaluationFormData formData1 =
         new EvaluationFormData(
-            categories,
-            "General comment",
-            5,
-            "Excellent",
-            true,
-            10,
-            "Yes",
-            true);
+            categories, "General comment", 5, "Excellent", true, 10, "Yes", true);
 
     EvaluationFormData formData2 =
         new EvaluationFormData(
-            categories,
-            "General comment",
-            5,
-            "Excellent",
-            true,
-            10,
-            "Yes",
-            true);
+            categories, "General comment", 5, "Excellent", true, 10, "Yes", true);
 
     assertEquals(formData1, formData2);
     assertEquals(formData1.hashCode(), formData2.hashCode());
@@ -112,21 +83,9 @@ class EvaluationFormDataTest {
     Map<String, List<QuestionResponse>> categories = new HashMap<>();
     EvaluationFormData formData =
         new EvaluationFormData(
-            categories,
-            "General comment",
-            5,
-            "Excellent",
-            true,
-            10,
-            "Yes",
-            true);
+            categories, "General comment", 5, "Excellent", true, 10, "Yes", true);
 
     assertNotNull(formData.toString());
     assertTrue(formData.toString().contains("EvaluationFormData"));
   }
 }
-
-
-
-
-

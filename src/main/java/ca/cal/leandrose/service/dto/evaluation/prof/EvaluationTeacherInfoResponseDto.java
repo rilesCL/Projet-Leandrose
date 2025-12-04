@@ -12,22 +12,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EvaluationTeacherInfoResponseDto {
-    private EntrepriseTeacherDto entrepriseTeacherDto;
-    private StudentTeacherDto studentTeacherDto;
-    private ProfDto profDto;
-    private Map<String, String> error;
+  private EntrepriseTeacherDto entrepriseTeacherDto;
+  private StudentTeacherDto studentTeacherDto;
+  private ProfDto profDto;
+  private Map<String, String> error;
 
-    public static EvaluationTeacherInfoResponseDto fromInfo(EvaluationTeacherInfoDto info) {
-        return EvaluationTeacherInfoResponseDto.builder()
-                .entrepriseTeacherDto(info.entrepriseTeacherDto())
-                .studentTeacherDto(info.studentTeacherDto())
-                .profDto(info.profDto())
-                .build();
-    }
+  public static EvaluationTeacherInfoResponseDto fromInfo(EvaluationTeacherInfoDto info) {
+    return EvaluationTeacherInfoResponseDto.builder()
+        .entrepriseTeacherDto(info.entrepriseTeacherDto())
+        .studentTeacherDto(info.studentTeacherDto())
+        .profDto(info.profDto())
+        .build();
+  }
 
-    public static EvaluationTeacherInfoResponseDto withErrorMessage(String message) {
-        EvaluationTeacherInfoResponseDto dto = new EvaluationTeacherInfoResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static EvaluationTeacherInfoResponseDto withErrorMessage(String message) {
+    EvaluationTeacherInfoResponseDto dto = new EvaluationTeacherInfoResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }

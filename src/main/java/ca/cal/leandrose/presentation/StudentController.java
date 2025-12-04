@@ -263,7 +263,8 @@ public class StudentController {
     } catch (IllegalStateException e) {
       return ResponseEntity.badRequest().body(CandidatureDto.withErrorMessage(e.getMessage()));
     } catch (RuntimeException e) {
-      return ResponseEntity.status(404).body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
+      return ResponseEntity.status(404)
+          .body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
     }
   }
 
@@ -282,7 +283,8 @@ public class StudentController {
     } catch (IllegalStateException e) {
       return ResponseEntity.badRequest().body(CandidatureDto.withErrorMessage(e.getMessage()));
     } catch (RuntimeException e) {
-      return ResponseEntity.status(404).body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
+      return ResponseEntity.status(404)
+          .body(CandidatureDto.withErrorMessage("Candidature non trouvée"));
     }
   }
 

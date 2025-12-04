@@ -9,13 +9,12 @@ import ca.cal.leandrose.service.dto.LoginDTO;
 import ca.cal.leandrose.service.dto.UserDTO;
 import ca.cal.leandrose.service.dto.UserRoleResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController

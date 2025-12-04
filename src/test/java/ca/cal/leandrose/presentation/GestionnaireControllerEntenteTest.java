@@ -315,8 +315,7 @@ class GestionnaireControllerEntenteTest {
         .andExpect(status().isOk())
         .andExpect(header().string("Content-Type", "application/pdf"))
         .andExpect(
-            header()
-                .string("Content-Disposition", "attachment; filename=\"entente_stage_1.pdf\""));
+            header().string("Content-Disposition", "attachment; filename=\"entente_stage_1.pdf\""));
     verify(ententeStageService, times(1)).telechargerPDF(1L);
   }
 
@@ -356,9 +355,7 @@ class GestionnaireControllerEntenteTest {
     when(userAppService.getMe(anyString())).thenReturn(gestionnaireDto);
     when(ententeStageService.signerParGestionnaire(1L, 1L)).thenReturn(ententeDto);
     mockMvc
-        .perform(
-            post("/gestionnaire/ententes/1/signer")
-                .header("Authorization", "Bearer token"))
+        .perform(post("/gestionnaire/ententes/1/signer").header("Authorization", "Bearer token"))
         .andExpect(status().isOk());
     verify(ententeStageService, times(1)).signerParGestionnaire(1L, 1L);
   }
@@ -370,9 +367,7 @@ class GestionnaireControllerEntenteTest {
     studentDto.setRole(ca.cal.leandrose.model.auth.Role.STUDENT);
     when(userAppService.getMe(anyString())).thenReturn(studentDto);
     mockMvc
-        .perform(
-            post("/gestionnaire/ententes/1/signer")
-                .header("Authorization", "Bearer token"))
+        .perform(post("/gestionnaire/ententes/1/signer").header("Authorization", "Bearer token"))
         .andExpect(status().isForbidden());
   }
 
@@ -386,9 +381,7 @@ class GestionnaireControllerEntenteTest {
     when(ententeStageService.signerParGestionnaire(1L, 1L))
         .thenThrow(new jakarta.persistence.EntityNotFoundException("Not found"));
     mockMvc
-        .perform(
-            post("/gestionnaire/ententes/1/signer")
-                .header("Authorization", "Bearer token"))
+        .perform(post("/gestionnaire/ententes/1/signer").header("Authorization", "Bearer token"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error.message").value("Entente non trouvée"));
   }
@@ -402,9 +395,7 @@ class GestionnaireControllerEntenteTest {
     when(ententeStageService.signerParGestionnaire(1L, 1L))
         .thenThrow(new IllegalStateException("déjà signé"));
     mockMvc
-        .perform(
-            post("/gestionnaire/ententes/1/signer")
-                .header("Authorization", "Bearer token"))
+        .perform(post("/gestionnaire/ententes/1/signer").header("Authorization", "Bearer token"))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.error.message").value("déjà signé"));
   }

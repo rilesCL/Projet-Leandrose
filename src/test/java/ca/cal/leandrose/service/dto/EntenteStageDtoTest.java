@@ -82,7 +82,8 @@ class EntenteStageDtoTest {
             .schoolTerm(schoolTerm)
             .build();
 
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
 
     candidature =
         Candidature.builder()
@@ -306,6 +307,3 @@ class EntenteStageDtoTest {
     assertFalse(dto.isEmployeurASigner());
   }
 }
-
-
-

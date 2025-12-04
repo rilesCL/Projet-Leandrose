@@ -1,5 +1,14 @@
 package ca.cal.leandrose.presentation;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import ca.cal.leandrose.model.EvaluationStatus;
 import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.security.TestSecurityConfiguration;
@@ -15,6 +24,8 @@ import ca.cal.leandrose.service.dto.evaluation.prof.EvaluationTeacherInfoDto;
 import ca.cal.leandrose.service.dto.evaluation.prof.QuestionResponseTeacher;
 import ca.cal.leandrose.service.dto.evaluation.prof.WorkShiftRange;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,19 +37,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.nio.file.AccessDeniedException;
-import java.time.LocalDate;
-import java.util.*;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ProfController.class)
 @ActiveProfiles("test")

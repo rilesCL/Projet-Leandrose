@@ -299,8 +299,9 @@ public class EntenteStageService {
             .findById(gestionnaireId)
             .orElseThrow(() -> new EntityNotFoundException("Gestionnaire non trouvé"));
 
-    if(entente.getDateSignatureEtudiant() == null && entente.getDateSignatureEmployeur() == null){
-        throw new IllegalStateException("L'étudiant et l'employeur doit signer avant le gestionnaire");
+    if (entente.getDateSignatureEtudiant() == null && entente.getDateSignatureEmployeur() == null) {
+      throw new IllegalStateException(
+          "L'étudiant et l'employeur doit signer avant le gestionnaire");
     }
 
     if (entente.getStatut() != EntenteStage.StatutEntente.EN_ATTENTE_SIGNATURE) {
@@ -405,93 +406,91 @@ public class EntenteStageService {
     List<EntenteStage> ententes = ententeRepository.findAllByProf_Id(profId);
     LocalDate today = LocalDate.now();
 
-      return ententes.stream()
-          .map(
-              e -> {
-                var cand = e.getCandidature();
-                var student = (cand != null) ? cand.getStudent() : null;
-                var offer = (cand != null) ? cand.getInternshipOffer() : null;
+    return ententes.stream()
+        .map(
+            e -> {
+              var cand = e.getCandidature();
+              var student = (cand != null) ? cand.getStudent() : null;
+              var offer = (cand != null) ? cand.getInternshipOffer() : null;
 
-                LocalDate start =
-                    (e.getStartDate() != null)
-                        ? e.getStartDate()
-                        : (offer != null ? offer.getStartDate() : null);
+              LocalDate start =
+                  (e.getStartDate() != null)
+                      ? e.getStartDate()
+                      : (offer != null ? offer.getStartDate() : null);
 
-                int weeks =
-                    (e.getDurationInWeeks() > 0)
-                        ? e.getDurationInWeeks()
-                        : (offer != null ? offer.getDurationInWeeks() : 0);
+              int weeks =
+                  (e.getDurationInWeeks() > 0)
+                      ? e.getDurationInWeeks()
+                      : (offer != null ? offer.getDurationInWeeks() : 0);
 
-                LocalDate end =
-                        start != null && weeks > 0 ? start.plusWeeks(weeks) : null;
+              LocalDate end = start != null && weeks > 0 ? start.plusWeeks(weeks) : null;
 
-                String stageStatus;
-                if (start == null || end == null) {
-                  stageStatus = "EN_COURS";
-                } else {
-                  stageStatus = (today.isAfter(end)) ? "TERMINE" : "EN_COURS";
-                }
+              String stageStatus;
+              if (start == null || end == null) {
+                stageStatus = "EN_COURS";
+              } else {
+                stageStatus = (today.isAfter(end)) ? "TERMINE" : "EN_COURS";
+              }
 
-                String evaluationStatus = getEvaluationStatus(e, student, offer);
+              String evaluationStatus = getEvaluationStatus(e, student, offer);
 
-                return ProfStudentItemDto.builder()
-                    .ententeId(e.getId())
-                    .studentId(student != null ? student.getId() : null)
-                    .studentFirstName(student != null ? student.getFirstName() : null)
-                    .studentLastName(student != null ? student.getLastName() : null)
-                    .companyName(offer != null ? offer.getCompanyName() : null)
-                    .offerTitle(offer != null ? offer.getDescription() : null)
-                    .startDate(start)
-                    .endDate(end)
-                    .stageStatus(stageStatus)
-                    .evaluationStatus(evaluationStatus)
-                    .build();
-              })
-          .filter(
-              i -> {
-                if (nameFilter != null && !nameFilter.isBlank()) {
-                  String q = nameFilter.toLowerCase();
-                  String full =
-                      (Objects.toString(i.getStudentFirstName(), "")
-                              + " "
-                              + Objects.toString(i.getStudentLastName(), ""))
-                          .toLowerCase();
-                  return full.contains(q);
-                }
-                return true;
-              })
-          .filter(
-              i -> {
-                if (companyFilter != null && !companyFilter.isBlank()) {
-                  String q = companyFilter.toLowerCase();
-                  return i.getCompanyName() != null
-                      && i.getCompanyName().toLowerCase().contains(q);
-                }
-                return true;
-              })
-          .filter(
-              i -> {
-                if (dateFrom != null) {
-                  return i.getEndDate() == null || !i.getEndDate().isBefore(dateFrom);
-                }
-                return true;
-              })
-          .filter(
-              i -> {
-                if (dateTo != null) {
-                  return i.getStartDate() == null || !i.getStartDate().isAfter(dateTo);
-                }
-                return true;
-              })
-          .filter(
-              i -> {
-                if (evaluationFilter != null && !evaluationFilter.isBlank()) {
-                  return evaluationFilter.equalsIgnoreCase(i.getEvaluationStatus());
-                }
-                return true;
-              })
-          .sorted(getComparator(sortBy, Boolean.TRUE.equals(asc)))
-          .collect(Collectors.toList());
+              return ProfStudentItemDto.builder()
+                  .ententeId(e.getId())
+                  .studentId(student != null ? student.getId() : null)
+                  .studentFirstName(student != null ? student.getFirstName() : null)
+                  .studentLastName(student != null ? student.getLastName() : null)
+                  .companyName(offer != null ? offer.getCompanyName() : null)
+                  .offerTitle(offer != null ? offer.getDescription() : null)
+                  .startDate(start)
+                  .endDate(end)
+                  .stageStatus(stageStatus)
+                  .evaluationStatus(evaluationStatus)
+                  .build();
+            })
+        .filter(
+            i -> {
+              if (nameFilter != null && !nameFilter.isBlank()) {
+                String q = nameFilter.toLowerCase();
+                String full =
+                    (Objects.toString(i.getStudentFirstName(), "")
+                            + " "
+                            + Objects.toString(i.getStudentLastName(), ""))
+                        .toLowerCase();
+                return full.contains(q);
+              }
+              return true;
+            })
+        .filter(
+            i -> {
+              if (companyFilter != null && !companyFilter.isBlank()) {
+                String q = companyFilter.toLowerCase();
+                return i.getCompanyName() != null && i.getCompanyName().toLowerCase().contains(q);
+              }
+              return true;
+            })
+        .filter(
+            i -> {
+              if (dateFrom != null) {
+                return i.getEndDate() == null || !i.getEndDate().isBefore(dateFrom);
+              }
+              return true;
+            })
+        .filter(
+            i -> {
+              if (dateTo != null) {
+                return i.getStartDate() == null || !i.getStartDate().isAfter(dateTo);
+              }
+              return true;
+            })
+        .filter(
+            i -> {
+              if (evaluationFilter != null && !evaluationFilter.isBlank()) {
+                return evaluationFilter.equalsIgnoreCase(i.getEvaluationStatus());
+              }
+              return true;
+            })
+        .sorted(getComparator(sortBy, Boolean.TRUE.equals(asc)))
+        .collect(Collectors.toList());
   }
 
   private Comparator<ProfStudentItemDto> getComparator(String sortBy, boolean asc) {
@@ -523,24 +522,23 @@ public class EntenteStageService {
     return ententeStage.isPresent() && ententeStage.get().getProf() != null;
   }
 
-  private String getEvaluationStatus(EntenteStage ententeState, Student student, InternshipOffer offer){
-      if(student == null || offer == null)
-          return EvaluationStatus.A_FAIRE.name();
+  private String getEvaluationStatus(
+      EntenteStage ententeState, Student student, InternshipOffer offer) {
+    if (student == null || offer == null) return EvaluationStatus.A_FAIRE.name();
 
-      Optional<EvaluationStagiaire> evaluationOpt = evaluationStagiaireRepository
-              .findByStudentIdAndInternshipOfferId(student.getId(), offer.getId());
+    Optional<EvaluationStagiaire> evaluationOpt =
+        evaluationStagiaireRepository.findByStudentIdAndInternshipOfferId(
+            student.getId(), offer.getId());
 
-      if(evaluationOpt.isPresent()) {
-          EvaluationStagiaire evaluation = evaluationOpt.get();
+    if (evaluationOpt.isPresent()) {
+      EvaluationStagiaire evaluation = evaluationOpt.get();
 
-          if(evaluation.isSubmittedByEmployer() && evaluation.isSubmittedByProfessor()){
-              return EvaluationStatus.TERMINEE.name();
-          }
-          else if(evaluation.isSubmittedByEmployer() || evaluation.isSubmittedByProfessor()){
-              return EvaluationStatus.EN_COURS.name();
-          }
-
+      if (evaluation.isSubmittedByEmployer() && evaluation.isSubmittedByProfessor()) {
+        return EvaluationStatus.TERMINEE.name();
+      } else if (evaluation.isSubmittedByEmployer() || evaluation.isSubmittedByProfessor()) {
+        return EvaluationStatus.EN_COURS.name();
       }
-      return EvaluationStatus.A_FAIRE.name();
+    }
+    return EvaluationStatus.A_FAIRE.name();
   }
 }

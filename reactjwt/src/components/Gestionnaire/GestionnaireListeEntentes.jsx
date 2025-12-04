@@ -311,210 +311,210 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
     return (
         <>
             {signatureModal.show && signatureModal.entente && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {t("ententeStage.model.stage_signatures")}
-                                </h3>
-                                <button
-                                    onClick={() => setSignatureModal({show: false, entente: null})}
-                                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                                >
-                                    <FaTimes className="text-xl"/>
-                                </button>
-                            </div>
-
-                            <div className="space-y-4">
-                                {(() => {
-                                    const signatures = getSignatureStatus(signatureModal.entente);
-                                    return (
-                                        <>
-                                            <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div
-                                                    className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
-                                                    {signatures.employeur.signed ? (
-                                                        <FaCheck className="text-xl"/>
-                                                    ) : (
-                                                        <FaClock className="text-xl"/>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400"/>
-                                                        <span
-                                                            className="font-medium text-gray-900">{t("ententeStage.model.employer")}</span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
-                                                    {signatures.employeur.signed ? (
-                                                        <p className="text-xs text-green-600 mt-1">
-                                                            {t("ententeStage.model.sign_the")} {formatDateTime(signatures.employeur.date)}
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">{t("ententeStage.model.waiting_signature")}</p>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div
-                                                    className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
-                                                    {signatures.etudiant.signed ? (
-                                                        <FaCheck className="text-xl"/>
-                                                    ) : (
-                                                        <FaClock className="text-xl"/>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400"/>
-                                                        <span
-                                                            className="font-medium text-gray-900">{t("ententeStage.model.student")}</span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
-                                                    {signatures.etudiant.signed ? (
-                                                        <p className="text-xs text-green-600 mt-1">
-                                                            {t("ententeStage.model.sign_the")} {formatDateTime(signatures.etudiant.date)}
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">{t("ententeStage.model.waiting_signature")}</p>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                                                <div
-                                                    className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
-                                                    {signatures.gestionnaire.signed ? (
-                                                        <FaCheck className="text-xl"/>
-                                                    ) : (
-                                                        <FaClock className="text-xl"/>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <FaUser className="text-gray-400"/>
-                                                        <span
-                                                            className="font-medium text-gray-900">{t("ententeStage.model.manager")}</span>
-                                                    </div>
-                                                    <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
-                                                    {signatures.gestionnaire.signed ? (
-                                                        <p className="text-xs text-green-600 mt-1">
-                                                            {t("ententeStage.model.sign_the")} {formatDateTime(signatures.gestionnaire.date)}
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-xs text-orange-600 mt-1">{t("ententeStage.model.waiting_signature")}</p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </>
-                                    );
-                                })()}
-                            </div>
-
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    onClick={() => setSignatureModal({show: false, entente: null})}
-                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                                >
-                                    {t("ententeStage.model.close")}
-                                </button>
-                            </div>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {t("ententeStage.model.stage_signatures")}
+                            </h3>
+                            <button
+                                onClick={() => setSignatureModal({show: false, entente: null})}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <FaTimes className="text-xl"/>
+                            </button>
                         </div>
-                    </div>
-                )}
 
-                {profModal.show && profModal.entente && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {t("ententeStage.model.assign_prof_title") || "Attribuer un professeur"}
-                                </h3>
-                                <button
-                                    onClick={() => setProfModal({show: false, entente: null})}
-                                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                                >
-                                    <FaTimes className="text-xl"/>
-                                </button>
-                            </div>
-
-                            <div className="mb-4">
-                                <p className="text-sm text-gray-600">
-                                    {t("ententeStage.model.assign_prof_description") || "Sélectionnez un professeur pour"} {profModal.entente.student?.firstName} {profModal.entente.student?.lastName}
-                                </p>
-                            </div>
-
-                            {loadingProfs ? (
-                                <div className="flex justify-center py-8">
-                                    <div
-                                        className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                </div>
-                            ) : (
-                                <div className="space-y-2 max-h-96 overflow-y-auto">
-                                    {profs.length === 0 ? (
-                                        <p className="text-sm text-gray-500 text-center py-4">
-                                            {t("ententeStage.model.no_profs") || "Aucun professeur disponible"}
-                                        </p>
-                                    ) : (
-                                        profs.map((prof) => (
+                        <div className="space-y-4">
+                            {(() => {
+                                const signatures = getSignatureStatus(signatureModal.entente);
+                                return (
+                                    <>
+                                        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
                                             <div
-                                                key={prof.id}
-                                                onClick={() => setSelectedProf(prof.id)}
-                                                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                                                    selectedProf === prof.id
-                                                        ? 'border-indigo-600 bg-indigo-50'
-                                                        : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                <div className="flex items-center space-x-3">
-                                                    <FaUser
-                                                        className={`${selectedProf === prof.id ? 'text-indigo-600' : 'text-gray-400'}`}/>
-                                                    <div>
-                                                        <div className="font-medium text-gray-900">
-                                                            {prof.firstName} {prof.lastName}
-                                                        </div>
-                                                        {prof.department && (
-                                                            <div className="text-xs text-gray-500">
-                                                                {prof.department}
-                                                            </div>
-                                                        )}
-                                                        {prof.employeeNumber && (
-                                                            <div className="text-xs text-gray-500">
-                                                                {t("ententeStage.model.employee_number") || "N°"}: {prof.employeeNumber}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
+                                                className={`mt-1 ${signatures.employeur.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                {signatures.employeur.signed ? (
+                                                    <FaCheck className="text-xl"/>
+                                                ) : (
+                                                    <FaClock className="text-xl"/>
+                                                )}
                                             </div>
-                                        ))
-                                    )}
-                                </div>
-                            )}
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-gray-400"/>
+                                                    <span
+                                                        className="font-medium text-gray-900">{t("ententeStage.model.employer")}</span>
+                                                </div>
+                                                <p className="text-sm text-gray-600 mt-1">{signatures.employeur.name}</p>
+                                                {signatures.employeur.signed ? (
+                                                    <p className="text-xs text-green-600 mt-1">
+                                                        {t("ententeStage.model.sign_the")} {formatDateTime(signatures.employeur.date)}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-orange-600 mt-1">{t("ententeStage.model.waiting_signature")}</p>
+                                                )}
+                                            </div>
+                                        </div>
 
-                            <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                    onClick={() => setProfModal({show: false, entente: null})}
-                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                                    disabled={attributing}
-                                >
-                                    {t("ententeStage.model.cancel") || "Annuler"}
-                                </button>
-                                <button
-                                    onClick={handleAttribuerProf}
-                                    disabled={!selectedProf || attributing}
-                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                                >
-                                    {attributing && (
-                                        <div
-                                            className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                    )}
-                                    <span>{t("ententeStage.model.assign") || "Attribuer"}</span>
-                                </button>
-                            </div>
+                                        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                                            <div
+                                                className={`mt-1 ${signatures.etudiant.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                {signatures.etudiant.signed ? (
+                                                    <FaCheck className="text-xl"/>
+                                                ) : (
+                                                    <FaClock className="text-xl"/>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-gray-400"/>
+                                                    <span
+                                                        className="font-medium text-gray-900">{t("ententeStage.model.student")}</span>
+                                                </div>
+                                                <p className="text-sm text-gray-600 mt-1">{signatures.etudiant.name}</p>
+                                                {signatures.etudiant.signed ? (
+                                                    <p className="text-xs text-green-600 mt-1">
+                                                        {t("ententeStage.model.sign_the")} {formatDateTime(signatures.etudiant.date)}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-orange-600 mt-1">{t("ententeStage.model.waiting_signature")}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                                            <div
+                                                className={`mt-1 ${signatures.gestionnaire.signed ? 'text-green-600' : 'text-orange-500'}`}>
+                                                {signatures.gestionnaire.signed ? (
+                                                    <FaCheck className="text-xl"/>
+                                                ) : (
+                                                    <FaClock className="text-xl"/>
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2">
+                                                    <FaUser className="text-gray-400"/>
+                                                    <span
+                                                        className="font-medium text-gray-900">{t("ententeStage.model.manager")}</span>
+                                                </div>
+                                                <p className="text-sm text-gray-600 mt-1">{signatures.gestionnaire.name}</p>
+                                                {signatures.gestionnaire.signed ? (
+                                                    <p className="text-xs text-green-600 mt-1">
+                                                        {t("ententeStage.model.sign_the")} {formatDateTime(signatures.gestionnaire.date)}
+                                                    </p>
+                                                ) : (
+                                                    <p className="text-xs text-orange-600 mt-1">{t("ententeStage.model.waiting_signature")}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                onClick={() => setSignatureModal({show: false, entente: null})}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            >
+                                {t("ententeStage.model.close")}
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
+            )}
+
+            {profModal.show && profModal.entente && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {t("ententeStage.model.assign_prof_title") || "Attribuer un professeur"}
+                            </h3>
+                            <button
+                                onClick={() => setProfModal({show: false, entente: null})}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <FaTimes className="text-xl"/>
+                            </button>
+                        </div>
+
+                        <div className="mb-4">
+                            <p className="text-sm text-gray-600">
+                                {t("ententeStage.model.assign_prof_description") || "Sélectionnez un professeur pour"} {profModal.entente.student?.firstName} {profModal.entente.student?.lastName}
+                            </p>
+                        </div>
+
+                        {loadingProfs ? (
+                            <div className="flex justify-center py-8">
+                                <div
+                                    className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                            </div>
+                        ) : (
+                            <div className="space-y-2 max-h-96 overflow-y-auto">
+                                {profs.length === 0 ? (
+                                    <p className="text-sm text-gray-500 text-center py-4">
+                                        {t("ententeStage.model.no_profs") || "Aucun professeur disponible"}
+                                    </p>
+                                ) : (
+                                    profs.map((prof) => (
+                                        <div
+                                            key={prof.id}
+                                            onClick={() => setSelectedProf(prof.id)}
+                                            className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                                                selectedProf === prof.id
+                                                    ? 'border-indigo-600 bg-indigo-50'
+                                                    : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            <div className="flex items-center space-x-3">
+                                                <FaUser
+                                                    className={`${selectedProf === prof.id ? 'text-indigo-600' : 'text-gray-400'}`}/>
+                                                <div>
+                                                    <div className="font-medium text-gray-900">
+                                                        {prof.firstName} {prof.lastName}
+                                                    </div>
+                                                    {prof.department && (
+                                                        <div className="text-xs text-gray-500">
+                                                            {prof.department}
+                                                        </div>
+                                                    )}
+                                                    {prof.employeeNumber && (
+                                                        <div className="text-xs text-gray-500">
+                                                            {t("ententeStage.model.employee_number") || "N°"}: {prof.employeeNumber}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
+
+                        <div className="mt-6 flex justify-end space-x-3">
+                            <button
+                                onClick={() => setProfModal({show: false, entente: null})}
+                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                                disabled={attributing}
+                            >
+                                {t("ententeStage.model.cancel") || "Annuler"}
+                            </button>
+                            <button
+                                onClick={handleAttribuerProf}
+                                disabled={!selectedProf || attributing}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                            >
+                                {attributing && (
+                                    <div
+                                        className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                )}
+                                <span>{t("ententeStage.model.assign") || "Attribuer"}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="bg-white shadow rounded-lg overflow-hidden">
                 <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
@@ -750,40 +750,40 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
                 )}
             </div>
 
-                {sortedEntentes.length > 0 && (
-                    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                    {t("ententeStage.stats.totalEntentes")}
-                                </dt>
-                                <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                                    {sortedEntentes.length}
-                                </dd>
-                            </div>
-                        </div>
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                    {t("ententeStage.stats.waitingSignature")}
-                                </dt>
-                                <dd className="mt-1 text-3xl font-semibold text-orange-600">
-                                    {waitingForManagerSignature}
-                                </dd>
-                            </div>
-                        </div>
-                        <div className="bg-white overflow-hidden shadow rounded-lg">
-                            <div className="px-4 py-5 sm:p-6">
-                                <dt className="text-sm font-medium text-gray-500 truncate">
-                                    {t("ententeStage.stats.agreementValidated")}
-                                </dt>
-                                <dd className="mt-1 text-3xl font-semibold text-green-600">
-                                    {sortedEntentes.filter(e => e.statut === 'VALIDEE').length}
-                                </dd>
-                            </div>
+            {sortedEntentes.length > 0 && (
+                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div className="bg-white overflow-hidden shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                {t("ententeStage.stats.totalEntentes")}
+                            </dt>
+                            <dd className="mt-1 text-3xl font-semibold text-gray-900">
+                                {sortedEntentes.length}
+                            </dd>
                         </div>
                     </div>
-                )}
+                    <div className="bg-white overflow-hidden shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                {t("ententeStage.stats.waitingSignature")}
+                            </dt>
+                            <dd className="mt-1 text-3xl font-semibold text-orange-600">
+                                {waitingForManagerSignature}
+                            </dd>
+                        </div>
+                    </div>
+                    <div className="bg-white overflow-hidden shadow rounded-lg">
+                        <div className="px-4 py-5 sm:p-6">
+                            <dt className="text-sm font-medium text-gray-500 truncate">
+                                {t("ententeStage.stats.agreementValidated")}
+                            </dt>
+                            <dd className="mt-1 text-3xl font-semibold text-green-600">
+                                {sortedEntentes.filter(e => e.statut === 'VALIDEE').length}
+                            </dd>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {pdfToPreview && (
                 <PdfViewer

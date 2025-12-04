@@ -114,6 +114,3 @@ class ProfStudentItemDtoTest {
     assertNull(dto.getEvaluationStatus());
   }
 }
-
-
-

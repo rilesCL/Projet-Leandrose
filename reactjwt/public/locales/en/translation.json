@@ -1199,7 +1199,7 @@
       "nbHoursWeek": "Specify the number of hours per week",
       "first_month": "First month",
       "second_month": "Second month",
-      "third_month" : "Third month",
+      "third_month": "Third month",
       "salary": "Specify the hourly wage"
     },
     "observations": {

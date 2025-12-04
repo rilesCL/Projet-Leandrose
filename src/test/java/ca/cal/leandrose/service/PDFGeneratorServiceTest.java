@@ -5,28 +5,25 @@ import static org.junit.jupiter.api.Assertions.*;
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.model.auth.Credentials;
 import ca.cal.leandrose.model.auth.Role;
-import ca.cal.leandrose.model.auth.Role;
 import ca.cal.leandrose.service.dto.ProfDto;
 import ca.cal.leandrose.service.dto.evaluation.*;
-import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
+import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.prof.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.util.*;
-
 class PDFGeneratorServiceTest {
-
-    private PDFGeneratorService pdfGeneratorService;
 
     @TempDir
     Path tempDir;
+    private PDFGeneratorService pdfGeneratorService;
 
     @BeforeEach
     void setUp() {

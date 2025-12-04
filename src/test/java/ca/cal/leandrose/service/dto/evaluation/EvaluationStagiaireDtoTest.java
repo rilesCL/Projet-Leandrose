@@ -2,9 +2,8 @@ package ca.cal.leandrose.service.dto.evaluation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDate;
-
 import ca.cal.leandrose.model.EvaluationStatus;
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 
 class EvaluationStagiaireDtoTest {

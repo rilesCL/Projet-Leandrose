@@ -1,13 +1,19 @@
 package ca.cal.leandrose.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.repository.*;
-import ca.cal.leandrose.service.dto.ProfDto;
 import ca.cal.leandrose.service.dto.evaluation.*;
+import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerFormData;
 import ca.cal.leandrose.service.dto.evaluation.employer.EvaluationEmployerInfoDto;
-import ca.cal.leandrose.service.dto.evaluation.employer.EmployerQuestionResponse;
 import ca.cal.leandrose.service.dto.evaluation.prof.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,15 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EvaluationStagiaireServiceTest {

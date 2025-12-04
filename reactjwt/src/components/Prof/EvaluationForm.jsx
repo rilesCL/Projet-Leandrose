@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import {
-    getEvaluationInfo,
-    createEvaluation,
-        generateEvaluationPdfWithId
-} from "../../api/apiProf";
-import { useTranslation } from 'react-i18next';
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {createEvaluation, generateEvaluationPdfWithId, getEvaluationInfo} from "../../api/apiProf";
+import {useTranslation} from 'react-i18next';
 
 const EvaluationForm = () => {
 
-    const { t } = useTranslation();
-    const { studentId, offerId } = useParams();
+    const {t} = useTranslation();
+    const {studentId, offerId} = useParams();
     const navigate = useNavigate();
 
     const [info, setInfo] = useState(null);
@@ -107,7 +103,7 @@ const EvaluationForm = () => {
                 Object.entries(teacherEvaluationTemplate).forEach(([key, group]) => {
                     initialCategories[key] =
                         Array.isArray(group.questions)
-                            ? group.questions.map(() => ({ rating: "" }))
+                            ? group.questions.map(() => ({rating: ""}))
                             : [];
                 });
 
@@ -131,17 +127,17 @@ const EvaluationForm = () => {
         setErrors(prev => {
             if (!prev?.categories || !prev.categories[categoryKey]) return prev;
 
-            const updatedCat = { ...prev.categories[categoryKey] };
+            const updatedCat = {...prev.categories[categoryKey]};
             delete updatedCat[questionIndex];
 
-            const updatedCategories = { ...prev.categories };
+            const updatedCategories = {...prev.categories};
             if (Object.keys(updatedCat).length === 0) {
                 delete updatedCategories[categoryKey];
             } else {
                 updatedCategories[categoryKey] = updatedCat;
             }
 
-            const newErrors = { ...prev, categories: updatedCategories };
+            const newErrors = {...prev, categories: updatedCategories};
             if (Object.keys(updatedCategories).length === 0) {
                 delete newErrors.categories;
             }
@@ -153,14 +149,14 @@ const EvaluationForm = () => {
     const clearFieldError = (field) => {
         setErrors(prev => {
             if (!prev || !prev[field]) return prev;
-            const updated = { ...prev };
+            const updated = {...prev};
             delete updated[field];
             return updated;
         });
     };
 
     const handleChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        setFormData(prev => ({...prev, [field]: value}));
         clearFieldError(field);
     };
 
@@ -170,7 +166,7 @@ const EvaluationForm = () => {
             categories: {
                 ...prev.categories,
                 [category]: prev.categories[category].map((q, i) =>
-                    i === index ? { ...q, rating: value } : q
+                    i === index ? {...q, rating: value} : q
                 )
             }
         }));
@@ -192,7 +188,7 @@ const EvaluationForm = () => {
             setTimeout(() => {
                 const el = document.querySelector('.validation-error');
                 if (el && typeof el.scrollIntoView === 'function') {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.scrollIntoView({behavior: 'smooth', block: 'center'});
                 }
             }, 50);
 
@@ -235,10 +231,10 @@ const EvaluationForm = () => {
     const optionBase = "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border font-semibold text-sm";
     const optionDefault = "bg-gray-100 border-gray-300 text-gray-800";
     const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
-    
+
     const getRatingButtonClasses = (value, isSelected) => {
         if (!isSelected) return optionDefault;
-        
+
         switch (value) {
             case "EXCELLENT":
                 return "bg-green-800 border-green-900 text-white shadow";
@@ -256,19 +252,21 @@ const EvaluationForm = () => {
     return (
         <div className="max-w-4xl mx-auto p-6 relative">
             {isFormDisabled && (
-                <div className="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-75 dark:bg-opacity-75 z-10 rounded-lg"></div>
+                <div
+                    className="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-75 dark:bg-opacity-75 z-10 rounded-lg"></div>
             )}
 
             <div className="mb-4">
                 <button
                     onClick={() => navigate(-1)}
                     className="flex items-center text-blue-600 hover:text-blue-800 focus:outline-none"
-                    aria-label={t('common.back', { defaultValue: 'Retour' })}
+                    aria-label={t('common.back', {defaultValue: 'Retour'})}
                 >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                     </svg>
-                    {t('common.back', { defaultValue: 'Retour' })}
+                    {t('common.back', {defaultValue: 'Retour'})}
                 </button>
             </div>
 
@@ -279,17 +277,28 @@ const EvaluationForm = () => {
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h2 className="text-xl font-semibold mb-4 text-gray-900">{t('evaluation.companyInfo')}</h2>
 
-                <p className="text-gray-700"><strong className="text-gray-900">{t('studentProfile.name')}</strong> {info?.entrepriseTeacherDto.companyName}</p>
-                <p className="text-gray-700"><strong className="text-gray-900">{t('studentProfile.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}</p>
-                <p className="text-gray-700"><strong className="text-gray-900">{t('studentProfile.address')}</strong> {info?.entrepriseTeacherDto.address}</p>
-                <p className="text-gray-700"><strong className="text-gray-900">{t('studentProfile.email')}</strong> {info?.entrepriseTeacherDto.email}</p>
+                <p className="text-gray-700"><strong
+                    className="text-gray-900">{t('studentProfile.name')}</strong> {info?.entrepriseTeacherDto.companyName}
+                </p>
+                <p className="text-gray-700"><strong
+                    className="text-gray-900">{t('studentProfile.contact_person')}</strong> {info?.entrepriseTeacherDto.contactName}
+                </p>
+                <p className="text-gray-700"><strong
+                    className="text-gray-900">{t('studentProfile.address')}</strong> {info?.entrepriseTeacherDto.address}
+                </p>
+                <p className="text-gray-700"><strong
+                    className="text-gray-900">{t('studentProfile.email')}</strong> {info?.entrepriseTeacherDto.email}
+                </p>
             </section>
 
             {/* Student Info */}
             <section className="mb-8 p-4 border rounded-lg bg-gray-50">
                 <h2 className="text-xl font-semibold mb-4 text-gray-900">{t('evaluation.studentInfo')}</h2>
-                <p className="text-gray-700"><strong className="text-gray-900">{t('studentProfile.name')}</strong> {info?.studentTeacherDto.fullname}</p>
-                <p className="text-gray-700"><strong className="text-gray-900">{t('studentProfile.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}</p>
+                <p className="text-gray-700"><strong
+                    className="text-gray-900">{t('studentProfile.name')}</strong> {info?.studentTeacherDto.fullname}</p>
+                <p className="text-gray-700"><strong
+                    className="text-gray-900">{t('studentProfile.internStartDate')}</strong> {info?.studentTeacherDto.internshipStartDate}
+                </p>
             </section>
 
             {/* Question Groups */}
@@ -313,10 +322,10 @@ const EvaluationForm = () => {
                                 {/* Rating Buttons: use grid for better layout - vertical on small screens */}
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     {[
-                                        { value: "EXCELLENT", label: t('evaluation.rating.totally_agree') },
-                                        { value: "TRES_BIEN", label: t('evaluation.rating.mostly_agree') },
-                                        { value: "SATISFAISANT", label: t('evaluation.rating.mostly_disagree') },
-                                        { value: "A_AMELIORER", label: t('evaluation.rating.totally_disagree') }
+                                        {value: "EXCELLENT", label: t('evaluation.rating.totally_agree')},
+                                        {value: "TRES_BIEN", label: t('evaluation.rating.mostly_agree')},
+                                        {value: "SATISFAISANT", label: t('evaluation.rating.mostly_disagree')},
+                                        {value: "A_AMELIORER", label: t('evaluation.rating.totally_disagree')}
                                     ].map(option => {
                                         const isSelected =
                                             formData.categories[groupKey]?.[index]?.rating === option.value;
@@ -358,8 +367,8 @@ const EvaluationForm = () => {
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q1")}</p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        {[{ value: "1", label: t('studentProfile.observations.first_intern')},
-                            { value: "2", label: t('studentProfile.observations.second_intern') }].map(
+                        {[{value: "1", label: t('studentProfile.observations.first_intern')},
+                            {value: "2", label: t('studentProfile.observations.second_intern')}].map(
                             opt => {
                                 const isSelected = formData.preferredStage === opt.value;
                                 return (
@@ -390,10 +399,10 @@ const EvaluationForm = () => {
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q2")}</p>
                     <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 justify-center">
                         {[
-                            { value: "1", label: t('studentProfile.observations.stage1') },
-                            { value: "2", label: t('studentProfile.observations.stage2') },
-                            { value: "3", label: t('studentProfile.observations.stage3') },
-                            { value: "4", label: t('studentProfile.observations.stage4') }
+                            {value: "1", label: t('studentProfile.observations.stage1')},
+                            {value: "2", label: t('studentProfile.observations.stage2')},
+                            {value: "3", label: t('studentProfile.observations.stage3')},
+                            {value: "4", label: t('studentProfile.observations.stage4')}
                         ].map(opt => {
                             const isSelected = formData.capacity === opt.value;
                             return (
@@ -422,7 +431,10 @@ const EvaluationForm = () => {
                     )}
                     <p className="font-medium mb-2 text-gray-700">{t("studentProfile.observations.q3")}</p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-xs mx-auto">
-                        {[{ value: "YES", label: t('studentProfile.observations.yes') }, { value: "NO", label: t('studentProfile.observations.no') }].map(opt => {
+                        {[{value: "YES", label: t('studentProfile.observations.yes')}, {
+                            value: "NO",
+                            label: t('studentProfile.observations.no')
+                        }].map(opt => {
                             const isSelected = formData.sameTraineeNextStage === opt.value;
                             return (
                                 <label

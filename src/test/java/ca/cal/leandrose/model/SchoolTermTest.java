@@ -121,7 +121,6 @@ class SchoolTermTest {
     assertNotEquals(null, term);
   }
 
-
   @Test
   void testEqualsWithSameValues() {
     SchoolTerm term1 = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);

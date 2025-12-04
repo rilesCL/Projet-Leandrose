@@ -159,6 +159,3 @@ class CandidatureEmployeurDtoTest {
     assertEquals("Stage test", dto.getOfferDescription());
   }
 }
-
-
-

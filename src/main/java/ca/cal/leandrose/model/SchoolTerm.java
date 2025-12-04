@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class SchoolTerm {
   @Enumerated(EnumType.STRING)
   private Season season;
+
   private int year;
 
   public static SchoolTerm getNextTerm() {
@@ -81,7 +82,7 @@ public class SchoolTerm {
   }
 
   public String getTermAsString() {
-    return (getSeason() != null)? getSeason() + " " + getYear():null;
+    return (getSeason() != null) ? getSeason() + " " + getYear() : null;
   }
 
   public enum Season {

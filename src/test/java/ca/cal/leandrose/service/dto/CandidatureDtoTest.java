@@ -128,7 +128,6 @@ class CandidatureDtoTest {
     dto.setInternshipOffer(null);
 
     assertNull(dto.getEmployeurId());
-
   }
 
   @Test
@@ -157,6 +156,3 @@ class CandidatureDtoTest {
     assertNull(dto.getError());
   }
 }
-
-
-

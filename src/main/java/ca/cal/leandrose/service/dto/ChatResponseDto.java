@@ -11,14 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatResponseDto {
-    private String response;
-    private String sessionId;
-    private Map<String, String> error;
+  private String response;
+  private String sessionId;
+  private Map<String, String> error;
 
-    public static ChatResponseDto withErrorMessage(String message) {
-        ChatResponseDto dto = new ChatResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static ChatResponseDto withErrorMessage(String message) {
+    ChatResponseDto dto = new ChatResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }
-

@@ -16,6 +16,7 @@ public class JwtTokenProvider {
   @Value("${application.security.jwt.secret-key}")
   private final String jwtSecret =
       "2B7E151628AED2A6ABF7158809CF4F3C2B7E151628AED2A6ABF7158809CF4F3C";
+
   @Value("${application.security.jwt.expiration}")
   private int expirationInMs;
 

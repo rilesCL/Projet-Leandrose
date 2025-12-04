@@ -1,5 +1,8 @@
 package ca.cal.leandrose.service;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import ca.cal.leandrose.model.*;
 import ca.cal.leandrose.model.auth.Credentials;
 import ca.cal.leandrose.model.auth.Role;
@@ -9,6 +12,7 @@ import ca.cal.leandrose.repository.ProfRepository;
 import ca.cal.leandrose.security.JwtTokenProvider;
 import ca.cal.leandrose.security.exception.UserNotFoundException;
 import ca.cal.leandrose.service.dto.*;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,31 +20,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 class UserAppServiceTest {
-
-    @Mock private JwtTokenProvider jwtTokenProvider;
-
-    @Mock private UserAppRepository userAppRepository;
-
-    @Mock private StudentRepository studentRepository;
-
-    @Mock private EmployeurRepository employeurRepository;
-
-    @Mock private GestionnaireRepository gestionnaireRepository;
-
-    @Mock private ProfRepository profRepository;
-
-    @Mock private PasswordEncoder passwordEncoder;
-
-    @InjectMocks private UserAppService userAppService;
 
     private final String token = "Bearer faketoken";
     private final String email = "test@example.com";
+    @Mock private JwtTokenProvider jwtTokenProvider;
+    @Mock private UserAppRepository userAppRepository;
+    @Mock private StudentRepository studentRepository;
+    @Mock private EmployeurRepository employeurRepository;
+    @Mock private GestionnaireRepository gestionnaireRepository;
+    @Mock private ProfRepository profRepository;
+    @Mock private PasswordEncoder passwordEncoder;
+    @InjectMocks private UserAppService userAppService;
 
     @BeforeEach
     void setUp() {

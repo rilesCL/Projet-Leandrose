@@ -49,7 +49,3 @@ class EvaluationInfoDtoTest {
     assertTrue(dto.toString().contains("EvaluationInfoDto"));
   }
 }
-
-
-
-

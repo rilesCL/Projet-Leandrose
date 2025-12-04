@@ -1,12 +1,11 @@
 package ca.cal.leandrose.presentation.request;
 
-import ca.cal.leandrose.presentation.request.UpdateUserRequest;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class UpdateUserRequestTest {
 

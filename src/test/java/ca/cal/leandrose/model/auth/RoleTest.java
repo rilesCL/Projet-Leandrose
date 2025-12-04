@@ -45,6 +45,3 @@ class RoleTest {
     assertNotNull(Role.GESTIONNAIRE);
   }
 }
-
-
-

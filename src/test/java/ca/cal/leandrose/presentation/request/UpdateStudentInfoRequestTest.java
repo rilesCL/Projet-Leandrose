@@ -10,38 +10,38 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UpdateStudentInfoRequestTest {
 
-    @Test
-    @DisplayName("Valid UpdateStudentInfoRequest should be created")
-    void testValidUpdateStudentInfoRequest() {
-        UpdateStudentInfoRequest request = new UpdateStudentInfoRequest("Computer Science");
+  @Test
+  @DisplayName("Valid UpdateStudentInfoRequest should be created")
+  void testValidUpdateStudentInfoRequest() {
+    UpdateStudentInfoRequest request = new UpdateStudentInfoRequest("Computer Science");
 
-        assertNotNull(request);
-        assertEquals("Computer Science", request.getProgram());
-    }
+    assertNotNull(request);
+    assertEquals("Computer Science", request.getProgram());
+  }
 
-    @Test
-    @DisplayName("No-args constructor should work")
-    void testNoArgsConstructor() {
-        UpdateStudentInfoRequest request = new UpdateStudentInfoRequest();
+  @Test
+  @DisplayName("No-args constructor should work")
+  void testNoArgsConstructor() {
+    UpdateStudentInfoRequest request = new UpdateStudentInfoRequest();
 
-        assertNotNull(request);
-        assertNull(request.getProgram());
-    }
+    assertNotNull(request);
+    assertNull(request.getProgram());
+  }
 
-    @Test
-    @DisplayName("Setter should update program")
-    void testSetter() {
-        UpdateStudentInfoRequest request = new UpdateStudentInfoRequest();
-        request.setProgram("Software Engineering");
+  @Test
+  @DisplayName("Setter should update program")
+  void testSetter() {
+    UpdateStudentInfoRequest request = new UpdateStudentInfoRequest();
+    request.setProgram("Software Engineering");
 
-        assertEquals("Software Engineering", request.getProgram());
-    }
+    assertEquals("Software Engineering", request.getProgram());
+  }
 
-    @Test
-    @DisplayName("Null program should be allowed")
-    void testNullProgram() {
-        UpdateStudentInfoRequest request = new UpdateStudentInfoRequest(null);
+  @Test
+  @DisplayName("Null program should be allowed")
+  void testNullProgram() {
+    UpdateStudentInfoRequest request = new UpdateStudentInfoRequest(null);
 
-        assertNull(request.getProgram());
-    }
+    assertNull(request.getProgram());
+  }
 }

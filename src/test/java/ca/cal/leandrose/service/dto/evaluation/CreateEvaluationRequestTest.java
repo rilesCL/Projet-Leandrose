@@ -42,8 +42,3 @@ class CreateEvaluationRequestTest {
     assertTrue(request.toString().contains("CreateEvaluationRequest"));
   }
 }
-
-
-
-
-

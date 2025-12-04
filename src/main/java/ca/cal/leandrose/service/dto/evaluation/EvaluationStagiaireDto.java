@@ -2,7 +2,6 @@ package ca.cal.leandrose.service.dto.evaluation;
 
 
 import ca.cal.leandrose.model.EvaluationStatus;
-
 import java.time.LocalDate;
 
 public record EvaluationStagiaireDto(

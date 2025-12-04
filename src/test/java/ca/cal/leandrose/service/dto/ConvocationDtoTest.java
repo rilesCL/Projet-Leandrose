@@ -44,7 +44,8 @@ class ConvocationDtoTest {
             .status(InternshipOffer.Status.PUBLISHED)
             .build();
 
-    Cv cv = Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
+    Cv cv =
+        Cv.builder().id(1L).student(student).pdfPath("/cv.pdf").status(Cv.Status.APPROVED).build();
 
     candidature =
         Candidature.builder()
@@ -147,7 +148,3 @@ class ConvocationDtoTest {
     assertNull(dto.getError());
   }
 }
-
-
-
-

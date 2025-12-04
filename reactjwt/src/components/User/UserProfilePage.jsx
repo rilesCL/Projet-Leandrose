@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
+import {FaChevronDown, FaChevronUp} from "react-icons/fa";
 
 export default function UserProfilePage() {
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
@@ -54,7 +54,7 @@ export default function UserProfilePage() {
         (async () => {
             try {
                 const res = await fetch("http://localhost:8080/user/me", {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {Authorization: `Bearer ${token}`},
                 });
 
                 if (!res.ok) throw new Error(t("userProfile.errors.loadFailed"));
@@ -77,8 +77,8 @@ export default function UserProfilePage() {
     }, [navigate]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setForm((prev) => ({...prev, [name]: value}));
     };
 
     const closeToast = () => {
@@ -115,7 +115,7 @@ export default function UserProfilePage() {
             lastName: form.lastName,
             phoneNumber: form.phone,
         };
-        
+
         if (currentPassword) {
             payload.currentPassword = currentPassword;
         }
@@ -143,7 +143,7 @@ export default function UserProfilePage() {
 
             const updated = await res.json();
 
-            setUser((prev) => ({ ...prev, ...updated }));
+            setUser((prev) => ({...prev, ...updated}));
             setForm((prev) => ({
                 ...prev,
                 firstName: updated.firstName || prev.firstName,
@@ -184,7 +184,8 @@ export default function UserProfilePage() {
             )}
 
             {errorPopup && (
-                <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-5 py-2 rounded-lg shadow-md z-50">
+                <div
+                    className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-5 py-2 rounded-lg shadow-md z-50">
                     {errorPopup}
                 </div>
             )}
@@ -204,8 +205,9 @@ export default function UserProfilePage() {
                                 onClick={() => setShowNameSection(!showNameSection)}
                                 className="w-full flex justify-between items-center"
                             >
-                                <span className="font-semibold text-gray-800">{t("userProfile.nameSection.title")}</span>
-                                {showNameSection ? <FaChevronUp /> : <FaChevronDown />}
+                                <span
+                                    className="font-semibold text-gray-800">{t("userProfile.nameSection.title")}</span>
+                                {showNameSection ? <FaChevronUp/> : <FaChevronDown/>}
                             </button>
 
                             {showNameSection && (
@@ -279,8 +281,9 @@ export default function UserProfilePage() {
                                 onClick={() => setShowPasswordSection(!showPasswordSection)}
                                 className="w-full flex justify-between items-center"
                             >
-                                <span className="font-semibold text-gray-800">{t("userProfile.passwordSection.title")}</span>
-                                {showPasswordSection ? <FaChevronUp /> : <FaChevronDown />}
+                                <span
+                                    className="font-semibold text-gray-800">{t("userProfile.passwordSection.title")}</span>
+                                {showPasswordSection ? <FaChevronUp/> : <FaChevronDown/>}
                             </button>
 
                             {showPasswordSection && (

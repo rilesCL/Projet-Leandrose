@@ -82,22 +82,22 @@ const Login = () => {
             if (userData.id) sessionStorage.setItem("userId", userData.id);
             if (userData.role) sessionStorage.setItem("role", userData.role);
 
-                switch (userData.role) {
-                    case "STUDENT":
-                        navigate("/dashboard/student");
-                        break;
-                    case "EMPLOYEUR":
-                        navigate("/dashboard/employeur");
-                        break;
-                    case "GESTIONNAIRE":
-                        navigate("/dashboard/gestionnaire");
-                        break;
-                    case "PROF":
-                        navigate("/dashboard/prof");
-                        break;
-                    default:
-                        navigate("/dashboard");
-                }
+            switch (userData.role) {
+                case "STUDENT":
+                    navigate("/dashboard/student");
+                    break;
+                case "EMPLOYEUR":
+                    navigate("/dashboard/employeur");
+                    break;
+                case "GESTIONNAIRE":
+                    navigate("/dashboard/gestionnaire");
+                    break;
+                case "PROF":
+                    navigate("/dashboard/prof");
+                    break;
+                default:
+                    navigate("/dashboard");
+            }
         } catch (error) {
             navigate("/dashboard");
         }

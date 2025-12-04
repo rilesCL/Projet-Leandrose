@@ -98,6 +98,3 @@ class EligibleEvaluationDtoTest {
     assertNull(dto.evaluationSubmitted());
   }
 }
-
-
-

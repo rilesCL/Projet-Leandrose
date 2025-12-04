@@ -2,8 +2,6 @@ package ca.cal.leandrose.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import ca.cal.leandrose.model.auth.Credentials;
-import ca.cal.leandrose.model.auth.Role;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

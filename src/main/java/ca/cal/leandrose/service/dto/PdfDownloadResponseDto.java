@@ -11,14 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PdfDownloadResponseDto {
-    private byte[] pdfBytes;
-    private String filename;
-    private Map<String, String> error;
+  private byte[] pdfBytes;
+  private String filename;
+  private Map<String, String> error;
 
-    public static PdfDownloadResponseDto withErrorMessage(String message) {
-        PdfDownloadResponseDto dto = new PdfDownloadResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static PdfDownloadResponseDto withErrorMessage(String message) {
+    PdfDownloadResponseDto dto = new PdfDownloadResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }
-

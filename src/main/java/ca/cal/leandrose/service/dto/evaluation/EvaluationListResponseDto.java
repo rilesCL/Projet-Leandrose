@@ -12,13 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EvaluationListResponseDto {
-    private List<EvaluationStagiaireDto> evaluations;
-    private Map<String, String> error;
+  private List<EvaluationStagiaireDto> evaluations;
+  private Map<String, String> error;
 
-    public static EvaluationListResponseDto withErrorMessage(String message) {
-        EvaluationListResponseDto dto = new EvaluationListResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static EvaluationListResponseDto withErrorMessage(String message) {
+    EvaluationListResponseDto dto = new EvaluationListResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }
-

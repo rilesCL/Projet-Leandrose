@@ -11,13 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckTeacherAssignedResponseDto {
-    private Boolean teacherAssigned;
-    private Map<String, String> error;
+  private Boolean teacherAssigned;
+  private Map<String, String> error;
 
-    public static CheckTeacherAssignedResponseDto withErrorMessage(String message) {
-        CheckTeacherAssignedResponseDto dto = new CheckTeacherAssignedResponseDto();
-        dto.setError(Map.of("message", message));
-        return dto;
-    }
+  public static CheckTeacherAssignedResponseDto withErrorMessage(String message) {
+    CheckTeacherAssignedResponseDto dto = new CheckTeacherAssignedResponseDto();
+    dto.setError(Map.of("message", message));
+    return dto;
+  }
 }
-

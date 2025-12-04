@@ -117,23 +117,22 @@ public class InternshipOfferService {
     return internshipOfferRepository.findOffersByEmployeurId(employeurId);
   }
 
-    public List<InternshipOfferDto> getPublishedOffersForStudents(String program, String schoolTerm) {
-        if (Arrays.stream(Program.values()).noneMatch(p -> p.getTranslationKey().equals(program))) {
-            throw new IllegalArgumentException("Invalid program: " + program);
-        }
-
-        SchoolTerm term = parseSchoolTerm(schoolTerm);
-
-
-        return internshipOfferRepository.findPublishedByProgram(program).stream()
-                .filter(offer -> offer.getSchoolTerm() != null
-                        && offer.getSchoolTerm().getSeason() == term.getSeason()
-                        && offer.getSchoolTerm().getYear() == term.getYear())
-                .map(InternshipOfferMapper::toDto)
-                .toList();
+  public List<InternshipOfferDto> getPublishedOffersForStudents(String program, String schoolTerm) {
+    if (Arrays.stream(Program.values()).noneMatch(p -> p.getTranslationKey().equals(program))) {
+      throw new IllegalArgumentException("Invalid program: " + program);
     }
 
+    SchoolTerm term = parseSchoolTerm(schoolTerm);
 
+    return internshipOfferRepository.findPublishedByProgram(program).stream()
+        .filter(
+            offer ->
+                offer.getSchoolTerm() != null
+                    && offer.getSchoolTerm().getSeason() == term.getSeason()
+                    && offer.getSchoolTerm().getYear() == term.getYear())
+        .map(InternshipOfferMapper::toDto)
+        .toList();
+  }
 
   private SchoolTerm parseSchoolTerm(String termString) {
     if (termString == null || termString.isBlank()) {
@@ -154,33 +153,35 @@ public class InternshipOfferService {
   }
 
   @Transactional
-    public InternshipOfferDto disableOffer(Long employerId, Long offerId){
-      return setOfferStatus(employerId, offerId, false);
+  public InternshipOfferDto disableOffer(Long employerId, Long offerId) {
+    return setOfferStatus(employerId, offerId, false);
   }
 
   @Transactional
-    public InternshipOfferDto enableOffer(Long employerId, Long offerId){
-      return setOfferStatus(employerId, offerId, true);
+  public InternshipOfferDto enableOffer(Long employerId, Long offerId) {
+    return setOfferStatus(employerId, offerId, true);
   }
 
   @Transactional
-    public InternshipOfferDto setOfferStatus(Long employerId, Long offerId, boolean enable){
-      InternshipOffer offer = internshipOfferRepository.findById(offerId)
-              .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
-      if(!offer.getEmployeur().getId().equals(employerId)){
-          throw new RuntimeException("Vous n'êtes pas autorisé à modifier cette offre");
-      }
+  public InternshipOfferDto setOfferStatus(Long employerId, Long offerId, boolean enable) {
+    InternshipOffer offer =
+        internshipOfferRepository
+            .findById(offerId)
+            .orElseThrow(() -> new RuntimeException("Offre de stage non trouvée"));
+    if (!offer.getEmployeur().getId().equals(employerId)) {
+      throw new RuntimeException("Vous n'êtes pas autorisé à modifier cette offre");
+    }
 
-      if(enable){
-          if(offer.getStartDate().isBefore(LocalDate.now())){
-              throw new RuntimeException("Impossible de réactiver une offre dont la date de début est expiré");
-          }
-          offer.setStatus(InternshipOffer.Status.PUBLISHED);
+    if (enable) {
+      if (offer.getStartDate().isBefore(LocalDate.now())) {
+        throw new RuntimeException(
+            "Impossible de réactiver une offre dont la date de début est expiré");
       }
-      else{
-          offer.setStatus(InternshipOffer.Status.DISABLED);
-      }
-      InternshipOffer saved = internshipOfferRepository.save(offer);
-      return InternshipOfferMapper.toDto(saved);
+      offer.setStatus(InternshipOffer.Status.PUBLISHED);
+    } else {
+      offer.setStatus(InternshipOffer.Status.DISABLED);
+    }
+    InternshipOffer saved = internshipOfferRepository.save(offer);
+    return InternshipOfferMapper.toDto(saved);
   }
 }

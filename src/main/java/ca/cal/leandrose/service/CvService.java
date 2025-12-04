@@ -28,6 +28,7 @@ public class CvService {
   private static final String PDF_EXTENSION = ".pdf";
   private static final String PDF_CONTENT_TYPE = "application/pdf";
   private final CvRepository cvRepository;
+
   @Value("${app.cv.max-size-mb:" + DEFAULT_MAX_SIZE_MB + "}")
   private int maxSizeMb;
 

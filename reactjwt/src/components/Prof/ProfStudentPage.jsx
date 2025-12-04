@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { fetchProfStudents } from "../../api/apiProf.jsx";
-import { t } from "i18next";
+import React, {useCallback, useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {fetchProfStudents} from "../../api/apiProf.jsx";
+import {t} from "i18next";
 
 
 const STATUS_LABELS = {
@@ -118,7 +118,7 @@ export default function ProfStudentsPage() {
 
     useEffect(() => {
         if (!profId || !firstLoadDone) return;
-        
+
         const timeoutId = setTimeout(() => {
             loadData();
         }, 300);
@@ -167,9 +167,11 @@ export default function ProfStudentsPage() {
                                 onChange={(e) => setEvaluationStatus(e.target.value)}
                                 className="px-3 py-2 rounded border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             >
-                                <option value="">{t("profStudentsPage.filters.evaluationStatus") || "Statut d'évaluation"}</option>
+                                <option
+                                    value="">{t("profStudentsPage.filters.evaluationStatus") || "Statut d'évaluation"}</option>
                                 <option value="A_FAIRE">{t("profStudentsPage.status.toDo") || "À faire"}</option>
-                                <option value="EN_COURS">{t("profStudentsPage.status.inProgress") || "En cours"}</option>
+                                <option
+                                    value="EN_COURS">{t("profStudentsPage.status.inProgress") || "En cours"}</option>
                                 <option value="TERMINEE">{t("profStudentsPage.status.finished") || "Terminée"}</option>
                             </select>
                         </div>
@@ -254,7 +256,8 @@ export default function ProfStudentsPage() {
                                             <td className="px-6 py-4">
                                                 <div className="text-sm text-gray-700">
                                                     {it.startDate || "—"}{" "}
-                                                    {it.endDate ? <span className="text-gray-500">→ {it.endDate}</span> : null}
+                                                    {it.endDate ?
+                                                        <span className="text-gray-500">→ {it.endDate}</span> : null}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">

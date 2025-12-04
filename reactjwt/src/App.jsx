@@ -1,5 +1,5 @@
 import './App.css';
-import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router-dom';
+import {createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider} from 'react-router-dom';
 
 import RouteLayout from "./components/RouteLayout.jsx";
 import RegisterEtudiant from "./components/RegisterStudentForm.jsx";
@@ -32,19 +32,19 @@ import EvaluationFormTeacher from "./components/Prof/EvaluationForm.jsx";
 function App() {
     const router = createBrowserRouter(
         createRoutesFromElements(
-            <Route path="/" element={<RouteLayout />}>
-                <Route index element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<RouteLayout/>}>
+                <Route index element={<Navigate to="/login" replace/>}/>
 
                 {/* Registration Routes */}
-                <Route path="register" element={<RegisterLanding />} />
-                <Route path="register/etudiant" element={<RegisterEtudiant />} />
-                <Route path="register/employeur" element={<RegisterEmployeur />} />
-                <Route path="login" element={<Login />} />
+                <Route path="register" element={<RegisterLanding/>}/>
+                <Route path="register/etudiant" element={<RegisterEtudiant/>}/>
+                <Route path="register/employeur" element={<RegisterEmployeur/>}/>
+                <Route path="login" element={<Login/>}/>
 
                 {/* Employeur Routes */}
-                <Route path="dashboard/employeur" element={<DashBoardEmployeur />} />
-                <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur />} />
-                <Route path="dashboard/employeur/offers/:offerId/candidatures" element={<OfferCandidaturesList />} />
+                <Route path="dashboard/employeur" element={<DashBoardEmployeur/>}/>
+                <Route path="dashboard/employeur/createOffer" element={<UploadStageEmployeur/>}/>
+                <Route path="dashboard/employeur/offers/:offerId/candidatures" element={<OfferCandidaturesList/>}/>
                 <Route path="dashboard/employeur/ententes" element={<EmployeurListeStages/>}/>
 
                 <Route path="dashboard/employeur/ententes/:id/signer" element={<SignerEntentePage/>}/>
@@ -54,38 +54,38 @@ function App() {
 
                 {/* Student Routes */}
                 {/* Student Routes */}
-                <Route path="dashboard/student" element={<DashBoardStudent />} />
-                <Route path="dashboard/student/uploadCv" element={<UploadCvStudent />} />
-                <Route path="dashboard/student/offers" element={<StudentInternshipOffersList />} />
-                <Route path="dashboard/student/offers/:offerId" element={<OfferDetailPage />} />
-                <Route path="dashboard/student/applications" element={<ApplicationsPage />} />
+                <Route path="dashboard/student" element={<DashBoardStudent/>}/>
+                <Route path="dashboard/student/uploadCv" element={<UploadCvStudent/>}/>
+                <Route path="dashboard/student/offers" element={<StudentInternshipOffersList/>}/>
+                <Route path="dashboard/student/offers/:offerId" element={<OfferDetailPage/>}/>
+                <Route path="dashboard/student/applications" element={<ApplicationsPage/>}/>
                 <Route path="dashboard/student/ententes/:id/signer" element={<SignerEntentePage/>}/>
                 {/* Gestionnaire Routes */}
-                <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire />}>
-                    <Route path="cv" element={<PendingCvPage />} />
-                    <Route path="applications" element={<ApplicationsPage />} />
+                <Route path="dashboard/gestionnaire" element={<DashBoardGestionnaire/>}>
+                    <Route path="cv" element={<PendingCvPage/>}/>
+                    <Route path="applications" element={<ApplicationsPage/>}/>
                 </Route>
-                <Route path="dashboard/gestionnaire/offers" element={<OffersPage />} />
-                <Route path="dashboard/gestionnaire/ententes" element={<EntentesStagePage/>} />
+                <Route path="dashboard/gestionnaire/offers" element={<OffersPage/>}/>
+                <Route path="dashboard/gestionnaire/ententes" element={<EntentesStagePage/>}/>
                 <Route path="dashboard/gestionnaire/ententes/:id/signer" element={<SignerEntentePage/>}/>
-                <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage />} />
-                <Route path="/dashboard/gestionnaire/ententes/create" element={<CreateEntenteForm />} />
+                <Route path="dashboard/gestionnaire/offers/:id" element={<OfferDetailsPage/>}/>
+                <Route path="/dashboard/gestionnaire/ententes/create" element={<CreateEntenteForm/>}/>
 
 
-                <Route path="/dashboard/prof" element={<DashboardProf />} />
-                <Route path="/dashboard/prof/etudiants" element={<ProfStudentPage />} />
+                <Route path="/dashboard/prof" element={<DashboardProf/>}/>
+                <Route path="/dashboard/prof/etudiants" element={<ProfStudentPage/>}/>
                 <Route path="dashboard/prof/evaluations" element={<EvaluationsList/>}/>
                 <Route path="dashboard/prof/evaluation/:studentId/:offerId" element={<EvaluationFormTeacher/>}/>
 
-                <Route path="/prof/etudiants" element={<ProfStudentPage />} />
-                <Route path="profil" element={<UserProfilePage />} />
+                <Route path="/prof/etudiants" element={<ProfStudentPage/>}/>
+                <Route path="profil" element={<UserProfilePage/>}/>
                 {/* Fallback Dashboard Route */}
-                <Route path="dashboard" element={<h1>DashBoard</h1>} />
+                <Route path="dashboard" element={<h1>DashBoard</h1>}/>
             </Route>
         )
     );
 
-    return <RouterProvider router={router} />;
+    return <RouterProvider router={router}/>;
 }
 
 export default App;
