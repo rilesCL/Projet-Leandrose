@@ -320,6 +320,7 @@
       "status": "Statut",
       "actions": "Actions"
     },
+    "preview": "Aperçu",
     "status": {
       "published": "Publiée",
       "rejected": "Rejetée",

@@ -357,6 +357,7 @@
       "status": "Status",
       "actions": "Actions"
     },
+    "preview": "Preview",
     "status": {
       "pendingapproval": "Pending approval",
       "published": "Published",
