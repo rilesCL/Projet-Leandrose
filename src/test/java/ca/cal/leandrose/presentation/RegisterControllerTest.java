@@ -115,8 +115,7 @@ class RegisterControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error.error").value("Cet email est déjà utilisé"));
-    }
+                .andExpect(jsonPath("$.error").value("Cet email est déjà utilisé"));    }
 
     @Test
     @DisplayName("POST /api/register/employeur returns 500 on server error")
@@ -136,7 +135,7 @@ class RegisterControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.error.error").value("Erreur serveur"));
+                .andExpect(jsonPath("$.error").value("Erreur serveur"));
     }
 
     // ===============================
