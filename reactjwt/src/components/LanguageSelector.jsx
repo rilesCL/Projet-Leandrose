@@ -4,6 +4,13 @@ import {useTranslation} from 'react-i18next';
 const LanguageSelector = ({className = "w-32"}) => {
     const {i18n} = useTranslation();
 
+    const getCurrentLanguage = () => {
+        const lang = i18n.language || i18n.resolvedLanguage || 'en';
+        return lang.split('-')[0].toLowerCase();
+    };
+
+    const currentLang = getCurrentLanguage();
+
     const handleLanguageChange = (e) => {
         const newLang = e.target.value;
         i18n.changeLanguage(newLang);
@@ -13,7 +20,7 @@ const LanguageSelector = ({className = "w-32"}) => {
     return (
         <div className={className}>
             <select
-                value={i18n.language}
+                value={currentLang}
                 onChange={handleLanguageChange}
                 className="block w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >

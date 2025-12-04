@@ -731,6 +731,7 @@
       "TO_REVIEW": "To review",
       "RETAINED": "Shortlisted",
       "ACCEPTED": "Accepted",
+      "ACCEPTEDBYEMPLOYEUR": "Accepted - Awaiting student response",
       "REJECTED": "Rejected",
       "EN_ATTENTE": "Pending",
       "CONVENED": "Shortlisted"

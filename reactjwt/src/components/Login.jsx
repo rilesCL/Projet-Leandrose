@@ -11,6 +11,13 @@ const Login = () => {
     const [warnings, setWarnings] = useState({email: "", password: ""});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const getCurrentLanguage = () => {
+        const lang = i18n.language || i18n.resolvedLanguage || 'en';
+        return lang.split('-')[0].toLowerCase();
+    };
+
+    const currentLang = getCurrentLanguage();
+
     const validateEmail = () => {
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
         return emailRegex.test(formData.email);
@@ -115,8 +122,12 @@ const Login = () => {
                         <h2 className="text-3xl font-semibold text-gray-800">{t("login.title")}</h2>
                         <div className="w-36">
                             <select
-                                value={i18n.language}
-                                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                                value={currentLang}
+                                onChange={(e) => {
+                                    const newLang = e.target.value;
+                                    i18n.changeLanguage(newLang);
+                                    localStorage.setItem('i18nextLng', newLang);
+                                }}
                                 className="block w-full bg-white border border-gray-300 text-gray-700 py-2.5 px-4 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             >
                                 <option value="en">English</option>
