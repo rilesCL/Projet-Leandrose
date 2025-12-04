@@ -162,7 +162,7 @@ class SchoolTermTest {
   void testHashCodeDifferentObjects() {
     SchoolTerm term1 = new SchoolTerm(SchoolTerm.Season.WINTER, 2024);
     SchoolTerm term2 = new SchoolTerm(SchoolTerm.Season.SUMMER, 2024);
-    // Different objects should likely have different hash codes (not guaranteed, but likely)
+
     assertNotEquals(term1.hashCode(), term2.hashCode());
   }
 

@@ -90,7 +90,7 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
             showToast(t("ententeStage.prof_attributed") || "Professeur attribué avec succès", 'success');
             setProfModal({show: false, entente: null});
             setSelectedProf(null);
-            // Recharger les ententes
+
             await fetchAgreements(setEntentes, () => {
             }, showToast, t);
         } catch (error) {
@@ -188,7 +188,7 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
             );
         }
 
-        // Manager can sign - both student and employer have signed, but manager hasn't
+
         if (studentSigned && employerSigned && !managerSigned && entente.statut === 'EN_ATTENTE_SIGNATURE') {
             return (
                 <button
@@ -200,7 +200,7 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
             );
         }
 
-        // Waiting for student and/or employer to sign
+
         if ((!studentSigned || !employerSigned) && entente.statut === 'EN_ATTENTE_SIGNATURE') {
             let waitingFor = [];
             if (!studentSigned) waitingFor.push(t("ententeStage.messages.student"));
@@ -217,7 +217,7 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
             );
         }
 
-        // Manager has signed but waiting for others (shouldn't happen with new backend logic)
+
         if (managerSigned && (!studentSigned || !employerSigned)) {
             return (
                 <button
@@ -247,59 +247,6 @@ export default function GestionnaireListeEntentes({selectedTerm}) {
         );
     };
 
-    // const getStatusBadge = (entente) => {
-    //     const managerSigned =
-    //         entente.dateSignatureEtudiant &&
-    //         entente.dateSignatureEmployeur &&
-    //         !entente.dateSignatureGestionnaire;
-    //
-    //     if (entente.statut === 'VALIDEE') {
-    //         return (
-    //             <button
-    //                 onClick={() => handleStatusClick(entente)}
-    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors cursor-pointer"
-    //             >
-    //                 {t("ententeStage.status.validation")}
-    //             </button>
-    //         );
-    //     }
-    //
-    //     if (managerSigned && entente.statut === 'EN_ATTENTE_SIGNATURE') {
-    //         return (
-    //             <button
-    //                 onClick={() => handleStatusClick(entente)}
-    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer"
-    //             >
-    //                 {t("ententeStage.status.waiting_other_signatures")}
-    //             </button>
-    //         );
-    //     }
-    //
-    //     if (entente.statut === 'EN_ATTENTE_SIGNATURE') {
-    //         return (
-    //             <button
-    //                 onClick={() => handleStatusClick(entente)}
-    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 transition-colors cursor-pointer"
-    //             >
-    //                 {t("ententeStage.status.waiting_your_signature")}
-    //             </button>
-    //         );
-    //     }
-    //
-    //     if (entente.statut === 'BROUILLON') {
-    //         return (
-    //             <button
-    //                 onClick={() => handleStatusClick(entente)}
-    //                 className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors cursor-pointer"
-    //             >
-    //                 {t("ententeStage.status.draft")}
-    //             </button>
-    //         );
-    //     }
-    //
-    //     return <span
-    //         className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{entente.statut}</span>;
-    // };
 
     const getSortIcon = (field) => {
         if (sortField !== field) return <FaSort className="text-gray-400"/>;

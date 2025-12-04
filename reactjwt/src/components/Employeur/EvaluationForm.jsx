@@ -1,4 +1,4 @@
-// Path: src/components/EvaluationForm.jsx
+
 
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -19,12 +19,11 @@ const EvaluationForm = () => {
     const [evaluationId, setEvaluationId] = useState(null);
     const [student, setStudent] = useState(null);
     const [internship, setInternship] = useState(null);
-    // `error` garde les erreurs d'initialisation / serveur (distinct de validation UI)
+
     const [error, setError] = useState(null);
     const [toast, setToast] = useState({show: false, message: '', type: 'success'});
     const [submitted, setSubmitted] = useState(false);
 
-    // Nouveau state pour stocker les erreurs de validation par champ
     const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState({
@@ -87,24 +86,22 @@ const EvaluationForm = () => {
         }
     };
 
-    // validateForm retourne un objet d'erreurs structuré par champ.
     const validateForm = () => {
         const newErrors = {};
 
-        // validation des catégories/questions
         for (const [categoryKey, questions] of Object.entries(formData.categories)) {
             for (let i = 0; i < questions.length; i++) {
                 const q = questions[i];
                 if (!q.rating) {
                     if (!newErrors.categories) newErrors.categories = {};
                     if (!newErrors.categories[categoryKey]) newErrors.categories[categoryKey] = {};
-                    // message spécifique par question
+
                     newErrors.categories[categoryKey][i] = `${t('evaluation.validation.missingRating')} - ${evaluationTemplate[categoryKey].title}, ${t('evaluation.questions')} ${i + 1}`;
                 }
             }
         }
 
-        // validations globales
+
         if (formData.globalAssessment === null) {
             newErrors.globalAssessment = t('evaluation.validation.globalAssessmentRequired');
         }
@@ -179,14 +176,14 @@ const EvaluationForm = () => {
         initializeForm();
     }, [studentId, offerId, t, navigate]);
 
-    // Helper: enleve l'erreur spécifique d'une question de catégorie
+
     const clearCategoryQuestionError = (categoryKey, questionIndex) => {
         setErrors(prev => {
             if (!prev?.categories || !prev.categories[categoryKey]) return prev;
             const catCopy = {...prev.categories[categoryKey]};
             delete catCopy[questionIndex];
             const categoriesCopy = {...prev.categories, [categoryKey]: catCopy};
-            // cleanup si vide
+
             if (Object.keys(catCopy).length === 0) delete categoriesCopy[categoryKey];
             const newPrev = {...prev, categories: categoriesCopy};
             if (!newPrev.categories || Object.keys(newPrev.categories).length === 0) {
@@ -196,7 +193,7 @@ const EvaluationForm = () => {
         });
     };
 
-    // Handlers modifiés pour aussi nettoyer les erreurs liées au champ modifié
+
     const handleQuestionChange = (categoryKey, questionIndex, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -208,7 +205,6 @@ const EvaluationForm = () => {
             }
         }));
 
-        // si on modifie la note (rating), on efface l'erreur liée à cette question
         if (field === 'rating') {
             clearCategoryQuestionError(categoryKey, questionIndex);
         }
@@ -237,7 +233,7 @@ const EvaluationForm = () => {
 
     const hasErrors = (obj) => {
         if (!obj) return false;
-        // check top-level keys
+
         for (const k of Object.keys(obj)) {
             if (k === 'categories') {
                 if (Object.keys(obj.categories).length > 0) return true;
@@ -258,12 +254,12 @@ const EvaluationForm = () => {
     const handleSubmitEvaluation = async () => {
         setError(null);
         setToast({show: false, message: '', type: 'success'});
-        // validation -> otr object d'erreurs
+
         const validationErrors = validateForm();
         if (hasErrors(validationErrors)) {
             setErrors(validationErrors);
-            // Scroll to first error pour meilleure UX (optionnel)
-            // trouver un élément d'erreur et scroller dessus
+
+
             setTimeout(() => {
                 const el = document.querySelector('.validation-error');
                 if (el && typeof el.scrollIntoView === 'function') {
@@ -273,7 +269,7 @@ const EvaluationForm = () => {
             return;
         }
 
-        // clear previous validation errors
+
         setErrors({});
         setSubmitting(true);
         try {
@@ -320,26 +316,26 @@ const EvaluationForm = () => {
         );
     }
 
-    // unified classes for option labels
+
     const optionBase = "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border font-semibold text-sm";
     const optionDefault = "bg-gray-100 border-gray-300 text-gray-800";
-    
-    // Fonction pour obtenir les classes selon la valeur et l'état de sélection
+
+
     const getRatingButtonClasses = (value, isSelected) => {
         if (!isSelected) return optionDefault;
-        
+
         switch (value) {
-            case "EXCELLENT": // Totalement d'accord
-            case 0: // Pour globalAssessment
+            case "EXCELLENT":
+            case 0:
                 return "bg-green-800 border-green-900 text-white shadow";
-            case "TRES_BIEN": // Plutôt d'accord
-            case 1: // Pour globalAssessment
+            case "TRES_BIEN":
+            case 1:
                 return "bg-green-200 border-green-300 text-green-900 shadow";
-            case "SATISFAISANT": // Plutôt en désaccord
-            case 3: // Pour globalAssessment
+            case "SATISFAISANT":
+            case 3:
                 return "bg-red-200 border-red-300 text-red-900 shadow";
-            case "A_AMELIORER": // Totalement en désaccord
-            case 4: // Pour globalAssessment
+            case "A_AMELIORER":
+            case 4:
                 return "bg-red-800 border-red-900 text-white shadow";
             default:
                 return optionDefault;
@@ -466,7 +462,7 @@ const EvaluationForm = () => {
                                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                                             {question}
                                         </p>
-                                        {/* Rating Buttons: vertical on small screens */}
+                                        
                                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                                             {[
                                                 { value: 'EXCELLENT', label: t('evaluation.rating.totally_agree') },
@@ -538,7 +534,7 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.question')}
                         </p>
-                        {/* Rating Buttons: vertical on small screens */}
+                        
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
                                 { value: 0, label: t('evaluation.rating.totally_agree') },
@@ -590,7 +586,7 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.technical_training')}
                         </p>
-                        {/* Technical Training Buttons: vertical on small screens */}
+                        
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
                                 { value: true, label: t('evaluation.globalAssessment.yes') },
@@ -642,7 +638,7 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.welcome_nextInternship')}
                         </p>
-                        {/* Welcome Next Internship Buttons: vertical on small screens */}
+                        
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
                                 { value: 'YES', label: t('evaluation.globalAssessment.yes') },
@@ -679,7 +675,7 @@ const EvaluationForm = () => {
                         <p className="text-gray-800 font-medium mb-3 leading-relaxed">
                             {t('evaluation.globalAssessment.technical_training')}
                         </p>
-                        {/* Technical Training Buttons: vertical on small screens */}
+                        
                         <div className="flex flex-col sm:flex-row gap-3 mb-3">
                             {[
                                 { value: true, label: t('evaluation.globalAssessment.yes') },

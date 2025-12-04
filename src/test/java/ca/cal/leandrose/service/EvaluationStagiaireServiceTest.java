@@ -126,7 +126,7 @@ class EvaluationStagiaireServiceTest {
                 .build();
     }
 
-    // ==================== Create Evaluation Tests ====================
+    
 
     @Test
     void createEvaluationByEmployer_Success() {
@@ -336,7 +336,7 @@ class EvaluationStagiaireServiceTest {
                 () -> evaluationStagiaireService.createEvaluationByProf(1L, 2L, 3L));
     }
 
-    // ==================== Get Evaluation Info Tests ====================
+    
 
     @Test
     void getEvaluationInfoForEmployer_Success() {
@@ -457,7 +457,7 @@ class EvaluationStagiaireServiceTest {
                 () -> evaluationStagiaireService.getEvaluationInfoForTeacher(1L, 2L, 3L));
     }
 
-    // ==================== Generate PDF Tests ====================
+    
 
     @Test
     void generateEvaluationPdfByEmployer_Success() {
@@ -530,7 +530,7 @@ class EvaluationStagiaireServiceTest {
                 () -> evaluationStagiaireService.generateEvaluationByTeacher(1L, formData, "fr"));
     }
 
-    // ==================== Get PDF Tests ====================
+    
 
     @Test
     void getEvaluationPdf_Employer_Success() {
@@ -578,7 +578,7 @@ class EvaluationStagiaireServiceTest {
                 () -> evaluationStagiaireService.getEvaluationPdf(1L, CreatorTypeEvaluation.EMPLOYER));
     }
 
-    // ==================== Get Evaluation By ID Tests ====================
+    
 
     @Test
     void getEvaluationById_Success() {
@@ -598,7 +598,7 @@ class EvaluationStagiaireServiceTest {
                 () -> evaluationStagiaireService.getEvaluationById(1L));
     }
 
-    // ==================== Get Evaluations By Creator Tests ====================
+    
 
     @Test
     void getEvaluationsByEmployeur_Success() {
@@ -654,7 +654,7 @@ class EvaluationStagiaireServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // ==================== Eligibility Tests ====================
+    
 
     @Test
     void isEvaluationEligible_Employer_Valid_ReturnsTrue() {
@@ -710,7 +710,7 @@ class EvaluationStagiaireServiceTest {
         assertFalse(result);
     }
 
-    // ==================== Get Eligible Evaluations Tests ====================
+    
 
     @Test
     void getEligibleEvaluations_Employer_WithoutExistingEvaluation() {
@@ -775,7 +775,7 @@ class EvaluationStagiaireServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // ==================== Get Existing Evaluation Tests ====================
+    
 
     @Test
     void getExistingEvaluation_Found() {
@@ -798,7 +798,7 @@ class EvaluationStagiaireServiceTest {
         assertFalse(result.isPresent());
     }
 
-    // ==================== Helper Methods ====================
+    
 
     private Map<String, List<EmployerQuestionResponse>> createEmployerCategories() {
         Map<String, List<EmployerQuestionResponse>> categories = new HashMap<>();

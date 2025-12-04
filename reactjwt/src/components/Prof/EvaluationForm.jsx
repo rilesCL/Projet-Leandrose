@@ -232,23 +232,21 @@ const EvaluationForm = () => {
 
     const isFormDisabled = toast.show && toast.type === 'success';
 
-    // unified classes for option labels
     const optionBase = "flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer transition-all border font-semibold text-sm";
     const optionDefault = "bg-gray-100 border-gray-300 text-gray-800";
     const optionSelected = "bg-blue-600 border-blue-700 text-white shadow";
     
-    // Fonction pour obtenir les classes selon la valeur et l'état de sélection
     const getRatingButtonClasses = (value, isSelected) => {
         if (!isSelected) return optionDefault;
         
         switch (value) {
-            case "EXCELLENT": // Totalement d'accord
+            case "EXCELLENT":
                 return "bg-green-800 border-green-900 text-white shadow";
-            case "TRES_BIEN": // Plutôt d'accord
+            case "TRES_BIEN":
                 return "bg-green-200 border-green-300 text-green-900 shadow";
-            case "SATISFAISANT": // Plutôt en désaccord
+            case "SATISFAISANT":
                 return "bg-red-200 border-red-300 text-red-900 shadow";
-            case "A_AMELIORER": // Totalement en désaccord
+            case "A_AMELIORER":
                 return "bg-red-800 border-red-900 text-white shadow";
             default:
                 return optionDefault;

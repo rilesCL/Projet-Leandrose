@@ -939,10 +939,6 @@ public class PDFGeneratorService {
                     : null;
         } catch(Exception ignored){}
 
-
-        System.out.println("Stage " + preferredStage);
-
-
         String stageText = "en".equals(language)
                 ? "Internship: "
                 : "Stage: ";

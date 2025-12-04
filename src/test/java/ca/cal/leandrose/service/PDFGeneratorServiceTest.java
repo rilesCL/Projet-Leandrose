@@ -35,7 +35,6 @@ class PDFGeneratorServiceTest {
         ReflectionTestUtils.setField(pdfGeneratorService, "baseEvaluationsDir", tempDir.resolve("evaluations").toString());
     }
 
-    // ==================== File Operations Tests ====================
 
     @Test
     void testLireFichierPDF_FileExists() throws Exception {
@@ -77,7 +76,7 @@ class PDFGeneratorServiceTest {
         });
     }
 
-    // ==================== Entente PDF Tests ====================
+    
 
     @Test
     void testGenererEntentePDF_Success() {
@@ -123,7 +122,7 @@ class PDFGeneratorServiceTest {
         assertTrue(Files.exists(Path.of(result)));
     }
 
-    // ==================== Employer Evaluation Tests ====================
+    
 
     @Test
     void testGeneratedEvaluationByEmployer_FrenchLanguage() {
@@ -397,7 +396,7 @@ class PDFGeneratorServiceTest {
         assertTrue(Files.exists(Path.of(result)));
     }
 
-    // ==================== Teacher Evaluation Tests ====================
+    
 
     @Test
     void testGeneratedEvaluationByTeacher_FrenchLanguage() {
@@ -594,7 +593,7 @@ class PDFGeneratorServiceTest {
         assertTrue(Files.exists(customDir));
     }
 
-    // ==================== Helper Methods ====================
+    
 
     private EntenteStage createTestEntente() {
         Credentials studentCreds = Credentials.builder()

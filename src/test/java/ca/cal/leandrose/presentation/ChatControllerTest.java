@@ -171,7 +171,7 @@ class ChatControllerTest {
         when(chatService.chat(eq(secondQuestion), eq(testSessionId)))
                 .thenReturn(secondResponse);
 
-        // Act & Assert - Première question
+        // Act & Assert
         mockMvc.perform(post("/gestionnaire/chatclient")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Session-Id", testSessionId)
@@ -179,7 +179,7 @@ class ChatControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response").value(firstResponse));
 
-        // Act & Assert - Deuxième question (même session)
+        // Act & Assert
         mockMvc.perform(post("/gestionnaire/chatclient")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Session-Id", testSessionId)

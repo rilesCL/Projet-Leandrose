@@ -221,7 +221,7 @@ describe('EvaluationForm (Prof)', () => {
         await screen.findByText('CONFORMITY');
 
         const hoursInputs = await screen.findAllByPlaceholderText(/month/i);
-        expect(hoursInputs.length).toBe(3); // First, Second, Third month
+        expect(hoursInputs.length).toBe(3);
     });
 
     it('renders salary input field for general category', async () => {

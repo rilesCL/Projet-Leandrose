@@ -335,7 +335,6 @@ class ConvocationServiceTest {
                 convocationService.addConvocation(
                         testCandidature.getId(), futureDate, "Salle 400", "Message test");
 
-        // read fresh from DB
         Convocation conv =
                 convocationRepository.findById(dto.getId()).orElseThrow();
 

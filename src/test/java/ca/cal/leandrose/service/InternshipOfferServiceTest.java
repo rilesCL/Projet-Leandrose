@@ -249,7 +249,6 @@ class InternshipOfferServiceTest {
       when(internshipOfferRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
       InternshipOfferDto result =  internshipOfferService.enableOffer(1L, 10L);
-      System.out.println("result: " + result);
       assertEquals("PUBLISHED", result.getStatus());
   }
 

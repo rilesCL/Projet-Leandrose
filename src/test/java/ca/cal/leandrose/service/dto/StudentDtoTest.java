@@ -149,8 +149,7 @@ class StudentDtoTest {
 
   @Test
   void testCreate_WithNullInternshipTerm() {
-    // The Student builder automatically creates a SchoolTerm when null is passed
-    // So even if we pass null, the Student will have a non-null internshipTerm
+
     Student studentWithoutTerm =
         Student.builder()
             .id(1L)
@@ -163,7 +162,6 @@ class StudentDtoTest {
             .internshipTerm(null)
             .build();
 
-    // The Student builder converts null to SchoolTerm.getNextTerm(), so no NPE occurs
     StudentDto dto = StudentDto.create(studentWithoutTerm);
     
     assertNotNull(dto);

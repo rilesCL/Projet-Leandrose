@@ -21,7 +21,7 @@ export default function Chatbot({isOpen = false, onToggle}) {
     const [sessionId, setSessionId] = useState(null);
     const messagesEndRef = useRef(null);
 
-    // Mapping des clés de programmes vers leurs traductions
+
     const programMapping = {
         'COMPUTER_SCIENCE': t('program.computer_science'),
         'SOFTWARE_ENGINEERING': t('program.software_engineering'),
@@ -73,7 +73,7 @@ export default function Chatbot({isOpen = false, onToggle}) {
         'SPORTS_SCIENCE': t('program.sports_science')
     };
 
-    // Fonction pour remplacer les clés par leurs valeurs traduites
+
     const replaceProgramKeys = (text) => {
         let result = text;
         Object.keys(programMapping).forEach(key => {
@@ -119,7 +119,7 @@ export default function Chatbot({isOpen = false, onToggle}) {
             const token = sessionStorage.getItem("accessToken");
             const data = await sendChatMessage(input, sessionId, token);
 
-            // Nettoyer les astérisques et remplacer les clés par les valeurs traduites
+
             let cleanContent = data.response.replace(/^\s*\*\s+/gm, '').trim();
             cleanContent = replaceProgramKeys(cleanContent);
 

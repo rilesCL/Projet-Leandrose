@@ -29,7 +29,7 @@ class EntenteStageServiceTest {
   @Mock private EntenteStageRepository ententeRepository;
 
   @Mock private CandidatureRepository candidatureRepository;
-  @Mock private EvaluationStagiaireRepository evaluationStagiaireRepository; //Besoin de ça, sinon un test échoue.
+  @Mock private EvaluationStagiaireRepository evaluationStagiaireRepository;
 
   @Mock private PDFGeneratorService pdfGeneratorService;
 

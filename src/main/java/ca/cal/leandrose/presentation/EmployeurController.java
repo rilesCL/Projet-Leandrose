@@ -95,7 +95,6 @@ public class EmployeurController {
                         employeurDto,
                         pdfFile);
 
-    System.out.println(offerDto);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(offerDto);
     }
 

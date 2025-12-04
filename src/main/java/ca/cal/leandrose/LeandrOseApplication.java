@@ -67,7 +67,6 @@ public class LeandrOseApplication {
         GestionnaireDto gestionnaireCreated =
             gestionnaireService.createGestionnaire(
                 "Jean", "Dupont", "gestionnaire@test.com", "Password123!", "514-123-4567");
-        System.out.println("Gestionnaire créé avec ID: " + gestionnaireCreated.getId());
 
         EmployeurDto employeurConvocation =
             employeurService.createEmployeur(
@@ -284,7 +283,7 @@ public class LeandrOseApplication {
             candidatureService.acceptByStudent(
                 candidatureAcceptedEntente2.getId(), studentEntente2.getId());
 
-          //Entente de stage Demo
+
         MultipartFile cvFileRiles = loadPdfFromResources("CV_Riles.pdf");
         CvDto cvDtoRiles = cvService.uploadCv(riles.getId(), cvFileRiles);
         CvDto cvApprovedRiles = gestionnaireService.approveCv(cvDtoRiles.getId());
@@ -324,7 +323,7 @@ public class LeandrOseApplication {
           System.err.println("Erreur STORY 40 : " + e.getMessage());
         }
 
-        // 1. Créer un professeur
+
         ProfDto prof1 =
             profService.createProf(
                 "Marie-Claude",
@@ -336,14 +335,6 @@ public class LeandrOseApplication {
                 "3800 R. Sherbrooke E, Montréal, QC H1X 2A2",
                 "(514) 364-7130",
                 "Département d'informatique");
-        System.out.println(
-            "✓ Prof créé: "
-                + prof1.getFirstName()
-                + " "
-                + prof1.getLastName()
-                + " (ID: "
-                + prof1.getId()
-                + ")");
 
         ProfDto prof2 =
             profService.createProf(
@@ -356,16 +347,9 @@ public class LeandrOseApplication {
                 "9155 Rue St-Hubert, Montréal, QC H2M 1Y8",
                 "(514) 364-7130",
                 "Département de génie logiciel");
-        System.out.println(
-            "✓ Prof créé: "
-                + prof2.getFirstName()
-                + " "
-                + prof2.getLastName()
-                + " (ID: "
-                + prof2.getId()
-                + ")");
 
-        // 2. Créer un nouveau scénario complet pour l'attribution d'un prof
+
+
         EmployeurDto employeurProf =
             employeurService.createEmployeur(
                 "Catherine",
@@ -374,7 +358,6 @@ public class LeandrOseApplication {
                 "Password123",
                 "TechQuébec Solutions",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
-        System.out.println("✓ Employeur créé: " + employeurProf.getCompanyName());
 
         StudentDto studentProf =
             studentService.createStudent(
@@ -384,14 +367,10 @@ public class LeandrOseApplication {
                 "Password123",
                 "STU100",
                 Program.SOFTWARE_ENGINEERING.getTranslationKey());
-        System.out.println(
-            "✓ Étudiant créé: " + studentProf.getFirstName() + " " + studentProf.getLastName());
 
-        // 3. CV et offre
         MultipartFile cvFileProf = loadPdfFromResources("CV_Antoine_Tremblay.pdf");
         CvDto cvDtoProf = cvService.uploadCv(studentProf.getId(), cvFileProf);
         CvDto cvApprovedProf = gestionnaireService.approveCv(cvDtoProf.getId());
-        System.out.println("✓ CV approuvé pour l'étudiant");
 
         MultipartFile offerFileProf = loadPdfFromResources("Offre_Stage_TechQuebec.pdf");
         InternshipOfferDto offerDtoProf =
@@ -405,24 +384,20 @@ public class LeandrOseApplication {
                 offerFileProf);
         InternshipOfferDto offerApprovedProf =
             gestionnaireService.approveOffer(offerDtoProf.getId());
-        System.out.println("✓ Offre de stage approuvée: " + offerApprovedProf.getDescription());
 
-        // 4. Candidature acceptée par employeur ET étudiant
+
         CandidatureDto candidatureProf =
             candidatureService.postuler(
                 studentProf.getId(), offerApprovedProf.getId(), cvApprovedProf.getId());
-        System.out.println("✓ Candidature soumise");
 
         CandidatureDto candidatureAcceptedByEmployeur =
             candidatureService.acceptByEmployeur(candidatureProf.getId());
-        System.out.println("✓ Candidature acceptée par l'employeur");
 
         CandidatureDto candidatureFullyAcceptedProf =
             candidatureService.acceptByStudent(
                 candidatureAcceptedByEmployeur.getId(), studentProf.getId());
-        System.out.println("✓ Candidature acceptée par l'étudiant (ACCEPTED)");
 
-        // 5. Créer l'entente
+
         EntenteStageDto ententeDtoProf = new EntenteStageDto();
         ententeDtoProf.setCandidatureId(candidatureFullyAcceptedProf.getId());
         ententeDtoProf.setDateDebut(offerApprovedProf.getStartDate());
@@ -443,40 +418,20 @@ public class LeandrOseApplication {
                             - Développer des compétences en DevOps""");
 
         EntenteStageDto ententeCreatedProf = ententeStageService.creerEntente(ententeDtoProf);
-        System.out.println(
-            "✓ Entente créée (Statut: "
-                + ententeCreatedProf.getStatut()
-                + ", ID: "
-                + ententeCreatedProf.getId()
-                + ")");
 
-        // 6. Faire signer l'entente par TOUTES les parties
-        // Signature étudiant
         ententeStageService.signerParEtudiant(ententeCreatedProf.getId(), studentProf.getId());
-        System.out.println("✓ Entente signée par l'étudiant");
 
-        // Signature employeur
         ententeStageService.signerParEmployeur(ententeCreatedProf.getId(), employeurProf.getId());
-        System.out.println("✓ Entente signée par l'employeur");
 
-        // Signature gestionnaire
+
         ententeStageService.signerParGestionnaire(
             ententeCreatedProf.getId(), gestionnaireCreated.getId());
-        System.out.println(
-            "✓ Entente signée par le gestionnaire: "
-                + gestionnaireCreated.getFirstName()
-                + " "
-                + gestionnaireCreated.getLastName());
 
-        // Vérifier le statut après toutes les signatures
         EntenteStageDto ententeValidee =
             ententeStageService.getEntenteById(ententeCreatedProf.getId());
-        System.out.println("✓ Statut de l'entente: " + ententeValidee.getStatut());
 
         if (ententeValidee.getStatut().toString().equals("VALIDEE")) {
-          System.out.println("✓ L'entente est VALIDEE - Prêt pour attribution d'un prof!");
           ententeStageService.attribuerProf(ententeValidee.getId(), prof1.getId());
-          System.out.println(prof1.getFirstName() + " " + prof1.getLastName() + " a été attributé");
 
         } else {
           System.err.println(

@@ -1,4 +1,3 @@
-// src/components/UserProfilePage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -66,7 +65,7 @@ export default function UserProfilePage() {
                     firstName: data.firstName || "",
                     lastName: data.lastName || "",
                     email: data.email || "",
-                    phone: "", // Champ vide par défaut, le numéro actuel est affiché en haut
+                    phone: "",
                     newPassword: "",
                 });
             } catch (err) {
@@ -149,7 +148,7 @@ export default function UserProfilePage() {
                 ...prev,
                 firstName: updated.firstName || prev.firstName,
                 lastName: updated.lastName || prev.lastName,
-                phone: "", // Réinitialiser le champ téléphone après sauvegarde
+                phone: "",
                 newPassword: "",
             }));
 

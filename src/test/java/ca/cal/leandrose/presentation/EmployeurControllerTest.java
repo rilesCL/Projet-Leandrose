@@ -134,26 +134,24 @@ class EmployeurControllerTest {
   }
 
     private EvaluationEmployerFormData createEvaluationEmployerFormData() {
-        // Create sample questions and responses using the record
         EmployerQuestionResponse question1 = new EmployerQuestionResponse(
-                "Very good performance",  // comment
-                true,                     // checked
-                "Excellent"               // rating
+                "Very good performance",
+                true,
+                "Excellent"
         );
 
         EmployerQuestionResponse question2 = new EmployerQuestionResponse(
-                "Satisfactory work",      // comment
-                true,                     // checked
-                "Good"                    // rating
+                "Satisfactory work",
+                true,
+                "Good"
         );
 
         EmployerQuestionResponse question3 = new EmployerQuestionResponse(
-                "Needs improvement",      // comment
-                false,                    // checked
-                "Average"                 // rating
+                "Needs improvement",
+                false,
+                "Average"
         );
 
-        // Create categories map
         Map<String, List<EmployerQuestionResponse>> categories = new HashMap<>();
         categories.put("Technical Skills", Arrays.asList(question1, question2));
         categories.put("Professionalism", Arrays.asList(question1, question3));
@@ -161,13 +159,13 @@ class EmployeurControllerTest {
 
         return new EvaluationEmployerFormData(
                 categories,
-                "Excellent intern, would hire again",  // generalComment
-                5,                                     // globalAssessment
-                "Outstanding performance",             // globalAppreciation
-                true,                                  // discussedWithTrainee
-                20,                                    // supervisionHours
-                "Yes, definitely",                     // welcomeNextInternship
-                true                                   // technicalTrainingSufficient
+                "Excellent intern, would hire again",
+                5,
+                "Outstanding performance",
+                true,
+                20,
+                "Yes, definitely",
+                true
         );
     }
 
@@ -871,7 +869,7 @@ class EmployeurControllerTest {
 
         mockMvc.perform(get("/employeur/candidatures/50/cv")
                         .header("Authorization", "Bearer token"))
-                .andExpect(status().isNotFound()); // File doesn't exist in test
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -950,7 +948,7 @@ class EmployeurControllerTest {
 
         mockMvc.perform(get("/employeur/ententes/10/pdf")
                         .header("Authorization", "Bearer token"))
-                .andExpect(status().isNotFound()); // File doesn't exist in test
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1026,25 +1024,6 @@ class EmployeurControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.teacherAssigned").value(true));
     }
-    /*
-
-    @Test
-    void checkTeacherAssigned_notEmployeur_throwsAccessDeniedException() throws Exception {
-        when(userAppService.getMe(anyString())).thenReturn(studentDto);
-
-        mockMvc.perform(get("/employeur/evaluations/check-teacher-assigned")
-                        .header("Authorization", "Bearer token")
-                        .param("studentId", "2")
-                        .param("offerId", "100"))
-                .andExpect(result -> {
-                    Exception exception = result.getResolvedException();
-                    assertNotNull(exception, "Exception should be thrown");
-                    assertInstanceOf(AccessDeniedException.class, exception, "Expected AccessDeniedException but got: " +
-                            exception.getClass().getName());
-                });
-    }
-
-     */
 
     @Test
     void checkTeacherAssigned_serviceException_returnsBadRequest() throws Exception {

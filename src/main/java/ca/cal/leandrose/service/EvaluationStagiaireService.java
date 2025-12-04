@@ -81,10 +81,6 @@ public class EvaluationStagiaireService {
 
             throw new IllegalStateException("L'évaluation complète existe déjà pour ce stagiaire.");
         }
-
-
-        //créer un nouveau formulaire
-
         Employeur emp = null;
         Prof prof = null;
 
@@ -232,7 +228,6 @@ public class EvaluationStagiaireService {
         }
 
         Prof professor = ententeStage.get().getProf();
-        System.out.println("Donne : " + professor);
         if (professor == null) {
             return getDefaultProfessor();
         }
@@ -377,9 +372,9 @@ public class EvaluationStagiaireService {
                 offer.getSchoolTerm(),
                 offer.getStartDate(),
                 offer.getStartDate().plusWeeks(offer.getDurationInWeeks()),
-                evaluation != null,  // hasEvaluation
-                evaluation != null ? evaluation.getId() : null,  // evaluationId
-                isSubmitted // evaluationSubmitted
+                evaluation != null,
+                evaluation != null ? evaluation.getId() : null,
+                isSubmitted
         );
     }
 

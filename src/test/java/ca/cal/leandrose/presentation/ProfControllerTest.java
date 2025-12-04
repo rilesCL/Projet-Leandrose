@@ -158,12 +158,11 @@ class ProfControllerTest {
         );
 
         return new EvaluationProfFormDto(
-                categories,           // categories
-                4,                    // preferredStage (scale 1-5)
-                5,                    // capacity (scale 1-5)
-                true,                 // sameTraineeNextStage
-                true,                 // workShiftYesNo
-                workShifts            // workShifts
+                categories,
+                4,
+                5,                                    true,
+                true,
+                workShifts
         );
     }
 
@@ -538,25 +537,6 @@ class ProfControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.teacherAssigned").value(true));
     }
-    /*
-
-    @Test
-    void checkTeacherAssigned_notProf_throwsAccessDeniedException() throws Exception {
-        when(userAppService.getMe(anyString())).thenReturn(studentDto);
-
-        mockMvc.perform(get("/prof/evaluations/check-teacher-assigned")
-                        .header("Authorization", "Bearer token")
-                        .param("studentId", "2")
-                        .param("offerId", "100"))
-                .andExpect(result -> {
-                    Exception exception = result.getResolvedException();
-                    assertNotNull(exception, "Exception should be thrown");
-                    assertInstanceOf(AccessDeniedException.class, exception, "Expected AccessDeniedException but got: " +
-                            exception.getClass().getName());
-                });
-    }
-
-     */
 
     @Test
     void checkTeacherAssigned_serviceException_returnsBadRequest() throws Exception {

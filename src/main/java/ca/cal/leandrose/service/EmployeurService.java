@@ -42,7 +42,6 @@ public class EmployeurService {
             .build();
 
     Employeur savedEmployeur = employeurRepository.save(employeur);
-    System.out.println(savedEmployeur.getField());
     return EmployeurDto.create(savedEmployeur);
   }
 

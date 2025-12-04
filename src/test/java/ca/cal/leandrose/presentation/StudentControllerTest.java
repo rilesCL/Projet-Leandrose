@@ -67,19 +67,17 @@ class StudentControllerTest {
             .internshipTerm("WINTER 2026")
             .build();
 
-      // Create internship offer
       internshipOfferDto = InternshipOfferDto.builder()
               .id(1L)
               .description("Software Developer Internship")
-              .employeurId(1L) // Make sure this is set
+              .employeurId(1L)
               .companyName("Tech Corp")
               .build();
 
-      // Create candidature with internship offer
       candidatureDto = CandidatureDto.builder()
               .id(100L)
               .student(studentDto)
-              .internshipOffer(internshipOfferDto) // This must not be null
+              .internshipOffer(internshipOfferDto)
               .build();
   }
 
@@ -1256,7 +1254,7 @@ class StudentControllerTest {
 
     mockMvc
         .perform(get("/student/cv/download").header("Authorization", "Bearer token"))
-        .andExpect(status().isNotFound()); // File doesn't exist in test
+        .andExpect(status().isNotFound());
   }
 
   @Test

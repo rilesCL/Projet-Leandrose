@@ -87,7 +87,6 @@ public class InternshipOfferService {
             .build();
 
     InternshipOffer saved = internshipOfferRepository.save(offer);
-    System.out.println(saved.getSchoolTerm());
 
     return toDto(saved);
   }
@@ -124,16 +123,12 @@ public class InternshipOfferService {
         }
 
         SchoolTerm term = parseSchoolTerm(schoolTerm);
-        System.out.println("Fetching offers for program: " + program + ", term: " + term.getTermAsString());
+
 
         return internshipOfferRepository.findPublishedByProgram(program).stream()
-                .filter(offer -> {
-                    boolean matchesTerm = offer.getSchoolTerm() != null
-                            && offer.getSchoolTerm().getSeason() == term.getSeason()
-                            && offer.getSchoolTerm().getYear() == term.getYear();
-                    System.out.println("Offer ID: " + offer.getId() + ", Matches term: " + matchesTerm);
-                    return matchesTerm;
-                })
+                .filter(offer -> offer.getSchoolTerm() != null
+                        && offer.getSchoolTerm().getSeason() == term.getSeason()
+                        && offer.getSchoolTerm().getYear() == term.getYear())
                 .map(InternshipOfferMapper::toDto)
                 .toList();
     }

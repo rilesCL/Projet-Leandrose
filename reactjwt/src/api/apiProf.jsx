@@ -1,5 +1,4 @@
-// src/api/profApi.js
-const API_BASE = "http://localhost:8080"; // <— sans slash final
+const API_BASE = "http://localhost:8080";
 
 async function handleFetch(url, options = {}) {
     try {
@@ -11,7 +10,6 @@ async function handleFetch(url, options = {}) {
         return res;
     } catch (error) {
         if (error && error.response) throw error;
-        // Gérer les erreurs réseau (Failed to fetch, CORS, etc.)
         const errorMessage = error?.message || "Impossible de se connecter au serveur";
         if (errorMessage.includes("Failed to fetch") || errorMessage.includes("NetworkError")) {
             throw { response: { data: "Erreur de connexion au serveur. Vérifiez que le serveur est démarré." } };
@@ -62,7 +60,6 @@ export async function fetchProfStudents(profId, params = {}) {
         if (contentType && contentType.includes("application/json")) {
             return await res.json();
         }
-        // Si ce n'est pas du JSON, retourner un tableau vide
         return [];
     } catch (error) {
         console.error("Error in fetchProfStudents:", error);

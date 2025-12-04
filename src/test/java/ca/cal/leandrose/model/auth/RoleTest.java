@@ -42,8 +42,6 @@ class RoleTest {
 
   @Test
   void testGestionnaireManagedRoles() {
-    // Note: managedRoles is private, so we can only test that GESTIONNAIRE exists
-    // The actual managed roles are set in a static block and are not directly testable
     assertNotNull(Role.GESTIONNAIRE);
   }
 }

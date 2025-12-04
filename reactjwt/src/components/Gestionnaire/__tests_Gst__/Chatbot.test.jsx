@@ -4,7 +4,7 @@ import i18n from 'i18next';
 import Chatbot from '../Chatbot.jsx';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-// Mock de lucide-react
+
 vi.mock('lucide-react', () => ({
     Send: () => <svg data-testid="send-icon"/>,
     Trash2: () => <svg data-testid="trash-icon"/>,
@@ -92,7 +92,7 @@ describe('Chatbot', () => {
     beforeEach(() => {
         vi.resetAllMocks();
 
-        // Mock sessionStorage
+
         const sessionStorageMock = {
             getItem: vi.fn((key) => {
                 if (key === 'accessToken') return 'test-token';
@@ -105,10 +105,10 @@ describe('Chatbot', () => {
         };
         global.sessionStorage = sessionStorageMock;
 
-        // Mock fetch global
+
         global.fetch = vi.fn();
 
-        // Mock scrollIntoView pour JSDOM
+
         Element.prototype.scrollIntoView = vi.fn();
     });
 
@@ -440,14 +440,14 @@ describe('Chatbot', () => {
             })
         });
 
-        // Mock pour la requête DELETE
+
         global.fetch.mockResolvedValueOnce({
             ok: true
         });
 
         render(<MockChatbot/>);
 
-        // Envoyer un message d'abord
+
         const textarea = screen.getByPlaceholderText('Votre question...');
         fireEvent.change(textarea, {target: {value: 'Test question'}});
 
@@ -459,7 +459,7 @@ describe('Chatbot', () => {
             expect(screen.getByText('Test question')).toBeInTheDocument();
         });
 
-        // Cliquer sur le bouton de réinitialisation
+
         const trashButton = screen.getByTitle('Réinitialiser');
         fireEvent.click(trashButton);
 
@@ -486,10 +486,10 @@ describe('Chatbot', () => {
 
         render(<MockChatbot/>);
 
-        // Vérifier que les questions suggérées sont présentes au début
+
         expect(screen.getByText("Quelles sont les offres en attente d'approbation?")).toBeInTheDocument();
 
-        // Envoyer un message
+
         const textarea = screen.getByPlaceholderText('Votre question...');
         fireEvent.change(textarea, {target: {value: 'Test question'}});
 

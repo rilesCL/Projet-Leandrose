@@ -48,8 +48,6 @@ public class StudentService {
             .build();
 
     Student savedStudent = studentRepository.save(student);
-    System.out.println(savedStudent.getProgram());
-    System.out.println(savedStudent.getTermAsString());
     return StudentDto.create(savedStudent);
   }
 

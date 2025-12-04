@@ -108,12 +108,12 @@ class ChatServiceTest {
     when(restTemplate.postForEntity(anyString(), any(), eq(Map.class)))
         .thenReturn(new ResponseEntity<>(responseBody, HttpStatus.OK));
 
-    // Act - Envoyer 25 messages pour dépasser la limite de 20
+    // Act
     for (int i = 0; i < 25; i++) {
       chatService.chat(message + i, TEST_SESSION_ID);
     }
 
-    // Assert - Vérifier que le service a géré correctement la limite
+    // Assert
     verify(restTemplate, times(25)).postForEntity(anyString(), any(), eq(Map.class));
   }
 
@@ -176,11 +176,11 @@ class ChatServiceTest {
     when(restTemplate.postForEntity(anyString(), any(), eq(Map.class)))
         .thenReturn(new ResponseEntity<>(responseBody, HttpStatus.OK));
 
-    // Act - Créer une conversation puis la supprimer
+    // Act
     chatService.chat(userMessage, TEST_SESSION_ID);
     chatService.clearHistory(TEST_SESSION_ID);
 
-    // Assert - Vérifier que l'historique a été supprimé
+    // Assert
     Set<String> activeSessions = chatService.getActiveSessions();
     assertThat(activeSessions).doesNotContain(TEST_SESSION_ID);
   }
@@ -241,13 +241,12 @@ class ChatServiceTest {
     chatService.chat(message, session1);
     chatService.chat(message, session2);
 
-    // Assert - Les deux sessions doivent être actives
+    // Assert
     Set<String> activeSessions = chatService.getActiveSessions();
     assertThat(activeSessions).hasSize(2);
     assertThat(activeSessions).contains(session1, session2);
   }
 
-  // Helper method to create mock API response
   private Map<String, Object> createMockResponse(String text) {
     Map<String, Object> responseBody = new HashMap<>();
     Map<String, Object> content = new HashMap<>();

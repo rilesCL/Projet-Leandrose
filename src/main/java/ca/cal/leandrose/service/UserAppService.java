@@ -91,7 +91,6 @@ public class UserAppService {
     public UserDTO updateProfile(String authHeader, UpdateUserRequest req) {
         UserApp user = getUserFromAuthHeader(authHeader);
 
-        // Validate current password if a new password is being set
         if (req.getNewPassword() != null
                 && !req.getNewPassword().isBlank()
                 && user.getCredentials() != null) {
@@ -122,7 +121,6 @@ public class UserAppService {
             user.getCredentials().setPassword(encoded);
         }
 
-        // Update phone number for all user types
         if (req.getPhoneNumber() != null) {
             switch (user.getRole()) {
                 case GESTIONNAIRE -> {

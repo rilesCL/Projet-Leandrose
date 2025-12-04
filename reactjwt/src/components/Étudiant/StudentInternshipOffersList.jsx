@@ -43,7 +43,7 @@ export default function StudentInternshipOffersList({studentInfo, onReregisterCl
         fetchOffers();
     }, [t]);
 
-    // --- gestion erreurs, loading etc. ---
+
 
     if (loading) {
         return (
@@ -87,7 +87,6 @@ export default function StudentInternshipOffersList({studentInfo, onReregisterCl
     return (
         <div className="bg-white shadow rounded-lg overflow-hidden">
 
-            {/* HEADER */}
             <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-lg font-medium text-gray-900">
                     {t("StudentInternshipOffersList.availableOffers")}
@@ -98,7 +97,6 @@ export default function StudentInternshipOffersList({studentInfo, onReregisterCl
                 </p>
             </div>
 
-            {/* DESKTOP TABLE */}
             <div className="hidden lg:block overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -115,7 +113,6 @@ export default function StudentInternshipOffersList({studentInfo, onReregisterCl
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("StudentInternshipOffersList.startDate")}
                         </th>
-                        {/* ❌ COLUMN TERM REMOVED */}
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             {t("StudentInternshipOffersList.duration")}
                         </th>
@@ -151,8 +148,6 @@ export default function StudentInternshipOffersList({studentInfo, onReregisterCl
                                 {formatDate(offer.startDate)}
                             </td>
 
-                            {/* ❌ TERM REMOVED */}
-
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {offer.durationInWeeks} semaine{offer.durationInWeeks > 1 ? "s" : ""}
                             </td>
@@ -171,7 +166,6 @@ export default function StudentInternshipOffersList({studentInfo, onReregisterCl
                 </table>
             </div>
 
-            {/* MOBILE VERSION */}
             <div className="lg:hidden divide-y divide-gray-200">
                 {offers.map((offer) => (
                     <div key={offer.id} className="p-4 hover:bg-gray-50">

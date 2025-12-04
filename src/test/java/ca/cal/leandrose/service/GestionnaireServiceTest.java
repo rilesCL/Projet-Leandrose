@@ -204,7 +204,7 @@ public class GestionnaireServiceTest {
     assertEquals(acceptedOffers.size(), list_approved_offers.size());
     assertTrue(list_approved_offers.stream().allMatch(o -> "PUBLISHED".equals(o.getStatus())));
   }
-    // ---------- ADD ALL TESTS BELOW ----------
+    
 
     @Test
     void approveCv_shouldThrow_whenCvNotFound() {
@@ -336,6 +336,6 @@ public class GestionnaireServiceTest {
         assertTrue(list.stream().anyMatch(p -> p.code().equals(Program.COMPUTER_SCIENCE.name())));
     }
 
-// ---------- END OF ADDED TESTS ----------
+
 
 }

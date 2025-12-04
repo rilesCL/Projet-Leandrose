@@ -9,7 +9,7 @@ export default function TermSelector({onTermChange}) {
     const [availableTerms, setAvailableTerms] = useState([]);
     const dropdownRef = useRef(null);
 
-    // Close dropdown when clicking outside
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -21,7 +21,7 @@ export default function TermSelector({onTermChange}) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Generate available terms (current + next 2 terms + previous 2 terms)
+
     useEffect(() => {
         const currentTerm = getCurrentTerm();
         const terms = [
@@ -35,7 +35,7 @@ export default function TermSelector({onTermChange}) {
         setAvailableTerms(terms);
         setSelectedTerm(currentTerm);
 
-        // Notify parent of initial term
+
         if (onTermChange) {
             onTermChange(currentTerm);
         }
@@ -44,7 +44,7 @@ export default function TermSelector({onTermChange}) {
     const getCurrentTerm = () => {
         const now = new Date();
         const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth() + 1; // JavaScript months are 0-indexed
+        const currentMonth = now.getMonth() + 1;
 
         let season;
         if (currentMonth <= 5) {

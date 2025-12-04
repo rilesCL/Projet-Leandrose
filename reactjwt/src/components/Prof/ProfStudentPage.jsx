@@ -115,13 +115,13 @@ export default function ProfStudentsPage() {
         }
     }, [profId, firstLoadDone, loadData]);
 
-    // Déclencher la recherche quand les filtres changent (avec debounce)
+
     useEffect(() => {
         if (!profId || !firstLoadDone) return;
         
         const timeoutId = setTimeout(() => {
             loadData();
-        }, 300); // Debounce de 300ms
+        }, 300);
 
         return () => clearTimeout(timeoutId);
     }, [name, evaluationStatus, profId, firstLoadDone, loadData]);

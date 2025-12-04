@@ -241,7 +241,7 @@ public class GestionnaireController {
   public ResponseEntity<List<ProfDto>> getAllProfs() {
     try {
       List<ProfDto> profs = profService.getAllProfs();
-      System.out.println("✓ Récupération de " + profs.size() + " professeurs");
+
       return ResponseEntity.ok(profs);
     } catch (Exception e) {
       System.err.println("✗ Erreur lors de la récupération des professeurs: " + e.getMessage());

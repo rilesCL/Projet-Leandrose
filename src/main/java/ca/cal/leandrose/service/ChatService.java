@@ -70,8 +70,6 @@ public class ChatService {
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         this.objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-
-        System.out.println("✅ ChatService initialisé avec ObjectMapper configuré pour les dates");
     }
 
     private List<Map<String, Object>> getFunctionDeclarations() {
@@ -241,17 +239,11 @@ public class ChatService {
         String functionName = (String) functionCall.get("name");
         Map<String, Object> functionArgs = (Map<String, Object>) functionCall.getOrDefault("args", Map.of());
 
-        System.out.println("🔧 Function call requested: " + functionName);
-        System.out.println("📥 Arguments: " + functionArgs);
-
         Object functionResult = executeFunction(functionName, functionArgs);
 
         String resultJson;
         try {
             resultJson = objectMapper.writeValueAsString(functionResult);
-            System.out.println("✅ Function result serialized successfully");
-            System.out.println("📤 Function result (first 300 chars): " +
-                    resultJson.substring(0, Math.min(300, resultJson.length())) + "...");
         } catch (Exception e) {
             System.err.println("❌ Erreur de sérialisation JSON: " + e.getMessage());
             e.printStackTrace();
@@ -331,63 +323,27 @@ public class ChatService {
 
     private Object executeFunction(String functionName, Map<String, Object> args) {
         try {
-            System.out.println("⚡ Exécution de la fonction: " + functionName);
-
-            Object result = switch (functionName) {
-                case "getPendingOffers" -> {
-                    var data = gestionnaireService.getPendingOffers();
-                    System.out.println("✅ getPendingOffers: " + data.size() + " offres récupérées");
-                    yield data;
-                }
-                case "getApprovedOffers" -> {
-                    var data = gestionnaireService.getApprovedOffers();
-                    System.out.println("✅ getApprovedOffers: " + data.size() + " offres récupérées");
-                    yield data;
-                }
-                case "getRejectedOffers" -> {
-                    var data = gestionnaireService.getRejectedoffers();
-                    System.out.println("✅ getRejectedOffers: " + data.size() + " offres récupérées");
-                    yield data;
-                }
-                case "getPendingCvs" -> {
-                    var data = gestionnaireService.getPendingCvs();
-                    System.out.println("✅ getPendingCvs: " + data.size() + " CVs récupérés");
-                    yield data;
-                }
+            return switch (functionName) {
+                case "getPendingOffers" -> gestionnaireService.getPendingOffers();
+                case "getApprovedOffers" -> gestionnaireService.getApprovedOffers();
+                case "getRejectedOffers" -> gestionnaireService.getRejectedoffers();
+                case "getPendingCvs" -> gestionnaireService.getPendingCvs();
                 case "getOfferDetails" -> {
                     Long offerId = ((Number) args.get("offerId")).longValue();
-                    var data = internshipOfferService.getOffer(offerId);
-                    System.out.println("✅ getOfferDetails: offre #" + offerId + " récupérée");
-                    yield data;
+                    yield internshipOfferService.getOffer(offerId);
                 }
-                case "getAllPrograms" -> {
-                    var data = gestionnaireService.getAllPrograms();
-                    System.out.println("✅ getAllPrograms: " + data.size() + " programmes récupérés");
-                    yield data;
-                }
-                case "getCandidaturesAcceptees" -> {
-                    var data = ententeService.getCandidaturesAcceptees();
-                    System.out.println("✅ getCandidaturesAcceptees: " + data.size() + " candidatures récupérées");
-                    yield data;
-                }
-                case "getAllEntentes" -> {
-                    var data = ententeService.getAllEntentes();
-                    System.out.println("✅ getAllEntentes: " + data.size() + " ententes récupérées");
-                    yield data;
-                }
+                case "getAllPrograms" -> gestionnaireService.getAllPrograms();
+                case "getCandidaturesAcceptees" -> ententeService.getCandidaturesAcceptees();
+                case "getAllEntentes" -> ententeService.getAllEntentes();
                 case "getEntenteDetails" -> {
                     Long ententeId = ((Number) args.get("ententeId")).longValue();
-                    var data = ententeService.getEntenteById(ententeId);
-                    System.out.println("✅ getEntenteDetails: entente #" + ententeId + " récupérée");
-                    yield data;
+                    yield ententeService.getEntenteById(ententeId);
                 }
                 default -> {
                     System.err.println("❌ Fonction inconnue: " + functionName);
                     yield Map.of("error", "Fonction inconnue: " + functionName);
                 }
             };
-
-            return result;
 
         } catch (Exception e) {
             System.err.println("❌ Erreur lors de l'exécution de " + functionName + ": " + e.getMessage());
@@ -406,13 +362,12 @@ public class ChatService {
         if (history.size() > MAX_HISTORY_SIZE) {
             int toRemove = history.size() - MAX_HISTORY_SIZE;
             history.subList(0, toRemove).clear();
-            System.out.println("🧹 Historique nettoyé: " + toRemove + " messages supprimés");
         }
     }
 
     public void clearHistory(String sessionId) {
         conversationHistory.remove(sessionId);
-        System.out.println("🗑️ Historique de la session " + sessionId + " supprimé");
+
     }
 
     public Set<String> getActiveSessions() {

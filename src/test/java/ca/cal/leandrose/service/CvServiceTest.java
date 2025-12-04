@@ -167,7 +167,6 @@ class CvServiceTest {
   }
     @Test
     void downloadCv_ShouldReturnResource_WhenCvExistsAndFilePresent() throws Exception {
-        // Upload a valid CV first
         MockMultipartFile file =
                 new MockMultipartFile(
                         "file",
@@ -197,7 +196,6 @@ class CvServiceTest {
 
     @Test
     void downloadCv_ShouldThrow_WhenFileMissingOnDisk() throws Exception {
-        // Upload a real CV
         MockMultipartFile file =
                 new MockMultipartFile(
                         "file",
@@ -207,7 +205,6 @@ class CvServiceTest {
 
         CvDto uploaded = cvService.uploadCv(testStudent.getId(), file);
 
-        // Delete the file manually
         Cv saved = cvRepository.findById(uploaded.getId()).orElseThrow();
         Path path = Path.of(saved.getPdfPath());
         Files.deleteIfExists(path);

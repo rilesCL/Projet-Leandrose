@@ -79,7 +79,7 @@ class CandidatureServiceTest {
                                 .build());
     }
 
-    // ------------------- HAPPY PATHS -------------------
+    
     @Test
     void postuler_ShouldCreateCandidature_WhenAllConditionsAreMet() {
         CandidatureDto result =
@@ -132,7 +132,7 @@ class CandidatureServiceTest {
         assertEquals(Candidature.Status.ACCEPTED, afterStudent.getStatus());
     }
 
-    // ------------------- POSTULER EXCEPTIONS -------------------
+    
     @Test
     void postuler_ShouldThrow_WhenAlreadyApplied() {
         candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -195,7 +195,7 @@ class CandidatureServiceTest {
                 () -> candidatureService.postuler(testStudent.getId(), testOffer.getId(), rejectedCv.getId()));
     }
 
-    // ------------------- ACCEPT BY EMPLOYEUR -------------------
+    
     @Test
     void acceptByEmployeur_ShouldThrow_WhenAlreadyRejected() {
         CandidatureDto c = candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -221,7 +221,7 @@ class CandidatureServiceTest {
         assertThrows(IllegalStateException.class, () -> candidatureService.acceptByEmployeur(c.getId()));
     }
 
-    // ------------------- ACCEPT BY STUDENT -------------------
+    
     @Test
     void acceptByStudent_ShouldThrow_WhenNotOwnedByStudent() {
         CandidatureDto c = candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -237,7 +237,7 @@ class CandidatureServiceTest {
         assertThrows(IllegalStateException.class, () -> candidatureService.acceptByStudent(c.getId(), testStudent.getId()));
     }
 
-    // ------------------- REJECT BY STUDENT -------------------
+    
     @Test
     void rejectByStudent_ShouldThrow_WhenNotOwnedByStudent() {
         CandidatureDto c = candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -253,7 +253,7 @@ class CandidatureServiceTest {
         assertThrows(IllegalStateException.class, () -> candidatureService.rejectByStudent(c.getId(), testStudent.getId()));
     }
 
-    // ------------------- REJECT BY EMPLOYEUR -------------------
+    
     @Test
     void rejectByEmployeur_ShouldThrow_WhenAlreadyAccepted() {
         CandidatureDto c = candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -270,9 +270,9 @@ class CandidatureServiceTest {
 
         assertThrows(IllegalStateException.class, () -> candidatureService.rejectByEmployeur(c.getId()));
     }
-    // Add these inside your existing CandidatureServiceTest class
+    
 
-    // ------------------- GET CANDIDATURE -------------------
+    
     @Test
     void getCandidatureById_ShouldReturnCandidature_WhenExists() {
         CandidatureDto c = candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -286,7 +286,7 @@ class CandidatureServiceTest {
         assertThrows(RuntimeException.class, () -> candidatureService.getCandidatureById(999L));
     }
 
-    // ------------------- GET CANDIDATURES BY OFFER -------------------
+    
     @Test
     void getCandidaturesByOffer_ShouldReturnEmptyList_WhenNoApplications() {
         List<CandidatureEmployeurDto> list = candidatureService.getCandidaturesByOffer(999L);
@@ -302,7 +302,7 @@ class CandidatureServiceTest {
         assertEquals(c.getId(), list.get(0).getId());
     }
 
-    // ------------------- GET CANDIDATURES BY EMPLOYEUR -------------------
+    
     @Test
     void getCandidaturesByEmployeur_ShouldReturnEmptyList_WhenNoApplications() {
         List<CandidatureEmployeurDto> list = candidatureService.getCandidaturesByEmployeur(999L);
@@ -318,7 +318,7 @@ class CandidatureServiceTest {
         assertEquals(c.getId(), list.get(0).getId());
     }
 
-    // ------------------- REJECT BY STUDENT (HAPPY PATH) -------------------
+    
     @Test
     void rejectByStudent_ShouldUpdateStatus_WhenValid() {
         CandidatureDto c = candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -328,7 +328,7 @@ class CandidatureServiceTest {
         assertEquals(Candidature.Status.REJECTED, rejected.getStatus());
     }
 
-    // ------------------- REJECT BY EMPLOYEUR (HAPPY PATH) -------------------
+    
     @Test
     void rejectByEmployeur_ShouldUpdateStatus_WhenValid() {
         CandidatureDto c = candidatureService.postuler(testStudent.getId(), testOffer.getId(), testCv.getId());
@@ -337,7 +337,7 @@ class CandidatureServiceTest {
         assertEquals(Candidature.Status.REJECTED, rejected.getStatus());
     }
 
-    // ------------------- MULTIPLE STUDENTS APPLY -------------------
+    
     @Test
     void multipleStudentsApplying_ShouldWorkIndependently() {
         Student student2 = studentRepository.save(

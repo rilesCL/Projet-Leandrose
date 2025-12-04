@@ -118,7 +118,7 @@ class CvDtoTest {
     CvDto dto = CvDto.create(cvRejected);
 
     assertEquals(Cv.Status.REJECTED, dto.getStatus());
-    // Note: The create method doesn't copy rejectionComment, so it will be null
+
     assertNull(dto.getRejectionComment());
   }
 
@@ -144,7 +144,6 @@ class CvDtoTest {
     assertEquals("/cv.pdf", dto.getPdfPath());
     assertEquals(Cv.Status.APPROVED, dto.getStatus());
     assertEquals("John Doe", dto.getStudentName());
-    // Note: The constructor doesn't assign rejectionComment, so it will be null
     assertNull(dto.getRejectionComment());
   }
 }

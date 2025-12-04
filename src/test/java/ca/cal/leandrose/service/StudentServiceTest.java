@@ -303,7 +303,7 @@ class StudentServiceTest {
     // Act
     Optional<ProfDto> result = studentService.getProfByStudentId(studentId);
 
-    // Assert - Should return prof2 as it's more recent
+    // Assert
     assertTrue(result.isPresent());
     assertEquals(11L, result.get().getId());
     assertEquals("Prof2", result.get().getFirstName());
@@ -583,7 +583,7 @@ class StudentServiceTest {
     // Act
     List<EmployeurDto> result = studentService.getEmployeursByStudentId(studentId);
 
-    // Assert - Should return only one unique employeur
+    // Assert
     assertEquals(1, result.size());
     assertEquals(20L, result.get(0).getId());
   }

@@ -40,9 +40,9 @@ class RegisterControllerTest {
     @MockitoBean private StudentService studentService;
     @MockitoBean private GestionnaireService gestionnaireService;
 
-    // ===============================
-    // POST /api/register/employeur
-    // ===============================
+    
+    
+    
     @Test
     @DisplayName("POST /api/register/employeur returns 201 and employer details on success")
     void testRegisterEmployeurSuccess() throws Exception {
@@ -50,7 +50,7 @@ class RegisterControllerTest {
         request.setFirstName("John");
         request.setLastName("Doe");
         request.setEmail("john.doe@example.com");
-        request.setPassword("Password123!"); // valid
+        request.setPassword("Password123!"); 
         request.setCompanyName("TechCorp");
         request.setField("IT");
 
@@ -85,7 +85,7 @@ class RegisterControllerTest {
         request.setFirstName("");
         request.setLastName("Doe");
         request.setEmail("invalid-email");
-        request.setPassword("pass"); // too short
+        request.setPassword("pass"); 
         request.setCompanyName("TechCorp");
         request.setField("IT");
 
@@ -138,9 +138,9 @@ class RegisterControllerTest {
                 .andExpect(jsonPath("$.error").value("Erreur serveur"));
     }
 
-    // ===============================
-    // POST /api/register/student
-    // ===============================
+    
+    
+    
     @Test
     @DisplayName("POST /api/register/student returns 201 and student details on success")
     void testRegisterStudentSuccess() throws Exception {
@@ -184,7 +184,7 @@ class RegisterControllerTest {
         request.setFirstName("");
         request.setLastName("Dupont");
         request.setEmail("invalid-email");
-        request.setPassword("pass"); // too short
+        request.setPassword("pass"); 
         request.setStudentNumber("");
         request.setProgram("");
 
@@ -238,9 +238,9 @@ class RegisterControllerTest {
                 .andExpect(jsonPath("$.error.error").value("Erreur serveur"));
     }
 
-    // ===============================
-    // GET /api/register/programs
-    // ===============================
+    
+    
+    
     @Test
     @DisplayName("GET /api/register/programs returns list of programs")
     void testGetPrograms() throws Exception {
