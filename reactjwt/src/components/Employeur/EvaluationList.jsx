@@ -144,89 +144,96 @@ export default function EvaluationsList() {
                 </div>
             ) : (
                 <div className="space-y-5">
-                    {eligibleAgreements.map((agreement) => {
-                        const key = `${agreement.studentId}-${agreement.offerId}`;
-                        const status = evaluationStatus[key] || {};
-                        const evaluation = status?.evaluation;
-                        const hasEval =
-                            evaluation &&
-                            ((isTeacher && evaluation.submittedByProfessor) ||
-                                (isEmployer && evaluation.submittedByEmployer))
+                    {eligibleAgreements.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                            {t("evaluationList.no_evaluations")}
+                        </div>
+                    ) : (
+                        <div className="space-y-5">
+                            {eligibleAgreements.map((agreement) => {
+                                const key = `${agreement.studentId}-${agreement.offerId}`;
+                                const status = evaluationStatus[key] || {};
+                                const evaluation = status?.evaluation;
+                                const hasEval =
+                                    evaluation &&
+                                    ((isTeacher && evaluation.submittedByProfessor) ||
+                                        (isEmployer && evaluation.submittedByEmployer))
 
-                        const teacherAssigned = teacherAssignmentStatus[key];
-                        const canCreate = teacherAssigned && !hasEval
+                                const teacherAssigned = teacherAssignmentStatus[key];
+                                const canCreate = teacherAssigned && !hasEval
 
-                        return (
-                            <div
-                                key={agreement.id}
-                                className="bg-white border rounded-xl p-6 shadow-sm"
-                            >
-                                <div className="flex flex-col md:flex-row md:justify-between gap-6">
+                                return (
+                                    <div
+                                        key={agreement.id}
+                                        className="bg-white border rounded-xl p-6 shadow-sm"
+                                    >
+                                        <div className="flex flex-col md:flex-row md:justify-between gap-6">
 
-                                    <div className="flex-1 space-y-3">
-                                        <h3 className="text-xl font-semibold">
-                                            {agreement.studentFirstName} {agreement.studentLastName}
-                                        </h3>
+                                            <div className="flex-1 space-y-3">
+                                                <h3 className="text-xl font-semibold">
+                                                    {agreement.studentFirstName} {agreement.studentLastName}
+                                                </h3>
 
-                                        <p>{agreement.internshipDescription}</p>
+                                                <p>{agreement.internshipDescription}</p>
 
-                                        {hasEval && (
-                                            <div
-                                                className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm">
-                                                ✔ {t("evaluationList.evaluation")}{" "}
-                                                {isTeacher
-                                                    ? evaluation.submittedByProfessor
-                                                        ? t("evaluationList.submitted")
-                                                        : t("evaluationList.draft_created")
-                                                    : evaluation.submittedByEmployer
-                                                        ? t("evaluationList.submitted")
-                                                        : t("evaluationList.draft_created")}
-                                                {" - "}
-                                                {console.log("Raw dateEvaluation:", evaluation.dateEvaluation, "Type:", typeof evaluation.dateEvaluation)}
+                                                {hasEval && (
+                                                    <div className="px-3 py-1.5 bg-green-50 text-green-700 rounded-full text-sm">
+                                                        ✔ {t("evaluationList.evaluation")}{" "}
+                                                        {isTeacher
+                                                            ? evaluation.submittedByProfessor
+                                                                ? t("evaluationList.submitted")
+                                                                : t("evaluationList.draft_created")
+                                                            : evaluation.submittedByEmployer
+                                                                ? t("evaluationList.submitted")
+                                                                : t("evaluationList.draft_created")}
+                                                        {" - "}
+                                                        {console.log("Raw dateEvaluation:", evaluation.dateEvaluation, "Type:", typeof evaluation.dateEvaluation)}
 
-                                                {formatEvaluationDate(evaluation.dateEvaluation)}
+                                                        {formatEvaluationDate(evaluation.dateEvaluation)}
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
 
-                                    <div className="flex flex-col gap-3 items-start md:items-end">
-                                        {hasEval ? (
-                                            <button
-                                                onClick={() =>
-                                                    handleViewPdf(
-                                                        agreement.studentId,
-                                                        agreement.offerId
-                                                    )
-                                                }
-                                                className="px-4 py-2 bg-emerald-600 text-white rounded-md"
-                                            >
-                                                {t("evaluationList.view_pdf")}
-                                            </button>
-                                        ) : (
-                                            <Link
-                                                to={
-                                                    canCreate
-                                                        ? isTeacher
-                                                            ? `/dashboard/prof/evaluation/${agreement.studentId}/${agreement.offerId}`
-                                                            : `/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`
-                                                        : "#"
-                                                }
-                                                className={`px-4 py-2 rounded-md text-white ${
-                                                    teacherAssigned
-                                                        ? "bg-blue-600"
-                                                        : "bg-gray-400 cursor-not-allowed"
-                                                }`}
-                                            >
-                                                {canCreate
-                                                    ? t("evaluationList.create_evaluation")
-                                                    : t("evaluationList.awaiting_teacher")}
-                                            </Link>
-                                        )}
+                                            <div className="flex flex-col gap-3 items-center md:items-end">
+                                                {hasEval ? (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleViewPdf(
+                                                                agreement.studentId,
+                                                                agreement.offerId
+                                                            )
+                                                        }
+                                                        className="px-4 py-2 bg-emerald-600 text-white rounded-md w-full md:w-auto"
+                                                    >
+                                                        {t("evaluationList.view_pdf")}
+                                                    </button>
+                                                ) : (
+                                                    <Link
+                                                        to={
+                                                            canCreate
+                                                                ? isTeacher
+                                                                    ? `/dashboard/prof/evaluation/${agreement.studentId}/${agreement.offerId}`
+                                                                    : `/dashboard/employeur/evaluation/${agreement.studentId}/${agreement.offerId}`
+                                                                : "#"
+                                                        }
+                                                        className={`px-4 py-2 rounded-md text-white text-center w-full md:w-auto ${
+                                                            teacherAssigned
+                                                                ? "bg-blue-600 hover:bg-blue-700"
+                                                                : "bg-gray-400 cursor-not-allowed"
+                                                        }`}
+                                                    >
+                                                        {canCreate
+                                                            ? t("evaluationList.create_evaluation")
+                                                            : t("evaluationList.awaiting_teacher")}
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             )}
 

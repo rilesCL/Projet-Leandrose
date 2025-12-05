@@ -309,24 +309,50 @@ export default function StudentApplicationsList() {
                 ) : (
                     <>
                         <div className="hidden lg:block overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
+                            <table className="min-w-full divide-y divide-gray-200 table-fixed">
                                 <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.offer")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.company")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.date")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.status")}</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t("studentApplicationsList.table.actions")}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {t("studentApplicationsList.table.offer")}
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {t("studentApplicationsList.table.company")}
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {t("studentApplicationsList.table.date")}
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {t("studentApplicationsList.table.status")}
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        {t("studentApplicationsList.table.actions")}
+                                    </th>
                                 </tr>
                                 </thead>
+
                                 <tbody className="bg-white divide-y divide-gray-200">
                                 {filteredCandidatures.map(c => (
                                     <tr key={c.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{c.internshipOffer?.description}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-900">{c.internshipOffer?.companyName}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{formatDate(c.applicationDate)}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(c.status, c)}</td>
+
+                                        <td className="px-6 py-4 text-sm text-left font-medium text-gray-900 truncate">
+                                            {c.internshipOffer?.description}
+                                        </td>
+
+                                        <td className="px-6 py-4 text-sm text-left text-gray-900 truncate">
+                                            {c.internshipOffer?.companyName}
+                                        </td>
+
+                                        <td className="px-6 py-4 text-sm text-left text-gray-900 whitespace-nowrap">
+                                            {formatDate(c.applicationDate)}
+                                        </td>
+
+                                        <td className="px-6 py-4 text-left whitespace-nowrap">
+                                            {getStatusBadge(c.status, c)}
+                                        </td>
+
+                                        {/* Actions */}
                                         <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+
                                             <button
                                                 onClick={() => navigate(`/dashboard/student/offers/${c.internshipOffer?.id}`)}
                                                 className="text-indigo-600 hover:text-indigo-900"
@@ -342,6 +368,7 @@ export default function StudentApplicationsList() {
                                                     >
                                                         {t("studentApplicationsList.actions.accept")}
                                                     </button>
+
                                                     <button
                                                         onClick={() => openRejectModal(c)}
                                                         className="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 font-medium"
@@ -350,10 +377,12 @@ export default function StudentApplicationsList() {
                                                     </button>
                                                 </>
                                             )}
+
                                         </td>
                                     </tr>
                                 ))}
                                 </tbody>
+
                             </table>
                         </div>
 

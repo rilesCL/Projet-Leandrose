@@ -38,7 +38,6 @@ function badgeClass(status) {
 }
 
 export default function ProfStudentsPage() {
-    const navigate = useNavigate();
     const [profId, setProfId] = useState(null);
     const [userName, setUserName] = useState("");
     const [loading, setLoading] = useState(true);
@@ -199,26 +198,33 @@ export default function ProfStudentsPage() {
                             <table className="min-w-full text-sm">
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                 <tr>
+                                    {/* Student Column - Always visible */}
                                     <th
-                                        className="text-left px-6 py-3 text-gray-700 font-semibold whitespace-nowrap cursor-pointer select-none hover:bg-gray-100 transition"
+                                        className="px-4 py-3 text-gray-700 font-semibold whitespace-nowrap cursor-pointer select-none hover:bg-gray-100 transition w-full sm:w-1/4"
                                         onClick={onClickSortStudent}
                                         title={t("profStudentsPage.table.sortByName")}
                                     >
-                                        {t("profStudentsPage.table.student")}{" "}
-                                        <span className="inline-block text-indigo-600">
-                        {sortBy === "name" ? sortedIcon : ""}
-                      </span>
+                                        <div className="flex justify-center sm:justify-center">
+                                            {t("profStudentsPage.table.student")}
+                                            <span className="ml-1 text-indigo-600">
+                                {sortBy === "name" ? sortedIcon : ""}
+                            </span>
+                                        </div>
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+
+                                    <th className="px-4 py-3 text-gray-700 font-semibold hidden sm:table-cell w-1/5">
                                         {t("profStudentsPage.table.company")}
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+
+                                    <th className="px-4 py-3 text-gray-700 font-semibold hidden sm:table-cell w-1/5">
                                         {t("profStudentsPage.table.dates")}
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+
+                                    <th className="px-4 py-3 text-gray-700 font-semibold w-1/6">
                                         {t("profStudentsPage.table.stageStatus")}
                                     </th>
-                                    <th className="text-left px-6 py-3 text-gray-700 font-semibold">
+
+                                    <th className="px-4 py-3 text-gray-700 font-semibold w-1/6">
                                         {t("profStudentsPage.table.evaluationStatus")}
                                     </th>
                                 </tr>
@@ -227,15 +233,18 @@ export default function ProfStudentsPage() {
                                 <tbody className="divide-y divide-gray-200">
                                 {loading && (
                                     <tr>
-                                        <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
-                                            {t("profStudentsPage.messages.loading")}
+                                        <td className="px-4 py-6 text-center text-gray-500" colSpan={5}>
+                                            <div className="flex justify-center items-center">
+                                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-2"></div>
+                                                {t("profStudentsPage.messages.loading")}
+                                            </div>
                                         </td>
                                     </tr>
                                 )}
 
                                 {!loading && rows.length === 0 && (
                                     <tr>
-                                        <td className="px-6 py-8 text-center text-gray-500" colSpan={5}>
+                                        <td className="px-4 py-8 text-center text-gray-500" colSpan={5}>
                                             {t("profStudentsPage.messages.noStudents")}
                                         </td>
                                     </tr>
@@ -244,35 +253,51 @@ export default function ProfStudentsPage() {
                                 {!loading &&
                                     rows.map((it) => (
                                         <tr key={it.ententeId} className="hover:bg-gray-50 transition">
-                                            <td className="px-6 py-4">
-                                                <div className="font-semibold text-gray-900">
+                                            <td className="px-4 py-4 align-top w-full sm:w-1/4">
+                                                <div className="font-semibold text-gray-900 truncate" title={`${it.studentLastName ?? ""} ${it.studentFirstName ?? ""}`.trim()}>
                                                     {`${it.studentLastName ?? ""} ${it.studentFirstName ?? ""}`.trim()}
                                                 </div>
-                                                <div className="text-xs text-gray-500">{it.offerTitle}</div>
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-700">
-                                                {it.companyName || <span className="text-gray-400">—</span>}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm text-gray-700">
-                                                    {it.startDate || "—"}{" "}
-                                                    {it.endDate ?
-                                                        <span className="text-gray-500">→ {it.endDate}</span> : null}
+                                                <div className="text-xs text-gray-500 truncate mt-1 sm:hidden" title={it.companyName}>
+                                                    {it.companyName || <span className="text-gray-400">—</span>}
+                                                </div>
+                                                <div className="text-xs text-gray-500 truncate mt-1" title={it.offerTitle}>
+                                                    {it.offerTitle}
+                                                </div>
+                                                <div className="text-xs text-gray-700 mt-1 sm:hidden">
+                                                    {it.startDate || "—"}
+                                                    {it.endDate && <span className="text-gray-500"> → {it.endDate}</span>}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                          <span
-                              className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.stageStatus)}`}
-                          >
-                            {prettifyStatus(it.stageStatus)}
-                          </span>
+
+                                            <td className="px-4 py-4 text-gray-700 align-middle hidden sm:table-cell w-1/5">
+                                                <div className="truncate" title={it.companyName}>
+                                                    {it.companyName || <span className="text-gray-400">—</span>}
+                                                </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                          <span
-                              className={`px-2 py-1 rounded text-xs font-medium ${badgeClass(it.evaluationStatus)}`}
-                          >
-                            {prettifyStatus(it.evaluationStatus)}
-                          </span>
+
+                                            <td className="px-4 py-4 align-middle hidden sm:table-cell w-1/5">
+                                                <div className="text-sm text-gray-700 whitespace-nowrap">
+                                                    <div>{it.startDate || "—"}</div>
+                                                    {it.endDate && (
+                                                        <div className="text-gray-500 text-xs mt-1">→ {it.endDate}</div>
+                                                    )}
+                                                </div>
+                                            </td>
+
+                                            <td className="px-4 py-4 align-middle w-1/6">
+                                <span
+                                    className={`inline-flex items-center justify-center px-2.5 py-1 rounded text-xs font-medium ${badgeClass(it.stageStatus)} w-full sm:w-auto`}
+                                >
+                                    {prettifyStatus(it.stageStatus)}
+                                </span>
+                                            </td>
+
+                                            <td className="px-4 py-4 align-middle w-1/6">
+                                <span
+                                    className={`inline-flex items-center justify-center px-2.5 py-1 rounded text-xs font-medium ${badgeClass(it.evaluationStatus)} w-full sm:w-auto`}
+                                >
+                                    {prettifyStatus(it.evaluationStatus)}
+                                </span>
                                             </td>
                                         </tr>
                                     ))}

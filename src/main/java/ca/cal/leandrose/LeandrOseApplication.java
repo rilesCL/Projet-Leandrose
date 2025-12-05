@@ -67,7 +67,7 @@ public class LeandrOseApplication {
             "wbbey@gmail.com",
             "mansang",
             "macolo",
-            Program.COMPUTER_SCIENCE.getTranslationKey());
+            Program.COMPUTER_SCIENCE.toString());
 
         StudentDto riles = studentService.createStudent(
             "Ghilas",
@@ -97,7 +97,7 @@ public class LeandrOseApplication {
                 "marie.tremblay@entreprise.com",
                 "Password123",
                 "TechInnovation Inc.",
-                Program.SOFTWARE_ENGINEERING.getTranslationKey());
+                Program.SOFTWARE_ENGINEERING.toString());
 
         StudentDto studentConvocation =
             studentService.createStudent(
@@ -225,7 +225,7 @@ public class LeandrOseApplication {
                 "philippe.lavoie@entreprise.com",
                 "Password123",
                 "Solutions Logicielles Pro",
-                Program.COMPUTER_SCIENCE.getTranslationKey());
+                Program.COMPUTER_SCIENCE.toString());
 
         StudentDto studentEntente =
             studentService.createStudent(
@@ -379,7 +379,7 @@ public class LeandrOseApplication {
                 "catherine.leduc@techquebec.com",
                 "Password123",
                 "TechQuébec Solutions",
-                Program.SOFTWARE_ENGINEERING.getTranslationKey());
+                Program.SOFTWARE_ENGINEERING.toString());
 
         StudentDto studentProf =
             studentService.createStudent(
