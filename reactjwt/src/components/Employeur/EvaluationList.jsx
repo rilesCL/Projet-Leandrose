@@ -218,7 +218,7 @@ export default function EvaluationsList() {
                                                         }
                                                         className={`px-4 py-2 rounded-md text-white text-center w-full md:w-auto ${
                                                             teacherAssigned
-                                                                ? "bg-blue-600 hover:bg-blue-700"
+                                                                ? "bg-blue-600 hover:bg-blue-700 visited:text-white"
                                                                 : "bg-gray-400 cursor-not-allowed"
                                                         }`}
                                                     >
